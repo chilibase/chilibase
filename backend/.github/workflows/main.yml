@@ -1,0 +1,34 @@
+# Workflow Build and publish (build is triggered in prepublish)
+name: Build and publish
+
+on:
+  # temporary turn off "push" in order to commit stuff (workflow_dispatch enables manually triggering)
+  #push
+  workflow_dispatch
+  #release:
+  #  types: [published]
+jobs:
+  build-and-publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Setup .npmrc file to publish to npm (without this step, the authorisation for "npm publish" does not work)
+      - name: Setup .npmrc file
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: true
+
+      - name: Publish package on NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}

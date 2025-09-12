@@ -1,0 +1,3 @@
+node_modules
+# Typescript compiles here ("/" means ignore only in lib in root folder)
+/lib

@@ -1,0 +1,32 @@
+/* vytvorene podla XDevReactWebApp a https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c */
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "downlevelIteration": true, // aby zafungovalo pouzitie .entries() (for (const [index, value] of array.entries()))
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ES2020",
+    "moduleResolution": "Node",
+    "rootDir": "src",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+
+    "declaration": true,
+    "outDir": "./lib"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/__tests__/*"]
+}
