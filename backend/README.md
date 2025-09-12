@@ -1,3 +1,9 @@
-comment to package.json:
-package.json was made by https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
-attribute "files": ["lib/**/*"] controls, that into npmjs.com are deployed only files in lib (not files in src)
+Backend part of the opensource fullstack framework chilibase.<br/>
+Based on nestjs, typeorm, postgres DB.<br/>
+<br/>
+Source code:<br/>
+https://github.com/chilibase/chilibase<br/>
+<br/>
+Example of use:<br/>
+https://github.com/chilibase/car-demo<br/>
+
