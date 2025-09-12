@@ -1,4 +1,3 @@
-# adresare a subory ktore nechceme poslat do npm
-# nema velky vyznam - do npm sa posielaju subory urcene cez "files" v package.json
+# folders and files that we don't want to deploy to npm
+# maybe we can remove this content - because to npm are deployed files declared in "files" in package.json
 node_modules/
-.idea/
