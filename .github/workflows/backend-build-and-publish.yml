@@ -1,5 +1,5 @@
 # Workflow Build and publish (build is triggered in prepublish)
-name: Build and publish
+name: Backend - build and publish
 
 on:
   # temporary turn off "push" in order to commit stuff (workflow_dispatch enables manually triggering)
@@ -9,7 +9,7 @@ on:
   #  types: [published]
 jobs:
   build-and-publish:
-    name: Build and publish
+    name: Backend - build and publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,6 +29,8 @@ jobs:
           run_install: true
 
       - name: Publish package on NPM
-        run: npm publish --access public
+        run: |
+          cd ./backend
+          pnpm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
