@@ -19,6 +19,9 @@ export interface XAutoCompleteProps extends XFormComponentProps<XObject> {
     AssocForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     dropdownButtonEnabled?: boolean; // ak dame false, tak nezobrazi dropdown button (default je true), ale ak by sme nemali mat ziadny button tak ho (zatial) zobrazime readOnly aby bolo vidno ze mame autocomplete
+    insertButtonTooltip?: string;
+    updateButtonTooltip?: string;
+    searchButtonTooltip?: string;
     suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v XAutoCompleteDT) (suggestionsLoad sa nepouziva)
     suggestionsLoad?: XSuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
@@ -102,6 +105,9 @@ export class XAutoComplete extends XFormComponent<XObject, XAutoCompleteProps> {
                                    SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement}
                                    ValueForm={this.props.AssocForm} valueFormElement={this.props.assocFormElement}
                                    dropdownButtonEnabled={this.props.dropdownButtonEnabled}
+                                   insertButtonTooltip={this.props.insertButtonTooltip}
+                                   updateButtonTooltip={this.props.updateButtonTooltip}
+                                   searchButtonTooltip={this.props.searchButtonTooltip}
                                    idField={xEntityAssoc.idField} readOnly={this.isReadOnly()}
                                    error={this.getError()} onErrorChange={this.onErrorChangeAutoCompleteBase}
                                    width={this.props.width} scrollHeight={this.props.scrollHeight}
