@@ -23,6 +23,8 @@ import {xLocaleOption} from "./XLocale";
 import {XLazyDataTableRef} from "./XLazyDataTable/XLazyDataTable";
 import {XCreateObjectFunction, XOnSaveOrCancelProp} from "./XFormBase";
 import {initMsalConfig} from "./auth";
+import {XOnSaveOrCancelProp} from "./XFormBase";
+import {XFindRowByIdRequest, XFindRowByIdResponse} from "../serverApi/x-lib-api";
 
 export enum OperationType {
     None,
@@ -406,15 +408,26 @@ export class XUtils {
         return response;
     }
 
-    static fetchById(entity: string, assocList: string[], id: number): Promise<any> {
+    static async fetchById(entity: string, assocList: string[], id: number): Promise<any> {
         // little quick fix - we create fieldList (adding id), better would be to have param assocList in api
         const fieldList: string[] = assocList.map<string>(assoc => assoc + ".id");
-        return XUtils.fetchOne('findRowById', {entity: entity, fields: fieldList, id: id})
+        const response: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
+        return response.row;
     }
 
     // version with fieldList (used by old projects), preferred is fetchById, maybe in the future will be used to avoid overfetching
-    static fetchByIdFieldList(entity: string, fieldList: string[], id: number): Promise<any> {
-        return XUtils.fetchOne('findRowById', {entity: entity, fields: fieldList, id: id})
+    static async fetchByIdFieldList(entity: string, fieldList: string[], id: number): Promise<any> {
+        const response: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
+        return response.row;
+    }
+
+    // more general function - can also lock the row
+    static fetchByIdWithLock(entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<XFindRowByIdResponse> {
+        let request: XFindRowByIdRequest = {entity: entity, fields: fields, id: id};
+        if (lockRow) {
+            request = {...request, lockDate: new Date(), lockXUser: XUtils.getXToken()?.xUser, overwriteLock: overwriteLock ?? false};
+        }
+        return XUtils.fetchOne('x-find-row-by-id', request);
     }
 
     static setXToken(xToken: XToken | null) {
@@ -553,7 +566,7 @@ export class XUtils {
             }
             else if (e.xResponseErrorBody.exceptionName === 'OptimisticLockVersionMismatchError') {
                 // better error message for optimistic locking
-                msg += "The optimistic lock failed, someone else has changed the row during the editation. Sorry, you have to cancel the editation and start the editation again.";
+                msg += xLocaleOption('optimisticLockFailed');
             }
             else {
                 msg += e.message + XUtilsCommon.newLine;
