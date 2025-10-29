@@ -76,6 +76,7 @@
     "./auth.module": "./lib/auth/auth.module.js",
     "./jwt-auth.guard": "./lib/auth/jwt-auth.guard.js",
     "./public": "./lib/auth/public.js",
+    "./x-en": "./lib/locale/x-en.js",
 
     "./serverApi": "./lib/serverApi/index.js",
     "./services": "./lib/services/index.js",
@@ -100,6 +101,7 @@
     "./XAdvancedConsoleLogger": "./lib/services/XAdvancedConsoleLogger.js",
     "./XAppError": "./lib/services/XAppError.js",
     "./XEnvVars": "./lib/services/XEnvVars.js",
+    "./XLocale": "./lib/services/XLocale.js",
     "./XOptimisticLockingSubscriber": "./lib/services/XOptimisticLockingSubscriber.js",
     "./XUtils": "./lib/services/XUtils.js"
   }

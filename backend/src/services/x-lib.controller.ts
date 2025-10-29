@@ -12,7 +12,6 @@ import {XEntityMetadataService} from "./x-entity-metadata.service.js";
 import {XEntityMap} from "../serverApi/XEntityMetadata.js";
 import {FindParam, XLazyAutoCompleteSuggestionsRequest} from "../serverApi/FindParam.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
-import {FindRowByIdParam} from "./FindRowByIdParam.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import {XBrowseMetaMap} from "../serverApi/XBrowseMetadata.js";
@@ -21,11 +20,16 @@ import {Response} from 'express';
 import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../serverApi/ExportImportParam.js";
 import {FindParamRows} from "./FindParamRows.js";
 import {XPostLoginRequest, XPostLoginResponse} from "../serverApi/x-auth-api.js";
-import {XGetSequenceValueRequest, XGetSequenceValueResponse} from "../serverApi/x-lib-api.js";
 import {LocalAuthGuard} from "../auth/local-auth.guard.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
 import {XLocalAuthLoginResponse} from "../serverApi/x-auth-api.js";
 import {Public} from "../auth/public.js";
+import {
+    XFindRowByIdRequest,
+    XFindRowByIdResponse,
+    XGetSequenceValueRequest,
+    XGetSequenceValueResponse, XUnlockRowRequest
+} from "../serverApi/x-lib-api.js";
 
 @Controller()
 export class XLibController {
@@ -88,14 +92,19 @@ export class XLibController {
         return await this.xLibService.findRows(body);
     }
 
-    @Post('findRowById')
-    async findRowById(@Body() body: FindRowByIdParam): Promise<any> {
+    @Post('x-find-row-by-id')
+    async findRowById(@Body() body: XFindRowByIdRequest): Promise<XFindRowByIdResponse> {
         return await this.xLazyDataTableService.findRowById(body);
     }
 
     @Post('saveRow')
     async saveRow(@Body() body: SaveRowParam): Promise<any> {
         return await this.xLibService.saveRow(body);
+    }
+
+    @Post('x-unlock-row')
+    async unlockRow(@Body() body: XUnlockRowRequest) {
+        await this.xLibService.unlockRow(body);
     }
 
     @Post('removeRow')
