@@ -74,13 +74,12 @@ export type XLoadObjectFunction<T> = (id: number, params?: XParams) => Promise<T
 // ma sa pouzivat len na triedach odvodenych od XFormBase - obmedzenie som vsak nevedel nakodit
 // property sa nastavi az po zbehnuti konstruktora
 // pozor - decorator je vykopirovany do projektoveho suboru XLibItems.ts, lebo ked je umiestneny tu tak nefunguje pre class-y v projekte!
-export function Form(entity: string, pessimisticLocking?: boolean, assocToLockingEntity?: string) {
+export function Form(entity: string, pessimisticLocking?: boolean) {
     // sem (mozno) moze prist registracia formu-u
     return function <T extends { new(...args: any[]): {} }>(constructor: T) {
         return class extends constructor {
             entity = entity;
             pessimisticLocking = pessimisticLocking ?? false;
-            assocToLockingEntity = assocToLockingEntity;
         }
     }
 }
@@ -93,7 +92,6 @@ export abstract class XFormBase extends Component<XFormProps> {
     formDataChanged: boolean; // true if user changed some attribute of the form - used (only) to create confirm if user clicks cancel
 
     pessimisticLocking?: boolean; // true if the form uses pessimistic locking (default is optimistic locking if the attribute "version" is available)
-    assocToLockingEntity?: string; // special case if locking attributes (lockDate, lockXUser) are in other entity then in base entity of the form - here is manyToOne assoc to the entity with locking attributes (path is not supported)
     rowLocked: boolean; // used by pessimistic locking, true if row was successfully locked
     readOnly: boolean; // used if the lock was not acquired (other user holds the lock)
 
@@ -115,7 +113,7 @@ export abstract class XFormBase extends Component<XFormProps> {
     legacyObjectLoad: boolean;
 
     // param entity can be used to set this.entity (another option is decorator @Form)
-    constructor(props: XFormProps, entity?: string) {
+    constructor(props: XFormProps, entity?: string, pessimisticLocking?: boolean) {
         super(props);
         this.legacyObjectLoad = (props.object === undefined);
         // check (legacy object load)
@@ -131,8 +129,8 @@ export abstract class XFormBase extends Component<XFormProps> {
             this.xEntity = XUtilsMetadataCommon.getXEntity(this.entity);
         }
         //this.entity = props.entity; - nastavuje sa cez decorator @Form
-        //this.pessimisticLocking - nastavuje sa cez decorator @Form
-        //this.assocToLockingEntity - nastavuje sa cez decorator @Form
+        // this.pessimisticLocking was originally set by decorator @Form
+        this.pessimisticLocking = pessimisticLocking ?? false;
         this.formDataChanged = false; // default
         this.rowLocked = false; // default
         this.readOnly = false; // default
@@ -322,6 +320,8 @@ export abstract class XFormBase extends Component<XFormProps> {
         }
 
         this.setState({object: object/*, errorMap: errorMap*/});
+
+        this.setFormDataChanged(true);
     }
 
     /**
@@ -374,8 +374,9 @@ export abstract class XFormBase extends Component<XFormProps> {
         else {
             rowList.push(newRow); // na koniec
         }
-        // TODO - tu mozno treba setnut funkciu - koli moznej asynchronicite
         this.setState({object: object});
+
+        this.setFormDataChanged(true);
     }
 
     static getNextRowId(rowList: any[], dataKey: string): number {
@@ -398,8 +399,10 @@ export abstract class XFormBase extends Component<XFormProps> {
             throw "Unexpected error - element 'row' not found in 'rowList'";
         }
         rowList.splice(index, 1);
-        // TODO - tu mozno treba setnut funkciu - koli moznej asynchronicite
+
         this.setState({object: object});
+
+        this.setFormDataChanged(true);
     }
 
     static getXRowTechData(row: any): XRowTechData {
@@ -690,6 +693,7 @@ export abstract class XFormBase extends Component<XFormProps> {
         return XUtils.fetch('saveRow', {entity: this.getEntity(), object: this.state.object, reload: this.props.onSaveOrCancel !== undefined});
     }
 
+    // this method can be overriden in subclass if needed (custom unlock row)
     async unlockRow() {
         if (this.rowLocked) {
             const xUnlockRowRequest: XUnlockRowRequest = {
