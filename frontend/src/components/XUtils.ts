@@ -480,9 +480,13 @@ export class XUtils {
 
     /**
      * returns value of environment variable from configuration file .env
-     * @param envVarEnum
+     * @param envVar
      */
     static getEnvVarValue(envVarEnum: XEnvVar): string {
+        return XUtils.getEnvVarValueBase(envVarEnum);
+    }
+
+    static getEnvVarValueBase(envVarEnum: string): string {
         // HEY import.meta.env does not work here in package
         //const value: string | undefined = import.meta.env[envVarEnum];
         // const value: string | undefined = process.env[envVarEnum];
