@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@auth0/auth0-react':
+        specifier: ^2.3.0
+        version: 2.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@azure/msal-browser':
+        specifier: ^4.11.0
+        version: 4.26.1
+      '@azure/msal-react':
+        specifier: ^3.0.10
+        version: 3.0.21(@azure/msal-browser@4.26.1)(react@18.3.1)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -71,6 +80,30 @@ packages:
 
   '@adobe/css-tools@4.4.2':
     resolution: {integrity: sha512-baYZExFpsdkBNuvGKTKWCwKH57HRZLVtycZS05WTQNVOiXVSeAki3nU35zlRbToeMW8aHlJfyS+1C4BOv27q0A==}
+
+  '@auth0/auth0-react@2.9.0':
+    resolution: {integrity: sha512-8BRMYjgE0CVQU/ndOZ5OYODdx/5FZs99D9ZI/t4pEeg3ewcGaL/Zewasm+frjeP3DKaNoFrHFX8FUTPiP9rCDQ==}
+    peerDependencies:
+      react: ^16.11.0 || ^17 || ^18 || ^19
+      react-dom: ^16.11.0 || ^17 || ^18 || ^19
+
+  '@auth0/auth0-spa-js@2.9.0':
+    resolution: {integrity: sha512-HmV9zaV3kpTHoVsdQCrHSisIUWxGDyVECcXg94Ky5uKU/Q03h68x0mkwSoz3JEmNIflg5xeZSn2m75BTkcFORw==}
+
+  '@azure/msal-browser@4.26.1':
+    resolution: {integrity: sha512-GGCIsZXxyNm5QcQZ4maA9q+9UWmM+/87G+ybvPkrE32el1URSa9WYt0t67ks3/P0gspZX9RoEqyLqJ/X/JDnBQ==}
+    engines: {node: '>=0.8.0'}
+
+  '@azure/msal-common@15.13.1':
+    resolution: {integrity: sha512-vQYQcG4J43UWgo1lj7LcmdsGUKWYo28RfEvDQAEMmQIMjSFufvb+pS0FJ3KXmrPmnWlt1vHDl3oip6mIDUQ4uA==}
+    engines: {node: '>=0.8.0'}
+
+  '@azure/msal-react@3.0.21':
+    resolution: {integrity: sha512-V2YUyEgLM2GLXN1mDYVEk/GA4cZEfjmS0xEGx29AGy6paEgZN62pZiYoBr8mVOExft6uT/ZonpOREvFiy8quZQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@azure/msal-browser': ^4.26.0
+      react: ^16.8.0 || ^17 || ^18 || ^19
 
   '@babel/code-frame@7.18.6':
     resolution: {integrity: sha512-TDCmlK5eOvH+eH7cdAFlNXeVJqWIQ7gW9tY1GJIpUtFb6CmjVyq2VM3u71bOyR8CRihcCgMUYoDNyLXao3+70Q==}
@@ -181,6 +214,9 @@ packages:
   brace-expansion@2.0.1:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
 
+  browser-tabs-lock@1.3.0:
+    resolution: {integrity: sha512-g6nHaobTiT0eMZ7jh16YpD2kcjAp+PInbiVq3M1x6KKaEIVhT4v9oURNIpZLOZ3LQbQ3XYfNhMAb/9hzNLIWrw==}
+
   call-bind@1.0.2:
     resolution: {integrity: sha512-7O+FbCihrB5WGbFYesctwmTKae6rOiIzmz1icreWJ+0aA7LJfuqhEso2T9ncpcFtzMQtzXf2QGGueWJGTYsqrA==}
 
@@ -243,6 +279,9 @@ packages:
   dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
 
+  dpop@2.1.1:
+    resolution: {integrity: sha512-J0Of2JTiM4h5si0tlbPQ/lkqfZ5wAEVkKYBhkwyyANnPJfWH4VsR5uIkZ+T+OSPIwDYUg1fbd5Mmodd25HjY1w==}
+
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
@@ -251,6 +290,9 @@ packages:
 
   emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
+
+  es-cookie@1.3.2:
+    resolution: {integrity: sha512-UTlYYhXGLOy05P/vKVT2Ui7WtC7NiRzGtJyAKKn32g5Gvcjn7KAClLPWlipCtxIus934dFg9o9jXiBL0nP+t9Q==}
 
   es-errors@1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
@@ -647,6 +689,29 @@ snapshots:
 
   '@adobe/css-tools@4.4.2': {}
 
+  '@auth0/auth0-react@2.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@auth0/auth0-spa-js': 2.9.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@auth0/auth0-spa-js@2.9.0':
+    dependencies:
+      browser-tabs-lock: 1.3.0
+      dpop: 2.1.1
+      es-cookie: 1.3.2
+
+  '@azure/msal-browser@4.26.1':
+    dependencies:
+      '@azure/msal-common': 15.13.1
+
+  '@azure/msal-common@15.13.1': {}
+
+  '@azure/msal-react@3.0.21(@azure/msal-browser@4.26.1)(react@18.3.1)':
+    dependencies:
+      '@azure/msal-browser': 4.26.1
+      react: 18.3.1
+
   '@babel/code-frame@7.18.6':
     dependencies:
       '@babel/highlight': 7.18.6
@@ -773,6 +838,10 @@ snapshots:
     dependencies:
       balanced-match: 1.0.0
 
+  browser-tabs-lock@1.3.0:
+    dependencies:
+      lodash: 4.17.21
+
   call-bind@1.0.2:
     dependencies:
       function-bind: 1.1.2
@@ -854,11 +923,15 @@ snapshots:
       '@babel/runtime': 7.12.5
       csstype: 3.0.6
 
+  dpop@2.1.1: {}
+
   eastasianwidth@0.2.0: {}
 
   emoji-regex@8.0.0: {}
 
   emoji-regex@9.2.2: {}
+
+  es-cookie@1.3.2: {}
 
   es-errors@1.3.0: {}
 

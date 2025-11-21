@@ -22,6 +22,7 @@ import {SelectItem} from "primereact/selectitem";
 import {xLocaleOption} from "./XLocale";
 import {XLazyDataTableRef} from "./XLazyDataTable/XLazyDataTable";
 import {XCreateObjectFunction, XOnSaveOrCancelProp} from "./XFormBase";
+import {initMsalConfig} from "./auth";
 
 export enum OperationType {
     None,
@@ -114,6 +115,8 @@ export class XUtils {
         XUtils.xGetEnvVarValue = xGetEnvVarValue;
 
         XUtils.setXBackendUrl(XUtils.getEnvVarValue(XEnvVar.VITE_BACKEND_URL));
+
+        initMsalConfig();
     }
 
     static demo(): boolean {
@@ -471,6 +474,8 @@ export class XUtils {
         // }
 
         if (!XUtils.xGetEnvVarValue) {
+            //const err = new Error();
+            //console.log(err.stack);
             throw `Unexpected error - XUtils.xGetEnvVarValue is undefined, call XUtils.initLib first`;
         }
         return XUtils.xGetEnvVarValue(envVarEnum);

@@ -1,6 +1,6 @@
 {
   "name": "@chilibase/frontend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "type": "module",
   "scripts": {
@@ -19,7 +19,10 @@
     "node": ">=20"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "@auth0/auth0-react": "^2.3.0",
+    "@azure/msal-browser": "^4.11.0",
+    "@azure/msal-react": "^3.0.10"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
@@ -54,6 +57,7 @@
     "./XUserBrowse": "./lib/administration/XUserBrowse.js",
     "./XUserForm": "./lib/administration/XUserForm.js",
 
+    "./auth": "./lib/components/auth/index.js",
     "./app-layout": "./lib/components/XAppLayout/index.js",
 
     "./XFormCol": "./lib/components/XFormRowCol/XFormCol.js",
