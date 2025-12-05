@@ -4,6 +4,7 @@ import {XMSEntraIDProvider} from "./XMSEntraIDProvider";
 import {XAuthOffProvider} from "./XAuthOffProvider";
 import {XEnvVar, XViteAuth} from "../XEnvVars.js";
 import { XUtils } from "../XUtils.js";
+import {XAuthLocalProvider} from "./XAuthLocalProvider";
 
 export const XApp = ({children}: {children: ReactNode;}) => {
     let elem: ReactElement;
@@ -11,10 +12,7 @@ export const XApp = ({children}: {children: ReactNode;}) => {
         elem = <XAuthOffProvider>{children}</XAuthOffProvider>;
     }
     else if (XUtils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.LOCAL) {
-        /* TODO - username/password authentication
         elem = <XAuthLocalProvider>{children}</XAuthLocalProvider>;
-         */
-        throw `XApp: Authentication not implemented for VITE_AUTH = ${XUtils.getEnvVarValue(XEnvVar.VITE_AUTH)}`;
     }
     else if (XUtils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.AUTH0) {
         elem = <XAuth0Provider>{children}</XAuth0Provider>;

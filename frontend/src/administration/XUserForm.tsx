@@ -58,12 +58,6 @@ export class XUserForm extends XFormBaseModif {
 
             if (this.state.passwordNew !== '' || this.state.passwordNewConfirm !== '') {
 
-                // nedovolime tuto zmenit heslo aktualne prihlasenemu uzivatelovi, lebo by sme museli upravit aj token
-                if (this.state.object.username === XUtils.getUsername()) {
-                    alert("Please, change your password via option Administration -> Change password.");
-                    return;
-                }
-
                 if (this.state.passwordNew !== this.state.passwordNewConfirm) {
                     alert("New password and confirmed new password are not equal.");
                     return;

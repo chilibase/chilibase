@@ -7,29 +7,30 @@ import {
 } from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
-import {XAssoc, XAssocMap, XEntity} from "../serverApi/XEntityMetadata.js";
+import {XAssoc, XEntity} from "../serverApi/XEntityMetadata.js";
 import {XUser} from "../administration/x-user.entity.js";
-import {XUserAuthenticationRequest, XUserAuthenticationResponse} from "../serverApi/XUserAuthenticationIfc.js";
 import {XUtils} from "./XUtils.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import * as bcrypt from 'bcrypt';
 import {FindParamRows} from "./FindParamRows.js";
-import {XPostLoginRequest, XPostLoginResponse} from "../serverApi/XPostLoginIfc.js";
+import {XPostLoginRequest, XPostLoginResponse} from "../serverApi/x-auth-api.js";
 import {XAuth, XEnvVar} from "./XEnvVars.js";
 import {join} from "path";
 import {unlinkSync} from "fs";
 import {XRowIdListToRemove} from "./XRowIdListToRemove.js";
 import {XParam} from "../administration/x-param.entity.js";
 import {dateFromUI, intFromUI, numberFromModel} from "../serverApi/XUtilsConversions.js";
+import {LocalAuthService} from "../auth/local-auth.service.js";
 
 @Injectable()
 export class XLibService {
 
     constructor(
         private readonly dataSource: DataSource,
-        private readonly xEntityMetadataService: XEntityMetadataService
+        private readonly xEntityMetadataService: XEntityMetadataService,
+        private readonly localAuthService: LocalAuthService
     ) {}
 
     /**
@@ -398,25 +399,15 @@ export class XLibService {
     }
     */
 
-    /* old authetication - change password
-    async userChangePassword(request: {username: string; passwordNew: string;}) {
-        const repository = this.dataSource.getRepository(XUser);
-        const selectQueryBuilder: SelectQueryBuilder<XUser> = repository.createQueryBuilder("xUser");
-        selectQueryBuilder.where("xUser.username = :username", request);
-        const xUser: XUser = await selectQueryBuilder.getOneOrFail();
-        xUser.password = await this.hashPassword(request.passwordNew);
-        await repository.save(xUser);
-    }
-    */
-
     async userSaveRow(row: SaveRowParam) {
         const repository = this.dataSource.getRepository(row.entity);
         // ak bolo zmenene heslo, treba ho zahashovat
         // ak nebolo vyplnene nove heslo, tak v password pride undefined a mapper atribut nebude menit
-        // -> password sa zatial nepouziva
-        // if (row.object.password && row.object.password !== '') {
-        //     row.object.password = await this.hashPassword(row.object.password);
-        // }
+        if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
+            if (row.object.password && row.object.password !== '') {
+                row.object.password = await this.localAuthService.hashPassword(row.object.password);
+            }
+        }
 
         // projekt depaul potrebuje pracovat s detail zaznamami, preto volame this.saveRow
         //await repository.save(row.object);
@@ -441,6 +432,7 @@ export class XLibService {
         const username: string = headerAuthDecoded.substring(0, posColon);
         const password: string = headerAuthDecoded.substring(posColon + 1);
 
+        // poznamka: zjavne tento jednoduchy sposob (select only password) bol pouzity lebo tento select sa volal pri kazdom requeste
         const repository = this.dataSource.getRepository(XUser);
         const selectQueryBuilder: SelectQueryBuilder<XUser> = repository.createQueryBuilder("xUser");
         selectQueryBuilder.select("xUser.password", "passwordDB");
@@ -464,18 +456,13 @@ export class XLibService {
     }
     */
 
-    /* old authentication
-    private hashPassword(password: string): Promise<string> {
-        // standardne by mal byt saltOrRounds = 10, potom trva jeden vypocet asi 100 ms, co sa povazuje za dostatocne bezpecne proti utoku hrubou vypoctovou silou
-        // kedze my testujeme heslo pri kazdom requeste, tak som znizil saltOrRounds na 1, potom trva jeden vypocet (v bcrypt.compare) asi 10 ms, cena je trochu nizsia bezpecnost
-        return bcrypt.hash(password, 1);
-    }
-    */
-
     async postLogin(reqUser: any, xPostLoginRequest: XPostLoginRequest): Promise<XPostLoginResponse> {
         let username: string;
         if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.OFF) {
             username = xPostLoginRequest.username;
+        }
+        else if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
+            username = reqUser.username; // remark: could be also xPostLoginRequest.username, but username from token is harder to replace/fake
         }
         else if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.AUTH0) {
             // email (username) must be added in auth0.com to the access token

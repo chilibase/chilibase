@@ -1,10 +1,9 @@
 import React, {ReactNode, useState} from 'react';
-import useXToken from "../useXToken";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XLoginForm} from "../XLoginForm";
-
-// TODO - does not work (very old code) - implement creating bearer token, use nestjs modul to process bearer token on backend
-// - add logout
+import {XLoginForm} from "./XLoginForm";
+import {XUtils} from "../XUtils";
+import {XPostLoginRequest} from "../../serverApi/x-auth-api";
+import {XUserNotFoundOrDisabledError} from "./XUserNotFoundOrDisabledError";
 
 export const XAuthLocalProvider = ({children}: {children: ReactNode;}) => {
     return (
@@ -16,13 +15,73 @@ export const XAuthLocalProvider = ({children}: {children: ReactNode;}) => {
 
 function AppAuthLocal({children}: {children: ReactNode;}) {
 
-    const [xToken, setXToken] = useXToken();
+    //const [xToken, setXToken] = useXToken(); - TODO - create hook that processes auth?
+    const [isAuthenticated, setAuthenticated] = useState(false);
 
     const [initialized, setInitialized] = useState(false);
 
-    // useEffect(() => {
-    //     fetchAndSetXEntityMap();
-    // },[]); // eslint-disable-line react-hooks/exhaustive-deps
+    const onLogin = async (username: string, accessToken: string) => {
+        await setXTokenAndDoPostLogin(username, accessToken);
+        setAuthenticated(true);
+    }
+
+    const logout = () => {
+        XUtils.setXToken(null);
+        setAuthenticated(false);
+        setInitialized(false);
+    }
+
+    // method is here to be similar to other auth methods (XAuth0Provider, XMSEntraIDProvider)
+    // 'post-login' request can be united with 'x-local-auth-login' request in the XLoginForm
+    const setXTokenAndDoPostLogin = async (username: string, accessToken: string) => {
+
+        // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
+        XUtils.setXToken({accessToken: accessToken});
+
+        // zavolame post-login
+        // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
+        // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
+        let xPostLoginResponse;
+        try {
+            const xPostLoginRequest: XPostLoginRequest = {username: username};
+            xPostLoginResponse = await XUtils.fetch('post-login', xPostLoginRequest);
+        }
+        catch (e) {
+            // console.log(typeof e);
+            // console.log(e instanceof Error);
+            const error: Error = e as Error;
+            // console.log(JSON.stringify(error));
+            console.log(error.stack);
+            // console.log(error.message);
+            // console.log(error.name);
+            // @ts-ignore
+            console.log(error.cause);
+
+            XUtils.showErrorMessage('post-login failed', e);
+            throw 'post-login failed';
+        }
+
+        if (xPostLoginResponse.xUser === undefined) {
+            // nenasli sme usera v DB
+            alert(`User account "${username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
+            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            throw new XUserNotFoundOrDisabledError();
+        }
+
+        if (!xPostLoginResponse.xUser.enabled) {
+            // user je disablovany
+            alert(`User account "${username}" is not enabled. Ask admin to enable user account.`);
+            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            throw new XUserNotFoundOrDisabledError();
+        }
+
+        // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
+        XUtils.setXToken({
+            accessToken: XUtils.getXToken()?.accessToken,
+            xUser: xPostLoginResponse.xUser,
+            logout: logout
+        });
+    }
 
     const fetchAndSetXMetadata = async () => {
         await XUtilsMetadata.fetchAndSetXEntityMap();
@@ -30,14 +89,9 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
         setInitialized(true);
     }
 
-    // const logout = () => {
-    //     XUtils.setXToken(null);
-    //     setInitialized(false);
-    // }
-
     let elem;
-    if (xToken === null) {
-        elem = <div className="App-form"><XLoginForm setXToken={setXToken}/></div>;
+    if (!isAuthenticated) {
+        elem = <div className="App-form"><XLoginForm onLogin={onLogin}/></div>;
     }
     else {
         if (!initialized) {

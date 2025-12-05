@@ -6,7 +6,7 @@ import {ValueTransformer} from "typeorm";
 export class XUtils {
 
     // token pouzivany pre public stranky (napr. XLoginForm), meno/heslo natvrdo (lepsie ako nic)
-    static xTokenPublic = {username: "xPublicUser", password: "xPublicUserPassword123"};
+    //static xTokenPublic = {username: "xPublicUser", password: "xPublicUserPassword123"};
 
     /**
      * returns value of environment variable from configuration file .env

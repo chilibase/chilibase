@@ -3,7 +3,7 @@ import {Auth0Provider, useAuth0} from "@auth0/auth0-react";
 import { XUtils } from '../XUtils';
 import { XEnvVar } from '../XEnvVars';
 import {XUserNotFoundOrDisabledError} from "./XUserNotFoundOrDisabledError";
-import {XPostLoginRequest} from "../../serverApi/XPostLoginIfc";
+import {XPostLoginRequest} from "../../serverApi/x-auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
 export const XAuth0Provider = ({children}: {children: ReactNode;}) => {
@@ -30,7 +30,6 @@ export const XAuth0Provider = ({children}: {children: ReactNode;}) => {
 }
 
 function AppAuth0({children}: {children: ReactNode;}) {
-
 
     const {user, isAuthenticated, isLoading, loginWithRedirect, logout, getAccessTokenSilently} = useAuth0();
 

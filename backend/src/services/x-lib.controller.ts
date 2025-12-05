@@ -3,7 +3,7 @@ import {
     Request,
     Controller,
     Post,
-    Res, StreamableFile
+    Res, StreamableFile, UseGuards
 } from '@nestjs/common';
 import {XLibService} from "./x-lib.service.js";
 import {FindResult} from "../serverApi/FindResult.js";
@@ -20,8 +20,12 @@ import {XBrowseFormMetadataService} from "./x-browse-form-metadata.service.js";
 import {Response} from 'express';
 import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../serverApi/ExportImportParam.js";
 import {FindParamRows} from "./FindParamRows.js";
-import {XPostLoginRequest, XPostLoginResponse} from "../serverApi/XPostLoginIfc.js";
+import {XPostLoginRequest, XPostLoginResponse} from "../serverApi/x-auth-api.js";
 import {XGetSequenceValueRequest, XGetSequenceValueResponse} from "../serverApi/x-lib-api.js";
+import {LocalAuthGuard} from "../auth/local-auth.guard.js";
+import {LocalAuthService} from "../auth/local-auth.service.js";
+import {XLocalAuthLoginResponse} from "../serverApi/x-auth-api.js";
+import {Public} from "../auth/public.js";
 
 @Controller()
 export class XLibController {
@@ -29,7 +33,8 @@ export class XLibController {
         private readonly xLibService: XLibService,
         private readonly xLazyDataTableService: XLazyDataTableService,
         private readonly xEntityMetadataService: XEntityMetadataService,
-        private readonly xBrowseFormMetadataService: XBrowseFormMetadataService) {}
+        private readonly xBrowseFormMetadataService: XBrowseFormMetadataService,
+        private readonly localAuthService: LocalAuthService) {}
 
     @Post('lazyDataTableFindRows')
     async lazyDataTableFindRows(@Body() body: FindParam): Promise<FindResult> {
@@ -117,11 +122,21 @@ export class XLibController {
     //     return await this.xLibService.userAuthentication(body);
     // }
 
-    // old authentication - change password
-    // @Post('userChangePassword')
-    // async userChangePassword(@Body() body: {username: string; passwordNew: string;}) {
-    //     await this.xLibService.userChangePassword(body);
-    // }
+    @Post('x-local-auth-change-password')
+    async localAuthChangePassword(@Request() req: any, @Body() body: {passwordCurrent: string; passwordNew: string;}) {
+        await this.localAuthService.changePassword(req.user, body);
+    }
+
+    @Public() // suppress JwtAuthGuard
+    @UseGuards(LocalAuthGuard)
+    @Post('x-local-auth-login')
+    async localAuthLogin(@Request() req: any): Promise<XLocalAuthLoginResponse> {
+        // LocalAuthGuard invokes method LocalStrategy.validate that returns object XUser,
+        // passport framework puts the object into "req.user" and the request pipeline continues with this method
+        // we return jwt token that will be used by other requests invoked after login
+        // (the other requests are "guarded" by JwtAuthGuard (associated with class JwtStrategy)
+        return this.localAuthService.createJwtToken(req.user);
+    }
 
     @Post('post-login')
     async postLogin(@Request() req: any, @Body() xPostLoginRequest: XPostLoginRequest): Promise<XPostLoginResponse> {

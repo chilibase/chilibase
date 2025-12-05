@@ -84,7 +84,7 @@ export class XUtils {
     // nacachovany XToken - na rozlicnych miestach potrebujeme vediet uzivatela
     static xToken: XToken | null = null;
     // token pouzivany pre public stranky (napr. XLoginForm), meno/heslo natvrdo (lepsie ako nic)
-    static xTokenPublic: XToken = {username: "xPublicUser", password: "xPublicUserPassword123"};
+    //static xTokenPublic: XToken = {username: "xPublicUser", password: "xPublicUserPassword123"};
 
     // nacachovane metadata (setuju sa v App.fetchAndSetXMetadata)
     private static appFormMap: {[name: string]: any;} = {};
@@ -274,8 +274,8 @@ export class XUtils {
         return XUtils.appFormMap[formKey];
     }
 
-    static fetchMany(path: string, value: any, usePublicToken?: boolean | XToken): Promise<any[]> {
-        return XUtils.fetch(path, value, usePublicToken);
+    static fetchMany(path: string, value: any): Promise<any[]> {
+        return XUtils.fetch(path, value);
     }
 
     // pomocna metodka pouzivajuca lazyDataTable service
@@ -292,8 +292,8 @@ export class XUtils {
         return totalRecords;
     }
 
-    static fetchOne(path: string, value: any, usePublicToken?: boolean | XToken): Promise<any> {
-        return XUtils.fetch(path, value, usePublicToken);
+    static fetchOne(path: string, value: any, useToken: boolean = true): Promise<any> {
+        return XUtils.fetch(path, value, useToken);
     }
 
     static async fetchString(path: string, value: any): Promise<string> {
@@ -301,8 +301,8 @@ export class XUtils {
         return valueObj.value;
     }
 
-    static async fetch(path: string, value: any, usePublicToken?: boolean | XToken): Promise<any> {
-        const response = await XUtils.fetchBasicJson(path, value, usePublicToken);
+    static async fetch(path: string, value: any, useToken: boolean = true): Promise<any> {
+        const response = await XUtils.fetchBasicJson(path, value, useToken);
         return await response.json();
     }
 
@@ -339,8 +339,8 @@ export class XUtils {
         return true;
     }
 
-    static fetchBasicJson(path: string, value: any, usePublicToken?: boolean | XToken): Promise<Response> {
-        return XUtils.fetchBasic(path, {'Content-Type': 'application/json'}, XUtilsCommon.objectAsJSON(value), usePublicToken);
+    static fetchBasicJson(path: string, value: any, useToken: boolean = true): Promise<Response> {
+        return XUtils.fetchBasic(path, {'Content-Type': 'application/json'}, XUtilsCommon.objectAsJSON(value), useToken);
     }
 
     static async fetchFile(path: string, jsonFieldValue: any, fileToPost: any): Promise<any> {
@@ -359,6 +359,7 @@ export class XUtils {
         return await response.json();
     }
 
+/*
     // nepouzivana stara Basic autentifikacia
     static async fetchBasicAuthBasic(path: string, headers: any, body: any, usePublicToken?: boolean | XToken): Promise<Response> {
         let xToken: XToken | null;
@@ -388,12 +389,15 @@ export class XUtils {
         }
         return response;
     }
+*/
 
-    static async fetchBasic(path: string, headers: any, body: any, usePublicToken?: boolean | XToken): Promise<Response> {
-        let accessToken: string = await XUtils.getAccessToken();
-        headers = {...headers,
-            'Authorization': `Bearer ${accessToken}`
-        };
+    static async fetchBasic(path: string, headers: any, body: any, useToken: boolean = true): Promise<Response> {
+        if (useToken) {
+            const accessToken: string = await XUtils.getAccessToken();
+            headers = {...headers,
+                'Authorization': `Bearer ${accessToken}`
+            };
+        }
         const response = await fetch(XUtils.getXBackendUrl() + path, {
                                     method: 'POST',
                                     headers: headers,

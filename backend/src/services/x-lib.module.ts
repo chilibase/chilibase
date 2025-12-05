@@ -9,6 +9,7 @@ import {XFileService} from "./x-file.service.js";
 import {XExportCsvService} from "./x-export-csv.service.js";
 import {XExportJsonService} from "./x-export-json.service.js";
 import {XExportExcelService} from "./x-export-excel.service.js";
+import {AuthModule} from "../auth/auth.module.js";
 
 @Module({})
 export class XLibModule {
@@ -17,7 +18,7 @@ export class XLibModule {
   static forRoot(): DynamicModule {
 
     return {
-      imports: [],
+      imports: [AuthModule.forRoot()],
       controllers: [XLibController, XFileController],
       providers: [
           XLibService,

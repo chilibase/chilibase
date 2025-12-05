@@ -2,6 +2,7 @@ import {XToken} from "./XToken";
 import {useState} from "react";
 import {XUtils} from "./XUtils";
 
+// zombie object (not used)
 export default function useXToken(): [XToken | null, (xToken: XToken | null) => void] {
 
     const getXToken = () : XToken | null => {
