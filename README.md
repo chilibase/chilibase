@@ -45,7 +45,7 @@ pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 - many-to-one and one-to-many associations (field paths like `assoc1.assoc2.fieldX`)
 - dropdown, autocomplete and custom components for filtering in column headers
 - export data to file - excel, csv, json
-- parameter form component - enables inserting and editing rows (in the form component)
+- parameter *form component* - enables inserting and editing rows (in the *form component*)
 - row expansion (DB row displayed in multiple table rows)
 - source code example: [CarBrowse.tsx](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarBrowse.tsx)
 
@@ -64,7 +64,7 @@ pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 - basic validation (check and conversion of types, check for required fields)
 - custom validation supported
 - custom fetching row supported
-- form component is generally displayed in dialog, that means that associated rows can be created/edited during editing of the base row
+- *form component* is generally displayed in dialog, that means that associated rows can be created/edited during editing of the base row
 - optimistic locking (via field `version` in DB row)
 - pessimistic locking (via fields `lock_date`, `lock_x_user_id` in DB row) (*)
 - source code example: [CarForm.tsx](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarForm.tsx)
@@ -73,8 +73,8 @@ pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 
 - lazy loading supported (search performed on DB via SQL)
 - multiple fields can be displayed and searched through in autocomplete (fields can be also paths like `assoc1.assoc2.fieldX`)
-- parameter form component - enables insert new row and edit of the selected row (in the form component)
-- parameter browse component - enables search row in the browse component (via lazy data table)
+- parameter *form component* - enables insert new row and edit of the selected row (in the *form component*)
+- parameter *browse component* - enables search row in the *browse component* (via lazy data table)
 
 ### Uploading/downloading files
 
