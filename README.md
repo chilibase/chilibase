@@ -9,7 +9,13 @@ Username: x_test_user@yahoo.com
 Password: fd4eg4DN45ggd
 
 Source code of car demo app: https://github.com/chilibase/car-demo  
-(Source code is also available via links in demo.)
+(Source code is also available via links in demo.)  
+
+The framework is suitable for small-budget projects, all used libraries are open source.  
+The projects created in this framework are running on Linux VPS using Docker, for deployment is used GitHub Actions. VPS is hosted on hetzner.com.  
+If there is interest, I can create the documentation about deployment/infrastructure.  
+
+Contact: michalrakus@gmail.com
 
 ## Install
 
@@ -21,7 +27,7 @@ Install pnpm (e.g. using command: `npm install -g pnpm@latest-10`)
 Create new chilibase project using create script `create-chilibase` and follow the instructions in the console.
 
 ```
-pnpx create-chilibase <app-name>
+pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 ```
 ## Features
 
@@ -73,7 +79,7 @@ pnpx create-chilibase <app-name>
 ### Uploading/downloading files
 
 - file is saved in entity via many-to-one association to framework entity `XFile` (table `x_file`)
-- file can be stored in filesystem (recommended) or in data table `x_file`
+- file can be stored in filesystem (recommended) or in DB table `x_file` (not recommended)
 - progress of uploading is displayed
 
 
