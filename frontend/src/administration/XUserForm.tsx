@@ -12,7 +12,6 @@ import {XInputDate} from "../components/XInputDate";
 import {XObject} from "../components/XObject";
 import {XFormHeader} from "../components/XFormHeader";
 
-// TODO - remove demo functionality (create XUserCarDemoBrowse/XUserCarDemoForm)
 export class XUserForm extends XFormBaseModif {
 
     constructor(props: XFormProps) {
@@ -30,9 +29,9 @@ export class XUserForm extends XFormBaseModif {
     }
 
     preInitForm(object: XObject, operationType: OperationType.Insert | OperationType.Update) {
-        // aktualny user si nemoze zmenit username, enabled a admin status
+        // current user cannot change username, enabled and admin status
         const username = object.username;
-        if (operationType === OperationType.Update && (username === XUtils.getUsername() || (XUtils.demo() && (username === 'xman')))) {
+        if (operationType === OperationType.Update && username === XUtils.getUsername()) {
             this.setState({usernameEnabledReadOnly: true});
         }
     }
@@ -40,12 +39,6 @@ export class XUserForm extends XFormBaseModif {
     async onClickSave(): Promise<void> {
 
         if (!await this.validateSave()) {
-            return;
-        }
-
-        // v deme nedovolime zmenit uzivatelov ktori sa pouzivaju na skusanie dema
-        if (XUtils.demo() && (this.state.object.username === 'jozko' || this.state.object.username === 'xman')) {
-            alert("Users jozko, xman can not be changed.");
             return;
         }
 

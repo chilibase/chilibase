@@ -119,10 +119,6 @@ export class XUtils {
         initMsalConfig();
     }
 
-    static demo(): boolean {
-        return XUtils.getXBackendUrl().indexOf('x-demo-server') !== -1;
-    }
-
     static isMobile(): boolean {
         // extra small displays (podla https://www.w3schools.com/howto/howto_css_media_query_breakpoints.asp)
         // mozno tu treba dat (window.screen.width * window.devicePixelRatio)
