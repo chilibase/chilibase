@@ -7,7 +7,7 @@ import {XLocalAuthLoginRequest, XLocalAuthLoginResponse, XPostLoginRequest} from
 import {XResponseError} from "../XResponseError";
 
 // is used by local auth
-export const XLoginForm = (props: {
+export const LoginForm = (props: {
     onLogin: (username: string, accessToken: string) => void;
     customUserService?: string; // needed?
 }) => {
@@ -51,7 +51,7 @@ export const XLoginForm = (props: {
         //     }
         //     // zatial si ulozime len username/password (koli http basic autentifikacii)
         //     props.setXToken({username: username, password: password, xUser: customUser});
-        //     // metoda pouzivana v XLoginDialog
+        //     // metoda pouzivana v LoginDialog
         //     if (props.onLogin) {
         //         props.onLogin();
         //     }

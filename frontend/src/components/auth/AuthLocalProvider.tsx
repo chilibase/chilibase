@@ -1,11 +1,11 @@
 import React, {ReactNode, useState} from 'react';
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XLoginForm} from "./XLoginForm";
+import {LoginForm} from "./LoginForm";
 import {XUtils} from "../XUtils";
 import {XPostLoginRequest} from "../../serverApi/x-auth-api";
-import {XUserNotFoundOrDisabledError} from "./XUserNotFoundOrDisabledError";
+import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 
-export const XAuthLocalProvider = ({children}: {children: ReactNode;}) => {
+export const AuthLocalProvider = ({children}: {children: ReactNode;}) => {
     return (
         <AppAuthLocal>
             {children}
@@ -31,8 +31,8 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
         setInitialized(false);
     }
 
-    // method is here to be similar to other auth methods (XAuth0Provider, XMSEntraIDProvider)
-    // 'post-login' request can be united with 'x-local-auth-login' request in the XLoginForm
+    // method is here to be similar to other auth methods (Auth0Provider, MSEntraIDProvider)
+    // 'post-login' request can be united with 'x-local-auth-login' request in the LoginForm
     const setXTokenAndDoPostLogin = async (username: string, accessToken: string) => {
 
         // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
@@ -65,14 +65,14 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
             // nenasli sme usera v DB
             alert(`User account "${username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         if (!xPostLoginResponse.xUser.enabled) {
             // user je disablovany
             alert(`User account "${username}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
@@ -91,7 +91,7 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
 
     let elem;
     if (!isAuthenticated) {
-        elem = <div className="App-form"><XLoginForm onLogin={onLogin}/></div>;
+        elem = <div className="App-form"><LoginForm onLogin={onLogin}/></div>;
     }
     else {
         if (!initialized) {

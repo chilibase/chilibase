@@ -12,12 +12,12 @@ import {
 } from "@azure/msal-browser";
 import {loginRequest, msalConfig} from "./msalConfig";
 import {Button} from "primereact/button";
-import {XUserNotFoundOrDisabledError} from "./XUserNotFoundOrDisabledError";
+import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {XUtils} from "../XUtils";
 import {XPostLoginRequest} from "../../serverApi/x-auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
-export const XMSEntraIDProvider = ({children}: {children: ReactNode;}) => {
+export const MSEntraIDProvider = ({children}: {children: ReactNode;}) => {
 
     const msalInstance: PublicClientApplication = new PublicClientApplication(msalConfig);
 
@@ -50,7 +50,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
             setInitialized(true);
         }
         catch (err) {
-            if (err instanceof XUserNotFoundOrDisabledError) {
+            if (err instanceof UserNotFoundOrDisabledError) {
                 // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
                 // zrusime nastaveny access token
                 XUtils.setXToken(null);
@@ -101,14 +101,14 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
             // nenasli sme usera v DB
             alert(`User account "${accountInfo?.username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         if (!xPostLoginResponse.xUser.enabled) {
             // user je disablovany
             alert(`User account "${accountInfo?.username}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id

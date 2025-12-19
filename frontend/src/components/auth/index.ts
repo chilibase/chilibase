@@ -1,14 +1,20 @@
 export * from "./msalConfig";
 
-export {XApp as App} from "./XApp";
-export {XAuth0Provider as Auth0Provider} from "./XAuth0Provider";
-export {XAuthLocalProvider as AuthLocalProvider} from "./XAuthLocalProvider";
-export {XAuthOffProvider as AuthOffProvider} from "./XAuthOffProvider";
-export {XMSEntraIDProvider as MSEntraIDProvider} from "./XMSEntraIDProvider";
+export * from "./App";
+export * from "./Auth0Provider";
+export * from "./AuthLocalProvider";
+export * from "./AuthOffProvider";
+export * from "./MSEntraIDProvider";
+export * from "./LoginForm";
+export * from "./LoginDialog";
+export * from "./UserNotFoundOrDisabledError";
 
-/** @deprecated - X-names */
-export * from "./XApp";
-export * from "./XAuth0Provider";
-export * from "./XAuthLocalProvider";
-export * from "./XAuthOffProvider";
-export * from "./XMSEntraIDProvider";
+/** @deprecated */
+export {App as XApp} from "./App";
+export {Auth0Provider as XAuth0Provider} from "./Auth0Provider";
+export {AuthLocalProvider as XAuthLocalProvider} from "./AuthLocalProvider";
+export {AuthOffProvider as XAuthOffProvider} from "./AuthOffProvider";
+export {MSEntraIDProvider as XMSEntraIDProvider} from "./MSEntraIDProvider";
+export {LoginForm as XLoginForm} from "./LoginForm";
+export {LoginDialog as XLoginDialog} from "./LoginDialog";
+export {UserNotFoundOrDisabledError as XUserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";

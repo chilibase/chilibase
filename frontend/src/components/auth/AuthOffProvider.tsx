@@ -1,12 +1,12 @@
 import React, {ReactNode, useState} from 'react';
 import {Button} from "primereact/button";
-import {XUserNotFoundOrDisabledError} from "./XUserNotFoundOrDisabledError";
+import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {XUtils} from "../XUtils";
 import {XEnvVar} from "../XEnvVars";
 import {XPostLoginRequest} from "../../serverApi/x-auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
-export const XAuthOffProvider = ({children}: {children: ReactNode;}) => {
+export const AuthOffProvider = ({children}: {children: ReactNode;}) => {
     return (
         <AppAuthOff>
             {children}
@@ -31,7 +31,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
             setInitialized(true);
         }
         catch (err) {
-            if (err instanceof XUserNotFoundOrDisabledError) {
+            if (err instanceof UserNotFoundOrDisabledError) {
                 // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
             }
             else {
@@ -74,14 +74,14 @@ function AppAuthOff({children}: {children: ReactNode;}) {
             // nenasli sme usera v DB
             alert(`User account "${username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         if (!xPostLoginResponse.xUser.enabled) {
             // user je disablovany
             alert(`User account "${username}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id

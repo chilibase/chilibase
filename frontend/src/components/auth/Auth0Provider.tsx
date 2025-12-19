@@ -1,12 +1,12 @@
 import React, {ReactNode, useState} from 'react';
-import {Auth0Provider, useAuth0} from "@auth0/auth0-react";
+import {Auth0Provider as Auth0Auth0Provider, useAuth0} from "@auth0/auth0-react";
 import { XUtils } from '../XUtils';
 import { XEnvVar } from '../XEnvVars';
-import {XUserNotFoundOrDisabledError} from "./XUserNotFoundOrDisabledError";
+import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {XPostLoginRequest} from "../../serverApi/x-auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
-export const XAuth0Provider = ({children}: {children: ReactNode;}) => {
+export const Auth0Provider = ({children}: {children: ReactNode;}) => {
     // na fungovanie klienta stacili domain, clientId, redirectUri - tak som nechal len tie
     // a este som sem pridal audience (id-cko backend-u) aby pri prihlasovani pytal suhlas na scope "profile"
     // (bez toho pri getAccessTokenSilently vrati chybu "Consent required", v doku sa pise: user cannot provide consent during a non-interactive flow (like getAccessTokenSilently))
@@ -18,14 +18,14 @@ export const XAuth0Provider = ({children}: {children: ReactNode;}) => {
     // (poznamka: mohli by sme pouzivat window.location.origin + "/callback" a na "/callback" v router-i zavesit specialny komponent ktory by sa cez navigate() dostal na spravnu stranku)
     //console.log('redirect_uri = ' + window.location.origin + window.location.pathname);
     return (
-        <Auth0Provider
+        <Auth0Auth0Provider
             domain={XUtils.getEnvVarValue(XEnvVar.VITE_AUTH0_DOMAIN)}
             clientId={XUtils.getEnvVarValue(XEnvVar.VITE_AUTH0_CLIENT_ID)}
             authorizationParams={{redirect_uri: window.location.origin, audience: XUtils.getEnvVarValue(XEnvVar.VITE_AUTH0_AUDIENCE)}}>
             <AppAuth0>
                 {children}
             </AppAuth0>
-        </Auth0Provider>
+        </Auth0Auth0Provider>
     );
 }
 
@@ -47,7 +47,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
             setInitialized(true);
         }
         catch (err) {
-            if (err instanceof XUserNotFoundOrDisabledError) {
+            if (err instanceof UserNotFoundOrDisabledError) {
                 // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
                 // zrusime nastaveny access token
                 XUtils.setXToken(null);
@@ -98,14 +98,14 @@ function AppAuth0({children}: {children: ReactNode;}) {
             // nenasli sme usera v DB
             alert(`User account "${user?.email}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         if (!xPostLoginResponse.xUser.enabled) {
             // user je disablovany
             alert(`User account "${user?.email}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
-            throw new XUserNotFoundOrDisabledError();
+            throw new UserNotFoundOrDisabledError();
         }
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
