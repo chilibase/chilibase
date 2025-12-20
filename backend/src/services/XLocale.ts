@@ -1,4 +1,4 @@
-import {XUtils} from "./XUtils";
+import {XUtils} from "./XUtils.js";
 
 // type for x-locale
 export interface XLocaleOptions {
@@ -10,7 +10,7 @@ export function xLocaleOption(xOptionKey: string, options?: any[string]) {
     const xLocaleOptions: XLocaleOptions = XUtils.getXLocaleOptions();
 
     try {
-        let optionValue = xLocaleOptions[xOptionKey];
+        let optionValue = (xLocaleOptions as any)[xOptionKey];
 
         if (optionValue && options) {
             for (const key in options) {

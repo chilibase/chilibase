@@ -23,7 +23,6 @@ import {xLocaleOption} from "./XLocale";
 import {XLazyDataTableRef} from "./XLazyDataTable/XLazyDataTable";
 import {XCreateObjectFunction, XOnSaveOrCancelProp} from "./XFormBase";
 import {initMsalConfig} from "./auth";
-import {XOnSaveOrCancelProp} from "./XFormBase";
 import {XFindRowByIdRequest, XFindRowByIdResponse} from "../serverApi/x-lib-api";
 
 export enum OperationType {
@@ -56,7 +55,7 @@ export interface IPostgresInterval {
     milliseconds?: number;
 }
 
-export type XGetEnvVarValue = (envVarEnum: XEnvVar) => string;
+export type XGetEnvVarValue = (envVarEnum: string) => string;
 
 // XQuery zatial docasne sem - ale je to globalny objekt - parametre pre XUtils.fetchRows, taky jednoduchsi FindParam (este sem mozme pridat fullTextSearch ak bude treba)
 

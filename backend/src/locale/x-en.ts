@@ -1,5 +1,5 @@
 // for simplicity, instead of json file x-en.json
-import {XLocaleOptions} from "../services/XLocale";
+import {XLocaleOptions} from "../services/XLocale.js";
 
 export const localeEn: {"en": XLocaleOptions} =
 {

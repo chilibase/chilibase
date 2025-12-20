@@ -2,7 +2,7 @@ import {XEnvVar} from "./XEnvVars.js";
 import {join} from "path";
 import {IPostgresInterval} from "postgres-interval";
 import {ValueTransformer} from "typeorm";
-import {XLocaleOptions} from "./XLocale";
+import {XLocaleOptions} from "./XLocale.js";
 
 export class XUtils {
 

@@ -654,13 +654,13 @@ export abstract class XFormBase extends Component<XFormProps> {
         if (this.pessimisticLocking) {
             this.addField("lockXUser.name");
         }
-        const xFindRowByIdResponse: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fields), id, this.pessimisticLocking!);
+        const xFindRowByIdResponse: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking!);
         let object: any = xFindRowByIdResponse.row;
         if (this.pessimisticLocking) {
             if (!xFindRowByIdResponse.lockAcquired) {
                 if (window.confirm(xLocaleOption('pessimisticLockNotAcquired', {lockXUser: object.lockXUser?.name, lockDate: datetimeAsUI(dateFromModel(object.lockDate))}))) {
                     // overwrite the lock in DB
-                    const xFindRowByIdResponse: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fields), id, this.pessimisticLocking, true);
+                    const xFindRowByIdResponse: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking, true);
                     object = xFindRowByIdResponse.row;
                     this.rowLocked = true;
                 }
