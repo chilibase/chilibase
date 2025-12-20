@@ -111,14 +111,14 @@ export abstract class XFormBase extends Component<XFormProps> {
     tabViewUsed: boolean;
 
     // special flag - in the future - legacy object loading (using componentDidMount) is supposed to be removed
-    legacyObjectLoad: boolean;
+    legacyObjectLoading: boolean;
 
     // param entity can be used to set this.entity (another option is decorator @Form)
     constructor(props: XFormProps, entity?: string, pessimisticLocking?: boolean) {
         super(props);
-        this.legacyObjectLoad = (props.object === undefined);
+        this.legacyObjectLoading = (props.object === undefined);
         // check (legacy object load)
-        if (this.legacyObjectLoad) {
+        if (this.legacyObjectLoading) {
             if (props.id !== undefined && props.initValues !== undefined) {
                 throw "Form cannot have both props id and initValues defined. Only one of them can be defined.";
             }
@@ -171,7 +171,7 @@ export abstract class XFormBase extends Component<XFormProps> {
         //    this.xEntity = XUtilsMetadataCommon.getXEntity(this.entity);
         //}
 
-        if (!this.legacyObjectLoad) {
+        if (!this.legacyObjectLoading) {
             let object: XObject = this.state.object;
             const operationType: OperationType.Insert | OperationType.Update = this.isAddRow() ? OperationType.Insert : OperationType.Update;
             // i am not sure if preInitForm (and call in componentDidMount is needed) but unlike legacy version,
@@ -256,7 +256,7 @@ export abstract class XFormBase extends Component<XFormProps> {
         }
         else {
             // deprecated way of object loading
-            if (this.legacyObjectLoad) {
+            if (this.legacyObjectLoading) {
                 id = this.props.id;
             }
         }
