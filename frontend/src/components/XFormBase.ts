@@ -40,6 +40,7 @@ export interface XFormProps {
 }
 
 export interface XFormWithLoaderProps {
+    ref?: React.Ref<XFormBase>; // forwarded to XFormProps
     id: number | undefined; // for id === undefined we do insert, for id !== undefined we do update
     initValues?: object; // DEPRECATED (forwarded to XFormProps)
     onSaveOrCancel?: XOnSaveOrCancelProp; // forwarded to XFormProps

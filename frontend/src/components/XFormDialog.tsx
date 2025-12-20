@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useRef} from "react";
 import {Dialog} from "primereact/dialog";
-import {XFormWithLoaderProps, XOnSaveOrCancelProp} from "./XFormBase";
+import {XFormBase, XFormWithLoaderProps, XOnSaveOrCancelProp} from "./XFormBase";
 import {OperationType} from "./XUtils";
 import {XFormProps} from "./XFormBase";
 import {XFormWithLoader} from "./XFormWithLoader";
@@ -21,10 +21,10 @@ export const XFormDialog = (props: {
     entity: string; // entity of the form - better would be to take entity from form (if it is technically possible)
 }) => {
 
+    const xFormBaseRef = useRef<XFormBase>(null);
+
     const onHide = () => {
-        if (props.dialogState.onSaveOrCancel) {
-            props.dialogState.onSaveOrCancel(null, OperationType.None);
-        }
+        xFormBaseRef.current!.cancelEdit();
     }
 
     const createFormElem = (): React.ReactElement | undefined => {
@@ -37,7 +37,7 @@ export const XFormDialog = (props: {
             if (Form || formElement) {
                 // wrap form component into component that first calls loader and after that renders the original form component
                 const FormWithLoader: React.FC<XFormWithLoaderProps> = XFormWithLoader(Form, formElement, props.entity, props.dialogState.id === undefined ? OperationType.Insert : OperationType.Update);
-                form = <FormWithLoader id={props.dialogState.id} initValues={props.dialogState.initValues} onSaveOrCancel={props.dialogState.onSaveOrCancel} isInDialog={true} params={props.dialogState.initValues}/>;
+                form = <FormWithLoader ref={xFormBaseRef} id={props.dialogState.id} initValues={props.dialogState.initValues} onSaveOrCancel={props.dialogState.onSaveOrCancel} isInDialog={true} params={props.dialogState.initValues}/>;
             }
         }
         return form;
