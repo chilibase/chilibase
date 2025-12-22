@@ -11,7 +11,7 @@ Password: fd4eg4DN45ggd
 Source code of car demo app: https://github.com/chilibase/car-demo  
 (Source code is also available via links in demo.)  
 
-The framework is suitable for small-budget projects, all used libraries are open source.  
+The framework is suitable for low-budget projects, all used libraries are open source.  
 The projects created in this framework are running on Linux VPS using Docker, for deployment is used GitHub Actions. VPS is hosted on hetzner.com.  
 If there is interest, I can create the documentation about deployment/infrastructure.  
 
@@ -93,7 +93,7 @@ pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 - export to word via templating (placeholders like `{assoc1.assoc2.fieldX}` in word template) - uses library `docxtemplater` (*)
 - statistics module (based on principles of contingency table in excel) (*)
 - reporting module for creating excel exports in runtime (*)
-- logging sql queries including execution time.
+- logging sql queries including execution time
 - both backend and frontend use ESM (tsc compiles to ESM)
 - all used third party libraries are open source
 

@@ -99,12 +99,12 @@ export function XFormWithLoader<T = any>(
 
             if (Form) {
                 // we use component type (idiomatic way)
-                return <Form ref={props.ref} object={data as XObject} id={props.id} initValues={props.initValues} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
+                return <Form ref={props.formBaseRef} object={data as XObject} id={props.id} initValues={props.initValues} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
                 return React.cloneElement(formElement!, {
-                    ref: props.ref,
+                    ref: props.formBaseRef,
                     object: data as XObject,
                     id: props.id,
                     initValues: props.initValues,
@@ -120,12 +120,12 @@ export function XFormWithLoader<T = any>(
         EnhancedComponent = (props: XFormWithLoaderProps) => {
             if (Form) {
                 // we use component type (idiomatic way)
-                return <Form ref={props.ref} object={undefined} id={props.id} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
+                return <Form ref={props.formBaseRef} object={undefined} id={props.id} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
                 return React.cloneElement(formElement!, {
-                    ref: props.ref,
+                    ref: props.formBaseRef,
                     object: undefined,
                     id: props.id,
                     onSaveOrCancel: props.onSaveOrCancel,
