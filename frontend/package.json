@@ -58,7 +58,7 @@
     "./XUserForm": "./lib/administration/XUserForm.js",
 
     "./auth": "./lib/components/auth/index.js",
-    "./app-layout": "./lib/components/XAppLayout/index.js",
+    "./app-layout": "./lib/components/app-layout/index.js",
 
     "./XFormCol": "./lib/components/XFormRowCol/XFormCol.js",
     "./XFormInlineRow": "./lib/components/XFormRowCol/XFormInlineRow.js",
