@@ -1,12 +1,12 @@
 import React from "react";
 import {Dropdown, DropdownChangeEvent} from "primereact/dropdown";
-import {XOptionalCustomFilter} from "./XLazyDataTable";
+import {OptionalCustomFilter} from "./LazyDataTable";
 
 // dropdown for optional custom filter (ocf)
-export const XOcfDropdown = (props: {
-    optionalCustomFilters: XOptionalCustomFilter[];
-    value: XOptionalCustomFilter | undefined;
-    onChange: (value: XOptionalCustomFilter | undefined) => void;
+export const OcfDropdown = (props: {
+    optionalCustomFilters: OptionalCustomFilter[];
+    value: OptionalCustomFilter | undefined;
+    onChange: (value: OptionalCustomFilter | undefined) => void;
     className?: string;
 }) => {
 

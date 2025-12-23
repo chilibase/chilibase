@@ -1,15 +1,15 @@
 import React from "react";
-import {XMultilineRenderType} from "./XLazyDataTable";
+import {MultilineRenderType} from "./LazyDataTable";
 import {SelectButton, SelectButtonChangeEvent} from "primereact/selectbutton";
 
 interface Option {
     icon: string;
-    value: XMultilineRenderType;
+    value: MultilineRenderType;
 }
 
-export const XMultilineSwitch = (props: {
-    value: XMultilineRenderType;
-    onChange: (value: XMultilineRenderType) => void;
+export const MultilineSwitch = (props: {
+    value: MultilineRenderType;
+    onChange: (value: MultilineRenderType) => void;
     className?: string;
 }) => {
 

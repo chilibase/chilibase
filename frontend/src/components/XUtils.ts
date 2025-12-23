@@ -20,7 +20,7 @@ import {XTableFieldReadOnlyProp} from "./XFormDataTable2";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
 import {xLocaleOption} from "./XLocale";
-import {XLazyDataTableRef} from "./XLazyDataTable/XLazyDataTable";
+import {LazyDataTableRef} from "./lazy-data-table";
 import {XCreateObjectFunction, XOnSaveOrCancelProp} from "./XFormBase";
 import {initMsalConfig} from "./auth";
 import {XFindRowByIdRequest, XFindRowByIdResponse} from "../serverApi/x-lib-api";
@@ -862,7 +862,7 @@ export class XUtils {
     /**
      * @deprecated returns onSaveOrCancel method used when opening form from browse when using XFormNavigator (deprecated)
      */
-    static onSaveOrCancelNavigator(openForm: (newFormElement: JSX.Element | null) => void, xLazyDataTableRef: React.RefObject<XLazyDataTableRef>): XOnSaveOrCancelProp {
+    static onSaveOrCancelNavigator(openForm: (newFormElement: JSX.Element | null) => void, xLazyDataTableRef: React.RefObject<LazyDataTableRef>): XOnSaveOrCancelProp {
         return (object: any | null, objectChange: OperationType) => {
             // close form and display the previous form (it should be browse)
             openForm(null);

@@ -33,7 +33,7 @@ import {XUtilsCommon} from "../serverApi/XUtilsCommon";
 import {xLocaleOption} from "./XLocale";
 import {XInputIntervalDT} from "./XInputIntervalDT";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XLazyColumnProps, XSearchBrowseProps} from "./XLazyDataTable/XLazyDataTable";
+import {SearchBrowseProps} from "./lazy-data-table";
 import {XInputTextareaDT} from "./XInputTextareaDT";
 import {XSuggestionsLoadProp} from "./XAutoCompleteBase";
 
@@ -625,7 +625,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
 
         // pre lepsiu citatelnost vytvarame stlpce uz tu
         const columnElemList: JSX.Element[] = React.Children.map(
-            this.props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: XLazyColumnProps}).props.columnViewStatus) !== XViewStatus.Hidden),
+            this.props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: XFormColumnBaseProps}).props.columnViewStatus) !== XViewStatus.Hidden),
             function (child) {
                 // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
                 // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
@@ -826,7 +826,7 @@ export interface XFormAutoCompleteColumnProps extends XFormColumnBaseProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
-    SearchBrowse?: React.ComponentType<XSearchBrowseProps>;
+    SearchBrowse?: React.ComponentType<SearchBrowseProps>;
     searchBrowseElement?: React.ReactElement;
     AssocForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)

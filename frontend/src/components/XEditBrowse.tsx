@@ -6,7 +6,7 @@ import {XBrowseMeta, XColumnMeta} from "../serverApi/XBrowseMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XEntity} from "../serverApi/XEntityMetadata";
 import {XUtils} from "./XUtils";
-import {XEditModeHandlers, XLazyColumn, XLazyDataTable} from "./XLazyDataTable/XLazyDataTable";
+import {EditModeHandlers, LazyColumn, LazyDataTable} from "./lazy-data-table";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {XUtilsCommon} from "../serverApi/XUtilsCommon";
 
@@ -210,7 +210,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
 
     render() {
         const xBrowseMeta = this.state.xBrowseMeta;
-        const xEditModeHandlers: XEditModeHandlers = {
+        const editModeHandlers: EditModeHandlers = {
             onStart: this.onEditModeStart,
             onSave: this.onEditModeSave,
             onCancel: this.onEditModeCancel,
@@ -237,12 +237,12 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
         }
         return (
             <div>
-                <XLazyDataTable entity={xBrowseMeta.entity} rows={xBrowseMeta.rows} editMode={this.state.editMode} editModeHandlers={xEditModeHandlers} onEdit={this.onEdit} displayed={(this.props as any).displayed}>
+                <LazyDataTable entity={xBrowseMeta.entity} rows={xBrowseMeta.rows} editMode={this.state.editMode} editModeHandlers={editModeHandlers} onEdit={this.onEdit} displayed={(this.props as any).displayed}>
                     {xBrowseMeta.columnMetaList.map(function (xColumnMeta: XColumnMeta, index: number) {
-                            return (<XLazyColumn key={index} field={xColumnMeta.field} header={xColumnMeta.header} dropdownInFilter={xColumnMeta.dropdownInFilter} align={xColumnMeta.align} width={xColumnMeta.width}/>);
+                            return (<LazyColumn key={index} field={xColumnMeta.field} header={xColumnMeta.header} dropdownInFilter={xColumnMeta.dropdownInFilter} align={xColumnMeta.align} width={xColumnMeta.width}/>);
                         }
                     )}
-                </XLazyDataTable>
+                </LazyDataTable>
                 {formSourceCode}
                 {entitySourceCodeLink}
                 <XEditColumnDialog dialogOpened={this.state.editColumnDialogOpened} entity={xBrowseMeta.entity} addColumn={this.addColumn} xEditColumnDialogValues={this.xEditColumnDialogValues} onHideDialog={this.editColumnDialogOnHide}/>

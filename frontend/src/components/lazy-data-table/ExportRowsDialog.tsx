@@ -20,7 +20,7 @@ import {numberAsUI} from "../../serverApi/XUtilsConversions";
 import {xLocaleOption} from "../XLocale";
 
 // parametre pre dialog
-export interface XExportParams {
+export interface ExportParams {
     rowCount: number; // parameter pre dialog
     existsToManyAssoc: boolean; // parameter pre dialog - ak true, zobrazi option "Detail rows export"
     queryParam: LazyDataTableQueryParam | any; // parametre specificke pre konkretny export (zvycajne hodnoty filtra)
@@ -30,13 +30,13 @@ export interface XExportParams {
     fileName: string; // fileName without extension
 }
 
-export interface XExportRowsDialogState {
+export interface ExportRowsDialogState {
     dialogOpened: boolean,
-    exportParams?: XExportParams
+    exportParams?: ExportParams
 }
 
-export const XExportRowsDialog = (props: {
-    dialogState: XExportRowsDialogState;
+export const ExportRowsDialog = (props: {
+    dialogState: ExportRowsDialogState;
     hideDialog: () => void;
     exportTypeOptions?: ExportType[];
 }) => {
@@ -67,7 +67,7 @@ export const XExportRowsDialog = (props: {
         props.hideDialog();
         // TODO - pridat nejake koliesko, pripadne progress bar
 
-        const exportParams: XExportParams = props.dialogState.exportParams!;
+        const exportParams: ExportParams = props.dialogState.exportParams!;
 
         // samotny export
         let apiPath: string;
@@ -108,7 +108,7 @@ export const XExportRowsDialog = (props: {
         XUtils.downloadFile(apiPath, requestPayload, fileName);
     }
 
-    const createExcelCsvParam = (exportParams: XExportParams): ExcelCsvParam => {
+    const createExcelCsvParam = (exportParams: ExportParams): ExcelCsvParam => {
         return {
             headers: createHeaderLine ? exportParams.headers : undefined,
             fieldsToDuplicateValues: exportParams.fieldsToDuplicateValues,

@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import {XMultilineRenderType} from "./XLazyDataTable";
+import {MultilineRenderType} from "./LazyDataTable";
 import {Button} from "primereact/button";
 
-export const XMultilineRenderer = (props: {
+export const MultilineRenderer = (props: {
     valueList: React.ReactNode[];
-    renderType: XMultilineRenderType;
+    renderType: MultilineRenderType;
     fewLinesCount: number;
     multilineContent?: boolean;
 }): JSX.Element => {

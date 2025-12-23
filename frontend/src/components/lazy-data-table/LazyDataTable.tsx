@@ -34,7 +34,7 @@ import {XButtonIconSmall} from "../XButtonIconSmall";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
 import {LazyDataTableQueryParam} from "../../serverApi/ExportImportParam";
-import {XExportParams, XExportRowsDialog, XExportRowsDialogState} from "./XExportRowsDialog";
+import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRowsDialog";
 import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
 import {XFormProps, XOnSaveOrCancelProp} from "../XFormBase";
 import {XCalendar} from "../XCalendar";
@@ -45,10 +45,10 @@ import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
 import {Editor} from "primereact/editor";
-import {XMultilineSwitch} from "./XMultilineSwitch";
-import {XMultilineRenderer} from "./XMultilineRenderer";
-import {XHtmlRenderer} from "./XHtmlRenderer";
-import {XOcfDropdown} from "./XOcfDropdown";
+import {MultilineSwitch} from "./MultilineSwitch";
+import {MultilineRenderer} from "./MultilineRenderer";
+import {HtmlRenderer} from "./HtmlRenderer";
+import {OcfDropdown} from "./OcfDropdown";
 import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../XFieldSet/XFieldSetBase";
 import {XAutoCompleteBase} from "../XAutoCompleteBase";
 import {XInputTextBase} from "../XInputTextBase";
@@ -64,23 +64,23 @@ interface XFieldSetMaps {
     [field: string]: XFieldXFieldMetaMap;
 }
 
-export type XBetweenFilterProp = "row" | "column" | undefined;
-export type XMultilineRenderType = "singleLine" | "fewLines" | "allLines";
+export type BetweenFilterProp = "row" | "column" | undefined;
+export type MultilineRenderType = "singleLine" | "fewLines" | "allLines";
 
-export type XOpenFormForInsert = (
+export type OpenFormForInsert = (
     initValues?: object,
     onSaveOrCancel?: XOnSaveOrCancelProp,
     Form?: React.ComponentType<XFormProps>,
     formElement?: React.ReactElement
 ) => void;
-export type XOpenFormForUpdate = (
+export type OpenFormForUpdate = (
     id: number,
     onSaveOrCancel?: XOnSaveOrCancelProp,
     Form?: React.ComponentType<XFormProps>,
     formElement?: React.ReactElement
 ) => void;
 
-export interface XAppButtonForRow {
+export interface AppButtonForRow {
     key?: string;
     icon?: IconType<ButtonProps>;
     label: string;
@@ -88,12 +88,12 @@ export interface XAppButtonForRow {
     style?: React.CSSProperties;
 }
 
-export interface XOptionalCustomFilter {
+export interface OptionalCustomFilter {
     label: string;
     filter: XCustomFilter;
 }
 
-export interface XEditModeHandlers {
+export interface EditModeHandlers {
     onStart: () => void;
     onSave: () => void;
     onCancel: () => void;
@@ -107,23 +107,23 @@ export interface XEditModeHandlers {
 // specialne propertiesy ktore su k dispozicii v komponentach <entity>Browse
 // displayed a openForm pridava XFormNavigator3
 // searchBrowseParams pridava XSearchButton
-// propertiesy displayed a searchBrowseParams sa (manualne) prenasaju do XLazyDataTable (cisto technicke zalezitosti)
+// propertiesy displayed a searchBrowseParams sa (manualne) prenasaju do LazyDataTable (cisto technicke zalezitosti)
 // property openForm sa pouziva na otvorenie dalsieho "podformulara", velmi casto <entity>Form (odtial sa potom zavolanim openForm(null) vraciame naspet do <entity>Browse)
-// ak chceme pouzit ten isty <entity>Browse ako klasicky Browse aj ako SearchBrowse, treba pouzit typ (props: XBrowseProps & XSearchBrowseProps) - zjednotenie propertiesov
+// ak chceme pouzit ten isty <entity>Browse ako klasicky Browse aj ako SearchBrowse, treba pouzit typ (props: BrowseProps & SearchBrowseProps) - zjednotenie propertiesov
 
 /**
  * @deprecated was used to send props displayed and openForm to *Browse when using XFormNavigator (deprecated)
  */
-export interface XBrowseProps {
+export interface BrowseProps {
     displayed?: boolean;
     openForm?: (newFormElement: JSX.Element | null) => void;
 }
 
-export interface XSearchBrowseProps {
+export interface SearchBrowseProps {
     searchBrowseParams?: XSearchBrowseParams;
 }
 
-export enum XStateKeySuffix {
+export enum StateKeySuffix {
     filters = 'filters',
     ftsInputValue = 'fts-input-value',
     optionalCustomFilter = 'optional-custom-filter',
@@ -134,24 +134,24 @@ export enum XStateKeySuffix {
 }
 
 // exposed methods
-export interface XLazyDataTableRef {
+export interface LazyDataTableRef {
     reread: () => void;
     setupExpandedRows: () => void;
 }
 
-export interface XLazyDataTableProps {
+export interface LazyDataTableProps {
     entity: string;
     stateStorage?: XStorageType; // default is session
-    stateKey?: string; // key used to save the state into session (or local), default is entity, but sometimes we have more then 1 browse/XLazyDataTable for 1 entity
+    stateKey?: string; // key used to save the state into session (or local), default is entity, but sometimes we have more then 1 browse/LazyDataTable for 1 entity
     label?: string;
     labelStyle?: React.CSSProperties; // used to override default style or add new style
     dataKey?: string;
     rowExpansionTemplate?: (row: any, options: DataTableRowExpansionTemplate) => React.ReactNode;
-    showExpandedRow?: (row: any, multilineSwitchValue: XMultilineRenderType) => boolean;
+    showExpandedRow?: (row: any, multilineSwitchValue: MultilineRenderType) => boolean;
     paginator?: boolean;
     rows?: number;
     filterDisplay?: "menu" | "row";
-    betweenFilter?: XBetweenFilterProp; // umiestnenie inputov od do: "row" - vedla seba, "column" - pod sebou; plati pre vsetky stlpce typu date/datetime/decimal/number ak nemaju definovany svoj betweenFilter
+    betweenFilter?: BetweenFilterProp; // umiestnenie inputov od do: "row" - vedla seba, "column" - pod sebou; plati pre vsetky stlpce typu date/datetime/decimal/number ak nemaju definovany svoj betweenFilter
     autoFilter?: boolean; // if true, filtering starts immediately after setting filter value (button Filter is not used/rendered) (default false)
     showFilterButtons?: boolean; // if true, Filter/Clear filter buttons are rendered (default true)
     showExportRows?: boolean; // true - export button rendered, false - export button not rendered, undefined (default) - Export button rendered only on desktop (not on mobile)
@@ -163,29 +163,29 @@ export interface XLazyDataTableProps {
     onResetTable?: () => void; // zavola sa pri kliknuti na button resetTable (Reset filter)
     EditForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
     editFormElement?: React.ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
-    onAddRow?: ((filters: DataTableFilterMeta, openFormForInsert: XOpenFormForInsert) => void) | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
+    onAddRow?: ((filters: DataTableFilterMeta, openFormForInsert: OpenFormForInsert) => void) | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
                                                             // filters are here in order to enable init some attributes of new row from filters values (if needed)
                                                             // function openFormForInsert can be used to open form from the body of the onAddRow method (no need to implement the whole boilerplate for opening form, it iś shortcut back into the framework)
-    onEdit?: ((selectedRow: any, openFormForUpdate: XOpenFormForUpdate) => void) | false; // creates edit row button (or overrides default edit function used by editForm); if false, no edit row button is created
+    onEdit?: ((selectedRow: any, openFormForUpdate: OpenFormForUpdate) => void) | false; // creates edit row button (or overrides default edit function used by editForm); if false, no edit row button is created
                                                             // function openFormForUpdate can be used to open form from the body of the onEditRow method (no need to implement the whole boilerplate for opening form, it iś shortcut back into the framework)
         // -> TODO - rename to onEditRow
     removeRow?: ((selectedRow: any) => Promise<boolean>) | boolean; // if removeRow is function or removeRow = true, then remove row button is created
         // -> TODO - rename to onRemoveRow
     onRemoveRow?: XOnSaveOrCancelProp; // function called after removing row (post remove row) -> TODO - rename to postRemoveRow
     docTemplates?: true | ((entity: string) => Promise<XtDocTemplate[]>); // if true, doc template button is rendered; function param: function returning list of templates that can be used by user (for the case if we need project specific way of fetching templates)
-    appButtonsForRow?: XAppButtonForRow[]; // do funkcii tychto buttonov sa posiela vyselectovany row
+    appButtonsForRow?: AppButtonForRow[]; // do funkcii tychto buttonov sa posiela vyselectovany row
     appButtons?: any; // vseobecne buttons (netreba im poslat vyselectovany row) - mozno by sa mali volat appButtonsGeneral
     filters?: DataTableFilterMeta; // pouzivatelsky filter
     customFilter?: XCustomFilter; // (programatorsky) filter ktory sa aplikuje na zobrazovane data (uzivatel ho nedokaze zmenit)
-    optionalCustomFilters?: XOptionalCustomFilter[]; // programatorom predpripravene filtre, user si moze vybrat predpripraveny filter v dropdown-e vedla Filter/Clear buttonov
+    optionalCustomFilters?: OptionalCustomFilter[]; // programatorom predpripravene filtre, user si moze vybrat predpripraveny filter v dropdown-e vedla Filter/Clear buttonov
     sortField?: string | DataTableSortMeta[];
     fullTextSearch?: boolean | string[]; // false - nemame full-text search, true - mame full-text search na default stlpcoch, string[] - full-text search na danych stlpcoch
     fields?: string[]; // ak chceme nacitat aj asociovane objekty mimo tych ktore sa nacitavaju koli niektoremu zo stlpcov
     multilineSwitch?: boolean; // default false, ak true tak zobrazi switch, ktorym sa da vypnut zobrazenie viacriadkovych textov v sirokom riadku
-    multilineSwitchInitValue?: XMultilineRenderType; // default "allLines"
+    multilineSwitchInitValue?: MultilineRenderType; // default "allLines"
     multilineSwitchFewLinesCount?: number; // max count of rendered lines for render type "fewLines" (default 2)
-    // ak chceme mat pristup k stavu multilineSwitchu, treba vytiahnut "const [multilineSwitchValue, setMultilineSwitchValue] = useState<XMultilineRenderType>(...);" do browse komponentu
-    multilineSwitchValue?: [XMultilineRenderType, React.Dispatch<React.SetStateAction<XMultilineRenderType>>]; // TODO - specialny typ vytvor, napr. XuseState<boolean>
+    // ak chceme mat pristup k stavu multilineSwitchu, treba vytiahnut "const [multilineSwitchValue, setMultilineSwitchValue] = useState<MultilineRenderType>(...);" do browse komponentu
+    multilineSwitchValue?: [MultilineRenderType, React.Dispatch<React.SetStateAction<MultilineRenderType>>]; // TODO - specialny typ vytvor, napr. XuseState<boolean>
     headerBodyTop?: React.ReactNode; // adds stuff above input for full text search and search buttons (used for mobile if there is not enaugh space in headerBodyLeft or headerBodyRight)
     headerBodyLeft?: React.ReactNode; // adds stuff before input for full text search
     headerBodyRight?: React.ReactNode; // prida sa hned za multilineSwitch, moze sa tu pridat napr. custom switch
@@ -196,7 +196,7 @@ export interface XLazyDataTableProps {
                                             // krajsie by bolo priamo tieto stlpce oznacit nejakou {true} properties ale nechce sa mi do toho tolko investovat
                                             // je to koli nejakym kontingencnym tabulkam v exceli ktore to potrebuju
     editMode?: boolean;
-    editModeHandlers?: XEditModeHandlers;
+    editModeHandlers?: EditModeHandlers;
     /**
      * @deprecated was used to reread data after save/cancel of the form when using XFormNavigator (deprecated),
      * now method reread() is exposed and supposed to be called in onSaveOrCancel of the form
@@ -205,7 +205,7 @@ export interface XLazyDataTableProps {
     children: ReactChild[];
 }
 
-export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>((
+export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     {
         stateStorage = "session",
         paginator = true,
@@ -226,7 +226,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
     ref
 ) => {
 
-    const props: XLazyDataTableProps = {
+    const props: LazyDataTableProps = {
         stateStorage,
         paginator,
         rows,
@@ -253,7 +253,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 
         let columns = props.children;
         for (let column of columns) {
-            const xLazyColumn = column as {props: XLazyColumnProps}; // nevedel som to krajsie...
+            const xLazyColumn = column as {props: LazyColumnProps}; // nevedel som to krajsie...
             if (xLazyColumn.props.aggregateType) {
                 aggregateItems.push({field: xLazyColumn.props.field, aggregateFunction: xLazyColumn.props.aggregateType});
             }
@@ -274,11 +274,11 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 
         let filtersInit: DataTableFilterMeta = {};
 
-        // warning note: props.children are used to get props of XLazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
+        // warning note: props.children are used to get props of LazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
         //let columns = dataTableEl.current.props.children; - does not work
         let columns = props.children;
         for (let column of columns) {
-            const xLazyColumn = column as {props: XLazyColumnProps}; // nevedel som to krajsie...
+            const xLazyColumn = column as {props: LazyColumnProps}; // nevedel som to krajsie...
             // in some situations, this would be suitable, but for dynamic hide/show columns it can cause crash
             // better place for initializing filters is probably creating columns - function(child)
             //if (XUtils.xViewStatus(xLazyColumn.props.columnViewStatus) !== XViewStatus.Hidden) {
@@ -302,7 +302,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         return filtersInit;
     }
 
-    const getInitFilterMatchMode = (xLazyColumnProps: XLazyColumnProps, xField: XField) : FilterMatchMode => {
+    const getInitFilterMatchMode = (xLazyColumnProps: LazyColumnProps, xField: XField) : FilterMatchMode => {
         let filterMatchMode: FilterMatchMode;
         if (xLazyColumnProps.filterElement !== undefined) {
             filterMatchMode = XFilterMatchMode.X_FILTER_ELEMENT as unknown as FilterMatchMode; // little hack
@@ -324,13 +324,13 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         return filterMatchMode;
     }
 
-    const isAutoCompleteInFilterEnabled = (xLazyColumnProps: XLazyColumnProps): boolean => {
+    const isAutoCompleteInFilterEnabled = (xLazyColumnProps: LazyColumnProps): boolean => {
         return xLazyColumnProps.autoComplete !== undefined;
     }
 
 /*  old version - created for automatical use of autocomplete on every *toOne assoc with string attribute
                 - extra property was used: autoCompleteEnabled: true | false | "forStringOnly"
-    const isAutoCompleteInFilterEnabled = (xLazyColumnProps: XLazyColumnProps, xField: XField): boolean => {
+    const isAutoCompleteInFilterEnabled = (xLazyColumnProps: LazyColumnProps, xField: XField): boolean => {
         let autoCompleteEnabled: boolean = false; // default
         // condition1: field has to have the length >= 2
         if (!XUtilsCommon.isSingleField(xLazyColumnProps.field)) {
@@ -382,21 +382,21 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 
 /*
     // TODO turn off/on storage
-    const saveValueIntoStorage = (stateKeySuffix: XStateKeySuffix, value: any) => {
+    const saveValueIntoStorage = (stateKeySuffix: StateKeySuffix, value: any) => {
         XUtils.saveValueIntoStorage(`${getTableStateKey()}-${stateKeySuffix}`, value);
     }
 
     // TODO turn off/on storage
-    const getValueFromStorage = (stateKeySuffix: XStateKeySuffix, initValue: any): any => {
+    const getValueFromStorage = (stateKeySuffix: StateKeySuffix, initValue: any): any => {
         return XUtils.getValueFromStorage(`${getTableStateKey()}-${stateKeySuffix}`, initValue);
     }
 */
-    const getStateKey = (stateKeySuffix: XStateKeySuffix): string => {
+    const getStateKey = (stateKeySuffix: StateKeySuffix): string => {
         return `x-ldt-state-${props.stateKey ?? props.entity}-${stateKeySuffix}`;
     }
 
     const removePagingFromStorage = () => {
-        XUtils.removeValueFromStorage(props.stateStorage!, getStateKey(XStateKeySuffix.pagingFirst));
+        XUtils.removeValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.pagingFirst));
     }
 
     // premenne platne pre cely component (obdoba member premennych v class-e)
@@ -422,11 +422,11 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
     const [value, setValue] = useState<FindResult>({rowList: [], totalRecords: 0, aggregateValues: []});
     const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined);
     const [loading, setLoading] = useState(false);
-    const [first, setFirst] = useXStateStorage(props.stateStorage!, getStateKey(XStateKeySuffix.pagingFirst), 0);
+    const [first, setFirst] = useXStateStorage(props.stateStorage!, getStateKey(StateKeySuffix.pagingFirst), 0);
     const [rowsLocal, setRowsLocal] = useState(props.paginator ? props.rows : undefined);
     // "filters" have special initialState function different from that used in useXStateSession
     const filtersInitialStateFunction = (): DataTableFilterMeta => {
-        let filtersInit: DataTableFilterMeta | null = XUtils.getValueFromStorage(props.stateStorage!, getStateKey(XStateKeySuffix.filters), null);
+        let filtersInit: DataTableFilterMeta | null = XUtils.getValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.filters), null);
         if (filtersInit != null) {
             // we have filters from session - if we have props.filters, we always override the values from session (values from props.filters have higher priority)
             filtersInit = overrideFilters(filtersInit, props.filters);
@@ -437,23 +437,23 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         }
         return filtersInit;
     }
-    const [filters, setFilters] = useXStateStorageBase<DataTableFilterMeta>(props.stateStorage!, getStateKey(XStateKeySuffix.filters), filtersInitialStateFunction); // filtrovanie na "controlled manner" (moze sa sem nainicializovat nejaka hodnota)
+    const [filters, setFilters] = useXStateStorageBase<DataTableFilterMeta>(props.stateStorage!, getStateKey(StateKeySuffix.filters), filtersInitialStateFunction); // filtrovanie na "controlled manner" (moze sa sem nainicializovat nejaka hodnota)
     const matchModeChangeFieldRef = useRef<string | null>(null);
     const initFtsInputValue: XFtsInputValue | undefined = props.fullTextSearch ? createInitFtsInputValue() : undefined;
-    const [ftsInputValue, setFtsInputValue] = useXStateStorage<XFtsInputValue | undefined>(props.stateStorage!, getStateKey(XStateKeySuffix.ftsInputValue), initFtsInputValue);
-    const [optionalCustomFilter, setOptionalCustomFilter] = useXStateStorage<XOptionalCustomFilter | undefined>(props.stateStorage!, getStateKey(XStateKeySuffix.optionalCustomFilter), undefined);
-    const [multilineSwitchValue, setMultilineSwitchValue] = props.multilineSwitchValue ?? useXStateStorage<XMultilineRenderType>(props.stateStorage!, getStateKey(XStateKeySuffix.multilineSwitchValue), props.multilineSwitchInitValue!);
-    const [multiSortMeta, setMultiSortMeta] = useXStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(XStateKeySuffix.multiSortMeta), XUtilsCommon.createMultiSortMeta(props.sortField));
-    const [selectedRow, setSelectedRow] = useXStateStorage<any>(props.stateStorage!, getStateKey(XStateKeySuffix.selectedRow), null);
+    const [ftsInputValue, setFtsInputValue] = useXStateStorage<XFtsInputValue | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.ftsInputValue), initFtsInputValue);
+    const [optionalCustomFilter, setOptionalCustomFilter] = useXStateStorage<OptionalCustomFilter | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.optionalCustomFilter), undefined);
+    const [multilineSwitchValue, setMultilineSwitchValue] = props.multilineSwitchValue ?? useXStateStorage<MultilineRenderType>(props.stateStorage!, getStateKey(StateKeySuffix.multilineSwitchValue), props.multilineSwitchInitValue!);
+    const [multiSortMeta, setMultiSortMeta] = useXStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.multiSortMeta), XUtilsCommon.createMultiSortMeta(props.sortField));
+    const [selectedRow, setSelectedRow] = useXStateStorage<any>(props.stateStorage!, getStateKey(StateKeySuffix.selectedRow), null);
     /**
      * @deprecated was used to reread data after save/cancel of the form when using XFormNavigator (deprecated)
      */
     const [dataLoaded, setDataLoaded] = useState<boolean>(false); // priznak kde si zapiseme, ci uz sme nacitali data
-    const [exportRowsDialogState, setExportRowsDialogState] = useState<XExportRowsDialogState>({dialogOpened: false});
+    const [exportRowsDialogState, setExportRowsDialogState] = useState<ExportRowsDialogState>({dialogOpened: false});
     //const [exportRowsDialogRowCount, setExportRowsDialogRowCount] = useState<number>(); // param pre dialog
     const [filtersAfterFiltering, setFiltersAfterFiltering] = useState<DataTableFilterMeta>(filters); // sem si odkladame stav filtra po kliknuti na button Filter (chceme exportovat presne to co vidno vyfiltrovane)
     const [ftsInputValueAfterFiltering, setFtsInputValueAfterFiltering] = useState<XFtsInputValue | undefined>(ftsInputValue); // tak isto ako filtersAfterFiltering
-    const [optionalCustomFilterAfterFiltering, setOptionalCustomFilterAfterFiltering] = useState<XOptionalCustomFilter | undefined>(optionalCustomFilter); // tak isto ako filtersAfterFiltering
+    const [optionalCustomFilterAfterFiltering, setOptionalCustomFilterAfterFiltering] = useState<OptionalCustomFilter | undefined>(optionalCustomFilter); // tak isto ako filtersAfterFiltering
     const [formDialogState, setFormDialogState] = useState<XFormDialogState>({opened: false});
 
     // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
@@ -622,7 +622,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         const ftsInputValueLocal: XFtsInputValue = createInitFtsInputValue();
         setFtsInputValue(ftsInputValueLocal);
 
-        const optionalCustomFilterLocal: XOptionalCustomFilter | undefined = undefined;
+        const optionalCustomFilterLocal: OptionalCustomFilter | undefined = undefined;
         setOptionalCustomFilter(optionalCustomFilterLocal);
 
         setMultilineSwitchValue(props.multilineSwitchInitValue!);
@@ -710,7 +710,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         XUtils.reloadIfNewVersion();
     }
 
-    const setupExpandedRows = (findResult: FindResult, multilineSwitchValue: XMultilineRenderType) => {
+    const setupExpandedRows = (findResult: FindResult, multilineSwitchValue: MultilineRenderType) => {
         if (props.rowExpansionTemplate) {
             const expandedRowsLocal: DataTableExpandedRows = {};
             if (findResult.rowList) {
@@ -738,9 +738,9 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 
 /*
     const saveTableState = (findParam: FindParam) => {
-        saveValueIntoStorage(XStateKeySuffix.filters, findParam.filters);
-        saveValueIntoStorage(XStateKeySuffix.ftsInputValue, ftsInputValue);
-        saveValueIntoStorage(XStateKeySuffix.optionalCustomFilter, optionalCustomFilter);
+        saveValueIntoStorage(StateKeySuffix.filters, findParam.filters);
+        saveValueIntoStorage(StateKeySuffix.ftsInputValue, ftsInputValue);
+        saveValueIntoStorage(StateKeySuffix.optionalCustomFilter, optionalCustomFilter);
     }
 */
 
@@ -757,7 +757,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         return xFullTextSearch;
     }
 
-    const createXCustomFilterItems = (customFilterItems: XCustomFilterItem[] | undefined, optionalCustomFilter: XOptionalCustomFilter | undefined): XCustomFilterItem[] | undefined => {
+    const createXCustomFilterItems = (customFilterItems: XCustomFilterItem[] | undefined, optionalCustomFilter: OptionalCustomFilter | undefined): XCustomFilterItem[] | undefined => {
         return XUtilsCommon.filterAnd(customFilterItems, optionalCustomFilter?.filter);
     }
 
@@ -806,8 +806,8 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 
     const getFieldSetIds = (): string[] => {
         const fieldSetIds = [];
-        // warning note: props.children are used to get props of XLazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
-        const columns: XLazyColumnType[] = props.children as XLazyColumnType[];
+        // warning note: props.children are used to get props of LazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
+        const columns: LazyColumnType[] = props.children as LazyColumnType[];
         for (let column of columns) {
             if (column.props.fieldSetId) {
                 fieldSetIds.push(column.props.fieldSetId);
@@ -818,8 +818,8 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 
     const hasContentTypeHtml = (): boolean => {
 
-        const columns: XLazyColumnType[] = props.children as XLazyColumnType[];
-        return columns.some((column: XLazyColumnType) => column.props.contentType === "html");
+        const columns: LazyColumnType[] = props.children as LazyColumnType[];
+        return columns.some((column: LazyColumnType) => column.props.contentType === "html");
     }
 
     const onSelectionChange = (event: any) => {
@@ -856,7 +856,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         }
     }
 
-    const openFormForInsert: XOpenFormForInsert = (
+    const openFormForInsert: OpenFormForInsert = (
         initValues?: object,
         onSaveOrCancel?: XOnSaveOrCancelProp,
         Form?: React.ComponentType<XFormProps>,
@@ -895,7 +895,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         }
     }
 
-    const openFormForUpdate: XOpenFormForUpdate = (
+    const openFormForUpdate: OpenFormForUpdate = (
         id: number,
         onSaveOrCancel?: XOnSaveOrCancelProp,
         Form?: React.ComponentType<XFormProps>,
@@ -994,11 +994,11 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         const findResult = await findByFilter(findParam);
         //setLoading(false);
 
-        const exportParams: XExportParams = createExportParams(fields, findResult.totalRecords!);
+        const exportParams: ExportParams = createExportParams(fields, findResult.totalRecords!);
         setExportRowsDialogState({dialogOpened: true, exportParams: exportParams});
     }
 
-    const createExportParams = (fields: string[], rowCount: number): XExportParams => {
+    const createExportParams = (fields: string[], rowCount: number): ExportParams => {
         const queryParam: LazyDataTableQueryParam = {
             filters: filtersAfterFiltering,
             fullTextSearch: createXFullTextSearch(ftsInputValueAfterFiltering),
@@ -1052,9 +1052,9 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
     // ****** vseobecne metodky pre set/get do/z filtra ********
     // zatial funguje len pre simple filtrovanie (filterDisplay="row")
 
-    // vseobecna specialna metodka pouzvana pri custom filtri (XLazyColumn.filterElement)
+    // vseobecna specialna metodka pouzvana pri custom filtri (LazyColumn.filterElement)
     // nepodarilo sa posunut autoFilter takym sposobom aby app programmer nemusel autoFilter nastavovat
-    const setFilterItem: XSetFilterItem = (field: string, filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData, autoFilter: boolean) => {
+    const setFilterItem: SetFilterItem = (field: string, filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData, autoFilter: boolean) => {
         filters[field] = filterItem;
         // neskusal som, ci treba aj toto klonovat ale pravdepodobne hej
         const filtersCloned: DataTableFilterMeta = {...filters};
@@ -1063,7 +1063,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         loadDataBaseIfAutoFilter(filtersCloned, autoFilter);
     }
 
-    // vseobecna specialna metodka pouzvana pri custom filtri (XLazyColumn.filterElement)
+    // vseobecna specialna metodka pouzvana pri custom filtri (LazyColumn.filterElement)
     const getFilterItem = (field: string): DataTableFilterMetaData | DataTableOperatorFilterMetaData => {
         return filters[field];
     }
@@ -1140,8 +1140,8 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         return filterValue !== null ? filterValue[index] : null;
     }
 
-    const getBetweenFilter = (columnBetweenFilter: XBetweenFilterProp | "noBetween", tableBetweenFilter: XBetweenFilterProp): XBetweenFilterProp => {
-        let betweenFilter: XBetweenFilterProp = undefined;
+    const getBetweenFilter = (columnBetweenFilter: BetweenFilterProp | "noBetween", tableBetweenFilter: BetweenFilterProp): BetweenFilterProp => {
+        let betweenFilter: BetweenFilterProp = undefined;
         // columnBetweenFilter has higher prio than tableBetweenFilter
         if (columnBetweenFilter !== undefined) {
             if (columnBetweenFilter === "row" || columnBetweenFilter === "column") {
@@ -1167,7 +1167,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
     }
 
 
-    const valueAsUI = (value: any, xField: XField, contentType: XContentType | undefined, fieldSetId: string | undefined): React.ReactNode => {
+    const valueAsUI = (value: any, xField: XField, contentType: ContentType | undefined, fieldSetId: string | undefined): React.ReactNode => {
         let valueResult: React.ReactNode;
         if (xField.type === "boolean") {
             // TODO - efektivnejsie by bolo renderovat len prislusne ikonky
@@ -1181,17 +1181,17 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         else {
             if (contentType === "html") {
                 // value should be always string (xField.type === "string")
-                valueResult = <XHtmlRenderer htmlValue={value} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
+                valueResult = <HtmlRenderer htmlValue={value} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
             }
             else {
                 // ine typy - convertValue vrati string
                 // mame zapnutu konverziu fromModel, lebo z json-u nam prichadzaju objekty typu string (napr. pri datumoch)
                 valueResult = convertValue(xField, value, true, AsUIType.Form);
-                // ak mame viacriadkovy text a multilineSwitch nastaveny na viac ako 1 riadok (defaultne je nastaveny na "allLines") pouzijeme XMultilineRenderer
+                // ak mame viacriadkovy text a multilineSwitch nastaveny na viac ako 1 riadok (defaultne je nastaveny na "allLines") pouzijeme MultilineRenderer
                 if (contentType === "multiline" && multilineSwitchValue !== "singleLine") {
                     if (xField.type === "string" && typeof valueResult === "string" && valueResult) {
                         const lines: string[] = valueResult.split(XUtilsCommon.newLine);
-                        valueResult = <XMultilineRenderer valueList={lines} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!} multilineContent={true}/>;
+                        valueResult = <MultilineRenderer valueList={lines} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!} multilineContent={true}/>;
                     }
                 }
             }
@@ -1199,12 +1199,12 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
         return valueResult;
     }
 
-    const bodyTemplate = (columnProps: XLazyColumnProps, rowData: any, xField: XField): React.ReactNode => {
+    const bodyTemplate = (columnProps: LazyColumnProps, rowData: any, xField: XField): React.ReactNode => {
         let bodyValue: React.ReactNode;
         const rowDataValue: any | any[] = XUtilsCommon.getValueOrValueListByPath(rowData, columnProps.field);
         if (Array.isArray(rowDataValue)) {
             const elemList: React.ReactNode[] = rowDataValue.map((value: any) => valueAsUI(value, xField, columnProps.contentType, columnProps.fieldSetId));
-            bodyValue = <XMultilineRenderer valueList={elemList} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
+            bodyValue = <MultilineRenderer valueList={elemList} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
         }
         else {
             bodyValue = valueAsUI(rowDataValue, xField, columnProps.contentType, columnProps.fieldSetId);
@@ -1352,12 +1352,12 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 
     // pre lepsiu citatelnost vytvarame stlpce uz tu
     const columnElemList: JSX.Element[] = React.Children.map(
-        props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: XLazyColumnProps}).props.columnViewStatus) !== XViewStatus.Hidden),
+        props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: LazyColumnProps}).props.columnViewStatus) !== XViewStatus.Hidden),
         function(child) {
             // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
             // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
             // (vzdy musime robit manipulacie so stlpcom, lebo potrebujeme pridat filter={true} sortable={true}
-            const childColumn = child as any as {props: XLazyColumnProps}; // nevedel som to krajsie...
+            const childColumn = child as any as {props: LazyColumnProps}; // nevedel som to krajsie...
             const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, childColumn.props.field);
 
             // *********** header ***********
@@ -1382,7 +1382,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
             }
 
             // *********** filterElement ***********
-            let betweenFilter: XBetweenFilterProp = undefined;
+            let betweenFilter: BetweenFilterProp = undefined;
             let filterElement:  React.ReactNode | ((options: ColumnFilterElementTemplateOptions) => React.ReactNode) | null = null;
             if (childColumn.props.filterElement !== undefined) {
                 // if we use matchModeLabel and this special match mode is chosen then we use custom filter element
@@ -1400,7 +1400,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
                     let assocField: string | undefined = undefined; // path to manyToOne assoc
                     let displayField: string | string[] | undefined = undefined; // field/fields displayed in autocomplete (can be path)
                     // if childColumn.props.autoComplete = true, then autoComplete = undefined and default autocomplete is created
-                    const autoComplete: XAutoCompleteInFilterProps | undefined = (typeof childColumn.props.autoComplete === 'object' ? childColumn.props.autoComplete : undefined);
+                    const autoComplete: AutoCompleteInFilterProps | undefined = (typeof childColumn.props.autoComplete === 'object' ? childColumn.props.autoComplete : undefined);
                     if (autoComplete) {
                         if (autoComplete.field) {
                             displayField = autoComplete.field;
@@ -1409,7 +1409,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
                         if (autoComplete.assocField) {
                             // check - autoComplete.assocField must be prefix (part) of childColumn.props.field
                             if (!childColumn.props.field.startsWith(autoComplete.assocField + ".")) {
-                                throw `XLazyColumn with field "${childColumn.props.field}": autoComplete.assocField "${autoComplete.assocField}" is not prefix of the field`;
+                                throw `LazyColumn with field "${childColumn.props.field}": autoComplete.assocField "${autoComplete.assocField}" is not prefix of the field`;
                             }
                             assocField = autoComplete.assocField;
                             if (displayField === undefined) {
@@ -1422,7 +1422,7 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
                         // default - take assocField/displayField from childColumn.props.field
                         const [assocFieldTemp, displayFieldTemp] = XUtilsCommon.getPathToAssocAndField(childColumn.props.field);
                         if (assocFieldTemp === null) {
-                            throw `XLazyColumn with field "${childColumn.props.field}": unexpected error - path of length >= 2 expected`;
+                            throw `LazyColumn with field "${childColumn.props.field}": unexpected error - path of length >= 2 expected`;
                         }
                         assocField = assocFieldTemp;
                         if (displayField === undefined) {
@@ -1630,8 +1630,8 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
                 {ftsInputValue ? <XFtsInput value={ftsInputValue} onChange={(value: XFtsInputValue) => setFtsInputValue(value)}/> : null}
                 {props.showFilterButtons ? <XButton key="filter" icon={isMobile ? "pi pi-search" : undefined} label={!isMobile ? xLocaleOption('filter') : undefined} onClick={onClickFilter} /> : null}
                 {props.showFilterButtons ? <XButton key="resetTable" icon={isMobile ? "pi pi-ban" : undefined} label={!isMobile ? xLocaleOption('resetTable') : undefined} onClick={onClickResetTable} /> : null}
-                {props.optionalCustomFilters ? <XOcfDropdown optionalCustomFilters={props.optionalCustomFilters} value={optionalCustomFilter} onChange={(value: XOptionalCustomFilter | undefined) => setOptionalCustomFilter(value)} className="m-1"/> : null}
-                {props.multilineSwitch ? <XMultilineSwitch value={multilineSwitchValue} onChange={(switchValue: XMultilineRenderType) => {
+                {props.optionalCustomFilters ? <OcfDropdown optionalCustomFilters={props.optionalCustomFilters} value={optionalCustomFilter} onChange={(value: OptionalCustomFilter | undefined) => setOptionalCustomFilter(value)} className="m-1"/> : null}
+                {props.multilineSwitch ? <MultilineSwitch value={multilineSwitchValue} onChange={(switchValue: MultilineRenderType) => {
                         setMultilineSwitchValue(switchValue);
                         setupExpandedRows(value, switchValue);
                     }} className="m-1"/> : null}
@@ -1660,11 +1660,11 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
                 {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <XButton key="removeRow" icon="pi pi-times" label={xLocaleOption('removeRow')} onClick={onClickRemoveRow}/> : null}
                 {exportRows ? <XButton key="exportRows" icon="pi pi-file-export" label={xLocaleOption('exportRows')} onClick={onClickExport} /> : null}
                 {props.docTemplates && !isMobile && props.searchBrowseParams === undefined ? <XDocTemplateButton key="docTemplates" entity={props.entity} rowId={selectedRow ? selectedRow[dataKey] : undefined} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/> : null}
-                {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: XAppButtonForRow) => <XButton key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}
+                {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: AppButtonForRow) => <XButton key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}
                 {props.searchBrowseParams === undefined ? props.appButtons : null}
                 {props.searchBrowseParams !== undefined ? <XButton key="choose" label={xLocaleOption('chooseRow')} onClick={onClickChoose}/> : null}
                 {editFormExists ? <XFormDialog key="formDialog" dialogState={formDialogState} entity={props.entity}/> : null}
-                {exportRows ? <XExportRowsDialog key="exportRowsDialog" dialogState={exportRowsDialogState} hideDialog={() => setExportRowsDialogState({dialogOpened: false})}/> : null}
+                {exportRows ? <ExportRowsDialog key="exportRowsDialog" dialogState={exportRowsDialogState} hideDialog={() => setExportRowsDialogState({dialogOpened: false})}/> : null}
             </div>
             {hasContentTypeHtml() ? <Editor style={{display: 'none'}} showHeader={false}/> : null /* we want to import css if needed (<style type="text/css" data-primereact-style-id="editor">) */}
         </div>
@@ -1678,12 +1678,12 @@ export const XLazyDataTable = forwardRef<XLazyDataTableRef, XLazyDataTableProps>
 // remark2: filter value transfer "custom filter input" -> "filters" is (temporary?) only one way, if some third party changes filter value in "filters",
 // the change will be not visible in custom filter input!
 // remark3: autoFilter is just copy of column property autoFilter, should by send to setFilterItem as last param but the constant true/false can be also sent
-export type XGetFilterItem = (field: string) => DataTableFilterMetaData | DataTableOperatorFilterMetaData;
-export type XSetFilterItem = (field: string, filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData, autoFilter: boolean) => void;
-export type XFilterElementParams = {getFilterItem: XGetFilterItem; setFilterItem: XSetFilterItem; options: ColumnFilterElementTemplateOptions; autoFilter: boolean};
-export type XFilterElementProp = {element: (params: XFilterElementParams) => React.ReactNode; matchModeLabel?: string};
+export type GetFilterItem = (field: string) => DataTableFilterMetaData | DataTableOperatorFilterMetaData;
+export type SetFilterItem = (field: string, filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData, autoFilter: boolean) => void;
+export type FilterElementParams = {getFilterItem: GetFilterItem; setFilterItem: SetFilterItem; options: ColumnFilterElementTemplateOptions; autoFilter: boolean};
+export type FilterElementProp = {element: (params: FilterElementParams) => React.ReactNode; matchModeLabel?: string};
 
-export type XAutoCompleteInFilterProps = {
+export type AutoCompleteInFilterProps = {
     // copy of some props in XAutoComplete (?)
     assocField?: string; // overrides default splitting of field prop (example: if field is "assocA.assocB.attrC", default assocField is "assocA.assocB", using this prop we can set assocField="assocA")
     filter?: XCustomFilter;
@@ -1694,7 +1694,7 @@ export type XAutoCompleteInFilterProps = {
     field?: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     inputClassName?: string;
-    SearchBrowse?: React.ComponentType<XSearchBrowseProps>; // browse for searching row after clicking on search button
+    SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
     ValueForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
     valueFormElement?: React.ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
@@ -1702,39 +1702,39 @@ export type XAutoCompleteInFilterProps = {
     scrollHeight?: string; // Maximum height of the suggestions panel.
 };
 
-export type XContentType = "multiline" | "html" | undefined;
+export type ContentType = "multiline" | "html" | undefined;
 
-export interface XLazyColumnProps {
+export interface LazyColumnProps {
     field: string;
     header?: any;
     align?: "left" | "center" | "right";
     dropdownInFilter?: boolean;
     dropdownFilter?: XCustomFilter;
     dropdownSortField?: string;
-    autoComplete?: XAutoCompleteInFilterProps | true; // if autoComplete = true, the autocomplete is created automatically according to "field"
+    autoComplete?: AutoCompleteInFilterProps | true; // if autoComplete = true, the autocomplete is created automatically according to "field"
     //autoCompleteEnabled: true | false | "forStringOnly"; // default is "forStringOnly" (autocomplete enabled only on attributes of string type)
     showFilterMenu?: boolean;
-    betweenFilter?: XBetweenFilterProp | "noBetween"; // creates 2 inputs from to, only for type date/datetime/decimal/number implemented, "row"/"column" - position of inputs from to
+    betweenFilter?: BetweenFilterProp | "noBetween"; // creates 2 inputs from to, only for type date/datetime/decimal/number implemented, "row"/"column" - position of inputs from to
     autoFilter: boolean; // if true, filtering starts immediately after setting filter value (user does not have to click the button Filter) (default false)
     width?: string; // for example 150px or 10rem or 10% (value 10 means 10rem)
-    contentType?: XContentType; // multiline (output from InputTextarea) - wraps the content; html (output from Editor) - for rendering raw html
+    contentType?: ContentType; // multiline (output from InputTextarea) - wraps the content; html (output from Editor) - for rendering raw html
     fieldSetId?: string; // in case that we render json attribute (output from XFieldSet), here is id of XFieldSet (saved in x_field_set_meta), fieldSet metadata is needed to get labels of field set attributes
                         // note: better solution would be take fieldSetId from json attribute from model, but we would have to create decorator for this purpose...
     aggregateType?: XAggregateFunction;
     columnViewStatus: XViewStatusOrBoolean; // aby sme mohli mat Hidden stlpec (nedarilo sa mi priamo v kode "o-if-ovat" stlpec), zatial netreba funkciu, vola sa columnViewStatus lebo napr. v Edit tabulke moze byt viewStatus na row urovni
-    filterElement?: XFilterElementProp;
+    filterElement?: FilterElementProp;
     body?: React.ReactNode | ((data: any, options: ColumnBodyOptions) => React.ReactNode); // the same type as type of property Column.body
 }
 
-export type XLazyColumnType = {props: XLazyColumnProps};
+export type LazyColumnType = {props: LazyColumnProps};
 
-// TODO - XLazyColumn neni idealny nazov, lepsi je XColumn (ale zatial nechame XLazyColumn)
-export const XLazyColumn = (props: XLazyColumnProps) => {
+// TODO - LazyColumn neni idealny nazov, lepsi je Column (ale zatial nechame LazyColumn)
+export const LazyColumn = (props: LazyColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-XLazyColumn.defaultProps = {
+LazyColumn.defaultProps = {
     //autoCompleteEnabled: "forStringOnly",
     columnViewStatus: true,  // XViewStatus.ReadWrite
     autoFilter: false

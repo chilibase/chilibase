@@ -14,7 +14,7 @@ import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {XFormDialog, XFormDialogState} from "./XFormDialog";
 import {XFormProps} from "./XFormBase";
 import {XSearchBrowseDialog, XSearchBrowseDialogState} from "./XSearchBrowseDialog";
-import {XSearchBrowseProps} from "./XLazyDataTable/XLazyDataTable";
+import {SearchBrowseProps} from "./lazy-data-table";
 
 // helper
 interface XButtonItem {
@@ -43,7 +43,7 @@ export interface XAutoCompleteBaseProps {
     field: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     splitQueryValue: boolean; // ak true, tak splituje natypovanu hodnotu podla space a vsetky parcialne hodnoty sa musia vyskytovat v danom suggestion (default je true)
-    SearchBrowse?: React.ComponentType<XSearchBrowseProps>; // browse for searching row after clicking on search button
+    SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
     ValueForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
     valueFormElement?: React.ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)

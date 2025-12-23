@@ -1,7 +1,7 @@
 import React from "react";
 import {Dialog} from "primereact/dialog";
 import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {XSearchBrowseProps} from "./XLazyDataTable/XLazyDataTable";
+import {SearchBrowseProps} from "./lazy-data-table";
 
 export interface XSearchBrowseDialogState {
     opened: boolean;
@@ -10,7 +10,7 @@ export interface XSearchBrowseDialogState {
 
 export const XSearchBrowseDialog = (props: {
     dialogState: XSearchBrowseDialogState;
-    SearchBrowse?: React.ComponentType<XSearchBrowseProps>;
+    SearchBrowse?: React.ComponentType<SearchBrowseProps>;
     searchBrowseElement?: React.ReactElement;
     onHide: () => void;
 }) => {
@@ -28,7 +28,7 @@ export const XSearchBrowseDialog = (props: {
                     // we use JSX element (not recommended way, but we can pass (custom) props at app level)
                     browse = React.cloneElement(props.searchBrowseElement!, {
                         searchBrowseParams: props.dialogState.searchBrowseParams,
-                    } satisfies XSearchBrowseProps);
+                    } satisfies SearchBrowseProps);
                 }
             }
         }

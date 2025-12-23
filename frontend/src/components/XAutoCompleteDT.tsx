@@ -8,13 +8,13 @@ import {XTableFieldFilterProp} from "./XFormDataTable2";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {DataTableSortMeta} from "primereact/datatable";
 import {XFormProps} from "./XFormBase";
-import {XSearchBrowseProps} from "./XLazyDataTable/XLazyDataTable";
+import {SearchBrowseProps} from "./lazy-data-table";
 
 export interface XAutoCompleteDTProps extends XFormComponentDTProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
-    SearchBrowse?: React.ComponentType<XSearchBrowseProps>; // browse for searching row after clicking on search button
+    SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
     AssocForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)

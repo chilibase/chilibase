@@ -1,7 +1,7 @@
 import {XField} from "../serverApi/XEntityMetadata";
 import {XUtils} from "./XUtils";
 import {XBrowseMeta, XBrowseMetaMap} from "../serverApi/XBrowseMetadata";
-import {XBetweenFilterProp} from "./XLazyDataTable/XLazyDataTable";
+import {BetweenFilterProp} from "./lazy-data-table";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 
 // idelany nazov: UtilsEntityMetadata - ale strasne dlhy
@@ -73,7 +73,7 @@ export class XUtilsMetadata {
     //static CHAR_SIZE: number = 0.57; // 0.57rem (8px)
     static CHAR_SIZE: number = 0.5; // 0.5rem (7px) - skusime
 
-    static computeColumnWidth(xField: XField, betweenFilter: XBetweenFilterProp, filterMenuInFilterRow: boolean, formColumnType: string | undefined, header: string | undefined, sortableButtonInHeader: boolean, filterButtonInHeader: boolean): string | undefined {
+    static computeColumnWidth(xField: XField, betweenFilter: BetweenFilterProp, filterMenuInFilterRow: boolean, formColumnType: string | undefined, header: string | undefined, sortableButtonInHeader: boolean, filterButtonInHeader: boolean): string | undefined {
         let width: number | undefined;
         if (formColumnType === undefined) {
             // lazy datatable (no inputs, no buttons, only text and padding)

@@ -65,10 +65,7 @@
     "./XFormRow": "./lib/components/XFormRowCol/XFormRow.js",
     "./XFormRowCol": "./lib/components/XFormRowCol/XFormRowCol.js",
 
-    "./XExportRowsDialog": "./lib/components/XLazyDataTable/XExportRowsDialog.js",
-    "./XHtmlRenderer": "./lib/components/XLazyDataTable/XHtmlRenderer.js",
-    "./XLazyDataTable": "./lib/components/XLazyDataTable/XLazyDataTable.js",
-    "./XMultilineRenderer": "./lib/components/XLazyDataTable/XMultilineRenderer.js",
+    "./lazy-data-table": "./lib/components/lazy-data-table/index.js",
 
     "./useXStateLocal": "./lib/components/useXStateLocal.js",
     "./useXStateSession": "./lib/components/useXStateSession.js",

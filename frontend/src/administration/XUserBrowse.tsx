@@ -1,14 +1,14 @@
 import {
-    XLazyColumn,
-    XLazyDataTable,
-    type XSearchBrowseProps
-} from "../components/XLazyDataTable/XLazyDataTable";
+    LazyColumn,
+    LazyDataTable,
+    type SearchBrowseProps
+} from "../components/lazy-data-table";
 import React from "react";
 import {XUser} from "../serverApi/XUser";
 import {XUserForm} from "./XUserForm";
 import {XUtils} from "../components/XUtils";
 
-export const XUserBrowse = (props: XSearchBrowseProps) => {
+export const XUserBrowse = (props: SearchBrowseProps) => {
 
     const onRemoveRow = async (selectedRow: XUser): Promise<boolean> => {
         if (selectedRow.username === XUtils.getUsername()) {
@@ -24,14 +24,14 @@ export const XUserBrowse = (props: XSearchBrowseProps) => {
     }
 
     return (
-        <XLazyDataTable entity="XUser" label="Users" rows={30}
+        <LazyDataTable entity="XUser" label="Users" rows={30}
                         EditForm={XUserForm} removeRow={onRemoveRow}
                         searchBrowseParams={props.searchBrowseParams}>
-            <XLazyColumn field="id" header="ID"/>
-            <XLazyColumn field="username" header="Username" width="17rem"/>
-            <XLazyColumn field="name" header="Name" width="17rem"/>
-            <XLazyColumn field="enabled" header="Enabled"/>
-            <XLazyColumn field="admin" header="Admin"/>
-        </XLazyDataTable>
+            <LazyColumn field="id" header="ID"/>
+            <LazyColumn field="username" header="Username" width="17rem"/>
+            <LazyColumn field="name" header="Name" width="17rem"/>
+            <LazyColumn field="enabled" header="Enabled"/>
+            <LazyColumn field="admin" header="Admin"/>
+        </LazyDataTable>
     );
 }
