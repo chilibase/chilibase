@@ -2,14 +2,14 @@ import React, {useState} from "react";
 import {
     stringAsUI,
     stringFromUI
-} from "../serverApi/XUtilsConversions";
-import {XUtils} from "./XUtils";
+} from "../../serverApi/XUtilsConversions";
+import {XUtils} from "../XUtils";
 import {InputText} from "primereact/inputtext";
 
 // koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
 // used for filter element in XLazyDataTable - if there was many rows/columns in datatable, typing in filter was slow (if setState was called after every character change)
 
-export const XInputTextBase = (props: {
+export const InputTextBase = (props: {
     id?: string;
     value: string | null;
     onChange: (value: string | null) => void;
@@ -69,5 +69,6 @@ export const XInputTextBase = (props: {
     );
 }
 
-XInputTextBase.defaultProps = {
+InputTextBase.defaultProps = {
 };
+

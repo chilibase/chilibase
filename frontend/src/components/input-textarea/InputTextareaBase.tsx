@@ -1,16 +1,16 @@
 import React, {Component} from "react";
-import {stringAsUI, stringFromUI} from "../serverApi/XUtilsConversions";
-import {XUtils} from "./XUtils";
+import {stringAsUI, stringFromUI} from "../../serverApi/XUtilsConversions";
+import {XUtils} from "../XUtils";
 import {InputTextarea} from "primereact/inputtextarea";
 
 // koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
 // pri velkych formularoch je totiz volanie zmeny stavu this.setState({object: this.state.object, errorMap: this.state.errorMap}); pomale
 
-// poznamka: XInputTextareaBase sme prerobili z functional component na class component, lebo sme potrebovali funkciu autoResize(),
+// poznamka: InputTextareaBase sme prerobili z functional component na class component, lebo sme potrebovali funkciu autoResize(),
 // ktoru je mozne volat z parent componentov cez ref (functional component neumoznuje poskytovat ref, lebo nema instanciu
 // (ref sa da len forwardovat cez forwardRef, co je komplikovane ak chceme mat aj funkciu autoResize()))
 
-export interface XInputTextareaBaseProps {
+export interface InputTextareaBaseProps {
     id?: string;
     value: string | null;
     onChange: (value: string | null) => void;
@@ -26,7 +26,7 @@ export interface XInputTextareaBaseProps {
     placeholder?: string;
 }
 
-export class XInputTextareaBase extends Component<XInputTextareaBaseProps> {
+export class InputTextareaBase extends Component<InputTextareaBaseProps> {
 
     inputTextareaRef: any;
 
@@ -35,7 +35,7 @@ export class XInputTextareaBase extends Component<XInputTextareaBaseProps> {
         inputValueState: string | undefined; // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
     };
 
-    constructor(props: XInputTextareaBaseProps) {
+    constructor(props: InputTextareaBaseProps) {
         super(props);
 
         this.inputTextareaRef = React.createRef();
@@ -74,7 +74,7 @@ export class XInputTextareaBase extends Component<XInputTextareaBaseProps> {
         return inputValue;
     }
 
-    // call this method to autoresize textarea after setting the content of XInputTextareaBase via onChange of some other attribute (e.g. onChangeClient)
+    // call this method to autoresize textarea after setting the content of InputTextareaBase via onChange of some other attribute (e.g. onChangeClient)
     // must be called as callback (param) of the method XFormBase.setStateXForm
     autoResize() {
         // code from ChatGPT
@@ -95,3 +95,4 @@ export class XInputTextareaBase extends Component<XInputTextareaBaseProps> {
         );
     }
 }
+

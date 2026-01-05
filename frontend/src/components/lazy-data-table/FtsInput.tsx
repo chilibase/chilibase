@@ -1,16 +1,16 @@
 import React from "react";
-import {XInputTextBase} from "./XInputTextBase";
-import {XUtils} from "./XUtils";
-import {xLocaleOption} from "./XLocale";
+import {InputTextBase} from "../input-text";
+import {XUtils} from "../XUtils";
+import {xLocaleOption} from "../XLocale";
 
-// typ XFtsInputValue reprezentuje hodnoty ktore sa daju menit touto komponentou
+// typ FtsInputValue reprezentuje hodnoty ktore sa daju menit touto komponentou
 // tento typ ciastocne zodpoveda typu XFullTextSearch pouzivanom v api
-export interface XFtsInputValue {
+export interface FtsInputValue {
     value: string | null; // null znamena prazdny input, neaplikuje sa full text search podmienka
     matchMode: 'startsWith' | 'contains' | 'endsWith' | 'equals'; // zatial tieto (podmnozina z DataTableFilterMetaData), default bude 'contains'
 }
 
-export const XFtsInput = (props: {value: XFtsInputValue; onChange: (value: XFtsInputValue) => void;}) => {
+export const FtsInput = (props: {value: FtsInputValue; onChange: (value: FtsInputValue) => void;}) => {
 
     const onChange = (value: string | null) => {
         props.value.value = value;
@@ -18,9 +18,10 @@ export const XFtsInput = (props: {value: XFtsInputValue; onChange: (value: XFtsI
     }
 
     // TODO - pridat input na zmenu matchMode
-    // we use XInputTextBase - we save onChange calls
+    // we use InputTextBase - we save onChange calls
     return (
-        <XInputTextBase value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: XUtils.isMobile() ? '7rem' : '17rem'}} className="m-1"
+        <InputTextBase value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: XUtils.isMobile() ? '7rem' : '17rem'}} className="m-1"
         placeholder={xLocaleOption('searchInAllFields')}/>
     );
 }
+

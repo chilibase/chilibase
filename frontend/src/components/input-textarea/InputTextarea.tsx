@@ -1,10 +1,10 @@
 import React from "react";
-import {XInput, XInputProps} from "./XInput";
-import {XUtils} from "./XUtils";
-import {XInputTextareaBase} from "./XInputTextareaBase";
+import {XInput, XInputProps} from "../XInput";
+import {XUtils} from "../XUtils";
+import {InputTextareaBase} from "./InputTextareaBase";
 import {Tooltip} from "primereact/tooltip";
 
-export interface XInputTextareaProps extends XInputProps<string> {
+export interface InputTextareaProps extends XInputProps<string> {
     rows?: number;
     cols?: number | "full"; // full - maximalna sirka (width:100%)
     labelOnTop?: boolean;
@@ -12,19 +12,19 @@ export interface XInputTextareaProps extends XInputProps<string> {
     fieldStyle?: React.CSSProperties; // zatial sem, mozno v buducnosti posunieme do superclass
 }
 
-export class XInputTextarea extends XInput<string, XInputTextareaProps> {
+export class InputTextarea extends XInput<string, InputTextareaProps> {
 
     public static defaultProps = {
         cols: "full"
     };
 
-    xInputTextareaBaseRef: any;
+    inputTextareaBaseRef: any;
     labelOnTop: boolean;
 
-    constructor(props: XInputTextareaProps) {
+    constructor(props: InputTextareaProps) {
         super(props);
 
-        this.xInputTextareaBaseRef = React.createRef();
+        this.inputTextareaBaseRef = React.createRef();
 
         if (props.labelOnTop !== undefined) {
             this.labelOnTop = props.labelOnTop;
@@ -50,8 +50,8 @@ export class XInputTextarea extends XInput<string, XInputTextareaProps> {
 
     // api method - can be called through "ref" from parent if needed to adjust the height of the input textarea according to the (changed) content
     autoResize() {
-        if (this.xInputTextareaBaseRef.current) {
-            this.xInputTextareaBaseRef.current.autoResize();
+        if (this.inputTextareaBaseRef.current) {
+            this.inputTextareaBaseRef.current.autoResize();
         }
     }
 
@@ -100,7 +100,7 @@ export class XInputTextarea extends XInput<string, XInputTextareaProps> {
                 {label !== undefined ? <label id={labelElemId} htmlFor={this.props.field} className={!this.labelOnTop ? 'col-fixed' : undefined} style={labelStyle}>{label}</label> : null}
                 {labelTooltip ? <Tooltip target={`#${labelElemId}`} content={labelTooltip}/> : null}
                 {this.props.form.state.object ?
-                    <XInputTextareaBase ref={this.xInputTextareaBaseRef} id={this.props.field} value={value} onChange={this.onValueChange} readOnly={this.isReadOnly()}
+                    <InputTextareaBase ref={this.inputTextareaBaseRef} id={this.props.field} value={value} onChange={this.onValueChange} readOnly={this.isReadOnly()}
                                maxLength={this.xField.length} style={inputStyle} className={this.props.inputClassName} rows={this.props.rows} cols={cols}
                                autoResize={this.props.autoResize} error={this.getError()} tooltip={inputTooltip} placeholder={this.props.placeholder ?? this.props.desc}/>
                     : null
@@ -109,3 +109,4 @@ export class XInputTextarea extends XInput<string, XInputTextareaProps> {
         );
     }
 }
+

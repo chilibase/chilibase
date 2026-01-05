@@ -40,7 +40,7 @@ import {XFormProps, XOnSaveOrCancelProp} from "../XFormBase";
 import {XCalendar} from "../XCalendar";
 import {XInputDecimalBase} from "../XInputDecimalBase";
 import {prLocaleOption, xLocaleOption} from "../XLocale";
-import {XFtsInput, XFtsInputValue} from "../XFtsInput";
+import {FtsInput, FtsInputValue} from "./FtsInput";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
@@ -51,7 +51,7 @@ import {HtmlRenderer} from "./HtmlRenderer";
 import {OcfDropdown} from "./OcfDropdown";
 import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../XFieldSet/XFieldSetBase";
 import {AutoCompleteBase} from "../auto-complete";
-import {XInputTextBase} from "../XInputTextBase";
+import {InputTextBase} from "../input-text";
 import {useXStateStorage} from "../useXStateStorage";
 import {useXStateStorageBase} from "../useXStateStorageBase";
 import * as _ from "lodash";
@@ -376,7 +376,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return filterItem;
     }
 
-    const createInitFtsInputValue = (): XFtsInputValue => {
+    const createInitFtsInputValue = (): FtsInputValue => {
         return {value: null, matchMode: "contains"};
     }
 
@@ -439,8 +439,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
     const [filters, setFilters] = useXStateStorageBase<DataTableFilterMeta>(props.stateStorage!, getStateKey(StateKeySuffix.filters), filtersInitialStateFunction); // filtrovanie na "controlled manner" (moze sa sem nainicializovat nejaka hodnota)
     const matchModeChangeFieldRef = useRef<string | null>(null);
-    const initFtsInputValue: XFtsInputValue | undefined = props.fullTextSearch ? createInitFtsInputValue() : undefined;
-    const [ftsInputValue, setFtsInputValue] = useXStateStorage<XFtsInputValue | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.ftsInputValue), initFtsInputValue);
+    const initFtsInputValue: FtsInputValue | undefined = props.fullTextSearch ? createInitFtsInputValue() : undefined;
+    const [ftsInputValue, setFtsInputValue] = useXStateStorage<FtsInputValue | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.ftsInputValue), initFtsInputValue);
     const [optionalCustomFilter, setOptionalCustomFilter] = useXStateStorage<OptionalCustomFilter | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.optionalCustomFilter), undefined);
     const [multilineSwitchValue, setMultilineSwitchValue] = props.multilineSwitchValue ?? useXStateStorage<MultilineRenderType>(props.stateStorage!, getStateKey(StateKeySuffix.multilineSwitchValue), props.multilineSwitchInitValue!);
     const [multiSortMeta, setMultiSortMeta] = useXStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.multiSortMeta), XUtilsCommon.createMultiSortMeta(props.sortField));
@@ -452,7 +452,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const [exportRowsDialogState, setExportRowsDialogState] = useState<ExportRowsDialogState>({dialogOpened: false});
     //const [exportRowsDialogRowCount, setExportRowsDialogRowCount] = useState<number>(); // param pre dialog
     const [filtersAfterFiltering, setFiltersAfterFiltering] = useState<DataTableFilterMeta>(filters); // sem si odkladame stav filtra po kliknuti na button Filter (chceme exportovat presne to co vidno vyfiltrovane)
-    const [ftsInputValueAfterFiltering, setFtsInputValueAfterFiltering] = useState<XFtsInputValue | undefined>(ftsInputValue); // tak isto ako filtersAfterFiltering
+    const [ftsInputValueAfterFiltering, setFtsInputValueAfterFiltering] = useState<FtsInputValue | undefined>(ftsInputValue); // tak isto ako filtersAfterFiltering
     const [optionalCustomFilterAfterFiltering, setOptionalCustomFilterAfterFiltering] = useState<OptionalCustomFilter | undefined>(optionalCustomFilter); // tak isto ako filtersAfterFiltering
     const [formDialogState, setFormDialogState] = useState<XFormDialogState>({opened: false});
 
@@ -619,7 +619,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         const filtersLocal: DataTableFilterMeta = createFiltersInit();
         setFilters(filtersLocal);
 
-        const ftsInputValueLocal: XFtsInputValue = createInitFtsInputValue();
+        const ftsInputValueLocal: FtsInputValue = createInitFtsInputValue();
         setFtsInputValue(ftsInputValueLocal);
 
         const optionalCustomFilterLocal: OptionalCustomFilter | undefined = undefined;
@@ -744,7 +744,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 */
 
-    const createXFullTextSearch = (ftsInputValue: XFtsInputValue | undefined): XFullTextSearch | undefined => {
+    const createXFullTextSearch = (ftsInputValue: FtsInputValue | undefined): XFullTextSearch | undefined => {
         let xFullTextSearch: XFullTextSearch | undefined = undefined; // default
         if (ftsInputValue && ftsInputValue.value !== null) {
             xFullTextSearch = {
@@ -1466,7 +1466,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     } else if (xField.type === "string") {
                         const stringValue: string | null = getFilterValue(childColumn.props.field);
                         const xFilterMatchMode: XFilterMatchMode = getFilterMatchMode(childColumn.props.field);
-                        filterElement = <XInputTextBase value={stringValue}
+                        filterElement = <InputTextBase value={stringValue}
                                                         onChange={(value: string | null) => setFilterValue(childColumn.props.field, value, undefined, undefined, childColumn.props.autoFilter)}
                                                         readOnly={xFilterMatchMode === XFilterMatchMode.X_IS_NOT_NULL || xFilterMatchMode === XFilterMatchMode.X_IS_NULL}/>
                     } else if (xField.type === "date" || xField.type === "datetime") {
@@ -1627,7 +1627,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             <div className="flex justify-content-center align-items-center">
                 {props.label ? <div className="x-lazy-datatable-label" style={props.labelStyle}>{props.label}</div> : null}
                 {props.headerBodyLeft}
-                {ftsInputValue ? <XFtsInput value={ftsInputValue} onChange={(value: XFtsInputValue) => setFtsInputValue(value)}/> : null}
+                {ftsInputValue ? <FtsInput value={ftsInputValue} onChange={(value: FtsInputValue) => setFtsInputValue(value)}/> : null}
                 {props.showFilterButtons ? <XButton key="filter" icon={isMobile ? "pi pi-search" : undefined} label={!isMobile ? xLocaleOption('filter') : undefined} onClick={onClickFilter} /> : null}
                 {props.showFilterButtons ? <XButton key="resetTable" icon={isMobile ? "pi pi-ban" : undefined} label={!isMobile ? xLocaleOption('resetTable') : undefined} onClick={onClickResetTable} /> : null}
                 {props.optionalCustomFilters ? <OcfDropdown optionalCustomFilters={props.optionalCustomFilters} value={optionalCustomFilter} onChange={(value: OptionalCustomFilter | undefined) => setOptionalCustomFilter(value)} className="m-1"/> : null}

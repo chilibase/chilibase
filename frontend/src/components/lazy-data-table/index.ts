@@ -4,6 +4,7 @@ export * from "./MultilineSwitch";
 export * from "./MultilineRenderer";
 export * from "./HtmlRenderer";
 export * from "./OcfDropdown";
+export * from "./FtsInput";
 
 /** @deprecated */
 export {LazyDataTable as XLazyDataTable} from "./LazyDataTable";
@@ -30,9 +31,11 @@ export type {AutoCompleteInFilterProps as XAutoCompleteInFilterProps} from "./La
 export type {ContentType as XContentType} from "./LazyDataTable";
 export type {ExportParams as XExportParams} from "./ExportRowsDialog";
 export type {ExportRowsDialogState as XExportRowsDialogState} from "./ExportRowsDialog";
+export type {FtsInputValue as XFtsInputValue} from "./FtsInput";
 export {ExportRowsDialog as XExportRowsDialog} from "./ExportRowsDialog";
 export {MultilineSwitch as XMultilineSwitch} from "./MultilineSwitch";
 export {MultilineRenderer as XMultilineRenderer} from "./MultilineRenderer";
 export {HtmlRenderer as XHtmlRenderer} from "./HtmlRenderer";
 export {OcfDropdown as XOcfDropdown} from "./OcfDropdown";
+export {FtsInput as XFtsInput} from "./FtsInput";
 

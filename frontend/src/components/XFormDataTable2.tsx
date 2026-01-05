@@ -10,7 +10,7 @@ import {
 } from "primereact/datatable";
 import {Column, ColumnBodyOptions} from "primereact/column";
 import {XButton} from "./XButton";
-import {XInputTextDT} from "./XInputTextDT";
+import {InputTextDT} from "./input-text";
 import {XSearchButtonDT} from "./XSearchButtonDT";
 import {XAssoc, XEntity, XField} from "../serverApi/XEntityMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
@@ -34,7 +34,7 @@ import {xLocaleOption} from "./XLocale";
 import {XInputIntervalDT} from "./XInputIntervalDT";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {SearchBrowseProps} from "./lazy-data-table";
-import {XInputTextareaDT} from "./XInputTextareaDT";
+import {InputTextareaDT} from "./input-textarea";
 import {SuggestionsLoadProp} from "./auto-complete";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v XFormDataTable2)
@@ -428,7 +428,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
             }
             else {
                 // xField.type === "string", pripadne ine jednoduche typy
-                body = <XInputTextDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly}/>;
+                body = <InputTextDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly}/>;
             }
         }
         else if (columnProps.type === "dropdown") {
@@ -454,7 +454,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         }
         else if (columnProps.type === "textarea") {
             const columnPropsTextarea = (columnProps as XFormTextareaColumnProps);
-            body = <XInputTextareaDT form={this.props.form} entity={this.getEntity()} field={columnPropsTextarea.field} rows={columnPropsTextarea.rows} autoResize={columnPropsTextarea.autoResize} rowData={rowData} readOnly={readOnly}/>;
+            body = <InputTextareaDT form={this.props.form} entity={this.getEntity()} field={columnPropsTextarea.field} rows={columnPropsTextarea.rows} autoResize={columnPropsTextarea.autoResize} rowData={rowData} readOnly={readOnly}/>;
         }
         else {
             throw "Unknown prop type = " + columnProps.type;
