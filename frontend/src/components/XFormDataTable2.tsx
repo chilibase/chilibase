@@ -23,7 +23,7 @@ import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
 import {XTableFieldChangeEvent} from "./XFieldChangeEvent";
 import {XCustomFilter} from "../serverApi/FindParam";
-import {XAutoCompleteDT} from "./XAutoCompleteDT";
+import {AutoCompleteDT} from "./auto-complete";
 import {XFormComponentDT} from "./XFormComponentDT";
 import {XErrorMap} from "./XErrors";
 import {XButtonIconNarrow} from "./XButtonIconNarrow";
@@ -35,7 +35,7 @@ import {XInputIntervalDT} from "./XInputIntervalDT";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {SearchBrowseProps} from "./lazy-data-table";
 import {XInputTextareaDT} from "./XInputTextareaDT";
-import {XSuggestionsLoadProp} from "./XAutoCompleteBase";
+import {SuggestionsLoadProp} from "./auto-complete";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v XFormDataTable2)
 export interface XRowTechData {
@@ -437,7 +437,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         }
         else if (columnProps.type === "autoComplete") {
             const columnPropsAutoComplete = (columnProps as XFormAutoCompleteColumnProps);
-            body = <XAutoCompleteDT form={this.props.form} entity={this.getEntity()}
+            body = <AutoCompleteDT form={this.props.form} entity={this.getEntity()}
                                     assocField={columnPropsAutoComplete.assocField} displayField={columnPropsAutoComplete.displayField} itemTemplate={columnPropsAutoComplete.itemTemplate}
                                     SearchBrowse={columnPropsAutoComplete.SearchBrowse} searchBrowseElement={columnPropsAutoComplete.searchBrowseElement}
                                     AssocForm={columnPropsAutoComplete.AssocForm} assocFormElement={columnPropsAutoComplete.assocFormElement}
@@ -835,8 +835,8 @@ export interface XFormAutoCompleteColumnProps extends XFormColumnBaseProps {
     sortField?: string | DataTableSortMeta[];
     fields?: string[]; // ak chceme pri citani suggestions nacitat aj asociovane objekty
     scrollHeight?: string; // Maximum height of the suggestions panel.
-    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v XAutoCompleteDT)
-    suggestionsLoad?: XSuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default)
+    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v AutoCompleteDT)
+    suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default)
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
 }
 

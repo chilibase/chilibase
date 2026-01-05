@@ -1,16 +1,16 @@
 import React from "react";
-import {XFormComponentDT, XFormComponentDTProps} from "./XFormComponentDT";
-import {XAssoc} from "../serverApi/XEntityMetadata";
-import {OperationType} from "./XUtils";
-import {XError} from "./XErrors";
-import {XAutoCompleteBase, XSuggestionsLoadProp} from "./XAutoCompleteBase";
-import {XTableFieldFilterProp} from "./XFormDataTable2";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XFormComponentDT, XFormComponentDTProps} from "../XFormComponentDT";
+import {XAssoc} from "../../serverApi/XEntityMetadata";
+import {OperationType} from "../XUtils";
+import {XError} from "../XErrors";
+import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
+import {XTableFieldFilterProp} from "../XFormDataTable2";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XFormProps} from "./XFormBase";
-import {SearchBrowseProps} from "./lazy-data-table";
+import {XFormProps} from "../XFormBase";
+import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface XAutoCompleteDTProps extends XFormComponentDTProps {
+export interface AutoCompleteDTProps extends XFormComponentDTProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -23,8 +23,8 @@ export interface XAutoCompleteDTProps extends XFormComponentDTProps {
                         // poznamka: treba zabezpecit volanie setState, ak overridneme suggestions
                         // poznamka2: ak sa zmeni asociovany objekt cez "assocForm",
                         // tak treba nejako zabezpecit aby sa zmenili data aj v tychto overridnutych suggestions
-                        // (pozri XAutoCompleteBase.formDialogOnSaveOrCancel)
-    suggestionsLoad?: XSuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
+                        // (pozri AutoCompleteBase.formDialogOnSaveOrCancel)
+    suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     splitQueryValue?: boolean;
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
@@ -36,12 +36,12 @@ export interface XAutoCompleteDTProps extends XFormComponentDTProps {
     inputClassName?: string;
 }
 
-export class XAutoCompleteDT extends XFormComponentDT<XAutoCompleteDTProps> {
+export class AutoCompleteDT extends XFormComponentDT<AutoCompleteDTProps> {
 
     protected xAssoc: XAssoc;
-    protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti XAutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
+    protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
 
-    constructor(props: XAutoCompleteDTProps) {
+    constructor(props: AutoCompleteDTProps) {
         super(props);
 
         this.xAssoc = XUtilsMetadataCommon.getXAssocToOne(XUtilsMetadataCommon.getXEntity(props.entity), props.assocField);
@@ -93,9 +93,9 @@ export class XAutoCompleteDT extends XFormComponentDT<XAutoCompleteDTProps> {
         // TODO - size
         //const size = this.props.size ?? xDisplayField.length;
 
-        // div className="col" nam zabezpeci aby XAutoCompleteBase nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
+        // div className="col" nam zabezpeci aby AutoCompleteBase nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
         return (
-            <XAutoCompleteBase value={this.getValue()} onChange={this.onChangeAutoCompleteBase}
+            <AutoCompleteBase value={this.getValue()} onChange={this.onChangeAutoCompleteBase}
                                field={this.props.displayField} itemTemplate={this.props.itemTemplate}
                                SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement}
                                ValueForm={this.props.AssocForm} valueFormElement={this.props.assocFormElement}

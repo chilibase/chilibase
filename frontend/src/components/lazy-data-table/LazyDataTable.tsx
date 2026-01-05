@@ -50,7 +50,7 @@ import {MultilineRenderer} from "./MultilineRenderer";
 import {HtmlRenderer} from "./HtmlRenderer";
 import {OcfDropdown} from "./OcfDropdown";
 import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../XFieldSet/XFieldSetBase";
-import {XAutoCompleteBase} from "../XAutoCompleteBase";
+import {AutoCompleteBase} from "../auto-complete";
 import {XInputTextBase} from "../XInputTextBase";
 import {useXStateStorage} from "../useXStateStorage";
 import {useXStateStorageBase} from "../useXStateStorageBase";
@@ -1431,7 +1431,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     }
                     const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOneByPath(xEntity, assocField);
                     const object: any | null = getFilterValue(childColumn.props.field);
-                    filterElement = <XAutoCompleteBase value={object}
+                    filterElement = <AutoCompleteBase value={object}
                                                        onChange={(object: any, objectChange: OperationType) => setFilterValue(childColumn.props.field, object, undefined, object !== null ? [{
                                                            where: `[${assocField}] = ${object['id']}`,
                                                            params: {}
@@ -1689,7 +1689,7 @@ export type AutoCompleteInFilterProps = {
     filter?: XCustomFilter;
     sortField?: string | DataTableSortMeta[];
     fields?: string[];
-    // copy of some props in XAutoCompleteBase (?)
+    // copy of some props in AutoCompleteBase (?)
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     field?: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)

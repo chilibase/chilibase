@@ -66,13 +66,12 @@
     "./XFormRowCol": "./lib/components/XFormRowCol/XFormRowCol.js",
 
     "./lazy-data-table": "./lib/components/lazy-data-table/index.js",
+    "./auto-complete": "./lib/components/auto-complete/index.js",
 
     "./useXStateLocal": "./lib/components/useXStateLocal.js",
     "./useXStateSession": "./lib/components/useXStateSession.js",
     "./useXStateStorage": "./lib/components/useXStateStorage.js",
     "./useXToken": "./lib/components/useXToken.js",
-    "./XAutoComplete": "./lib/components/XAutoComplete.js",
-    "./XAutoCompleteBase": "./lib/components/XAutoCompleteBase.js",
     "./XButton": "./lib/components/XButton.js",
     "./XButtonIconMedium": "./lib/components/XButtonIconMedium.js",
     "./XButtonIconNarrow": "./lib/components/XButtonIconNarrow.js",

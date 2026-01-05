@@ -1,23 +1,23 @@
 import React, {Component} from "react";
 import {AutoComplete, AutoCompleteChangeEvent} from "primereact/autocomplete";
 import {SplitButton} from "primereact/splitbutton";
-import {OperationType, XQuery, XUtils} from "./XUtils";
+import {OperationType, XQuery, XUtils} from "../XUtils";
 import {Button} from "primereact/button";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
-import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {XCustomFilter, XLazyAutoCompleteSuggestionsRequest} from "../serverApi/FindParam";
+import {XSearchBrowseParams} from "../XSearchBrowseParams";
+import {XCustomFilter, XLazyAutoCompleteSuggestionsRequest} from "../../serverApi/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
-import {FindResult} from "../serverApi/FindResult";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
-import {XEntity} from "../serverApi/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XFormDialog, XFormDialogState} from "./XFormDialog";
-import {XFormProps} from "./XFormBase";
-import {XSearchBrowseDialog, XSearchBrowseDialogState} from "./XSearchBrowseDialog";
-import {SearchBrowseProps} from "./lazy-data-table";
+import {FindResult} from "../../serverApi/FindResult";
+import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {XEntity} from "../../serverApi/XEntityMetadata";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XFormDialog, XFormDialogState} from "../XFormDialog";
+import {XFormProps} from "../XFormBase";
+import {XSearchBrowseDialog, XSearchBrowseDialogState} from "../XSearchBrowseDialog";
+import {SearchBrowseProps} from "../lazy-data-table";
 
 // helper
-interface XButtonItem {
+interface ButtonItem {
     icon: any | undefined;
     tooltip?: string;
     command(event: MenuItemCommandEvent): void;
@@ -29,15 +29,15 @@ interface XButtonItem {
 // onSerachStart (default) - suggestions are being loaded (always) when user starts typing or when user clicks on dropdown button (only one request is invoked in compare to lazy load)
 // lazy - suggestions are being loaded always when user types some character (at least "minLength" characters must be typed), only first "lazyLoadMaxRows" rows are loaded, if there is more rows then special row ... is added, (default for "lazyLoadMaxRows" is 10)
 //      -> this options must be used in the case if large amount of suggestions can be loaded
-export type XSuggestionsLoadProp = "eager" | "onSearchStart" | "lazy";
-export type XSuggestionsLoadType = "suggestions" | XSuggestionsLoadProp;
+export type SuggestionsLoadProp = "eager" | "onSearchStart" | "lazy";
+export type SuggestionsLoadType = "suggestions" | SuggestionsLoadProp;
 
-export interface XAutoCompleteBaseProps {
+export interface AutoCompleteBaseProps {
     value: any;
     onChange: (object: any, objectChange: OperationType) => void; // odovzda vybraty objekt, ak bol vybraty objekt zmeneny cez dialog (aj v DB), tak vrati objectChange !== OperationType.None
     suggestions?: any[]; // ak su priamo zadane suggestions, nepouziva sa suggestionsLoad a suggestionsQuery (vynimka je ak mame aj searchBrowse, vtedy do searchBrowse posleme filter (aj sortField?))
     suggestionsEntity?: string; // ak su priamo zadane suggestions, nepouziva sa suggestionsLoad a suggestionsQuery a entity mozme zadat tu - entity je potrebna na vyhladanie XField-ov (tie su potrebne na konverziu hodnoty atributu "field" do string-u); ak entitu nezadame, tak sa napr. zle skonvertuju datumy (iba cez toString)
-    suggestionsLoad?: XSuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default) a suggestionsQuery (ten musi byt zadany)
+    suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default) a suggestionsQuery (ten musi byt zadany)
     suggestionsQuery?: XQuery; // musi byt zadany ak nie su zadane suggestions (poznamka: filter (a sortField?) sa posielaju do searchBrowse)
     lazyLoadMaxRows: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     field: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
@@ -61,12 +61,12 @@ export interface XAutoCompleteBaseProps {
     scrollHeight?: string; // Maximum height of the suggestions panel.
     inputClassName?: string;
     readOnly?: boolean;
-    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny (pozor! netreba sem davat error z onErrorCahnge, ten si riesi XAutoCompleteBase sam)
+    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny (pozor! netreba sem davat error z onErrorCahnge, ten si riesi AutoCompleteBase sam)
     onErrorChange: (error: string | undefined) => void; // "vystup" pre validacnu chybu ktoru "ohlasi" AutoComplete; chyba by mala byt ohlasena vzdy ked this.state.inputChanged = true (a nemame focus na inpute)
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 
-export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
+export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
 
     private static valueMoreSuggestions: string = "...";
 
@@ -103,7 +103,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
 
     xEntity: XEntity | undefined;
 
-    constructor(props: XAutoCompleteBaseProps) {
+    constructor(props: AutoCompleteBaseProps) {
         super(props);
 
         this.autoCompleteRef = React.createRef();
@@ -123,7 +123,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
         this.wasOnChangeCalled = false;
 
         let entity: string | undefined;
-        if (this.getXSuggestionsLoadType() === "suggestions") {
+        if (this.getSuggestionsLoadType() === "suggestions") {
             // if (this.props.suggestionsEntity === undefined) {
             //     throw "If prop suggestions is used, then also prop suggestionsEntity must be defined.";
             // }
@@ -157,8 +157,8 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
         return this.props.ValueForm !== undefined || this.props.valueFormElement !== undefined;
     }
 
-    getXSuggestionsLoadType(): XSuggestionsLoadType {
-        let suggestionsLoadType: XSuggestionsLoadType;
+    getSuggestionsLoadType(): SuggestionsLoadType {
+        let suggestionsLoadType: SuggestionsLoadType;
         if (this.props.suggestions) {
             suggestionsLoadType = "suggestions";
         }
@@ -181,7 +181,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
     }
 
     componentDidMount() {
-        if (this.getXSuggestionsLoadType() === "eager") {
+        if (this.getSuggestionsLoadType() === "eager") {
             this.loadSuggestions();
         }
         if (this.props.setFocusOnCreate) {
@@ -196,7 +196,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
 
     async fetchSuggestions(): Promise<any[]> {
         if (!this.props.suggestionsQuery) {
-            throw `XAutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
+            throw `AutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
         }
         return XUtils.fetchRows(
             this.props.suggestionsQuery.entity,
@@ -211,8 +211,8 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
         if (!sortField) {
             // len pri ne-lazy pouzivame ako default sort prvy displayField
             // pri lazy to spomaluje selecty v pripade ze klauzula LIMIT vyrazne obmedzi vysledny zoznam suggestions
-            // pri lazy zosortujeme na frontende v XAutoCompleteBase
-            if (this.getXSuggestionsLoadType() !== "lazy") {
+            // pri lazy zosortujeme na frontende v AutoCompleteBase
+            if (this.getSuggestionsLoadType() !== "lazy") {
                 sortField = this.getFirstField();
             }
         }
@@ -221,16 +221,16 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
 
     async completeMethod(event: {query: string;}) {
         let filteredSuggestions: any[];
-        const xSuggestionsLoadType: XSuggestionsLoadType = this.getXSuggestionsLoadType();
-        if (xSuggestionsLoadType !== "lazy") {
+        const suggestionsLoadType: SuggestionsLoadType = this.getSuggestionsLoadType();
+        if (suggestionsLoadType !== "lazy") {
             let suggestions: any[];
-            if (xSuggestionsLoadType === "suggestions") {
+            if (suggestionsLoadType === "suggestions") {
                 suggestions = this.props.suggestions!;
             }
-            else if (xSuggestionsLoadType === "eager") {
+            else if (suggestionsLoadType === "eager") {
                 suggestions = this.state.suggestions!;
             }
-            else if (xSuggestionsLoadType === "onSearchStart") {
+            else if (suggestionsLoadType === "onSearchStart") {
                 if (!this.suggestionsLoadedForOSS) {
                     suggestions = await this.fetchSuggestions();
                     // ulozime si
@@ -296,7 +296,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
             // tento specialny select mozme v buducnosti dorobit (na backende) ak chceme podporovat (rychle) sortovanie v DB pre autocomplete
 
             if (!this.props.suggestionsQuery) {
-                throw `XAutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
+                throw `AutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
             }
             let filter: XCustomFilter | undefined = XUtils.evalFilter(this.props.suggestionsQuery.filter);
             const suggestionsRequest: XLazyAutoCompleteSuggestionsRequest = {
@@ -317,7 +317,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
             // ak mame o 1 zaznam viac ako je lazyLoadMaxRows, zmenime posledny zaznam na ...
             // TODO - lepsie by bolo posledny zaznam vyhodit a popisok ... zobrazit do footer-a (odpadnu problemy z pripadnou selekciou pseudozaznamu ...)
             if (filteredSuggestions.length > this.props.lazyLoadMaxRows) {
-                filteredSuggestions[filteredSuggestions.length - 1] = XAutoCompleteBase.valueMoreSuggestions; // zatial priamo string
+                filteredSuggestions[filteredSuggestions.length - 1] = AutoCompleteBase.valueMoreSuggestions; // zatial priamo string
             }
         }
 
@@ -325,7 +325,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
     }
 
     onChange(e: AutoCompleteChangeEvent) {
-        if (typeof e.value === 'string' && !XAutoCompleteBase.isMoreSuggestions(e.value)) {
+        if (typeof e.value === 'string' && !AutoCompleteBase.isMoreSuggestions(e.value)) {
             this.setState({inputChanged: true, inputValueState: e.value});
             this.wasOnChangeCalled = false; // reset na default hodnotu
         }
@@ -335,7 +335,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
         // nevolame this.setObjectValue ak uz bol zavolany z onBlur
         if (!this.wasOnChangeCalled) {
             // nedovolime vybrat specialny zaznam ...
-            if (!XAutoCompleteBase.isMoreSuggestions(e.value)) {
+            if (!AutoCompleteBase.isMoreSuggestions(e.value)) {
                 this.setObjectValue(e.value, OperationType.None);
                 // ak sme na mobile, nechceme aby sa otvorila klavesnica mobilu, preto zavolame removeFocus
                 // pouzivame setTimeout, priame volanie nefungovalo
@@ -489,7 +489,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
         }
     }
 
-    createInsertItem(buttonItems: XButtonItem[]) {
+    createInsertItem(buttonItems: ButtonItem[]) {
 
         buttonItems.push(
             {
@@ -524,7 +524,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
             });
     }
 
-    createUpdateItem(buttonItems: XButtonItem[]) {
+    createUpdateItem(buttonItems: ButtonItem[]) {
         buttonItems.push(
             {
                 icon: 'pi pi-pencil',
@@ -551,7 +551,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
         // },
     }
 
-    createSearchItem(buttonItems: XButtonItem[]) {
+    createSearchItem(buttonItems: ButtonItem[]) {
 
         buttonItems.push(
             {
@@ -567,7 +567,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
             });
     }
 
-    createDropdownItem(buttonItems: XButtonItem[]) {
+    createDropdownItem(buttonItems: ButtonItem[]) {
 
         buttonItems.push(
             {
@@ -604,7 +604,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
     onEditAssocValue() {
         // otvorime dialog na update
         if (this.props.idField === undefined) {
-            throw "XAutoCompleteBase: property valueForm is defined but property idField is also needed for form editation.";
+            throw "AutoCompleteBase: property valueForm is defined but property idField is also needed for form editation.";
         }
         const formDialogState: XFormDialogState = {
             opened: true,
@@ -637,7 +637,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
     itemTemplateString(suggestion: any): string {
         const itemValue: React.ReactNode = this.computeItemTemplate(suggestion, -1, true);
         if (typeof itemValue !== "string") {
-            throw `XAutoCompleteBase: function of the property itemTemplate created non-string value for suggestion. Please create string value if parameter createStringValue = true.`;
+            throw `AutoCompleteBase: function of the property itemTemplate created non-string value for suggestion. Please create string value if parameter createStringValue = true.`;
         }
         return itemValue;
     }
@@ -645,7 +645,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
     computeItemTemplate(suggestion: any, index: number, createStringValue: boolean): React.ReactNode {
         let itemTemplate: React.ReactNode;
         // osetrenie specialnej polozky ... dame sem, nech sa to nemusi inde riesit
-        if (XAutoCompleteBase.isMoreSuggestions(suggestion)) {
+        if (AutoCompleteBase.isMoreSuggestions(suggestion)) {
             itemTemplate = suggestion;
         }
         else {
@@ -660,7 +660,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
 
     computeDefaultDisplayValue(suggestion: any): string {
         let displayValue: string;
-        if (XAutoCompleteBase.isMoreSuggestions(suggestion)) {
+        if (AutoCompleteBase.isMoreSuggestions(suggestion)) {
             displayValue = suggestion;
         }
         else {
@@ -669,9 +669,9 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
         return displayValue;
     }
 
-    // vrati true ak sa jedna o specialny typ XAutoCompleteBase.valueMoreSuggestions
+    // vrati true ak sa jedna o specialny typ AutoCompleteBase.valueMoreSuggestions
     static isMoreSuggestions(suggestion: any): boolean {
-        return typeof suggestion === "string" && suggestion === XAutoCompleteBase.valueMoreSuggestions;
+        return typeof suggestion === "string" && suggestion === AutoCompleteBase.valueMoreSuggestions;
     }
 
     // takto cez metodku, mozno sa metodka vola len ked sa otvori dialog a usetrime nieco...
@@ -693,7 +693,7 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
             // TODO - upratat koli split layuot-u (ak dropdownButtonEnabled = false tak moze vzniknut split button s jednym buttonom)
             if (createInsertItem || this.hasValueForm() || this.hasSearchBrowse()) {
                 // mame searchBrowse alebo CRUD operacie, potrebujeme viac buttonov alebo SplitButton
-                const buttonItems: XButtonItem[] = [];
+                const buttonItems: ButtonItem[] = [];
 
                 if (createInsertItem) {
                     this.createInsertItem(buttonItems);
@@ -712,13 +712,13 @@ export class XAutoCompleteBase extends Component<XAutoCompleteBaseProps> {
                 }
 
                 if (this.props.buttonsLayout === "buttons") {
-                    buttons = buttonItems.map((value: XButtonItem, index: number) => <Button key={`button${index}`} icon={value.icon} tooltip={value.tooltip} tooltipOptions={{position: 'top'}}
+                    buttons = buttonItems.map((value: ButtonItem, index: number) => <Button key={`button${index}`} icon={value.icon} tooltip={value.tooltip} tooltipOptions={{position: 'top'}}
                                                                               onClick={(e: any) => value.command!(e)} className={'x-dropdownbutton' + XUtils.mobileCssSuffix()}/>);
                 }
                 else {
                     // buttonsLayout === "splitButton"
                     // tooltip-y by trebalo pridat...
-                    const splitButtonItems: MenuItem[] = buttonItems.map<MenuItem>((value: XButtonItem) => {return {icon: value.icon, command: value.command}});
+                    const splitButtonItems: MenuItem[] = buttonItems.map<MenuItem>((value: ButtonItem) => {return {icon: value.icon, command: value.command}});
                     buttons = [<SplitButton model={splitButtonItems} className={'x-splitbutton-only-dropdown' + XUtils.mobileCssSuffix()} menuClassName={'x-splitbutton-only-dropdown-menu' + XUtils.mobileCssSuffix()} disabled={readOnly}/>];
                 }
             }

@@ -1,16 +1,16 @@
 import React from "react";
-import {XFilterProp, XFormComponent, XFormComponentProps} from "./XFormComponent";
-import {XAssoc} from "../serverApi/XEntityMetadata";
-import {OperationType} from "./XUtils";
-import {XAutoCompleteBase, XSuggestionsLoadProp} from "./XAutoCompleteBase";
-import {XError} from "./XErrors";
-import {XObject} from "./XObject";
+import {XFilterProp, XFormComponent, XFormComponentProps} from "../XFormComponent";
+import {XAssoc} from "../../serverApi/XEntityMetadata";
+import {OperationType} from "../XUtils";
+import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
+import {XError} from "../XErrors";
+import {XObject} from "../XObject";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XFormProps} from "./XFormBase";
-import {SearchBrowseProps} from "./lazy-data-table";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XFormProps} from "../XFormBase";
+import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface XAutoCompleteProps extends XFormComponentProps<XObject> {
+export interface AutoCompleteProps extends XFormComponentProps<XObject> {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - autocomplete will run on <assoc2>)
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -22,8 +22,8 @@ export interface XAutoCompleteProps extends XFormComponentProps<XObject> {
     insertButtonTooltip?: string;
     updateButtonTooltip?: string;
     searchButtonTooltip?: string;
-    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v XAutoCompleteDT) (suggestionsLoad sa nepouziva)
-    suggestionsLoad?: XSuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
+    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v AutoCompleteDT) (suggestionsLoad sa nepouziva)
+    suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     splitQueryValue?: boolean;
     minLength?: number; // Minimum number of characters to initiate a search (default 1)
@@ -37,12 +37,12 @@ export interface XAutoCompleteProps extends XFormComponentProps<XObject> {
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 
-export class XAutoComplete extends XFormComponent<XObject, XAutoCompleteProps> {
+export class AutoComplete extends XFormComponent<XObject, AutoCompleteProps> {
 
     protected xAssoc: XAssoc;
-    protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti XAutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
+    protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
 
-    constructor(props: XAutoCompleteProps) {
+    constructor(props: AutoCompleteProps) {
         super(props);
 
         this.xAssoc = XUtilsMetadataCommon.getXAssocToOneByPath(XUtilsMetadataCommon.getXEntity(props.form.getEntity()), props.assocField);
@@ -96,11 +96,11 @@ export class XAutoComplete extends XFormComponent<XObject, XAutoCompleteProps> {
 
         const xEntityAssoc = XUtilsMetadataCommon.getXEntity(this.xAssoc.entityName);
 
-        // div className="col" nam zabezpeci aby XAutoCompleteBase nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
+        // div className="col" nam zabezpeci aby AutoCompleteBase nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
         return (
             <div className="field grid">
                 <label htmlFor={this.props.assocField} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <XAutoCompleteBase value={this.getValue()} onChange={this.onChangeAutoCompleteBase}
+                <AutoCompleteBase value={this.getValue()} onChange={this.onChangeAutoCompleteBase}
                                    field={this.props.displayField} itemTemplate={this.props.itemTemplate}
                                    SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement}
                                    ValueForm={this.props.AssocForm} valueFormElement={this.props.assocFormElement}
