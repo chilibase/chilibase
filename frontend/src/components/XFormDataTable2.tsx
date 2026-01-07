@@ -17,7 +17,7 @@ import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtils, XViewStatus, XViewStatusOrBoolean} from "./XUtils";
 import {XDropdownDTFilter} from "./XDropdownDTFilter";
 import {InputDecimalDT} from "./input-decimal";
-import {XInputDateDT} from "./XInputDateDT";
+import {InputDateDT} from "./input-date";
 import {XCheckboxDT} from "./XCheckboxDT";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
@@ -418,7 +418,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
                 body = <InputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "date" || xField.type === "datetime") {
-                body = <XInputDateDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
+                body = <InputDateDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "interval") {
                 body = <XInputIntervalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;

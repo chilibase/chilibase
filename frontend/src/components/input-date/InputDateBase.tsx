@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import {Calendar, CalendarSelectEvent} from "primereact/calendar";
-import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, XDateScale} from "../serverApi/XUtilsConversions";
-import {XUtils} from "./XUtils";
+import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, XDateScale} from "../../serverApi/XUtilsConversions";
+import {XUtils} from "../XUtils";
 import {FormEvent} from "primereact/ts-helpers";
 
-// wrapper for Calendar component, maybe better name would be XInputDateBase
+// wrapper for Calendar component
 // TODO - nefunguje rezim datetime pre zapis - dorobit konverziu!
-export const XCalendar = (props: {
+export const InputDateBase = (props: {
     id?: string;
     value: Date | null;
     onChange: (value: Date | null) => void;
@@ -99,6 +99,7 @@ export const XCalendar = (props: {
     );
 }
 
-XCalendar.defaultProps = {
+InputDateBase.defaultProps = {
     scale: XDateScale.Date
 };
+

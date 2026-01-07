@@ -8,7 +8,7 @@ import {XFormFooter} from "../components/XFormFooter";
 import {XCheckbox} from "../components/XCheckbox";
 import {XEnvVar, XViteAuth} from "../components/XEnvVars";
 import {XFormBaseModif} from "../components/XFormBaseModif";
-import {XInputDate} from "../components/XInputDate";
+import {InputDate} from "../components/input-date";
 import {XObject} from "../components/XObject";
 import {XFormHeader} from "../components/XFormHeader";
 
@@ -110,7 +110,7 @@ export class XUserForm extends XFormBaseModif {
                         <XCheckbox form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         <XCheckbox form={this} field="admin" label="Admin" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         {passwordElems}
-                        <XInputDate form={this} field="modifDate" label="Modified at" readOnly={true} labelStyle={{width:'14rem'}}/>
+                        <InputDate form={this} field="modifDate" label="Modified at" readOnly={true} labelStyle={{width:'14rem'}}/>
                         <InputText form={this} field="modifXUser.name" label="Modified by" size={20} labelStyle={{width:'14rem'}}/>
                     </div>
                 </div>

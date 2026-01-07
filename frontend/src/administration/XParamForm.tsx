@@ -3,7 +3,7 @@ import {XFormBaseModif} from "../components/XFormBaseModif";
 import {Form} from "../components/XFormBase";
 import {XObject} from "../components/XObject";
 import {InputDecimal} from "../components/input-decimal";
-import {XInputDate} from "../components/XInputDate";
+import {InputDate} from "../components/input-date";
 import {InputText} from "../components/input-text";
 import {XFormFooter} from "../components/XFormFooter";
 import {XFormHeader} from "../components/XFormHeader";
@@ -22,7 +22,7 @@ export class XParamForm extends XFormBaseModif {
                 <div className="x-form-row">
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
-                        <XInputDate form={this} field="modifDate" label="Modified at" readOnly={true}/>
+                        <InputDate form={this} field="modifDate" label="Modified at" readOnly={true}/>
                         <InputText form={this} field="modifXUser.name" label="Modified by" inputStyle={{width:'12.5rem'}}/>
                         <InputText form={this} field="code" label="Code" inputStyle={{width:'16rem'}}/>
                         <InputText form={this} field="name" label="Name" inputStyle={{width:'45rem'}}/>

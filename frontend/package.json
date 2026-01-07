@@ -66,6 +66,7 @@
     "./XFormRowCol": "./lib/components/XFormRowCol/XFormRowCol.js",
 
     "./auto-complete": "./lib/components/auto-complete/index.js",
+    "./input-date": "./lib/components/input-date/index.js",
     "./input-decimal": "./lib/components/input-decimal/index.js",
     "./input-text": "./lib/components/input-text/index.js",
     "./input-textarea": "./lib/components/input-textarea/index.js",
@@ -79,7 +80,6 @@
     "./XButtonIconMedium": "./lib/components/XButtonIconMedium.js",
     "./XButtonIconNarrow": "./lib/components/XButtonIconNarrow.js",
     "./XButtonIconSmall": "./lib/components/XButtonIconSmall.js",
-    "./XCalendar": "./lib/components/XCalendar.js",
     "./XChangePasswordForm": "./lib/components/XChangePasswordForm.js",
     "./XCheckbox": "./lib/components/XCheckbox.js",
     "./XCheckboxBase": "./lib/components/XCheckboxBase.js",
@@ -100,7 +100,6 @@
     "./XFormHeader": "./lib/components/XFormHeader.js",
     "./XFormNavigator3": "./lib/components/XFormNavigator3.js",
     "./XHolders": "./lib/components/XHolders.js",
-    "./XInputDate": "./lib/components/XInputDate.js",
     "./XInputFileList": "./lib/components/XInputFileList.js",
     "./XInputInterval": "./lib/components/XInputInterval.js",
     "./XInputIntervalBase": "./lib/components/XInputIntervalBase.js",

@@ -1,17 +1,17 @@
 import React from "react";
-import {XCalendar} from "./XCalendar";
-import {XFormComponentProps} from "./XFormComponent";
-import {XInput} from "./XInput";
-import {dateFromModel, XDateScale} from "../serverApi/XUtilsConversions";
+import {InputDateBase} from "./InputDateBase";
+import {XFormComponentProps} from "../XFormComponent";
+import {XInput} from "../XInput";
+import {dateFromModel, XDateScale} from "../../serverApi/XUtilsConversions";
 
-export interface XInputDateProps extends XFormComponentProps<number> {
+export interface InputDateProps extends XFormComponentProps<number> {
     field: string;
     scale?: XDateScale;
 }
 
-export class XInputDate extends XInput<Date, XInputDateProps> {
+export class InputDate extends XInput<Date, InputDateProps> {
 
-    constructor(props: XInputDateProps) {
+    constructor(props: InputDateProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -31,9 +31,10 @@ export class XInputDate extends XInput<Date, XInputDateProps> {
         return (
             <div className="field grid">
                 <label htmlFor={this.props.field} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <XCalendar id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}
+                <InputDateBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}
                            scale={this.props.scale ?? this.xField.scale} datetime={this.xField.type === 'datetime'}/>
             </div>
         );
     }
 }
+
