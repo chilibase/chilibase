@@ -1,16 +1,16 @@
 import React from "react";
-import {XInput, XInputProps} from "./XInput";
-import {XCheckboxBase} from "./XCheckboxBase";
+import {XInput, XInputProps} from "../XInput";
+import {CheckboxBase} from "./CheckboxBase";
 
-export interface XCheckboxProps extends XInputProps<boolean> {
+export interface CheckboxProps extends XInputProps<boolean> {
     // aby sme vedeli zobrazit dvojstavovy checkbox aj ked v DB mame null stlpec
     // zatial len sem mozno v buducnosti dame na vsetky komponenty
     isNotNull?: boolean;
 }
 
-export class XCheckbox extends XInput<boolean, XCheckboxProps> {
+export class Checkbox extends XInput<boolean, CheckboxProps> {
 
-    constructor(props: XCheckboxProps) {
+    constructor(props: CheckboxProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -29,7 +29,7 @@ export class XCheckbox extends XInput<boolean, XCheckboxProps> {
     }
 
     render() {
-        let element: JSX.Element = <XCheckboxBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
+        let element: JSX.Element = <CheckboxBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
                                                   readOnly={this.isReadOnly()} isNotNull={this.isNotNull()}
                                                   tooltip={this.props.tooltip} error={this.getError()} style={this.props.inputStyle}/>;
 
@@ -43,3 +43,4 @@ export class XCheckbox extends XInput<boolean, XCheckboxProps> {
         return element;
     }
 }
+

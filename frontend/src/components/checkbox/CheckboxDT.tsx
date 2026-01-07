@@ -1,13 +1,13 @@
 import React from "react";
-import {XInputDT, XInputDTProps} from "./XInputDT";
-import {XCheckboxBase} from "./XCheckboxBase";
+import {XInputDT, XInputDTProps} from "../XInputDT";
+import {CheckboxBase} from "./CheckboxBase";
 
-export interface XCheckboxDTProps extends XInputDTProps {
+export interface CheckboxDTProps extends XInputDTProps {
 }
 
-export class XCheckboxDT extends XInputDT<XCheckboxDTProps> {
+export class CheckboxDT extends XInputDT<CheckboxDTProps> {
 
-    constructor(props: XCheckboxDTProps) {
+    constructor(props: CheckboxDTProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -23,9 +23,10 @@ export class XCheckboxDT extends XInputDT<XCheckboxDTProps> {
 
     render() {
         return (
-            <XCheckboxBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
+            <CheckboxBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
                            readOnly={this.isReadOnly()} isNotNull={this.isNotNull()}
                            error={this.getError()} style={this.props.inputStyle}/>
         );
     }
 }
+

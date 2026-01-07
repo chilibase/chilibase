@@ -18,7 +18,7 @@ import {XUtils, XViewStatus, XViewStatusOrBoolean} from "./XUtils";
 import {XDropdownDTFilter} from "./XDropdownDTFilter";
 import {InputDecimalDT} from "./input-decimal";
 import {InputDateDT} from "./input-date";
-import {XCheckboxDT} from "./XCheckboxDT";
+import {CheckboxDT} from "./checkbox";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
 import {XTableFieldChangeEvent} from "./XFieldChangeEvent";
@@ -424,7 +424,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
                 body = <XInputIntervalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "boolean") {
-                body = <XCheckboxDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
+                body = <CheckboxDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else {
                 // xField.type === "string", pripadne ine jednoduche typy

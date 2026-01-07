@@ -1,9 +1,9 @@
 import React, {CSSProperties} from "react";
 import {TriStateCheckbox, TriStateCheckboxChangeEvent} from "primereact/tristatecheckbox";
 import {Checkbox, CheckboxChangeEvent} from "primereact/checkbox";
-import {XUtils} from "./XUtils";
+import {XUtils} from "../XUtils";
 
-export const XCheckboxBase = (props: {
+export const CheckboxBase = (props: {
     id?: string;
     value: boolean | null;
     onChange: (value: boolean | null) => void;
@@ -45,3 +45,4 @@ export const XCheckboxBase = (props: {
                                 disabled={props.readOnly} style={props.style} {...XUtils.createTooltipOrErrorProps(props.error, props.tooltip)}/>
     );
 }
+

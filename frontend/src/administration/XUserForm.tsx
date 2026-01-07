@@ -5,7 +5,7 @@ import {InputDecimal} from "../components/input-decimal";
 import {Password} from "primereact/password";
 import {OperationType, XUtils} from "../components/XUtils";
 import {XFormFooter} from "../components/XFormFooter";
-import {XCheckbox} from "../components/XCheckbox";
+import {Checkbox} from "../components/checkbox";
 import {XEnvVar, XViteAuth} from "../components/XEnvVars";
 import {XFormBaseModif} from "../components/XFormBaseModif";
 import {InputDate} from "../components/input-date";
@@ -107,8 +107,8 @@ export class XUserForm extends XFormBaseModif {
                         <InputDecimal form={this} field="id" label="ID" readOnly={true} labelStyle={{width:'14rem'}}/>
                         <InputText form={this} field="username" label="Username" size={30} labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         <InputText form={this} field="name" label="Name" size={30} labelStyle={{width:'14rem'}}/>
-                        <XCheckbox form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
-                        <XCheckbox form={this} field="admin" label="Admin" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
+                        <Checkbox form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
+                        <Checkbox form={this} field="admin" label="Admin" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         {passwordElems}
                         <InputDate form={this} field="modifDate" label="Modified at" readOnly={true} labelStyle={{width:'14rem'}}/>
                         <InputText form={this} field="modifXUser.name" label="Modified by" size={20} labelStyle={{width:'14rem'}}/>
