@@ -1,6 +1,6 @@
 import {Form, XFormBase} from "../components/XFormBase";
-import {XInputDecimal} from "../components/XInputDecimal";
-import {XInputText} from "../components/XInputText";
+import {InputDecimal} from "../components/input-decimal";
+import {InputText} from "../components/input-text";
 import React from "react";
 import {XFormColumn, XFormDataTable2} from "../components/XFormDataTable2";
 import {XFormFooter} from "../components/XFormFooter";
@@ -13,10 +13,10 @@ export class XBrowseMetaForm extends XFormBase {
             <div>
                 <div className="x-form-row">
                     <div className="x-form-col">
-                        <XInputDecimal form={this} field="id" label="ID" readOnly={true}/>
-                        <XInputText form={this} field="entity" label="Entity" size={20}/>
-                        <XInputText form={this} field="browseId" label="Browse ID" size={20}/>
-                        <XInputDecimal form={this} field="rows" label="Rows"/>
+                        <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
+                        <InputText form={this} field="entity" label="Entity" size={20}/>
+                        <InputText form={this} field="browseId" label="Browse ID" size={20}/>
+                        <InputDecimal form={this} field="rows" label="Rows"/>
                     </div>
                 </div>
                 <div className="x-viewport-width">

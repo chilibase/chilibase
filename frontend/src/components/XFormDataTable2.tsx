@@ -16,7 +16,7 @@ import {XAssoc, XEntity, XField} from "../serverApi/XEntityMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtils, XViewStatus, XViewStatusOrBoolean} from "./XUtils";
 import {XDropdownDTFilter} from "./XDropdownDTFilter";
-import {XInputDecimalDT} from "./XInputDecimalDT";
+import {InputDecimalDT} from "./input-decimal";
 import {XInputDateDT} from "./XInputDateDT";
 import {XCheckboxDT} from "./XCheckboxDT";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
@@ -415,7 +415,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
             const columnPropsInputSimple = (columnProps as XFormColumnProps);
             const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, columnPropsInputSimple.field);
             if (xField.type === "decimal" || xField.type === "number") {
-                body = <XInputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
+                body = <InputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "date" || xField.type === "datetime") {
                 body = <XInputDateDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;

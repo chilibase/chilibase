@@ -23,7 +23,7 @@ export class XUtilsMetadata {
         }
     }
 
-    // docasne sem, kym nemame jednotny XInputDecimal/XInputDecimalDT
+    // docasne sem, kym nemame jednotny InputDecimal/InputDecimalDT
     static getParamsForInputNumber(xField: XField): {useGrouping: boolean; fractionDigits?: number; min?: number; max?: number; size?: number} {
         let useGrouping: boolean = true;
         let scale: number | undefined = undefined;
@@ -47,7 +47,7 @@ export class XUtilsMetadata {
             size = precision;
         }
         else {
-            throw `XInputDecimal: field ${xField.name} has unsupported type ${xField.type}. Supported types are decimal and number.`;
+            throw `InputDecimal: field ${xField.name} has unsupported type ${xField.type}. Supported types are decimal and number.`;
         }
 
         return XUtilsMetadata.getParamsForInputNumberBase(useGrouping, scale, precision, size);

@@ -1,18 +1,18 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
-import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XFormComponentProps} from "./XFormComponent";
-import {XInput} from "./XInput";
+import {XUtilsMetadata} from "../XUtilsMetadata";
+import {XFormComponentProps} from "../XFormComponent";
+import {XInput} from "../XInput";
 
-export interface XInputDecimalProps extends XFormComponentProps<number> {
+export interface InputDecimalProps extends XFormComponentProps<number> {
     field: string;
     size?: number;
     inputStyle?: React.CSSProperties;
 }
 
-export class XInputDecimal extends XInput<number, XInputDecimalProps> {
+export class InputDecimal extends XInput<number, InputDecimalProps> {
 
-    constructor(props: XInputDecimalProps) {
+    constructor(props: InputDecimalProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -60,3 +60,4 @@ export class XInputDecimal extends XInput<number, XInputDecimalProps> {
         );
     }
 }
+

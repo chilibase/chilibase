@@ -1,15 +1,15 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
-import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XInputDT, XInputDTProps} from "./XInputDT";
-import {XUtils} from "./XUtils";
+import {XUtilsMetadata} from "../XUtilsMetadata";
+import {XInputDT, XInputDTProps} from "../XInputDT";
+import {XUtils} from "../XUtils";
 
-export interface XInputDecimalDTProps extends XInputDTProps {
+export interface InputDecimalDTProps extends XInputDTProps {
 }
 
-export class XInputDecimalDT extends XInputDT<XInputDecimalDTProps> {
+export class InputDecimalDT extends XInputDT<InputDecimalDTProps> {
 
-    constructor(props: XInputDecimalDTProps) {
+    constructor(props: InputDecimalDTProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -51,3 +51,4 @@ export class XInputDecimalDT extends XInputDT<XInputDecimalDTProps> {
         );
     }
 }
+
