@@ -100,7 +100,7 @@ export abstract class XFormBase extends Component<XFormProps> {
     state: {object: XObject | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
-    xFormComponentList: Array<XFormComponent<any, any>>; // zoznam jednoduchych komponentov na formulari (vcetne XDropdown, XSearchButton, ...)
+    xFormComponentList: Array<XFormComponent<any, any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
     xFormDataTableList: Array<XFormDataTable2>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
     assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v xRowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)

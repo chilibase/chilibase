@@ -13,7 +13,7 @@ export type XFieldOnChange = (e: XFieldChangeEvent<any>) => void;
 
 export type XReadOnlyProp = boolean | ((object: any) => boolean);
 
-// typ property pre pridanie filtra na vyber associable rows - pouziva sa na assoc fieldoch (XAutoComplete, XDropdown, ...)
+// typ property pre pridanie filtra na vyber associable rows - pouziva sa na assoc fieldoch (XAutoComplete, Dropdown, ...)
 // bud sa do property zapise priamo XCustomFilter alebo sa vytvara funkcia ktora XCustomFilter vrati (v tomto pripade moze XCustomFilter zavisiet od aktualne editovaneho objektu "object")
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
 export type XFilterProp = XCustomFilter | ((object: any) => XCustomFilter | undefined);

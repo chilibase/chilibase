@@ -1,11 +1,11 @@
 import React, {Component} from "react";
 import {Dropdown, DropdownChangeEvent} from "primereact/dropdown";
-import {XUtils} from "./XUtils";
-import {XCustomFilter} from "../serverApi/FindParam";
-import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtils} from "../XUtils";
+import {XCustomFilter} from "../../serverApi/FindParam";
+import {XUtilsMetadata} from "../XUtilsMetadata";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 
-export interface XDropdownForEntityProps {
+export interface DropdownForEntityProps {
     id?: string;
     entity: string;
     displayField: string;
@@ -20,12 +20,12 @@ export interface XDropdownForEntityProps {
 
 // vseobecny Dropdown ktoreho parametrom je entity, zobrazuje zaznamy danej entity, po selectnuti vracia zaznam danej entity
 // ambicia je pouzivat ho vsade - vo formulari, vo filtroch, vo form tabulke, priamo aplikacnym programmerom
-// dalo by sa vyclenit este XDropdownBase, ktory by dostaval ako parameter options (bol by nezavisly od DB), zatial ho nerobime,
-// pravdepodobnost potreby XDropdownBase je nizka
+// dalo by sa vyclenit este DropdownBase, ktory by dostaval ako parameter options (bol by nezavisly od DB), zatial ho nerobime,
+// pravdepodobnost potreby DropdownBase je nizka
 // do buducna sa planuje pouzit cache pre options (plnila by sa pri otvoreni XFormBase*) - dolezite je to hlavne pre dropdowny vo form tabulke (a tiez pre dynamicky filter vo formulari - objekt sa nacita neskor ako options)
 // tiez by bolo fajn podporovat dynamicky filter (vo formulari) - to by ale trebalo vytiahnut options do state formulara
-// otazka je ci nepouzivat vsade len XAutoComplete a upustit od XDropdown
-export class XDropdownForEntity extends Component<XDropdownForEntityProps> {
+// otazka je ci nepouzivat vsade len XAutoComplete a upustit od Dropdown
+export class DropdownForEntity extends Component<DropdownForEntityProps> {
 
     protected idField: string;
 
@@ -33,7 +33,7 @@ export class XDropdownForEntity extends Component<XDropdownForEntityProps> {
         options: any[];
     };
 
-    constructor(props: XDropdownForEntityProps) {
+    constructor(props: DropdownForEntityProps) {
         super(props);
 
         this.idField = XUtilsMetadataCommon.getXEntity(this.props.entity).idField;
@@ -79,3 +79,4 @@ export class XDropdownForEntity extends Component<XDropdownForEntityProps> {
         );
     }
 }
+

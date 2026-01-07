@@ -17,7 +17,7 @@ import {XButton} from "../XButton";
 import {OperationType, XStorageType, XUtils, XViewStatus, XViewStatusOrBoolean} from "../XUtils";
 import {XFieldFilter, XSearchBrowseParams} from "../XSearchBrowseParams";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XDropdownDTFilter} from "../XDropdownDTFilter";
+import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
 import {XAssoc, XEntity, XField} from "../../serverApi/XEntityMetadata";
 import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../serverApi/XUtilsConversions";
 import {FindResult} from "../../serverApi/FindResult";
@@ -1458,7 +1458,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                                                           onChange={(e: any) => setFilterValue(childColumn.props.field, e.value, FilterMatchMode.EQUALS, undefined, childColumn.props.autoFilter)}/>;
                     } else if (childColumn.props.dropdownInFilter) {
                         const dropdownValue = getDropdownFilterValue(childColumn.props.field);
-                        filterElement = <XDropdownDTFilter entity={props.entity} path={childColumn.props.field}
+                        filterElement = <DropdownDTFilter entity={props.entity} path={childColumn.props.field}
                                                            value={dropdownValue}
                                                            onValueChange={(field: string, displayValue: any) => onDropdownFilterChange(field, displayValue, childColumn.props.autoFilter)}
                                                            filter={childColumn.props.dropdownFilter}

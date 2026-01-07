@@ -1,7 +1,7 @@
 import {XFormBase, XFormProps} from "./XFormBase";
 import {XObject} from "./XObject";
 import React, {Component, ReactChild} from "react";
-import {XDropdownDT} from "./XDropdownDT";
+import {DropdownDT} from "./dropdown/DropdownDT";
 import {
     DataTable,
     DataTableFilterMeta,
@@ -15,7 +15,7 @@ import {XSearchButtonDT} from "./XSearchButtonDT";
 import {XAssoc, XEntity, XField} from "../serverApi/XEntityMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtils, XViewStatus, XViewStatusOrBoolean} from "./XUtils";
-import {XDropdownDTFilter} from "./XDropdownDTFilter";
+import {DropdownDTFilter} from "./dropdown/DropdownDTFilter";
 import {InputDecimalDT} from "./input-decimal";
 import {InputDateDT} from "./input-date";
 import {CheckboxDT} from "./checkbox";
@@ -39,7 +39,7 @@ import {SuggestionsLoadProp} from "./auto-complete";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v XFormDataTable2)
 export interface XRowTechData {
-    // zoznam komponentov na riadku tabulky (vcetne XDropdownDT, XSearchButtonDT, ...)
+    // zoznam komponentov na riadku tabulky (vcetne DropdownDT, XSearchButtonDT, ...)
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
     // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
     // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
@@ -433,7 +433,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         }
         else if (columnProps.type === "dropdown") {
             const columnPropsDropdown = (columnProps as XFormDropdownColumnProps);
-            body = <XDropdownDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsDropdown.assocField} displayField={columnPropsDropdown.displayField} sortField={columnPropsDropdown.sortField} filter={columnPropsDropdown.filter} dropdownOptionsMap={this.state.dropdownOptionsMap} onDropdownOptionsMapChange={this.onDropdownOptionsMapChange} rowData={rowData} readOnly={readOnly}/>;
+                body = <DropdownDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsDropdown.assocField} displayField={columnPropsDropdown.displayField} sortField={columnPropsDropdown.sortField} filter={columnPropsDropdown.filter} dropdownOptionsMap={this.state.dropdownOptionsMap} onDropdownOptionsMapChange={this.onDropdownOptionsMapChange} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "autoComplete") {
             const columnPropsAutoComplete = (columnProps as XFormAutoCompleteColumnProps);
@@ -673,7 +673,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
                         }
                         else if (childColumnProps.dropdownInFilter) {
                             const dropdownValue = thisLocal.getDropdownFilterValue(field);
-                            filterElement = <XDropdownDTFilter entity={thisLocal.getEntity()} path={field} value={dropdownValue} onValueChange={thisLocal.onDropdownFilterChange}/>
+                            filterElement = <DropdownDTFilter entity={thisLocal.getEntity()} path={field} value={dropdownValue} onValueChange={thisLocal.onDropdownFilterChange}/>
                         }
                     }
 
@@ -790,7 +790,7 @@ export type XTableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) =>
 // do buducna (kedze object mame vo formulari pristupny cez this.state.object, tak nepotrebujeme nutne pouzivat funkciu, vystacime si priamo s hodnotou)
 //export type XFormColumnViewStatusProp = XViewStatusOrBoolean | ((object: any) => XViewStatusOrBoolean);
 
-// typ property pre vytvorenie filtra na assoc fieldoch (XAutoComplete, XDropdown, ...)
+// typ property pre vytvorenie filtra na assoc fieldoch (XAutoComplete, Dropdown, ...)
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
 export type XTableFieldFilterProp = XCustomFilter | ((object: any, rowData: any) => XCustomFilter | undefined);
 

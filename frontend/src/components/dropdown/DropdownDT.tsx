@@ -1,14 +1,14 @@
-import {XFormBase} from "./XFormBase";
+import {XFormBase} from "../XFormBase";
 import React, {useEffect} from "react";
-import {XUtils} from "./XUtils";
+import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
-import {XDropdownOptionsMap, XTableFieldReadOnlyProp} from "./XFormDataTable2";
-import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XAssoc} from "../serverApi/XEntityMetadata";
-import {XCustomFilter} from "../serverApi/FindParam";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XDropdownOptionsMap, XTableFieldReadOnlyProp} from "../XFormDataTable2";
+import {XUtilsMetadata} from "../XUtilsMetadata";
+import {XAssoc} from "../../serverApi/XEntityMetadata";
+import {XCustomFilter} from "../../serverApi/FindParam";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 
-export const XDropdownDT = (props: {
+export const DropdownDT = (props: {
         form: XFormBase;
         entity: string;
         assocField: string;
@@ -29,7 +29,7 @@ export const XDropdownDT = (props: {
 
     // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
     useEffect(() => {
-        //console.log("XDropdownDT - zavolany useEffect *******************")
+        //console.log("DropdownDT - zavolany useEffect *******************")
         findOptions();
     },[]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -54,7 +54,7 @@ export const XDropdownDT = (props: {
 
             options.splice(0, 0, {[idField]: null, [props.displayField]: ""}); // null polozka (nepridavat pre not null atributy)
             props.dropdownOptionsMap[props.assocField] = options;
-            //console.log("XDropdownDT - findOptions - citali sme options pre field = " + props.assocField);
+            //console.log("DropdownDT - findOptions - citali sme options pre field = " + props.assocField);
             //console.log(props.dropdownOptionsMap);
             props.onDropdownOptionsMapChange(props.dropdownOptionsMap); // vyrenderujeme nacitane hodnoty
         }
@@ -90,9 +90,10 @@ export const XDropdownDT = (props: {
 
     const readOnly: boolean = XUtils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.object, props.rowData);
 
-    // appendTo={document.body} appenduje overlay panel na element body - eliminuje problem s overflow (pozri poznamku v XDropdownDTFilter)
+    // appendTo={document.body} appenduje overlay panel na element body - eliminuje problem s overflow (pozri poznamku v DropdownDTFilter)
     return (
         <Dropdown appendTo={document.body} id={props.assocField} optionLabel={props.displayField} value={assocObject} options={options} dataKey={idField}
                   onChange={(e: any) => onValueChange(props.assocField, props.rowData, e.target.value)} readOnly={readOnly} disabled={readOnly}/>
     );
 }
+

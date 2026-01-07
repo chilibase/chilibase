@@ -67,6 +67,7 @@
 
     "./auto-complete": "./lib/components/auto-complete/index.js",
     "./checkbox": "./lib/components/checkbox/index.js",
+    "./dropdown": "./lib/components/dropdown/index.js",
     "./input-date": "./lib/components/input-date/index.js",
     "./input-decimal": "./lib/components/input-decimal/index.js",
     "./input-text": "./lib/components/input-text/index.js",
@@ -82,8 +83,6 @@
     "./XButtonIconNarrow": "./lib/components/XButtonIconNarrow.js",
     "./XButtonIconSmall": "./lib/components/XButtonIconSmall.js",
     "./XChangePasswordForm": "./lib/components/XChangePasswordForm.js",
-    "./XDropdown": "./lib/components/XDropdown.js",
-    "./XDropdownForEntity": "./lib/components/XDropdownForEntity.js",
     "./XEditBrowse": "./lib/components/XEditBrowse.js",
     "./XEditor": "./lib/components/XEditor.js",
     "./XEditorBase": "./lib/components/XEditorBase.js",

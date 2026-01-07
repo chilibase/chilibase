@@ -1,21 +1,21 @@
 import React, {useEffect, useState} from "react";
-import {XUtils} from "./XUtils";
+import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
-import {XAssoc, XField} from "../serverApi/XEntityMetadata";
-import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XFilterProp} from "./XFormComponent";
-import {XCustomFilter} from "../serverApi/FindParam";
+import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {XAssoc, XField} from "../../serverApi/XEntityMetadata";
+import {XUtilsMetadata} from "../XUtilsMetadata";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XFilterProp} from "../XFormComponent";
+import {XCustomFilter} from "../../serverApi/FindParam";
 
 // pouzivany vo filtri v XLazyDataTable aj v XFormDataTable2
-export const XDropdownDTFilter = (props: {entity: string; path: string; value: any; onValueChange: (field: string, displayValue: any) => void; filter?: XCustomFilter; sortField?: string;}) => {
+export const DropdownDTFilter = (props: {entity: string; path: string; value: any; onValueChange: (field: string, displayValue: any) => void; filter?: XCustomFilter; sortField?: string;}) => {
 
     const [options, setOptions] = useState<any[]>([]);
 
     const fieldList: string[] = XUtilsCommon.getFieldListForPath(props.path);
     if (fieldList.length < 2) {
-        throw `XDropdownDTFilter: prop path (${props.path}) must have at least 2 items`;
+        throw `DropdownDTFilter: prop path (${props.path}) must have at least 2 items`;
     }
     const displayField = fieldList[fieldList.length - 1];
 
@@ -46,3 +46,4 @@ export const XDropdownDTFilter = (props: {entity: string; path: string; value: a
                   optionLabel={displayField} optionValue={displayField} value={props.value} options={options} onChange={onValueChange}/>
     );
 }
+
