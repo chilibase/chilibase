@@ -1,17 +1,17 @@
 import React from "react";
-import {FormComponentProps} from "./form";
-import {XInput} from "./XInput";
-import {IPostgresInterval} from "./XUtils";
-import {XInputIntervalBase} from "./XInputIntervalBase";
+import {FormComponentProps} from "../form";
+import {XInput} from "../XInput";
+import {IPostgresInterval} from "../XUtils";
+import {InputIntervalBase} from "./InputIntervalBase";
 
-export interface XInputIntervalProps extends FormComponentProps<number> {
+export interface InputIntervalProps extends FormComponentProps<IPostgresInterval> {
     field: string;
     inputStyle?: React.CSSProperties;
 }
 
-export class XInputInterval extends XInput<number, XInputIntervalProps> {
+export class InputInterval extends XInput<IPostgresInterval, InputIntervalProps> {
 
-    constructor(props: XInputIntervalProps) {
+    constructor(props: InputIntervalProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -29,9 +29,10 @@ export class XInputInterval extends XInput<number, XInputIntervalProps> {
         return (
             <div className="field grid">
                 <label htmlFor={this.props.field} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <XInputIntervalBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
+                <InputIntervalBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
                                     readOnly={this.isReadOnly()} error={this.getError()} style={this.props.inputStyle} {...this.getClassNameTooltip()}/>
             </div>
         );
     }
 }
+

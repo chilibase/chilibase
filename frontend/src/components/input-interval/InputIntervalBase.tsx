@@ -1,10 +1,10 @@
 import {InputText} from "primereact/inputtext";
 import React, {CSSProperties, useState} from "react";
-import {intervalAsUI, intervalFromUI} from "../serverApi/XUtilsConversions";
-import {IPostgresInterval, XUtils} from "./XUtils";
+import {intervalAsUI, intervalFromUI} from "../../serverApi/XUtilsConversions";
+import {IPostgresInterval, XUtils} from "../XUtils";
 
 // zatial podporuje len hours a minutes - TODO - pridat aj seconds, ale cez nejaky prepinac
-export const XInputIntervalBase = (props: {
+export const InputIntervalBase = (props: {
     id?: string;
     value: IPostgresInterval | null;
     onChange: (value: IPostgresInterval | null) => void;
@@ -57,3 +57,4 @@ export const XInputIntervalBase = (props: {
                    readOnly={props.readOnly} {...XUtils.createTooltipOrErrorProps(props.error)} style={{width:'3.5rem', ...props.style}}/>
     );
 }
+
