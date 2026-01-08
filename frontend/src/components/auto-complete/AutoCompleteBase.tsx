@@ -11,8 +11,8 @@ import {FindResult} from "../../serverApi/FindResult";
 import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
 import {XEntity} from "../../serverApi/XEntityMetadata";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
-import {XFormDialog, XFormDialogState} from "../XFormDialog";
-import {XFormProps} from "../XFormBase";
+import {FormDialog, FormDialogState} from "../form";
+import {FormProps} from "../form";
 import {XSearchBrowseDialog, XSearchBrowseDialogState} from "../XSearchBrowseDialog";
 import {SearchBrowseProps} from "../lazy-data-table";
 
@@ -45,7 +45,7 @@ export interface AutoCompleteBaseProps {
     splitQueryValue: boolean; // ak true, tak splituje natypovanu hodnotu podla space a vsetky parcialne hodnoty sa musia vyskytovat v danom suggestion (default je true)
     SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
-    ValueForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
+    ValueForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
     valueFormElement?: React.ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
     idField?: string; // id field (nazov atributu) objektu z value/suggestions - je potrebny pri otvoreni formularu na editaciu, formular potrebuje id-cko na nacitanie/update zaznamu z DB
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
@@ -92,7 +92,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                             // zmena je hlasena cez onErrorChange parentovi, parent by mal zabezpecit, ze ak mame nejaky nevalidny autocomplete, formular sa neda sejvnut na stacenie Save
         suggestions: any[] | undefined; // pouzivane ak suggestionsLoad = eager alebo onSearchStart, nepouzivane ak mame this.props.suggestions alebo suggestionsLoad = lazy
         filteredSuggestions: any[] | undefined;
-        formDialogState: XFormDialogState;
+        formDialogState: FormDialogState;
         searchBrowseDialogState: XSearchBrowseDialogState;
     };
 
@@ -469,7 +469,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                 this.setFocusToInput();
             }
         }
-        const formDialogState: XFormDialogState = {opened: false};
+        const formDialogState: FormDialogState = {opened: false};
         this.setState({formDialogState: formDialogState});
     }
 
@@ -512,7 +512,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                         if (this.state.inputChanged) {
                             initValues[this.getFirstField()] = this.state.inputValueState;
                         }
-                        const formDialogState: XFormDialogState = {
+                        const formDialogState: FormDialogState = {
                             opened: true,
                             id: undefined,
                             initValues: initValues,
@@ -606,7 +606,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
         if (this.props.idField === undefined) {
             throw "AutoCompleteBase: property valueForm is defined but property idField is also needed for form editation.";
         }
-        const formDialogState: XFormDialogState = {
+        const formDialogState: FormDialogState = {
             opened: true,
             id: this.props.value[this.props.idField],
             initValues: undefined,
@@ -761,7 +761,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                               showEmptyMessage={true}/>
                 {...buttons}{/* ked tu bolo len {buttons} bez ..., tak vypisoval hlasku Warning: Each child in a list should have a unique "key" prop. */}
                 {this.hasValueForm() ?
-                    <XFormDialog key="dialog-form" dialogState={this.state.formDialogState} Form={this.props.ValueForm} formElement={this.props.valueFormElement} entity={this.xEntity!.name}/>
+                    <FormDialog key="dialog-form" dialogState={this.state.formDialogState} Form={this.props.ValueForm} formElement={this.props.valueFormElement} entity={this.xEntity!.name}/>
                     : undefined}
                 {this.hasSearchBrowse() && !readOnly ?
                     <XSearchBrowseDialog key="dialog-browse" dialogState={this.state.searchBrowseDialogState} SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement} onHide={this.searchDialogOnHide}/>

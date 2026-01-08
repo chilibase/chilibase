@@ -1,9 +1,9 @@
 import React from "react";
 import {XFormRowCol} from "./XFormRowCol";
-import {XFormBase} from "../XFormBase";
+import {FormBase} from "../form";
 
 export interface XFormColProps {
-    form?: XFormBase;
+    form?: FormBase;
     width?: string | "full"; // nastavi css property {width: <props.width>} na div (full nastavuje 100%)
     labelStyle?: React.CSSProperties;
     style?: React.CSSProperties; // prenesie sa na div

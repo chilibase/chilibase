@@ -1,5 +1,5 @@
 import React from "react";
-import {XFilterProp, XFormComponent, XFormComponentProps} from "./XFormComponent";
+import {FilterProp, FormComponent, FormComponentProps} from "./form";
 import {XAssoc} from "../serverApi/XEntityMetadata";
 import {XObject} from "./XObject";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
@@ -13,18 +13,18 @@ import {XUtilsCommon} from "../serverApi/XUtilsCommon";
 // 2. entity of form uses OneToMany assoc to link rows (entity for link table must be created)
 //      in this case prop "assocToMany" is OneToMany assoc to link rows and prop "assocManyToOne" is ManyToOne assoc from link row to option row
 
-export interface XMultiSelectProps extends XFormComponentProps<XObject> {
+export interface XMultiSelectProps extends FormComponentProps<XObject> {
     assocToMany: string; // assoc ManyToMany to option rows or assoc OneToMany to link rows; can be also path (e.g. <assoc1>.<assoc2> - multiselect will run on <assoc2>)
     assocManyToOne?: string; // assoc from link row to option row - used only if prop "assocToMany" is OneToMany assoc to link rows
     displayField: string; // field of option row
-    filter?: XFilterProp; // filter for option rows
+    filter?: FilterProp; // filter for option rows
     sortField?: string | DataTableSortMeta[]; // sortField for option rows
     fields?: string[]; // ak chceme pri citani options nacitat aj asociovane objekty
     width?: string;
     scrollHeight?: string; // Maximum height of the suggestions panel.
 }
 
-export class XMultiSelect extends XFormComponent<XObject, XMultiSelectProps> {
+export class XMultiSelect extends FormComponent<XObject, XMultiSelectProps> {
 
     protected xAssocToMany: XAssoc;
     protected xAssocManyToOne?: XAssoc;

@@ -1,8 +1,10 @@
 // pouzivane na custom validaciu na urovni formulara
+// TODO - should be replaced with FormErrorMap, if it is possible
 export interface XErrors {
     [name: string]: string;
 }
 
+// TODO - rename to FormError (Error is javascript global identifier), file rename also to FormError.ts and move to dir form
 export interface XError {
     onChange?: string;
     onBlur?: string;
@@ -12,6 +14,7 @@ export interface XError {
 }
 
 // pouzivane v lib-ke
+// TODO - rename to FormErrorMap
 export interface XErrorMap {
     [name: string]: XError;
 }

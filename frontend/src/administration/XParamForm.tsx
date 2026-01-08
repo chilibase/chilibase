@@ -1,15 +1,15 @@
 import React from "react";
-import {XFormBaseModif} from "../components/XFormBaseModif";
-import {Form} from "../components/XFormBase";
+import {FormBaseModif} from "../components/form";
+import {Form} from "../components/form";
 import {XObject} from "../components/XObject";
 import {InputDecimal} from "../components/input-decimal";
 import {InputDate} from "../components/input-date";
 import {InputText} from "../components/input-text";
-import {XFormFooter} from "../components/XFormFooter";
-import {XFormHeader} from "../components/XFormHeader";
+import {FormFooter} from "../components/form";
+import {FormHeader} from "../components/form";
 
 @Form("XParam")
-export class XParamForm extends XFormBaseModif {
+export class XParamForm extends FormBaseModif {
 
     createNewObject(): XObject {
         return {version: 0};
@@ -18,7 +18,7 @@ export class XParamForm extends XFormBaseModif {
     render() {
         return (
             <div>
-                <XFormHeader label="Parameter"/>
+                <FormHeader label="Parameter"/>
                 <div className="x-form-row">
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
@@ -29,7 +29,7 @@ export class XParamForm extends XFormBaseModif {
                         <InputText form={this} field="value" label="Value" inputStyle={{width:'45rem'}}/>
                     </div>
                 </div>
-                <XFormFooter form={this}/>
+                <FormFooter form={this}/>
             </div>
         );
     }

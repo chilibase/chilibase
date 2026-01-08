@@ -1,10 +1,10 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XFormComponentProps} from "../XFormComponent";
+import {FormComponentProps} from "../form/FormComponent";
 import {XInput} from "../XInput";
 
-export interface InputDecimalProps extends XFormComponentProps<number> {
+export interface InputDecimalProps extends FormComponentProps<number> {
     field: string;
     size?: number;
     inputStyle?: React.CSSProperties;

@@ -1,4 +1,4 @@
-import {XFormBase} from "../XFormBase";
+import {FormBase} from "../form";
 import React, {Component} from "react";
 import {XObject} from "../XObject";
 import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
@@ -8,7 +8,7 @@ import {XCustomFilter} from "../../serverApi/FindParam";
 import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
 
 export interface FormComponentDTProps {
-    form: XFormBase;
+    form: FormBase;
     entity: string;
     rowData: any;
     readOnly?: TableFieldReadOnlyProp;
@@ -31,7 +31,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
 
         this.valueChanged = false;
 
-        XFormBase.getRowTechData(props.rowData).formComponentDTList.push(this);
+        FormBase.getRowTechData(props.rowData).formComponentDTList.push(this);
     }
 
     // nazov fieldu, pod ktorym sa hodnota uklada do objektu this.props.rowData
@@ -162,7 +162,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
 
     // vrati error message z rowData.errorMap
     getError(): string | undefined {
-        const error: XError = XFormBase.getRowTechData(this.props.rowData).errorMap[this.getField()];
+        const error: XError = FormBase.getRowTechData(this.props.rowData).errorMap[this.getField()];
         return error ? XUtils.getErrorMessage(error) : undefined;
     }
 
@@ -172,7 +172,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
             // developer v onChange nastavi atributy na object-e
             this.props.onChange({object: object, tableRow: this.props.rowData, assocObjectChange: undefined});
             // rovno zavolame form.setState({...}), nech to nemusi robit developer
-            this.props.form.setStateXForm();
+            this.props.form.setStateForm();
             this.valueChanged = false; // resetneme na false (dalsi onChange volame az ked user zmeni hodnotu)
         }
     }

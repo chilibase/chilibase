@@ -7,7 +7,7 @@ import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
 import {TableFieldFilterProp} from "../form-data-table";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XFormProps} from "../XFormBase";
+import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
 export interface AutoCompleteDTProps extends FormComponentDTProps {
@@ -16,7 +16,7 @@ export interface AutoCompleteDTProps extends FormComponentDTProps {
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
-    AssocForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row
+    AssocForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     dropdownButtonEnabled?: boolean; // ak dame false, tak nezobrazi dropdown button (default je true), ale ak by sme nemali mat ziadny button tak ho (zatial) zobrazime readOnly aby bolo vidno ze mame autocomplete
     suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu

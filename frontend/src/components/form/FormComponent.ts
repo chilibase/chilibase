@@ -1,40 +1,40 @@
 import React, {Component} from "react";
-import {XFormBase} from "./XFormBase";
-import {XError} from "./XErrors";
-import {XObject} from "./XObject";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
-import {OperationType, XUtils} from "./XUtils";
-import {XFieldChangeEvent} from "./XFieldChangeEvent";
-import {XCustomFilter} from "../serverApi/FindParam";
+import {FormBase} from "./FormBase";
+import {XError} from "../XErrors";
+import {XObject} from "../XObject";
+import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {OperationType, XUtils} from "../XUtils";
+import {XFieldChangeEvent} from "../XFieldChangeEvent";
+import {XCustomFilter} from "../../serverApi/FindParam";
 
 // typ metody pre onChange - pouzil som XFieldChangeEvent<any>, pri deklarovani onChange metody na komponente
 // sa da vdaka tomu pouzit (e: XFieldChangeEvent<Dobrovolnik>) a kompilator sa nestazuje. Je to hack, mozno existuje krajsie riesenie
-export type XFieldOnChange = (e: XFieldChangeEvent<any>) => void;
+export type FieldOnChange = (e: XFieldChangeEvent<any>) => void;
 
-export type XReadOnlyProp = boolean | ((object: any) => boolean);
+export type ReadOnlyProp = boolean | ((object: any) => boolean);
 
 // typ property pre pridanie filtra na vyber associable rows - pouziva sa na assoc fieldoch (XAutoComplete, Dropdown, ...)
 // bud sa do property zapise priamo XCustomFilter alebo sa vytvara funkcia ktora XCustomFilter vrati (v tomto pripade moze XCustomFilter zavisiet od aktualne editovaneho objektu "object")
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
-export type XFilterProp = XCustomFilter | ((object: any) => XCustomFilter | undefined);
+export type FilterProp = XCustomFilter | ((object: any) => XCustomFilter | undefined);
 
-export interface XFormComponentProps<T> {
-    form: XFormBase;
+export interface FormComponentProps<T> {
+    form: FormBase;
     label?: string;
     labelTooltip?: string; // tooltip for label (not implemented for every form component)
     tooltip?: string; // tooltip for input
     placeholder?: string;
     desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat label a tooltip) - vytvoreny pre depaul
-    readOnly?: XReadOnlyProp;
+    readOnly?: ReadOnlyProp;
     labelStyle?: React.CSSProperties;
     inline?: boolean; // poznamka: nenasiel som pouzitie v skch-finance a depaul (pouziva sa <div className="x-form-inline-row">), asi je to zombie
                         // je to metuci nazov, da sa pouzit ked mame komponent v riadku (napr. cez uvedeny <div className="x-form-inline-row">)
                         // a chceme aby mal element pre label dlzku labelu (je to vlastne labelStyle={{width: 'auto', marginLeft: '1rem'}}, ten marginLeft uz asi neni potrebny, mame to cez css poriesene)
-    onChange?: XFieldOnChange;
+    onChange?: FieldOnChange;
     onlyInput?: boolean; // ak true, tak vyrenderuje len input element (nerenderuje <div className="field grid"> ani label)
 }
 
-export abstract class XFormComponent<T, P extends XFormComponentProps<T>> extends Component<P> {
+export abstract class FormComponent<T, P extends FormComponentProps<T>> extends Component<P> {
 
     private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (ci bol volany onChange); ak nebola zmena, tak nevolame aplikacny onChange z onBlur
                                     // mali sme problem ze aplikacny onChange sa volal aj ked uzivatel iba klikol do inputu a odisiel z neho
@@ -44,7 +44,7 @@ export abstract class XFormComponent<T, P extends XFormComponentProps<T>> extend
 
         this.valueChanged = false;
 
-        props.form.addXFormComponent(this);
+        props.form.addFormComponent(this);
     }
 
     // nazov fieldu, pod ktorym sa hodnota uklada do objektu form.state.object
@@ -71,7 +71,7 @@ export abstract class XFormComponent<T, P extends XFormComponentProps<T>> extend
     }
 
     // writes value into form.state.object
-    onValueChangeBase(value: any, onChange?: XFieldOnChange, assocObjectChange?: OperationType) {
+    onValueChangeBase(value: any, onChange?: FieldOnChange, assocObjectChange?: OperationType) {
         const error: string | undefined = this.validateOnChange(value);
         this.props.form.onFieldChange(this.getField(), value, error, onChange, assocObjectChange);
         this.valueChanged = true;
@@ -203,13 +203,13 @@ export abstract class XFormComponent<T, P extends XFormComponentProps<T>> extend
             // developer v onChange nastavi atributy na object-e
             this.props.onChange({object: object});
             // rovno zavolame form.setState({...}), nech to nemusi robit developer
-            this.props.form.setStateXForm();
+            this.props.form.setStateForm();
             this.valueChanged = false; // resetneme na false (dalsi onChange volame az ked user zmeni hodnotu)
         }
     }
 
     // len pre assoc fieldy sa pouziva
-    getFilterBase(filter: XFilterProp | undefined): XCustomFilter | undefined {
+    getFilterBase(filter: FilterProp | undefined): XCustomFilter | undefined {
         let customFilter: XCustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
             customFilter = filter;
@@ -218,7 +218,7 @@ export abstract class XFormComponent<T, P extends XFormComponentProps<T>> extend
             //const object: XObject = this.props.form.getXObject();
             const object: XObject = this.props.form.state.object;
             // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii object
-            // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre XFormBase))
+            // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre FormBase))
             //if (object) {
                 customFilter = filter(object);
             //}
@@ -226,3 +226,4 @@ export abstract class XFormComponent<T, P extends XFormComponentProps<T>> extend
         return customFilter;
     }
 }
+

@@ -1,10 +1,10 @@
 import React from "react";
-import {XFormComponentProps} from "./XFormComponent";
+import {FormComponentProps} from "./form";
 import {XInput} from "./XInput";
 import {IPostgresInterval} from "./XUtils";
 import {XInputIntervalBase} from "./XInputIntervalBase";
 
-export interface XInputIntervalProps extends XFormComponentProps<number> {
+export interface XInputIntervalProps extends FormComponentProps<number> {
     field: string;
     inputStyle?: React.CSSProperties;
 }

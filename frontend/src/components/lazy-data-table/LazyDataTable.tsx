@@ -36,7 +36,7 @@ import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
 import {LazyDataTableQueryParam} from "../../serverApi/ExportImportParam";
 import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRowsDialog";
 import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
-import {XFormProps, XOnSaveOrCancelProp} from "../XFormBase";
+import {FormProps, OnSaveOrCancelProp} from "../form";
 import {InputDateBase} from "../input-date";
 import {InputDecimalBase} from "../input-decimal";
 import {prLocaleOption, xLocaleOption} from "../XLocale";
@@ -57,7 +57,7 @@ import {useXStateStorageBase} from "../useXStateStorageBase";
 import * as _ from "lodash";
 import {XtDocTemplate} from "../../modules/docTemplates/xt-doc-template";
 import {XDocTemplateButton} from "../../modules/docTemplates/XDocTemplateButton";
-import {XFormDialog, XFormDialogState} from "../XFormDialog";
+import {FormDialog, FormDialogState} from "../form";
 
 // typ pouzivany len v XLazyDataTable
 interface XFieldSetMaps {
@@ -69,14 +69,14 @@ export type MultilineRenderType = "singleLine" | "fewLines" | "allLines";
 
 export type OpenFormForInsert = (
     initValues?: object,
-    onSaveOrCancel?: XOnSaveOrCancelProp,
-    Form?: React.ComponentType<XFormProps>,
+    onSaveOrCancel?: OnSaveOrCancelProp,
+    Form?: React.ComponentType<FormProps>,
     formElement?: React.ReactElement
 ) => void;
 export type OpenFormForUpdate = (
     id: number,
-    onSaveOrCancel?: XOnSaveOrCancelProp,
-    Form?: React.ComponentType<XFormProps>,
+    onSaveOrCancel?: OnSaveOrCancelProp,
+    Form?: React.ComponentType<FormProps>,
     formElement?: React.ReactElement
 ) => void;
 
@@ -161,7 +161,7 @@ export interface LazyDataTableProps {
     formFooterHeight?: string; // pouziva sa (zatial) len pri deme - zadava sa sem vyska linkov na zdrojaky (SourceCodeLinkForm, SourceCodeLinkEntity) aby ich bolo vidno pri automatickom vypocte vysky tabulky
     shrinkWidth?: boolean; // default true - ak je true, nerozsiruje stlpce na viac ako je ich explicitna sirka (nevznikaju "siroke" tabulky na celu dlzku parent elementu)
     onResetTable?: () => void; // zavola sa pri kliknuti na button resetTable (Reset filter)
-    EditForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
+    EditForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
     editFormElement?: React.ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
     onAddRow?: ((filters: DataTableFilterMeta, openFormForInsert: OpenFormForInsert) => void) | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
                                                             // filters are here in order to enable init some attributes of new row from filters values (if needed)
@@ -171,7 +171,7 @@ export interface LazyDataTableProps {
         // -> TODO - rename to onEditRow
     removeRow?: ((selectedRow: any) => Promise<boolean>) | boolean; // if removeRow is function or removeRow = true, then remove row button is created
         // -> TODO - rename to onRemoveRow
-    onRemoveRow?: XOnSaveOrCancelProp; // function called after removing row (post remove row) -> TODO - rename to postRemoveRow
+    onRemoveRow?: OnSaveOrCancelProp; // function called after removing row (post remove row) -> TODO - rename to postRemoveRow
     docTemplates?: true | ((entity: string) => Promise<XtDocTemplate[]>); // if true, doc template button is rendered; function param: function returning list of templates that can be used by user (for the case if we need project specific way of fetching templates)
     appButtonsForRow?: AppButtonForRow[]; // do funkcii tychto buttonov sa posiela vyselectovany row
     appButtons?: any; // vseobecne buttons (netreba im poslat vyselectovany row) - mozno by sa mali volat appButtonsGeneral
@@ -454,7 +454,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const [filtersAfterFiltering, setFiltersAfterFiltering] = useState<DataTableFilterMeta>(filters); // sem si odkladame stav filtra po kliknuti na button Filter (chceme exportovat presne to co vidno vyfiltrovane)
     const [ftsInputValueAfterFiltering, setFtsInputValueAfterFiltering] = useState<FtsInputValue | undefined>(ftsInputValue); // tak isto ako filtersAfterFiltering
     const [optionalCustomFilterAfterFiltering, setOptionalCustomFilterAfterFiltering] = useState<OptionalCustomFilter | undefined>(optionalCustomFilter); // tak isto ako filtersAfterFiltering
-    const [formDialogState, setFormDialogState] = useState<XFormDialogState>({opened: false});
+    const [formDialogState, setFormDialogState] = useState<FormDialogState>({opened: false});
 
     // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
     useEffect(() => {
@@ -858,8 +858,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const openFormForInsert: OpenFormForInsert = (
         initValues?: object,
-        onSaveOrCancel?: XOnSaveOrCancelProp,
-        Form?: React.ComponentType<XFormProps>,
+        onSaveOrCancel?: OnSaveOrCancelProp,
+        Form?: React.ComponentType<FormProps>,
         formElement?: React.ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
@@ -897,8 +897,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const openFormForUpdate: OpenFormForUpdate = (
         id: number,
-        onSaveOrCancel?: XOnSaveOrCancelProp,
-        Form?: React.ComponentType<XFormProps>,
+        onSaveOrCancel?: OnSaveOrCancelProp,
+        Form?: React.ComponentType<FormProps>,
         formElement?: React.ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
@@ -1663,7 +1663,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: AppButtonForRow) => <XButton key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}
                 {props.searchBrowseParams === undefined ? props.appButtons : null}
                 {props.searchBrowseParams !== undefined ? <XButton key="choose" label={xLocaleOption('chooseRow')} onClick={onClickChoose}/> : null}
-                {editFormExists ? <XFormDialog key="formDialog" dialogState={formDialogState} entity={props.entity}/> : null}
+                {editFormExists ? <FormDialog key="formDialog" dialogState={formDialogState} entity={props.entity}/> : null}
                 {exportRows ? <ExportRowsDialog key="exportRowsDialog" dialogState={exportRowsDialogState} hideDialog={() => setExportRowsDialogState({dialogOpened: false})}/> : null}
             </div>
             {hasContentTypeHtml() ? <Editor style={{display: 'none'}} showHeader={false}/> : null /* we want to import css if needed (<style type="text/css" data-primereact-style-id="editor">) */}
@@ -1696,7 +1696,7 @@ export type AutoCompleteInFilterProps = {
     inputClassName?: string;
     SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
-    ValueForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
+    ValueForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
     valueFormElement?: React.ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
     minLength?: number; // Minimum number of characters to initiate a search (default 1)
     scrollHeight?: string; // Maximum height of the suggestions panel.

@@ -5,7 +5,6 @@ import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
 import {XAssoc, XField} from "../../serverApi/XEntityMetadata";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
-import {XFilterProp} from "../XFormComponent";
 import {XCustomFilter} from "../../serverApi/FindParam";
 
 // pouzivany vo filtri v XLazyDataTable aj v XFormDataTable2

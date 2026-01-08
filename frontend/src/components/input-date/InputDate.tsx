@@ -1,10 +1,10 @@
 import React from "react";
 import {InputDateBase} from "./InputDateBase";
-import {XFormComponentProps} from "../XFormComponent";
+import {FormComponentProps} from "../form";
 import {XInput} from "../XInput";
 import {dateFromModel, XDateScale} from "../../serverApi/XUtilsConversions";
 
-export interface InputDateProps extends XFormComponentProps<number> {
+export interface InputDateProps extends FormComponentProps<Date> {
     field: string;
     scale?: XDateScale;
 }

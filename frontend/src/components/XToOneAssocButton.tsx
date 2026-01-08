@@ -1,4 +1,4 @@
-import {XFormBase} from "./XFormBase";
+import {FormBase} from "./form";
 import {XObject} from "./XObject";
 import React from "react";
 import {Button} from "primereact/button";
@@ -6,7 +6,7 @@ import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtils} from "./XUtils";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 
-export const XToOneAssocButton = (props: {form: XFormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
+export const XToOneAssocButton = (props: {form: FormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
 
     // mozno lepsie by bolo sem dat xEntityAssoc.idField ale postaci aj *FAKE*
     props.form.addField(props.assocField + '.*FAKE*');

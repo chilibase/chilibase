@@ -1,9 +1,9 @@
 import React from "react";
 import {XFormRowCol} from "./XFormRowCol";
-import {XFormBase} from "../XFormBase";
+import {FormBase} from "../form";
 
 export interface XFormRowProps {
-    form?: XFormBase;
+    form?: FormBase;
     labelStyle?: React.CSSProperties;
     style?: React.CSSProperties; // prenesie sa na div
     children: JSX.Element | JSX.Element[];

@@ -1,4 +1,4 @@
-import {XFormBase} from "./XFormBase";
+import {FormBase} from "./form";
 import {XObject} from "./XObject";
 import React, {useRef, useState} from "react";
 import {InputText} from "primereact/inputtext";
@@ -8,7 +8,7 @@ import {Dialog} from "primereact/dialog";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 
-export const XSearchButtonOld = (props: {form: XFormBase; assocField: string; displayField: string, searchTable: any; assocForm?: any; label?: string; readOnly?: boolean; size?: number; inputStyle?: React.CSSProperties;}) => {
+export const XSearchButtonOld = (props: {form: FormBase; assocField: string; displayField: string, searchTable: any; assocForm?: any; label?: string; readOnly?: boolean; size?: number; inputStyle?: React.CSSProperties;}) => {
 
     props.form.addField(props.assocField + '.' + props.displayField);
 

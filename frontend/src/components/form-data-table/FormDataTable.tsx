@@ -1,4 +1,4 @@
-import {XFormBase, XFormProps} from "../XFormBase";
+import {FormBase, FormProps} from "../form";
 import {XObject} from "../XObject";
 import React, {Component, ReactChild} from "react";
 import {DropdownDT} from "../dropdown/DropdownDT";
@@ -57,7 +57,7 @@ export interface DropdownOptionsMap {
 
 // POZNAMKA: parameter width?: string; neviem ako funguje (najme pri pouziti scrollWidth/scrollHeight), ani sa zatial nikde nepouziva
 export interface FormDataTableProps {
-    form: XFormBase;
+    form: FormBase;
     assocField: string;
     dataKey?: string;
     paginator?: boolean;
@@ -139,7 +139,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         this.getDropdownFilterValue = this.getDropdownFilterValue.bind(this);
         this.bodyTemplate = this.bodyTemplate.bind(this);
 
-        props.form.addXFormDataTable(this);
+        props.form.addFormDataTable(this);
 
         //props.form.addField(props.assocField + '.*FAKE*'); - vzdy mame aspon 1 field, nie je to potrebne
         for (const child of props.children) {
@@ -499,7 +499,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         const object: XObject = this.props.form.getXObject();
         const rowList: any[] = object[this.props.assocField];
         for (const row of rowList) {
-            const rowTechData: RowTechData = XFormBase.getRowTechData(row);
+            const rowTechData: RowTechData = FormBase.getRowTechData(row);
             const xErrorMap: XErrorMap = {};
             for (const formComponentDT of rowTechData.formComponentDTList) {
                 const errorItem = formComponentDT.validate();
@@ -828,7 +828,7 @@ export interface FormAutoCompleteColumnProps extends FormColumnBaseProps {
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     SearchBrowse?: React.ComponentType<SearchBrowseProps>;
     searchBrowseElement?: React.ReactElement;
-    AssocForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row
+    AssocForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
     filter?: TableFieldFilterProp;

@@ -1,12 +1,12 @@
-import {Form, XFormBase} from "../components/XFormBase";
+import {Form, FormBase} from "../components/form";
 import {InputDecimal} from "../components/input-decimal";
 import {InputText} from "../components/input-text";
 import React from "react";
 import {FormColumn, FormDataTable} from "../components/form-data-table";
-import {XFormFooter} from "../components/XFormFooter";
+import {FormFooter} from "../components/form";
 
 @Form("XBrowseMeta")
-export class XBrowseMetaForm extends XFormBase {
+export class XBrowseMetaForm extends FormBase {
 
     render() {
         return (
@@ -30,7 +30,7 @@ export class XBrowseMetaForm extends XFormBase {
                         <FormColumn field="columnOrder" header="Column order"/>
                     </FormDataTable>
                 </div>
-                <XFormFooter form={this}/>
+                <FormFooter form={this}/>
             </div>
         );
     }

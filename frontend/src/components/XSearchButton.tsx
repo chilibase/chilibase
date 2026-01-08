@@ -4,7 +4,7 @@ import {Button} from "primereact/button";
 import {XUtils} from "./XUtils";
 import {Dialog} from "primereact/dialog";
 import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XFilterProp, XFormComponent, XFormComponentProps} from "./XFormComponent";
+import {FilterProp, FormComponent, FormComponentProps} from "./form";
 import {XAssoc} from "../serverApi/XEntityMetadata";
 import {XObject} from "./XObject";
 import {XCustomFilter} from "../serverApi/FindParam";
@@ -16,17 +16,17 @@ import {XUtilsCommon} from "../serverApi/XUtilsCommon";
 // nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci XAutoComplete
 // TODO - ak sa to ma pouzivat, tak zmenit searchBrowse a assocForm (pouzivane pri readOnly) na SearchBrowse/searchBrowseElement a AssocForm/assocFormElement a nepouzivat FormNavigator
 
-export interface XSearchButtonProps extends XFormComponentProps<XObject> {
+export interface XSearchButtonProps extends FormComponentProps<XObject> {
     assocField: string;
     displayField: string;
     searchBrowse: JSX.Element;
     assocForm?: JSX.Element;
-    filter?: XFilterProp;
+    filter?: FilterProp;
     size?: number;
     inputStyle?: React.CSSProperties;
 }
 
-export class XSearchButton extends XFormComponent<XObject, XSearchButtonProps> {
+export class XSearchButton extends FormComponent<XObject, XSearchButtonProps> {
 
     protected xAssoc: XAssoc;
 

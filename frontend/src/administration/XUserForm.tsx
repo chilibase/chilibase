@@ -1,20 +1,20 @@
-import type {XFormProps} from "../components/XFormBase";
+import type {FormProps} from "../components/form";
 import {InputText} from "../components/input-text";
 import React from "react";
 import {InputDecimal} from "../components/input-decimal";
 import {Password} from "primereact/password";
 import {OperationType, XUtils} from "../components/XUtils";
-import {XFormFooter} from "../components/XFormFooter";
+import {FormFooter} from "../components/form";
 import {Checkbox} from "../components/checkbox";
 import {XEnvVar, XViteAuth} from "../components/XEnvVars";
-import {XFormBaseModif} from "../components/XFormBaseModif";
+import {FormBaseModif} from "../components/form";
 import {InputDate} from "../components/input-date";
 import {XObject} from "../components/XObject";
-import {XFormHeader} from "../components/XFormHeader";
+import {FormHeader} from "../components/form";
 
-export class XUserForm extends XFormBaseModif {
+export class XUserForm extends FormBaseModif {
 
-    constructor(props: XFormProps) {
+    constructor(props: FormProps) {
         super(props, "XUser");
 
         this.state.usernameEnabledReadOnly = false;
@@ -101,7 +101,7 @@ export class XUserForm extends XFormBaseModif {
 
         return (
             <div>
-                <XFormHeader label="User"/>
+                <FormHeader label="User"/>
                 <div className="x-form-row">
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true} labelStyle={{width:'14rem'}}/>
@@ -114,7 +114,7 @@ export class XUserForm extends XFormBaseModif {
                         <InputText form={this} field="modifXUser.name" label="Modified by" size={20} labelStyle={{width:'14rem'}}/>
                     </div>
                 </div>
-                <XFormFooter form={this}/>
+                <FormFooter form={this}/>
             </div>
         );
     }

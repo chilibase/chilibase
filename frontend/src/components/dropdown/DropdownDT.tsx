@@ -1,4 +1,4 @@
-import {XFormBase} from "../XFormBase";
+import {FormBase} from "../form";
 import React, {useEffect} from "react";
 import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
@@ -9,7 +9,7 @@ import {XCustomFilter} from "../../serverApi/FindParam";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 
 export const DropdownDT = (props: {
-        form: XFormBase;
+        form: FormBase;
         entity: string;
         assocField: string;
         displayField: string;

@@ -1,5 +1,5 @@
 import React, {Component, ReactElement, RefObject} from "react";
-import {XFormBase} from "./XFormBase";
+import {FormBase} from "./form";
 
 // helper
 interface XFormElement {
@@ -77,8 +77,8 @@ export class XFormNavigator3 extends Component<XFormNavigator3Props> {
         const formElements: XFormElement[] = this.getAllFormElements();
         // slice makes a copy
         for (const formElement of formElements.slice().reverse()) {
-            if (this.isXFormBase(formElement.elem)) {
-                if (!((formElement.xElemRef as RefObject<XFormBase>).current!.cancelEdit())) {
+            if (this.isFormBase(formElement.elem)) {
+                if (!((formElement.xElemRef as RefObject<FormBase>).current!.cancelEdit())) {
                     return false;
                 }
             }
@@ -86,7 +86,7 @@ export class XFormNavigator3 extends Component<XFormNavigator3Props> {
         return true;
     }
 
-    isXFormBase(elem: ReactElement): boolean {
+    isFormBase(elem: ReactElement): boolean {
         const type = elem.type;
 
         // only class components have prototype.isReactComponent
@@ -94,7 +94,7 @@ export class XFormNavigator3 extends Component<XFormNavigator3Props> {
             typeof type === "function" &&
             type.prototype &&
             type.prototype.isReactComponent &&
-            type.prototype instanceof XFormBase);
+            type.prototype instanceof FormBase);
     }
 
     // helper returning all elems including root elem

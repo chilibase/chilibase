@@ -1,5 +1,5 @@
 import React from "react";
-import {XFormBase} from "../XFormBase";
+import {FormBase} from "../form";
 import {XUtils} from "../XUtils";
 
 // the purpose of XFormRow/Col:
@@ -9,7 +9,7 @@ import {XUtils} from "../XUtils";
 // ak je property definovany na XFormCol aj na child-e, tak vyssiu prio ma property na child-e
 export interface XFormRowColProps {
     className: "x-form-row" | "x-form-inline-row" | "x-form-col";
-    form?: XFormBase; // toto sa zatial neda pouzit, lebo form je povinny atribut na komponentoch a pouziva sa uz v konstruktore, ktovie ci by to vobec zafungovalo
+    form?: FormBase; // toto sa zatial neda pouzit, lebo form je povinny atribut na komponentoch a pouziva sa uz v konstruktore, ktovie ci by to vobec zafungovalo
     width?: string | "full"; // nastavi css property {width: <props.width>} na div (full nastavuje 100%)
     labelStyle?: React.CSSProperties;
     style?: React.CSSProperties; // prenesie sa na div

@@ -1,4 +1,4 @@
-import {XFormBase} from "../XFormBase";
+import {FormBase} from "../form";
 import React from "react";
 import {InputText} from "primereact/inputtext";
 import {stringAsUI, stringFromUI} from "../../serverApi/XUtilsConversions";
@@ -7,7 +7,7 @@ import {TableFieldReadOnlyProp} from "../form-data-table";
 import {XUtils} from "../XUtils";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 
-export const InputTextDT = (props: {form: XFormBase; entity: string; field: string; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
+export const InputTextDT = (props: {form: FormBase; entity: string; field: string; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
     const xField = XUtilsMetadataCommon.getXFieldByPathStr(props.entity, props.field);
 

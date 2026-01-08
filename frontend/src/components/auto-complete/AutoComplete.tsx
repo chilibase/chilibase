@@ -1,5 +1,5 @@
 import React from "react";
-import {XFilterProp, XFormComponent, XFormComponentProps} from "../XFormComponent";
+import {FilterProp, FormComponent, FormComponentProps} from "../form";
 import {XAssoc} from "../../serverApi/XEntityMetadata";
 import {OperationType} from "../XUtils";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
@@ -7,16 +7,16 @@ import {XError} from "../XErrors";
 import {XObject} from "../XObject";
 import {DataTableSortMeta} from "primereact/datatable";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
-import {XFormProps} from "../XFormBase";
+import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface AutoCompleteProps extends XFormComponentProps<XObject> {
+export interface AutoCompleteProps extends FormComponentProps<XObject> {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - autocomplete will run on <assoc2>)
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
-    AssocForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row
+    AssocForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     dropdownButtonEnabled?: boolean; // ak dame false, tak nezobrazi dropdown button (default je true), ale ak by sme nemali mat ziadny button tak ho (zatial) zobrazime readOnly aby bolo vidno ze mame autocomplete
     insertButtonTooltip?: string;
@@ -27,7 +27,7 @@ export interface AutoCompleteProps extends XFormComponentProps<XObject> {
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     splitQueryValue?: boolean;
     minLength?: number; // Minimum number of characters to initiate a search (default 1)
-    filter?: XFilterProp;
+    filter?: FilterProp;
     sortField?: string | DataTableSortMeta[];
     fields?: string[]; // ak chceme pri citani suggestions nacitat aj asociovane objekty
     width?: string;
@@ -37,7 +37,7 @@ export interface AutoCompleteProps extends XFormComponentProps<XObject> {
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 
-export class AutoComplete extends XFormComponent<XObject, AutoCompleteProps> {
+export class AutoComplete extends FormComponent<XObject, AutoCompleteProps> {
 
     protected xAssoc: XAssoc;
     protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)

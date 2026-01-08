@@ -1,18 +1,18 @@
 import React from "react";
-import {XFilterProp, XFormComponent, XFormComponentProps} from "../XFormComponent";
+import {FilterProp, FormComponent, FormComponentProps} from "../form";
 import {XAssoc} from "../../serverApi/XEntityMetadata";
 import {XObject} from "../XObject";
 import {DropdownForEntity} from "./DropdownForEntity";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 
-export interface DropdownProps extends XFormComponentProps<XObject> {
+export interface DropdownProps extends FormComponentProps<XObject> {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - dropdown will run on <assoc2>)
     displayField: string;
     sortField?: string;
-    filter?: XFilterProp;
+    filter?: FilterProp;
 }
 
-export class Dropdown extends XFormComponent<XObject, DropdownProps> {
+export class Dropdown extends FormComponent<XObject, DropdownProps> {
 
     protected xAssoc: XAssoc;
 

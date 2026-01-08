@@ -1,78 +1,78 @@
 import React, {Component} from "react";
-import {XObject} from "./XObject";
-import {OperationType, XUtils} from "./XUtils";
-import {XFieldOnChange, XFormComponent} from "./XFormComponent";
-import {TableFieldOnChange, FormDataTable, RowTechData} from "./form-data-table";
-import {XErrorMap, XErrors} from "./XErrors";
-import {XParams, XUtilsCommon} from "../serverApi/XUtilsCommon";
-import {XEntity} from "../serverApi/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XFindRowByIdResponse, XUnlockRowRequest} from "../serverApi/x-lib-api";
-import {dateFromModel, datetimeAsUI} from "../serverApi/XUtilsConversions";
-import {xLocaleOption} from "./XLocale";
+import {XObject} from "../XObject";
+import {OperationType, XUtils} from "../XUtils";
+import {FieldOnChange, FormComponent} from "./FormComponent";
+import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
+import {XErrorMap, XErrors} from "../XErrors";
+import {XParams, XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {XEntity} from "../../serverApi/XEntityMetadata";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XFindRowByIdResponse, XUnlockRowRequest} from "../../serverApi/x-lib-api";
+import {dateFromModel, datetimeAsUI} from "../../serverApi/XUtilsConversions";
+import {xLocaleOption} from "../XLocale";
 
-export type XOnSaveOrCancelProp = (object: XObject | null, objectChange: OperationType) => void;
+export type OnSaveOrCancelProp = (object: XObject | null, objectChange: OperationType) => void;
 
-// poznamka - v assoc button-e (XSearchButton, XToOneAssocButton, XFormSearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
+// poznamka - v assoc button-e (XSearchButton, XToOneAssocButton, FormSearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
 // pri tomto zapise sa nezadava property id (id sa doplni automaticky pri otvoreni assoc formularu cez klonovanie elementu)
 // preto umoznujeme aby id mohlo byt undefined
 // zombie
-export interface XFormPropsOld {
-    ref?: React.Ref<XFormBase>;
+export interface FormPropsOld {
+    ref?: React.Ref<FormBase>;
     id?: number;
     loaderData?: object; // objekt nacitany cez clientLoader (id by malo byt undefined, initValues je tiez undefined, v buducnosti nahradi id)
     initValues?: object; // pri inserte (id je undefined) mozme cez tuto property poslat do formulara default hodnoty ktore sa nastavia do objektu vytvoreneho v metode this.createNewObject(): XObject
-    onSaveOrCancel?: XOnSaveOrCancelProp; // pouziva sa pri zobrazeni formulara v dialogu (napr. v XAutoCompleteBase) - pri onSave odovzdava updatnuty/insertnuty objekt, pri onCancel odovzdava null,
+    onSaveOrCancel?: OnSaveOrCancelProp; // pouziva sa pri zobrazeni formulara v dialogu (napr. v XAutoCompleteBase) - pri onSave odovzdava updatnuty/insertnuty objekt, pri onCancel odovzdava null,
                                             // pouziva sa aj pri navrate do browsu - v tejto metode sa zavola reread browsu
     isInDialog?: boolean; // flag, if form is opened in Dialog (usually true)
 }
 
-export interface XFormProps {
-    ref?: React.Ref<XFormBase>;
+export interface FormProps {
+    ref?: React.Ref<FormBase>;
     object?: XObject; // object(row) created/loaded using methods createObject(id undefined)/loadObject (id exists)
                     // "?" is DEPRECATED - if object is undefined then object is loaded in componentDidMount - legacy way of loading
     id?: number; // DEPRECATED - used only if object is undefined (legacy way of loading)
     initValues?: object; // DEPRECATED - used to init object by insert in case of legacy object loading - could/will be replaced with params/object
-    onSaveOrCancel?: XOnSaveOrCancelProp; // pouziva sa pri zobrazeni formulara v dialogu (napr. v XAutoCompleteBase) - pri onSave odovzdava updatnuty/insertnuty objekt, pri onCancel odovzdava null,
+    onSaveOrCancel?: OnSaveOrCancelProp; // pouziva sa pri zobrazeni formulara v dialogu (napr. v XAutoCompleteBase) - pri onSave odovzdava updatnuty/insertnuty objekt, pri onCancel odovzdava null,
     // pouziva sa aj pri navrate do browsu - v tejto metode sa zavola reread browsu
     isInDialog?: boolean; // flag, if form is opened in Dialog (usually true) - really needed here?
     params?: XParams;
 }
 
-export interface XFormWithLoaderProps {
-    formBaseRef?: React.Ref<XFormBase>; // forwarded to XFormProps
+export interface FormWithLoaderProps {
+    formBaseRef?: React.Ref<FormBase>; // forwarded to FormProps
     id: number | undefined; // for id === undefined we do insert, for id !== undefined we do update
-    initValues?: object; // DEPRECATED (forwarded to XFormProps)
-    onSaveOrCancel?: XOnSaveOrCancelProp; // forwarded to XFormProps
-    isInDialog?: boolean; // flag, if form is opened in Dialog (usually true), (forwarded to XFormProps)
-    params?: XParams; // various params used in methods createObject/loadObject, (forwarded to XFormProps)
+    initValues?: object; // DEPRECATED (forwarded to FormProps)
+    onSaveOrCancel?: OnSaveOrCancelProp; // forwarded to FormProps
+    isInDialog?: boolean; // flag, if form is opened in Dialog (usually true), (forwarded to FormProps)
+    params?: XParams; // various params used in methods createObject/loadObject, (forwarded to FormProps)
 }
 
-// type for XForm param - either Form is used (Form={CarForm}) or formElement is used (formElement={<CarForm/>})
+// type for Form param - either Form is used (Form={CarForm}) or formElement is used (formElement={<CarForm/>})
 // if both are undefined or both are defined - invalid state
-// export interface XFormParam {
-//     Form?: React.ComponentType<XFormProps>;
+// export interface FormParam {
+//     Form?: React.ComponentType<FormProps>;
 //     formElement?: React.ReactElement;
 // }
 
 // ********** types of static methods used on forms to load objects *********
 
 // type used for method createObject (used by insert)
-export type XCreateObjectFunction<T> = (params?: XParams) => Promise<T>;
+export type CreateObjectFunction<T> = (params?: XParams) => Promise<T>;
 
 // type used for method assocList (used by update, simple alternative to loadObject)
-export type XAssocListFunction = (params?: XParams) => string[];
+export type AssocListFunction = (params?: XParams) => string[];
 
 // type used for method fieldList (used by update, simple alternative to loadObject)
 // reserved for future use if needed (if we want to list exact fields to load (to avoid overfetching), now the method assocList should be enough)
-//export type XFieldListFunction = (params?: XParams) => string[];
+//export type FieldListFunction = (params?: XParams) => string[];
 
 // type used for method loadObject (used by update)
-export type XLoadObjectFunction<T> = (id: number, params?: XParams) => Promise<T>;
+export type LoadObjectFunction<T> = (id: number, params?: XParams) => Promise<T>;
 
 
 // class decorator ktory nastavuje property entity (dalo by sa to nastavovat v konstruktore ale decorator je menej ukecany)
-// ma sa pouzivat len na triedach odvodenych od XFormBase - obmedzenie som vsak nevedel nakodit
+// ma sa pouzivat len na triedach odvodenych od FormBase - obmedzenie som vsak nevedel nakodit
 // property sa nastavi az po zbehnuti konstruktora
 // pozor - decorator je vykopirovany do projektoveho suboru XLibItems.ts, lebo ked je umiestneny tu tak nefunguje pre class-y v projekte!
 export function Form(entity: string, pessimisticLocking?: boolean) {
@@ -85,7 +85,7 @@ export function Form(entity: string, pessimisticLocking?: boolean) {
     }
 }
 
-export abstract class XFormBase extends Component<XFormProps> {
+export abstract class FormBase extends Component<FormProps> {
 
     entity?: string; // typ objektu, napr. Car, pouziva sa pri citani objektu z DB
     xEntity: XEntity | undefined; // zistene podla this.entity
@@ -100,7 +100,7 @@ export abstract class XFormBase extends Component<XFormProps> {
     state: {object: XObject | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
-    xFormComponentList: Array<XFormComponent<any, any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
+    formComponentList: Array<FormComponent<any, any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
     formDataTableList: Array<FormDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
     assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v rowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)
@@ -114,7 +114,7 @@ export abstract class XFormBase extends Component<XFormProps> {
     legacyObjectLoading: boolean;
 
     // param entity can be used to set this.entity (another option is decorator @Form)
-    constructor(props: XFormProps, entity?: string, pessimisticLocking?: boolean) {
+    constructor(props: FormProps, entity?: string, pessimisticLocking?: boolean) {
         super(props);
         this.legacyObjectLoading = (props.object === undefined);
         // check (legacy object load)
@@ -150,7 +150,7 @@ export abstract class XFormBase extends Component<XFormProps> {
             object: props.object ?? null, // null is used only for legacy object loading (in componentDidMount)
             errorMap: {}
         };
-        this.xFormComponentList = [];
+        this.formComponentList = [];
         this.formDataTableList = [];
         this.assocToValidateList = [];
         this.assocToSortList = [];
@@ -160,11 +160,11 @@ export abstract class XFormBase extends Component<XFormProps> {
     }
 
     async componentDidMount() {
-        //console.log("volany XFormBase.componentDidMount()");
+        //console.log("volany FormBase.componentDidMount()");
         // old code not used since not using @Form decorator
         // kontrola (musi byt tu, v konstruktore este property nie je nastavena)
         //if (this.entity === undefined || this.pessimisticLocking === undefined) {
-        //    throw "XFormBase: Property entity is not defined - use decorator @Form.";
+        //    throw "FormBase: Property entity is not defined - use decorator @Form.";
         //}
         //if (this.xEntity === undefined) {
         //    // if decorator @Form is not used
@@ -184,7 +184,7 @@ export abstract class XFormBase extends Component<XFormProps> {
             let object: XObject;
             let operationType: OperationType.Insert | OperationType.Update;
             if (this.props.id !== undefined) {
-                //console.log('XFormBase.componentDidMount ide nacitat objekt');
+                //console.log('FormBase.componentDidMount ide nacitat objekt');
                 //console.log(this.fields);
                 //object = await XUtils.fetchByIdFieldList(this.entity, Array.from(this.fieldSet), this.props.id);
                 object = await this.loadObjectLegacy(this.props.id);
@@ -198,7 +198,7 @@ export abstract class XFormBase extends Component<XFormProps> {
                     }
                 }
 
-                //console.log('XFormBase.componentDidMount nacital objekt:');
+                //console.log('FormBase.componentDidMount nacital objekt:');
                 //console.log(object);
                 // const price = (object as any).price;
                 // console.log(typeof price);
@@ -222,8 +222,8 @@ export abstract class XFormBase extends Component<XFormProps> {
             }
 
             this.preInitForm(object, operationType);
-            //console.log("volany XFormBase.componentDidMount() - ideme setnut object");
-            this.setState({object: object}/*, () => console.log("************** volany XFormBase.componentDidMount() - callback setState")*/);
+            //console.log("volany FormBase.componentDidMount() - ideme setnut object");
+            this.setState({object: object}/*, () => console.log("************** volany FormBase.componentDidMount() - callback setState")*/);
         }
     }
 
@@ -236,7 +236,7 @@ export abstract class XFormBase extends Component<XFormProps> {
 
     getXObject(): XObject {
         if (this.state.object === null) {
-            throw "XFormBase: this.state.object is null";
+            throw "FormBase: this.state.object is null";
         }
         return this.state.object;
     }
@@ -284,7 +284,7 @@ export abstract class XFormBase extends Component<XFormProps> {
         this.tabViewUsed = tabViewUsed;
     }
 
-    onFieldChange(field: string, value: any, error?: string | undefined, onChange?: XFieldOnChange, assocObjectChange?: OperationType) {
+    onFieldChange(field: string, value: any, error?: string | undefined, onChange?: FieldOnChange, assocObjectChange?: OperationType) {
 
         // field moze byt aj na asociovanom objekte (field length > 1, napr.: <assocX>.<fieldY>)
         // v takom pripade sa do errorMap zapise ako key cely field <assocX>.<fieldY>
@@ -312,7 +312,7 @@ export abstract class XFormBase extends Component<XFormProps> {
         rowData[field] = value;
 
         // nastavime error do rowData do tech fieldu
-        const errorMap: XErrorMap = XFormBase.getRowTechData(rowData).errorMap;
+        const errorMap: XErrorMap = FormBase.getRowTechData(rowData).errorMap;
         errorMap[field] = {...errorMap[field], onChange: error};
 
         // tu zavolame onChange komponentu - object uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
@@ -344,7 +344,7 @@ export abstract class XFormBase extends Component<XFormProps> {
     // ak niekto zmenil this.state.object alebo this.state.errorMap, zmena sa prejavi vo formulari
     // pouzivame napr. po zavolani onChange na XInputText
     // callback je zavolany, ked dobehne update formulara (mozme pouzit na dalsi update formulara, ktory potrebuje aby boli vsetky komponenty vytvorene)
-    setStateXForm(callback?: () => void) {
+    setStateForm(callback?: () => void) {
         // TODO - je to ok ze object menime takto?
         this.setState({object: this.state.object, errorMap: this.state.errorMap}, callback);
     }
@@ -358,7 +358,7 @@ export abstract class XFormBase extends Component<XFormProps> {
         if (dataKey !== undefined) {
             const newRowId = newRow[dataKey];
             if (newRowId === undefined || newRowId === null) {
-                newRow[dataKey] = XFormBase.getNextRowId(rowList, dataKey);
+                newRow[dataKey] = FormBase.getNextRowId(rowList, dataKey);
                 newRow.__x_generatedRowId = true; // specialny priznak, ze sme vygenerovali id-cko - pred insertom do DB toto id-cko vynullujeme aby sa vygenerovalo realne id-cko
             }
         }
@@ -425,22 +425,22 @@ export abstract class XFormBase extends Component<XFormProps> {
         this.fieldSet.add(field);
     }
 
-    addXFormComponent(xFormComponent: XFormComponent<any, any>) {
-        this.xFormComponentList.push(xFormComponent);
+    addFormComponent(formComponent: FormComponent<any, any>) {
+        this.formComponentList.push(formComponent);
     }
 
-    findXFormComponent(field: string): XFormComponent<any, any> | undefined {
-        // TODO - vytvorit mapu (field, ref(xFormComponent)), bude to rychlejsie
+    findFormComponent(field: string): FormComponent<any, any> | undefined {
+        // TODO - vytvorit mapu (field, ref(formComponent)), bude to rychlejsie
         // vytvorit len mapu (a list zrusit) je problem - mozme mat pre jeden field viacero (napr. asociacnych) componentov
-        for (const xFormComponent of this.xFormComponentList) {
-            if (xFormComponent.getField() === field) {
-                return xFormComponent;
+        for (const formComponent of this.formComponentList) {
+            if (formComponent.getField() === field) {
+                return formComponent;
             }
         }
         return undefined;
     }
 
-    addXFormDataTable(formDataTable: FormDataTable) {
+    addFormDataTable(formDataTable: FormDataTable) {
         this.formDataTableList.push(formDataTable);
     }
 
@@ -504,9 +504,9 @@ export abstract class XFormBase extends Component<XFormProps> {
     }
 
     openFormNull() {
-        // deprecated functionality used when XFormNavigator (deprecated) used
+        // deprecated functionality used when FormNavigator (deprecated) used
         // standardny rezim
-        // openForm pridavame automaticky v XFormNavigator pri renderovani komponentu
+        // openForm pridavame automaticky v FormNavigator pri renderovani komponentu
         // null - vrati sa do predchadzajuceho formularu, z ktoreho bol otvoreny
         if (typeof (this.props as any).openForm === 'function') {
             (this.props as any).openForm(null);
@@ -518,7 +518,7 @@ export abstract class XFormBase extends Component<XFormProps> {
     }
 
     // API function called upon cancel of edit/show of the form
-    // also outer components call this function, e.g XFormDialog, (legacy XMenu in depaul project)
+    // also outer components call this function, e.g FormDialog, (legacy XMenu in depaul project)
     // returns false if cancel was stopped (not confirmed) by user
     cancelEdit(): boolean {
         // confirm cancel if data was changed
@@ -554,7 +554,7 @@ export abstract class XFormBase extends Component<XFormProps> {
         }
 
         // este spracujeme oneToMany asociacie, ktore boli explicitne uvedene, ze ich treba validovat
-        // (validaciu treba nakodit vo formulari, zavolat z metody validate() a ukoncit zavolanim XFormBase.saveErrorsIntoRowTechData)
+        // (validaciu treba nakodit vo formulari, zavolat z metody validate() a ukoncit zavolanim FormBase.saveErrorsIntoRowTechData)
         for (const assocToValidate of this.assocToValidateList) {
             msg += this.getErrorMessagesForAssoc(assocToValidate);
         }
@@ -576,8 +576,8 @@ export abstract class XFormBase extends Component<XFormProps> {
         for (const [field, error] of Object.entries(xErrors)) {
             if (error) {
                 // skusime zistit label
-                const xFormComponent: XFormComponent<any, any> | undefined = this.findXFormComponent(field);
-                const fieldLabel: string | undefined = xFormComponent ? xFormComponent.getLabel() : undefined;
+                const formComponent: FormComponent<any, any> | undefined = this.findFormComponent(field);
+                const fieldLabel: string | undefined = formComponent ? formComponent.getLabel() : undefined;
                 xErrorMap[field] = {...xErrorMap[field], form: error, fieldLabel: fieldLabel};
             }
         }
@@ -590,8 +590,8 @@ export abstract class XFormBase extends Component<XFormProps> {
 
     fieldValidation(): XErrorMap {
         const xErrorMap: XErrorMap = {};
-        for (const xFormComponent of this.xFormComponentList) {
-            const errorItem = xFormComponent.validate();
+        for (const formComponent of this.formComponentList) {
+            const errorItem = formComponent.validate();
             if (errorItem) {
                 //console.log("Mame field = " + errorItem.field);
                 xErrorMap[errorItem.field] = errorItem.xError;
@@ -611,7 +611,7 @@ export abstract class XFormBase extends Component<XFormProps> {
             throw `Array for the assoc ${oneToManyAssoc} not found in the form object`;
         }
         for (const row of rowList) {
-            const rowTechData: RowTechData = XFormBase.getRowTechData(row);
+            const rowTechData: RowTechData = FormBase.getRowTechData(row);
             msg += XUtils.getErrorMessages(rowTechData.errorMap);
         }
         return msg;
@@ -625,7 +625,7 @@ export abstract class XFormBase extends Component<XFormProps> {
                 xErrorMap[field] = {form: error};
             }
         }
-        const rowTechData: RowTechData = XFormBase.getRowTechData(row);
+        const rowTechData: RowTechData = FormBase.getRowTechData(row);
         rowTechData.errorMap = xErrorMap;
     }
 
@@ -708,3 +708,4 @@ export abstract class XFormBase extends Component<XFormProps> {
         }
     }
 }
+

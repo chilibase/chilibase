@@ -1,7 +1,7 @@
 import React from "react";
 import {Component} from "react";
 import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
-import {XFormBase} from "./XFormBase";
+import {FormBase} from "./form";
 import {XAssoc, XEntity} from "../serverApi/XEntityMetadata";
 import {XUtils} from "./XUtils";
 import {XObject} from "./XObject";
@@ -20,7 +20,7 @@ interface XFile {
 }
 
 export interface XInputFileListProps {
-    form: XFormBase;
+    form: FormBase;
     assocField: string;
     label?: string;
     chooseLabel?: string;

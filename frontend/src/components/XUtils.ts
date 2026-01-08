@@ -21,7 +21,7 @@ import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
 import {xLocaleOption} from "./XLocale";
 import {LazyDataTableRef} from "./lazy-data-table";
-import {XCreateObjectFunction, XOnSaveOrCancelProp} from "./XFormBase";
+import {CreateObjectFunction, OnSaveOrCancelProp} from "./form";
 import {initMsalConfig} from "./auth";
 import {XFindRowByIdRequest, XFindRowByIdResponse} from "../serverApi/x-lib-api";
 
@@ -862,7 +862,7 @@ export class XUtils {
     /**
      * @deprecated returns onSaveOrCancel method used when opening form from browse when using XFormNavigator (deprecated)
      */
-    static onSaveOrCancelNavigator(openForm: (newFormElement: JSX.Element | null) => void, xLazyDataTableRef: React.RefObject<LazyDataTableRef>): XOnSaveOrCancelProp {
+    static onSaveOrCancelNavigator(openForm: (newFormElement: JSX.Element | null) => void, xLazyDataTableRef: React.RefObject<LazyDataTableRef>): OnSaveOrCancelProp {
         return (object: any | null, objectChange: OperationType) => {
             // close form and display the previous form (it should be browse)
             openForm(null);
@@ -882,7 +882,7 @@ export class XUtils {
     //     return xFormParam;
     // }
 
-    static getDefaultCreateObject<T>(entity: string): XCreateObjectFunction<T> {
+    static getDefaultCreateObject<T>(entity: string): CreateObjectFunction<T> {
         const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(entity);
         const xField: XField = xEntity.fieldMap["version"];
         let object: XObject = {};
