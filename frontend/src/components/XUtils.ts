@@ -16,7 +16,7 @@ import {XError, XErrorMap} from "./XErrors";
 import {FindParam, ResultType, XCustomFilter} from "../serverApi/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 import {XObject} from "./XObject";
-import {XTableFieldReadOnlyProp} from "./XFormDataTable2";
+import {TableFieldReadOnlyProp} from "./form-data-table";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
 import {xLocaleOption} from "./XLocale";
@@ -527,8 +527,8 @@ export class XUtils {
         return readOnly;
     }
 
-    // docasna funkcia, kym sa vsade nebude pouzivat XFormComponentDT a jej isReadOnly()
-    static isReadOnlyTableField(path: string | undefined, readOnly: XTableFieldReadOnlyProp | undefined, object: XObject | null, tableRow: any): boolean {
+    // docasna funkcia, kym sa vsade nebude pouzivat FormComponentDT a jej isReadOnly()
+    static isReadOnlyTableField(path: string | undefined, readOnly: TableFieldReadOnlyProp | undefined, object: XObject | null, tableRow: any): boolean {
 
         let isReadOnly: boolean;
 

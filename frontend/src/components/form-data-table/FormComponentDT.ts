@@ -1,28 +1,28 @@
-import {XFormBase} from "./XFormBase";
+import {XFormBase} from "../XFormBase";
 import React, {Component} from "react";
-import {XObject} from "./XObject";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
-import {OperationType, XUtils} from "./XUtils";
-import {XError} from "./XErrors";
-import {XCustomFilter} from "../serverApi/FindParam";
-import {XTableFieldFilterProp, XTableFieldOnChange, XTableFieldReadOnlyProp} from "./XFormDataTable2";
+import {XObject} from "../XObject";
+import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {OperationType, XUtils} from "../XUtils";
+import {XError} from "../XErrors";
+import {XCustomFilter} from "../../serverApi/FindParam";
+import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
 
-export interface XFormComponentDTProps {
+export interface FormComponentDTProps {
     form: XFormBase;
     entity: string;
     rowData: any;
-    readOnly?: XTableFieldReadOnlyProp;
-    onChange?: XTableFieldOnChange;
+    readOnly?: TableFieldReadOnlyProp;
+    onChange?: TableFieldOnChange;
     placeholder?: string; // poznamka: placeholder moze byt nastavovany aj cez property desc (ak pouzivame napr. XFormPanelList)
 
-    // props pouzivane ak vytvarame component s label-om (nie sme v XFormDataTable, ale pouzivame napr. XFormPanelList)
+    // props pouzivane ak vytvarame component s label-om (nie sme v FormDataTable, ale pouzivame napr. XFormPanelList)
     label?: string;
     tooltip?: string;
     desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat placeholder a tooltip pre label) - vytvoreny pre depaul
     labelStyle?: React.CSSProperties;
 }
 
-export abstract class XFormComponentDT<P extends XFormComponentDTProps> extends Component<P> {
+export abstract class FormComponentDT<P extends FormComponentDTProps> extends Component<P> {
 
     private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (pozri poznamku v XFormComponent)
 
@@ -31,7 +31,7 @@ export abstract class XFormComponentDT<P extends XFormComponentDTProps> extends 
 
         this.valueChanged = false;
 
-        XFormBase.getXRowTechData(props.rowData).xFormComponentDTList.push(this);
+        XFormBase.getRowTechData(props.rowData).formComponentDTList.push(this);
     }
 
     // nazov fieldu, pod ktorym sa hodnota uklada do objektu this.props.rowData
@@ -58,7 +58,7 @@ export abstract class XFormComponentDT<P extends XFormComponentDTProps> extends 
     }
 
     // writes value into form.state.object
-    onValueChangeBase(value: any, onChange?: XTableFieldOnChange, assocObjectChange?: OperationType) {
+    onValueChangeBase(value: any, onChange?: TableFieldOnChange, assocObjectChange?: OperationType) {
         const error: string | undefined = this.validateOnChange(value);
         this.props.form.onTableFieldChange(this.props.rowData, this.getField(), value, error, onChange, assocObjectChange);
         this.valueChanged = true;
@@ -76,8 +76,8 @@ export abstract class XFormComponentDT<P extends XFormComponentDTProps> extends 
             // if the length of field is 2 or more, then readOnly
             readOnly = true;
         }
-        // formReadOnlyBase is called on the level XFormDataTable2 and XFormPanelList
-        // the reason is (probably) that in XFormDataTable2 and XFormPanelList we know the assoc name whereas here in component we know only field name
+        // formReadOnlyBase is called on the level FormDataTable and XFormPanelList
+        // the reason is (probably) that in FormDataTable and XFormPanelList we know the assoc name whereas here in component we know only field name
         // (assoc name is param of formReadOnlyBase)
         // else if (this.props.form.formReadOnlyBase("xxx")) {
         //     readOnly = true;
@@ -162,7 +162,7 @@ export abstract class XFormComponentDT<P extends XFormComponentDTProps> extends 
 
     // vrati error message z rowData.errorMap
     getError(): string | undefined {
-        const error: XError = XFormBase.getXRowTechData(this.props.rowData).errorMap[this.getField()];
+        const error: XError = XFormBase.getRowTechData(this.props.rowData).errorMap[this.getField()];
         return error ? XUtils.getErrorMessage(error) : undefined;
     }
 
@@ -178,7 +178,7 @@ export abstract class XFormComponentDT<P extends XFormComponentDTProps> extends 
     }
 
     // len pre assoc fieldy sa pouziva, aj to nie pre vsetky
-    getFilterBase(filter: XTableFieldFilterProp | undefined): XCustomFilter | undefined {
+    getFilterBase(filter: TableFieldFilterProp | undefined): XCustomFilter | undefined {
         let customFilter: XCustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
             customFilter = filter;
@@ -195,3 +195,4 @@ export abstract class XFormComponentDT<P extends XFormComponentDTProps> extends 
         return customFilter;
     }
 }
+

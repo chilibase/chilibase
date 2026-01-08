@@ -2,7 +2,7 @@ import {Form, XFormBase} from "../components/XFormBase";
 import {InputDecimal} from "../components/input-decimal";
 import {InputText} from "../components/input-text";
 import React from "react";
-import {XFormColumn, XFormDataTable2} from "../components/XFormDataTable2";
+import {FormColumn, FormDataTable} from "../components/form-data-table";
 import {XFormFooter} from "../components/XFormFooter";
 
 @Form("XBrowseMeta")
@@ -20,15 +20,15 @@ export class XBrowseMetaForm extends XFormBase {
                     </div>
                 </div>
                 <div className="x-viewport-width">
-                    <XFormDataTable2 form={this} assocField="columnMetaList" label="Column list">
-                        <XFormColumn field="id" header="ID" readOnly={true}/>
-                        <XFormColumn field="field" header="Field" width="17rem"/>
-                        <XFormColumn field="header" header="Header" width="17rem"/>
-                        <XFormColumn field="align" header="Align"/>
-                        <XFormColumn field="dropdownInFilter" header="Dropdown in filter"/>
-                        <XFormColumn field="width" header="Width"/>
-                        <XFormColumn field="columnOrder" header="Column order"/>
-                    </XFormDataTable2>
+                    <FormDataTable form={this} assocField="columnMetaList" label="Column list">
+                        <FormColumn field="id" header="ID" readOnly={true}/>
+                        <FormColumn field="field" header="Field" width="17rem"/>
+                        <FormColumn field="header" header="Header" width="17rem"/>
+                        <FormColumn field="align" header="Align"/>
+                        <FormColumn field="dropdownInFilter" header="Dropdown in filter"/>
+                        <FormColumn field="width" header="Width"/>
+                        <FormColumn field="columnOrder" header="Column order"/>
+                    </FormDataTable>
                 </div>
                 <XFormFooter form={this}/>
             </div>

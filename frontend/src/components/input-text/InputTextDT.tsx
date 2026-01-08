@@ -3,11 +3,11 @@ import React from "react";
 import {InputText} from "primereact/inputtext";
 import {stringAsUI, stringFromUI} from "../../serverApi/XUtilsConversions";
 import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
-import {XTableFieldReadOnlyProp} from "../XFormDataTable2";
+import {TableFieldReadOnlyProp} from "../form-data-table";
 import {XUtils} from "../XUtils";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 
-export const InputTextDT = (props: {form: XFormBase; entity: string; field: string; rowData: any; readOnly?: XTableFieldReadOnlyProp}) => {
+export const InputTextDT = (props: {form: XFormBase; entity: string; field: string; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
     const xField = XUtilsMetadataCommon.getXFieldByPathStr(props.entity, props.field);
 

@@ -5,10 +5,10 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
 import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {XTableFieldReadOnlyProp} from "./XFormDataTable2";
+import {TableFieldReadOnlyProp} from "./form-data-table";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 
-export const XSearchButtonDT = (props: {form: XFormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: XTableFieldReadOnlyProp}) => {
+export const XSearchButtonDT = (props: {form: XFormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
     const inputTextRef = useRef<any>(null);
 

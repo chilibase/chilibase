@@ -2,7 +2,7 @@ import {XFormBase} from "../XFormBase";
 import React, {useEffect} from "react";
 import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
-import {XDropdownOptionsMap, XTableFieldReadOnlyProp} from "../XFormDataTable2";
+import {DropdownOptionsMap, TableFieldReadOnlyProp} from "../form-data-table";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 import {XAssoc} from "../../serverApi/XEntityMetadata";
 import {XCustomFilter} from "../../serverApi/FindParam";
@@ -15,10 +15,10 @@ export const DropdownDT = (props: {
         displayField: string;
         sortField?: string;
         filter?: XCustomFilter;
-        dropdownOptionsMap: XDropdownOptionsMap;
-        onDropdownOptionsMapChange: (dropdownOptionsMap: XDropdownOptionsMap) => void;
+        dropdownOptionsMap: DropdownOptionsMap;
+        onDropdownOptionsMapChange: (dropdownOptionsMap: DropdownOptionsMap) => void;
         rowData: any;
-        readOnly?: XTableFieldReadOnlyProp;
+        readOnly?: TableFieldReadOnlyProp;
     }) => {
 
     // poznamka: nacitanie/ulozenie options je vytiahnute do parent komponentu XFormDataTable koli tomu aby sme nenacitavali options pre kazdy riadok tabulky

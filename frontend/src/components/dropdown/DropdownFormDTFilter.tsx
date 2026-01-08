@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
-import {XFormDataTable2} from "../XFormDataTable2";
+import {FormDataTable} from "../form-data-table";
 
 // stary nepouzivany Dropdown do filtra
-export const DropdownFormDTFilter = (props: {dataTable: XFormDataTable2; assocField: string; displayField: string;}) => {
+export const DropdownFormDTFilter = (props: {dataTable: FormDataTable; assocField: string; displayField: string;}) => {
 
     // TODO - pridat cez generikum typ objektu v Dropdown-e (ak sa da)
     const [value, setValue] = useState<any>(null);

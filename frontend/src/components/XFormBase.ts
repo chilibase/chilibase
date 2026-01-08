@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {XObject} from "./XObject";
 import {OperationType, XUtils} from "./XUtils";
 import {XFieldOnChange, XFormComponent} from "./XFormComponent";
-import {XTableFieldOnChange, XFormDataTable2, XRowTechData} from "./XFormDataTable2";
+import {TableFieldOnChange, FormDataTable, RowTechData} from "./form-data-table";
 import {XErrorMap, XErrors} from "./XErrors";
 import {XParams, XUtilsCommon} from "../serverApi/XUtilsCommon";
 import {XEntity} from "../serverApi/XEntityMetadata";
@@ -101,12 +101,12 @@ export abstract class XFormBase extends Component<XFormProps> {
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
     xFormComponentList: Array<XFormComponent<any, any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
-    xFormDataTableList: Array<XFormDataTable2>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
-    assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v xRowTechData (pouzivane pre specialnu custom validaciu)
+    formDataTableList: Array<FormDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
+    assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v rowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)
 
     // special flag - application can set this flag if the form uses component TabView
-    // as a result, the width of components XFormScrollable and XFormDataTable2 will be proper adjusted (the margin of TabPanel will be subtracted from 100vw)
+    // as a result, the width of components XFormScrollable and FormDataTable will be proper adjusted (the margin of TabPanel will be subtracted from 100vw)
     // (it is important for mobile display)
     tabViewUsed: boolean;
 
@@ -151,7 +151,7 @@ export abstract class XFormBase extends Component<XFormProps> {
             errorMap: {}
         };
         this.xFormComponentList = [];
-        this.xFormDataTableList = [];
+        this.formDataTableList = [];
         this.assocToValidateList = [];
         this.assocToSortList = [];
         this.tabViewUsed = false; // default
@@ -306,13 +306,13 @@ export abstract class XFormBase extends Component<XFormProps> {
         this.setFormDataChanged(true);
     }
 
-    onTableFieldChange(rowData: any, field: string, value: any, error?: string | undefined, onChange?: XTableFieldOnChange, assocObjectChange?: OperationType) {
+    onTableFieldChange(rowData: any, field: string, value: any, error?: string | undefined, onChange?: TableFieldOnChange, assocObjectChange?: OperationType) {
 
         const object: XObject = this.getXObject();
         rowData[field] = value;
 
         // nastavime error do rowData do tech fieldu
-        const errorMap: XErrorMap = XFormBase.getXRowTechData(rowData).errorMap;
+        const errorMap: XErrorMap = XFormBase.getRowTechData(rowData).errorMap;
         errorMap[field] = {...errorMap[field], onChange: error};
 
         // tu zavolame onChange komponentu - object uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
@@ -328,7 +328,7 @@ export abstract class XFormBase extends Component<XFormProps> {
     /**
      * @deprecated - mal by sa pouzivat onTableFieldChange
      */
-    onObjectDataChange(row?: any, onChange?: XTableFieldOnChange) {
+    onObjectDataChange(row?: any, onChange?: TableFieldOnChange) {
         const object: XObject | null = this.state.object;
 
         // tu zavolame onChange komponentu - object uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
@@ -406,14 +406,14 @@ export abstract class XFormBase extends Component<XFormProps> {
         this.setFormDataChanged(true);
     }
 
-    static getXRowTechData(row: any): XRowTechData {
+    static getRowTechData(row: any): RowTechData {
         // ak este nemame rowTechData, tak ho vytvorime
         if (row.__x_rowTechData === undefined) {
             // field '__x_rowTechData' vytvorime takymto specialnym sposobom, aby mal "enumerable: false", tympadom ho JSON.stringify nezaserializuje
             // pri posielani objektu formulara na backend (pozor, zaroven sa neda tento field iterovat cez in operator a pod.)
-            const xRowTechData: XRowTechData = {xFormComponentDTList: [], errorMap: {}};
+            const rowTechData: RowTechData = {formComponentDTList: [], errorMap: {}};
             Object.defineProperty(row, '__x_rowTechData', {
-                value: xRowTechData,
+                value: rowTechData,
                 writable: false,
                 enumerable: false
             });
@@ -440,8 +440,8 @@ export abstract class XFormBase extends Component<XFormProps> {
         return undefined;
     }
 
-    addXFormDataTable(xFormDataTable: XFormDataTable2) {
-        this.xFormDataTableList.push(xFormDataTable);
+    addXFormDataTable(formDataTable: FormDataTable) {
+        this.formDataTableList.push(formDataTable);
     }
 
     addAssocToValidate(oneToManyAssoc: string) {
@@ -548,13 +548,13 @@ export abstract class XFormBase extends Component<XFormProps> {
         let msg: string = XUtils.getErrorMessages(xErrorMap);
 
         // este spracujeme editovatelne tabulky
-        for (const xFormDataTable of this.xFormDataTableList) {
-            //msg += xFormDataTable.getErrorMessages();
-            msg += this.getErrorMessagesForAssoc(xFormDataTable.props.assocField);
+        for (const formDataTable of this.formDataTableList) {
+            //msg += formDataTable.getErrorMessages();
+            msg += this.getErrorMessagesForAssoc(formDataTable.props.assocField);
         }
 
         // este spracujeme oneToMany asociacie, ktore boli explicitne uvedene, ze ich treba validovat
-        // (validaciu treba nakodit vo formulari, zavolat z metody validate() a ukoncit zavolanim XFormBase.saveErrorsIntoXRowTechData)
+        // (validaciu treba nakodit vo formulari, zavolat z metody validate() a ukoncit zavolanim XFormBase.saveErrorsIntoRowTechData)
         for (const assocToValidate of this.assocToValidateList) {
             msg += this.getErrorMessagesForAssoc(assocToValidate);
         }
@@ -597,8 +597,8 @@ export abstract class XFormBase extends Component<XFormProps> {
                 xErrorMap[errorItem.field] = errorItem.xError;
             }
         }
-        for (const xFormDataTable of this.xFormDataTableList) {
-            xFormDataTable.validate();
+        for (const formDataTable of this.formDataTableList) {
+            formDataTable.validate();
         }
         return xErrorMap;
     }
@@ -611,22 +611,22 @@ export abstract class XFormBase extends Component<XFormProps> {
             throw `Array for the assoc ${oneToManyAssoc} not found in the form object`;
         }
         for (const row of rowList) {
-            const xRowTechData: XRowTechData = XFormBase.getXRowTechData(row);
-            msg += XUtils.getErrorMessages(xRowTechData.errorMap);
+            const rowTechData: RowTechData = XFormBase.getRowTechData(row);
+            msg += XUtils.getErrorMessages(rowTechData.errorMap);
         }
         return msg;
     }
 
     // can be called from AppForm in case of custom validation on oneToMany assoc
-    static saveErrorsIntoXRowTechData(row: any, xErrors: XErrors) {
+    static saveErrorsIntoRowTechData(row: any, xErrors: XErrors) {
         const xErrorMap: XErrorMap = {};
         for (const [field, error] of Object.entries(xErrors)) {
             if (error) {
                 xErrorMap[field] = {form: error};
             }
         }
-        const xRowTechData: XRowTechData = XFormBase.getXRowTechData(row);
-        xRowTechData.errorMap = xErrorMap;
+        const rowTechData: RowTechData = XFormBase.getRowTechData(row);
+        rowTechData.errorMap = xErrorMap;
     }
 
     // this method can be overriden in subclass if needed

@@ -1,16 +1,16 @@
 import React from "react";
-import {XFormComponentDT, XFormComponentDTProps} from "../XFormComponentDT";
+import {FormComponentDT, FormComponentDTProps} from "../form-data-table";
 import {XAssoc} from "../../serverApi/XEntityMetadata";
 import {OperationType} from "../XUtils";
 import {XError} from "../XErrors";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
-import {XTableFieldFilterProp} from "../XFormDataTable2";
+import {TableFieldFilterProp} from "../form-data-table";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 import {DataTableSortMeta} from "primereact/datatable";
 import {XFormProps} from "../XFormBase";
 import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface AutoCompleteDTProps extends XFormComponentDTProps {
+export interface AutoCompleteDTProps extends FormComponentDTProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -29,14 +29,14 @@ export interface AutoCompleteDTProps extends XFormComponentDTProps {
     splitQueryValue?: boolean;
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
     minLength?: number; // Minimum number of characters to initiate a search (default 1)
-    filter?: XTableFieldFilterProp;
+    filter?: TableFieldFilterProp;
     sortField?: string | DataTableSortMeta[];
     fields?: string[]; // ak chceme pri citani suggestions nacitat aj asociovane objekty
     scrollHeight?: string; // Maximum height of the suggestions panel.
     inputClassName?: string;
 }
 
-export class AutoCompleteDT extends XFormComponentDT<AutoCompleteDTProps> {
+export class AutoCompleteDT extends FormComponentDT<AutoCompleteDTProps> {
 
     protected xAssoc: XAssoc;
     protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)

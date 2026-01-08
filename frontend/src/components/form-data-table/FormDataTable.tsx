@@ -1,7 +1,7 @@
-import {XFormBase, XFormProps} from "./XFormBase";
-import {XObject} from "./XObject";
+import {XFormBase, XFormProps} from "../XFormBase";
+import {XObject} from "../XObject";
 import React, {Component, ReactChild} from "react";
-import {DropdownDT} from "./dropdown/DropdownDT";
+import {DropdownDT} from "../dropdown/DropdownDT";
 import {
     DataTable,
     DataTableFilterMeta,
@@ -9,41 +9,41 @@ import {
     DataTableOperatorFilterMetaData, DataTableSortMeta
 } from "primereact/datatable";
 import {Column, ColumnBodyOptions} from "primereact/column";
-import {XButton} from "./XButton";
-import {InputTextDT} from "./input-text";
-import {XSearchButtonDT} from "./XSearchButtonDT";
-import {XAssoc, XEntity, XField} from "../serverApi/XEntityMetadata";
-import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XUtils, XViewStatus, XViewStatusOrBoolean} from "./XUtils";
-import {DropdownDTFilter} from "./dropdown/DropdownDTFilter";
-import {InputDecimalDT} from "./input-decimal";
-import {InputDateDT} from "./input-date";
-import {CheckboxDT} from "./checkbox";
+import {XButton} from "../XButton";
+import {InputTextDT} from "../input-text";
+import {XSearchButtonDT} from "../XSearchButtonDT";
+import {XAssoc, XEntity, XField} from "../../serverApi/XEntityMetadata";
+import {XUtilsMetadata} from "../XUtilsMetadata";
+import {XUtils, XViewStatus, XViewStatusOrBoolean} from "../XUtils";
+import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
+import {InputDecimalDT} from "../input-decimal";
+import {InputDateDT} from "../input-date";
+import {CheckboxDT} from "../checkbox";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
-import {XTableFieldChangeEvent} from "./XFieldChangeEvent";
-import {XCustomFilter} from "../serverApi/FindParam";
-import {AutoCompleteDT} from "./auto-complete";
-import {XFormComponentDT} from "./XFormComponentDT";
-import {XErrorMap} from "./XErrors";
-import {XButtonIconNarrow} from "./XButtonIconNarrow";
+import {XTableFieldChangeEvent} from "../XFieldChangeEvent";
+import {XCustomFilter} from "../../serverApi/FindParam";
+import {AutoCompleteDT} from "../auto-complete";
+import {FormComponentDT} from "./FormComponentDT";
+import {XErrorMap} from "../XErrors";
+import {XButtonIconNarrow} from "../XButtonIconNarrow";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
-import {xLocaleOption} from "./XLocale";
-import {XInputIntervalDT} from "./XInputIntervalDT";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {SearchBrowseProps} from "./lazy-data-table";
-import {InputTextareaDT} from "./input-textarea";
-import {SuggestionsLoadProp} from "./auto-complete";
+import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {xLocaleOption} from "../XLocale";
+import {XInputIntervalDT} from "../XInputIntervalDT";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {SearchBrowseProps} from "../lazy-data-table";
+import {InputTextareaDT} from "../input-textarea";
+import {SuggestionsLoadProp} from "../auto-complete";
 
-// typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v XFormDataTable2)
-export interface XRowTechData {
+// typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
+export interface RowTechData {
     // zoznam komponentov na riadku tabulky (vcetne DropdownDT, XSearchButtonDT, ...)
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
     // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
     // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
-    xFormComponentDTList: Array<XFormComponentDT<any>>;
+    formComponentDTList: Array<FormComponentDT<any>>;
     // zoznam validacnych chyb (to iste co form.state.errorMap na XFormBase.ts pre hlavny objekt formularu)
     // chyby sem zapisuje automaticka validacia a pripadna custom validacia
     // chyby sa zobrazia (vycervenenie + tooltip) vo formulari zavolanim this.setState({object: this.state.object});
@@ -51,12 +51,12 @@ export interface XRowTechData {
     errorMap: XErrorMap;
 }
 
-export interface XDropdownOptionsMap {
+export interface DropdownOptionsMap {
     [assocField: string]: any[];
 }
 
 // POZNAMKA: parameter width?: string; neviem ako funguje (najme pri pouziti scrollWidth/scrollHeight), ani sa zatial nikde nepouziva
-export interface XFormDataTableProps {
+export interface FormDataTableProps {
     form: XFormBase;
     assocField: string;
     dataKey?: string;
@@ -83,7 +83,7 @@ export interface XFormDataTableProps {
     children: ReactChild[];
 }
 
-export class XFormDataTable2 extends Component<XFormDataTableProps> {
+export class FormDataTable extends Component<FormDataTableProps> {
 
     public static defaultProps = {
         filterDisplay: "none",
@@ -101,18 +101,18 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         removeRowIcon: "pi pi-times"
     };
 
-    props: XFormDataTableProps;
+    props: FormDataTableProps;
     entity?: string;
     dataKey?: string;
     dt: any;
 
     state: {
         selectedRow: {} | undefined;
-        dropdownOptionsMap: XDropdownOptionsMap;
+        dropdownOptionsMap: DropdownOptionsMap;
         filters: DataTableFilterMeta;
     };
 
-    constructor(props: XFormDataTableProps) {
+    constructor(props: FormDataTableProps) {
         super(props);
         this.props = props;
         this.dataKey = props.dataKey;
@@ -143,7 +143,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
 
         //props.form.addField(props.assocField + '.*FAKE*'); - vzdy mame aspon 1 field, nie je to potrebne
         for (const child of props.children) {
-            const childColumn = child as {props: XFormColumnBaseProps}; // nevedel som to krajsie...
+            const childColumn = child as {props: FormColumnBaseProps}; // nevedel som to krajsie...
             if (childColumn.props.type !== "custom") {
                 const field = props.assocField + '.' + this.getPathForColumn(childColumn.props);
                 props.form.addField(field);
@@ -151,28 +151,28 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         }
     }
 
-    getPathForColumn(columnProps: XFormColumnBaseProps): string {
+    getPathForColumn(columnProps: FormColumnBaseProps): string {
         if (columnProps.type === "inputSimple") {
-            const columnPropsInputSimple = (columnProps as XFormColumnProps);
+            const columnPropsInputSimple = (columnProps as FormColumnProps);
             return columnPropsInputSimple.field;
         }
         else if (columnProps.type === "dropdown") {
-            const columnPropsDropdown = (columnProps as XFormDropdownColumnProps);
+            const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
             return columnPropsDropdown.assocField + '.' + columnPropsDropdown.displayField;
         }
         else if (columnProps.type === "autoComplete") {
-            const columnPropsAutoComplete = (columnProps as XFormAutoCompleteColumnProps);
+            const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
             // for simplicity we use here the first column (is used for filtering/sorting)
             // TODO - all columns add in constructor (through method props.form.addField(...))
             const displayField: string = Array.isArray(columnPropsAutoComplete.displayField) ? columnPropsAutoComplete.displayField[0] : columnPropsAutoComplete.displayField;
             return columnPropsAutoComplete.assocField + '.' + displayField;
         }
         else if (columnProps.type === "searchButton") {
-            const columnPropsSearchButton = (columnProps as XFormSearchButtonColumnProps);
+            const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
             return columnPropsSearchButton.assocField + '.' + columnPropsSearchButton.displayField;
         }
         else if (columnProps.type === "textarea") {
-            const columnPropsTextarea = (columnProps as XFormTextareaColumnProps);
+            const columnPropsTextarea = (columnProps as FormTextareaColumnProps);
             return columnPropsTextarea.field;
         }
         else {
@@ -180,38 +180,38 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         }
     }
 
-    static getHeader(columnProps: XFormColumnBaseProps, xEntity: XEntity, field: string, xField: XField): string {
+    static getHeader(columnProps: FormColumnBaseProps, xEntity: XEntity, field: string, xField: XField): string {
         // poznamky - parametre field a xField by sme mohli vyratavat na zaklade columnProps ale kedze ich uz mame, setrime performance a neduplikujeme vypocet
         // nie je to tu uplne idealne nakodene, ale je to pomerne prehladne
         let isNullable: boolean = true;
         let readOnly: boolean = false;
         if (columnProps.type === "inputSimple") {
-            const columnPropsInputSimple = (columnProps as XFormColumnProps);
+            const columnPropsInputSimple = (columnProps as FormColumnProps);
             isNullable = xField.isNullable;
-            readOnly = XFormDataTable2.isReadOnlyHeader(columnPropsInputSimple.field, columnProps.readOnly);
+            readOnly = FormDataTable.isReadOnlyHeader(columnPropsInputSimple.field, columnProps.readOnly);
         }
         else if (columnProps.type === "dropdown") {
-            const columnPropsDropdown = (columnProps as XFormDropdownColumnProps);
+            const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
             const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(xEntity, columnPropsDropdown.assocField);
             isNullable = xAssoc.isNullable;
-            readOnly = XFormDataTable2.isReadOnlyHeader(undefined, columnProps.readOnly);
+            readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "autoComplete") {
-            const columnPropsAutoComplete = (columnProps as XFormAutoCompleteColumnProps);
+            const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
             const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(xEntity, columnPropsAutoComplete.assocField);
             isNullable = xAssoc.isNullable;
-            readOnly = XFormDataTable2.isReadOnlyHeader(undefined, columnProps.readOnly);
+            readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "searchButton") {
-            const columnPropsSearchButton = (columnProps as XFormSearchButtonColumnProps);
+            const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
             const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(xEntity, columnPropsSearchButton.assocField);
             isNullable = xAssoc.isNullable;
-            readOnly = XFormDataTable2.isReadOnlyHeader(undefined, columnProps.readOnly);
+            readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "textarea") {
-            const columnPropsTextarea = (columnProps as XFormTextareaColumnProps);
+            const columnPropsTextarea = (columnProps as FormTextareaColumnProps);
             isNullable = xField.isNullable;
-            readOnly = XFormDataTable2.isReadOnlyHeader(columnPropsTextarea.field, columnProps.readOnly);
+            readOnly = FormDataTable.isReadOnlyHeader(columnPropsTextarea.field, columnProps.readOnly);
         }
         else {
             throw "Unknown prop type = " + columnProps.type;
@@ -225,14 +225,14 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
     }
 
     // helper
-    static isReadOnlyHeader(path: string | undefined , readOnly: XTableFieldReadOnlyProp | undefined): boolean {
+    static isReadOnlyHeader(path: string | undefined , readOnly: TableFieldReadOnlyProp | undefined): boolean {
         let isReadOnly: boolean;
 
         if (path && !XUtilsCommon.isSingleField(path)) {
             // if the length of field is 2 or more, then readOnly
             isReadOnly = true;
         }
-            // formReadOnlyBase is called on the level XFormDataTable2
+            // formReadOnlyBase is called on the level FormDataTable
             // else if (this.props.form.formReadOnlyBase("xxx")) {
             //     isReadOnly = true;
         // }
@@ -269,7 +269,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
 
         // TODO - asi by bolo fajn si tieto field, xField niekam ulozit a iterovat ulozene hodnoty, pouziva sa to na viacerych miestach
         for (const child of this.props.children) {
-            const childColumn = child as {props: XFormColumnBaseProps}; // nevedel som to krajsie...
+            const childColumn = child as {props: FormColumnBaseProps}; // nevedel som to krajsie...
             // zatial nepodporujeme filter pre custom stlpce
             if (childColumn.props.type !== "custom") {
                 const field: string | undefined = this.getPathForColumn(childColumn.props);
@@ -319,7 +319,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         this.setState({selectedRow: event.value});
     }
 
-    onDropdownOptionsMapChange(dropdownOptionsMap: XDropdownOptionsMap) {
+    onDropdownOptionsMapChange(dropdownOptionsMap: DropdownOptionsMap) {
         this.setState({dropdownOptionsMap: dropdownOptionsMap})
     }
 
@@ -396,12 +396,12 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
     }
 */
     // body={(rowData: any) => bodyTemplate(childColumn.props.field, rowData)}
-    bodyTemplate(columnProps: XFormColumnBaseProps, tableReadOnly: boolean, rowData: any, xEntity: XEntity): any {
+    bodyTemplate(columnProps: FormColumnBaseProps, tableReadOnly: boolean, rowData: any, xEntity: XEntity): any {
         let body: any;
         // columnProps.columnViewStatus "ReadOnly" has higher prio then tableReadOnly
         // tableReadOnly has higher prio then property readOnly
         // (viewStatus "Hidden" - column is not rendered (bodyTemplate not called), viewStatus "ReadWrite" (default) - tableReadOnly/columnProps.readOnly is applied)
-        let readOnly: XTableFieldReadOnlyProp | undefined;
+        let readOnly: TableFieldReadOnlyProp | undefined;
         if (XUtils.xViewStatus(columnProps.columnViewStatus) === XViewStatus.ReadOnly) {
             readOnly = true;
         }
@@ -412,7 +412,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
             readOnly = columnProps.readOnly;
         }
         if (columnProps.type === "inputSimple") {
-            const columnPropsInputSimple = (columnProps as XFormColumnProps);
+            const columnPropsInputSimple = (columnProps as FormColumnProps);
             const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, columnPropsInputSimple.field);
             if (xField.type === "decimal" || xField.type === "number") {
                 body = <InputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
@@ -432,11 +432,11 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
             }
         }
         else if (columnProps.type === "dropdown") {
-            const columnPropsDropdown = (columnProps as XFormDropdownColumnProps);
+            const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
                 body = <DropdownDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsDropdown.assocField} displayField={columnPropsDropdown.displayField} sortField={columnPropsDropdown.sortField} filter={columnPropsDropdown.filter} dropdownOptionsMap={this.state.dropdownOptionsMap} onDropdownOptionsMapChange={this.onDropdownOptionsMapChange} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "autoComplete") {
-            const columnPropsAutoComplete = (columnProps as XFormAutoCompleteColumnProps);
+            const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
             body = <AutoCompleteDT form={this.props.form} entity={this.getEntity()}
                                     assocField={columnPropsAutoComplete.assocField} displayField={columnPropsAutoComplete.displayField} itemTemplate={columnPropsAutoComplete.itemTemplate}
                                     SearchBrowse={columnPropsAutoComplete.SearchBrowse} searchBrowseElement={columnPropsAutoComplete.searchBrowseElement}
@@ -449,11 +449,11 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
                                     rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "searchButton") {
-            const columnPropsSearchButton = (columnProps as XFormSearchButtonColumnProps);
+            const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
             body = <XSearchButtonDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsSearchButton.assocField} displayField={columnPropsSearchButton.displayField} searchBrowse={columnPropsSearchButton.searchBrowse} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "textarea") {
-            const columnPropsTextarea = (columnProps as XFormTextareaColumnProps);
+            const columnPropsTextarea = (columnProps as FormTextareaColumnProps);
             body = <InputTextareaDT form={this.props.form} entity={this.getEntity()} field={columnPropsTextarea.field} rows={columnPropsTextarea.rows} autoResize={columnPropsTextarea.autoResize} rowData={rowData} readOnly={readOnly}/>;
         }
         else {
@@ -499,16 +499,16 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
         const object: XObject = this.props.form.getXObject();
         const rowList: any[] = object[this.props.assocField];
         for (const row of rowList) {
-            const xRowTechData: XRowTechData = XFormBase.getXRowTechData(row);
+            const rowTechData: RowTechData = XFormBase.getRowTechData(row);
             const xErrorMap: XErrorMap = {};
-            for (const xFormComponentDT of xRowTechData.xFormComponentDTList) {
-                const errorItem = xFormComponentDT.validate();
+            for (const formComponentDT of rowTechData.formComponentDTList) {
+                const errorItem = formComponentDT.validate();
                 if (errorItem) {
                     //console.log("Mame field = " + errorItem.field);
                     xErrorMap[errorItem.field] = errorItem.xError;
                 }
             }
-            xRowTechData.errorMap = xErrorMap;
+            rowTechData.errorMap = xErrorMap;
         }
     }
 
@@ -517,8 +517,8 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
     //     const object: XObject = this.props.form.getXObject();
     //     const rowList: any[] = object[this.props.assocField];
     //     for (const row of rowList) {
-    //         const xRowTechData: XRowTechData = XFormBase.getXRowTechData(row);
-    //         msg += XUtils.getErrorMessages(xRowTechData.errorMap);
+    //         const rowTechData: RowTechData = XFormBase.getRowTechData(row);
+    //         msg += XUtils.getErrorMessages(rowTechData.errorMap);
     //     }
     //     return msg;
     // }
@@ -625,12 +625,12 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
 
         // pre lepsiu citatelnost vytvarame stlpce uz tu
         const columnElemList: JSX.Element[] = React.Children.map(
-            this.props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: XFormColumnBaseProps}).props.columnViewStatus) !== XViewStatus.Hidden),
+            this.props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: FormColumnBaseProps}).props.columnViewStatus) !== XViewStatus.Hidden),
             function (child) {
                 // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
                 // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
                 // (vzdy musime robit manipulacie so stlpcom, lebo potrebujeme pridat filter={true} sortable={true}
-                const childColumn = child as {props: XFormColumnBaseProps}; // nevedel som to krajsie...
+                const childColumn = child as {props: FormColumnBaseProps}; // nevedel som to krajsie...
                 const childColumnProps = childColumn.props;
 
                 let fieldParam: string | undefined;
@@ -643,7 +643,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
 
                 if (childColumnProps.type === "custom") {
                     // len jednoduche hodnoty, zatial nebude takmer ziadna podpora
-                    const columnPropsCustom = (childColumnProps as XFormCustomColumnProps);
+                    const columnPropsCustom = (childColumnProps as FormCustomColumnProps);
                     fieldParam = columnPropsCustom.field;
                     header = columnPropsCustom.header;
                     filterElement = undefined;
@@ -663,7 +663,7 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
                     const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, field);
 
                     // *********** header ***********
-                    header = XFormDataTable2.getHeader(childColumnProps, xEntity, field, xField);
+                    header = FormDataTable.getHeader(childColumnProps, xEntity, field, xField);
 
                     // *********** filterElement ***********
                     if (thisLocal.props.filterDisplay !== "none") {
@@ -783,46 +783,46 @@ export class XFormDataTable2 extends Component<XFormDataTableProps> {
     }
 }
 
-export type XTableFieldOnChange = (e: XTableFieldChangeEvent<any, any>) => void;
+export type TableFieldOnChange = (e: XTableFieldChangeEvent<any, any>) => void;
 
-export type XTableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => boolean);
+export type TableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => boolean);
 
 // do buducna (kedze object mame vo formulari pristupny cez this.state.object, tak nepotrebujeme nutne pouzivat funkciu, vystacime si priamo s hodnotou)
-//export type XFormColumnViewStatusProp = XViewStatusOrBoolean | ((object: any) => XViewStatusOrBoolean);
+//export type FormColumnViewStatusProp = XViewStatusOrBoolean | ((object: any) => XViewStatusOrBoolean);
 
 // typ property pre vytvorenie filtra na assoc fieldoch (XAutoComplete, Dropdown, ...)
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
-export type XTableFieldFilterProp = XCustomFilter | ((object: any, rowData: any) => XCustomFilter | undefined);
+export type TableFieldFilterProp = XCustomFilter | ((object: any, rowData: any) => XCustomFilter | undefined);
 
-export interface XFormColumnBaseProps {
+export interface FormColumnBaseProps {
     type: "inputSimple" | "dropdown" | "autoComplete" | "searchButton" | "textarea" | "custom";
     header?: any;
-    readOnly?: XTableFieldReadOnlyProp;
+    readOnly?: TableFieldReadOnlyProp;
     dropdownInFilter?: boolean; // moze byt len na stlpcoch ktore zobrazuju asociavany atribut (dlzka path >= 2)
     showFilterMenu?: boolean;
     width?: string; // for example 150px or 10rem or 10% (value 10 means 10rem)
-    onChange?: XTableFieldOnChange;
+    onChange?: TableFieldOnChange;
     columnViewStatus: XViewStatusOrBoolean;
 }
 
-// default props for XFormColumnBaseProps
-const XFormColumnBase_defaultProps = {
+// default props for FormColumnBaseProps
+const FormColumnBase_defaultProps = {
     columnViewStatus: true
 };
 
 
-export interface XFormColumnProps extends XFormColumnBaseProps {
+export interface FormColumnProps extends FormColumnBaseProps {
     field: string;
 }
 
-export interface XFormDropdownColumnProps extends XFormColumnBaseProps {
+export interface FormDropdownColumnProps extends FormColumnBaseProps {
     assocField: string;
     displayField: string;
     sortField?: string;
     filter?: XCustomFilter;
 }
 
-export interface XFormAutoCompleteColumnProps extends XFormColumnBaseProps {
+export interface FormAutoCompleteColumnProps extends FormColumnBaseProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -831,7 +831,7 @@ export interface XFormAutoCompleteColumnProps extends XFormColumnBaseProps {
     AssocForm?: React.ComponentType<XFormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
-    filter?: XTableFieldFilterProp;
+    filter?: TableFieldFilterProp;
     sortField?: string | DataTableSortMeta[];
     fields?: string[]; // ak chceme pri citani suggestions nacitat aj asociovane objekty
     scrollHeight?: string; // Maximum height of the suggestions panel.
@@ -840,83 +840,84 @@ export interface XFormAutoCompleteColumnProps extends XFormColumnBaseProps {
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
 }
 
-export interface XFormSearchButtonColumnProps extends XFormColumnBaseProps {
+export interface FormSearchButtonColumnProps extends FormColumnBaseProps {
     assocField: string;
     displayField: string;
     searchBrowse: JSX.Element;
 }
 
-export interface XFormTextareaColumnProps extends XFormColumnBaseProps {
+export interface FormTextareaColumnProps extends FormColumnBaseProps {
     field: string;
     rows: number;
     autoResize?: boolean;
 }
 
-// TODO - XFormCustomColumnProps by nemal extendovat od XFormColumnBaseProps, niektore propertiesy nedavaju zmysel
-export interface XFormCustomColumnProps extends XFormColumnBaseProps {
+// TODO - FormCustomColumnProps by nemal extendovat od FormColumnBaseProps, niektore propertiesy nedavaju zmysel
+export interface FormCustomColumnProps extends FormColumnBaseProps {
     body: React.ReactNode | ((data: any, options: ColumnBodyOptions) => React.ReactNode); // the same type as type of property Column.body
     field?: string; // koli pripadnemu sortovaniu/filtrovaniu
 }
 
-export const XFormColumn = (props: XFormColumnProps) => {
+export const FormColumn = (props: FormColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-XFormColumn.defaultProps = {
-    ...XFormColumnBase_defaultProps,
+FormColumn.defaultProps = {
+    ...FormColumnBase_defaultProps,
     type: "inputSimple"
 };
 
-export const XFormDropdownColumn = (props: XFormDropdownColumnProps) => {
+export const FormDropdownColumn = (props: FormDropdownColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-XFormDropdownColumn.defaultProps = {
-    ...XFormColumnBase_defaultProps,
+FormDropdownColumn.defaultProps = {
+    ...FormColumnBase_defaultProps,
     type: "dropdown"
 };
 
-export const XFormAutoCompleteColumn = (props: XFormAutoCompleteColumnProps) => {
+export const FormAutoCompleteColumn = (props: FormAutoCompleteColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-XFormAutoCompleteColumn.defaultProps = {
-    ...XFormColumnBase_defaultProps,
+FormAutoCompleteColumn.defaultProps = {
+    ...FormColumnBase_defaultProps,
     type: "autoComplete",
     addRowEnabled: true
 };
 
-export const XFormSearchButtonColumn = (props: XFormSearchButtonColumnProps) => {
+export const FormSearchButtonColumn = (props: FormSearchButtonColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-XFormSearchButtonColumn.defaultProps = {
-    ...XFormColumnBase_defaultProps,
+FormSearchButtonColumn.defaultProps = {
+    ...FormColumnBase_defaultProps,
     type: "searchButton"
 };
 
-export const XFormTextareaColumn = (props: XFormTextareaColumnProps) => {
+export const FormTextareaColumn = (props: FormTextareaColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-XFormTextareaColumn.defaultProps = {
-    ...XFormColumnBase_defaultProps,
+FormTextareaColumn.defaultProps = {
+    ...FormColumnBase_defaultProps,
     type: "textarea",
     rows: 1,
     autoResize: true
 };
 
-export const XFormCustomColumn = (props: XFormCustomColumnProps) => {
+export const FormCustomColumn = (props: FormCustomColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-XFormCustomColumn.defaultProps = {
-    ...XFormColumnBase_defaultProps,
+FormCustomColumn.defaultProps = {
+    ...FormColumnBase_defaultProps,
     type: "custom"
 };
+
