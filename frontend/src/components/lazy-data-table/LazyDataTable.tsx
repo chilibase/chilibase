@@ -93,6 +93,11 @@ export interface OptionalCustomFilter {
     filter: XCustomFilter;
 }
 
+export interface AssocToSort {
+    assoc: string;
+    sortField: string;
+}
+
 export interface EditModeHandlers {
     onStart: () => void;
     onSave: () => void;
@@ -181,6 +186,7 @@ export interface LazyDataTableProps {
     sortField?: string | DataTableSortMeta[];
     fullTextSearch?: boolean | string[]; // false - nemame full-text search, true - mame full-text search na default stlpcoch, string[] - full-text search na danych stlpcoch
     fields?: string[]; // ak chceme nacitat aj asociovane objekty mimo tych ktore sa nacitavaju koli niektoremu zo stlpcov
+    assocsToSort?: AssocToSort[]; // oneToMany assocs for sorting detail rows of after fetching data from backend (only first level assocs are supported, only default asc order supported)
     multilineSwitch?: boolean; // default false, ak true tak zobrazi switch, ktorym sa da vypnut zobrazenie viacriadkovych textov v sirokom riadku
     multilineSwitchInitValue?: MultilineRenderType; // default "allLines"
     multilineSwitchFewLinesCount?: number; // max count of rendered lines for render type "fewLines" (default 2)
@@ -696,6 +702,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         //console.log("zavolany loadDataBase - startIndex = " + findParam.first + ", endIndex = " + ((findParam.first ?? 0) + (findParam.rows ?? 0)) + ", filters = " + JSON.stringify(findParam.filters) + ", multiSortMeta = " + JSON.stringify(findParam.multiSortMeta) + ", fields = " + JSON.stringify(findParam.fields));
         setLoading(true);
         const findResult = await findByFilter(findParam);
+        sortAssocsToSort(findResult);
         setValue(findResult);
         setupExpandedRows(findResult, multilineSwitchValue);
         setLoading(false);
@@ -708,6 +715,22 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         // async check for new version - the purpose is to get new version of app to the browser (if available) in short time (10 minutes)
         // (if there is no new version, the check will run async (as the last operation) and nothing will happen)
         XUtils.reloadIfNewVersion();
+    }
+
+    const sortAssocsToSort = (findResult: FindResult) => {
+        if (props.assocsToSort) {
+            if (findResult.rowList) {
+                for (const row of findResult.rowList) {
+                    // sorting in javascript (avoid of sorting in DB)
+                    for (const assocToSort of props.assocsToSort) {
+                        const assocRowList: any[] = row[assocToSort.assoc];
+                        if (assocRowList) {
+                            row[assocToSort.assoc] = XUtilsCommon.arraySort(assocRowList, assocToSort.sortField);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     const setupExpandedRows = (findResult: FindResult, multilineSwitchValue: MultilineRenderType) => {
