@@ -2,13 +2,13 @@ import React from "react";
 import {XInput, XInputProps} from "../XInput";
 import {CheckboxBase} from "./CheckboxBase";
 
-export interface CheckboxProps extends XInputProps<boolean> {
+export interface CheckboxProps extends XInputProps {
     // aby sme vedeli zobrazit dvojstavovy checkbox aj ked v DB mame null stlpec
     // zatial len sem mozno v buducnosti dame na vsetky komponenty
     isNotNull?: boolean;
 }
 
-export class Checkbox extends XInput<boolean, CheckboxProps> {
+export class Checkbox extends XInput<CheckboxProps> {
 
     constructor(props: CheckboxProps) {
         super(props);

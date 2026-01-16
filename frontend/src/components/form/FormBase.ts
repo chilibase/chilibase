@@ -100,7 +100,7 @@ export abstract class FormBase extends Component<FormProps> {
     state: {object: XObject | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
-    formComponentList: Array<FormComponent<any, any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
+    formComponentList: Array<FormComponent<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
     formDataTableList: Array<FormDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
     assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v rowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)
@@ -425,11 +425,11 @@ export abstract class FormBase extends Component<FormProps> {
         this.fieldSet.add(field);
     }
 
-    addFormComponent(formComponent: FormComponent<any, any>) {
+    addFormComponent(formComponent: FormComponent<any>) {
         this.formComponentList.push(formComponent);
     }
 
-    findFormComponent(field: string): FormComponent<any, any> | undefined {
+    findFormComponent(field: string): FormComponent<any> | undefined {
         // TODO - vytvorit mapu (field, ref(formComponent)), bude to rychlejsie
         // vytvorit len mapu (a list zrusit) je problem - mozme mat pre jeden field viacero (napr. asociacnych) componentov
         for (const formComponent of this.formComponentList) {
@@ -576,7 +576,7 @@ export abstract class FormBase extends Component<FormProps> {
         for (const [field, error] of Object.entries(xErrors)) {
             if (error) {
                 // skusime zistit label
-                const formComponent: FormComponent<any, any> | undefined = this.findFormComponent(field);
+                const formComponent: FormComponent<any> | undefined = this.findFormComponent(field);
                 const fieldLabel: string | undefined = formComponent ? formComponent.getLabel() : undefined;
                 xErrorMap[field] = {...xErrorMap[field], form: error, fieldLabel: fieldLabel};
             }

@@ -5,14 +5,14 @@ import {XObject} from "../XObject";
 import {DropdownForEntity} from "./DropdownForEntity";
 import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 
-export interface DropdownProps extends FormComponentProps<XObject> {
+export interface DropdownProps extends FormComponentProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - dropdown will run on <assoc2>)
     displayField: string;
     sortField?: string;
     filter?: FilterProp;
 }
 
-export class Dropdown extends FormComponent<XObject, DropdownProps> {
+export class Dropdown extends FormComponent<DropdownProps> {
 
     protected xAssoc: XAssoc;
 

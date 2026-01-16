@@ -10,7 +10,7 @@ import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface AutoCompleteProps extends FormComponentProps<XObject> {
+export interface AutoCompleteProps extends FormComponentProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - autocomplete will run on <assoc2>)
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -37,7 +37,7 @@ export interface AutoCompleteProps extends FormComponentProps<XObject> {
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 
-export class AutoComplete extends FormComponent<XObject, AutoCompleteProps> {
+export class AutoComplete extends FormComponent<AutoCompleteProps> {
 
     protected xAssoc: XAssoc;
     protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)

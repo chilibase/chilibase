@@ -4,7 +4,7 @@ import {XUtils} from "../XUtils";
 import {InputTextareaBase} from "./InputTextareaBase";
 import {Tooltip} from "primereact/tooltip";
 
-export interface InputTextareaProps extends XInputProps<string> {
+export interface InputTextareaProps extends XInputProps {
     rows?: number;
     cols?: number | "full"; // full - maximalna sirka (width:100%)
     labelOnTop?: boolean;
@@ -12,7 +12,7 @@ export interface InputTextareaProps extends XInputProps<string> {
     fieldStyle?: React.CSSProperties; // zatial sem, mozno v buducnosti posunieme do superclass
 }
 
-export class InputTextarea extends XInput<string, InputTextareaProps> {
+export class InputTextarea extends XInput<InputTextareaProps> {
 
     public static defaultProps = {
         cols: "full"

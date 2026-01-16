@@ -13,7 +13,7 @@ import {XUtilsCommon} from "../serverApi/XUtilsCommon";
 // 2. entity of form uses OneToMany assoc to link rows (entity for link table must be created)
 //      in this case prop "assocToMany" is OneToMany assoc to link rows and prop "assocManyToOne" is ManyToOne assoc from link row to option row
 
-export interface XMultiSelectProps extends FormComponentProps<XObject> {
+export interface XMultiSelectProps extends FormComponentProps {
     assocToMany: string; // assoc ManyToMany to option rows or assoc OneToMany to link rows; can be also path (e.g. <assoc1>.<assoc2> - multiselect will run on <assoc2>)
     assocManyToOne?: string; // assoc from link row to option row - used only if prop "assocToMany" is OneToMany assoc to link rows
     displayField: string; // field of option row
@@ -24,7 +24,7 @@ export interface XMultiSelectProps extends FormComponentProps<XObject> {
     scrollHeight?: string; // Maximum height of the suggestions panel.
 }
 
-export class XMultiSelect extends FormComponent<XObject, XMultiSelectProps> {
+export class XMultiSelect extends FormComponent<XMultiSelectProps> {
 
     protected xAssocToMany: XAssoc;
     protected xAssocManyToOne?: XAssoc;

@@ -5,11 +5,11 @@ import {XInput, XInputProps} from "../XInput";
 import {XUtils} from "../XUtils";
 import {Tooltip} from "primereact/tooltip";
 
-export interface InputTextProps extends XInputProps<string> {
+export interface InputTextProps extends XInputProps {
     size?: number;
 }
 
-export class InputText extends XInput<string, InputTextProps> {
+export class InputText extends XInput<InputTextProps> {
 
     constructor(props: InputTextProps) {
         super(props);

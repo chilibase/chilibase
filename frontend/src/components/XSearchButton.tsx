@@ -16,7 +16,7 @@ import {XUtilsCommon} from "../serverApi/XUtilsCommon";
 // nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci XAutoComplete
 // TODO - ak sa to ma pouzivat, tak zmenit searchBrowse a assocForm (pouzivane pri readOnly) na SearchBrowse/searchBrowseElement a AssocForm/assocFormElement a nepouzivat FormNavigator
 
-export interface XSearchButtonProps extends FormComponentProps<XObject> {
+export interface XSearchButtonProps extends FormComponentProps {
     assocField: string;
     displayField: string;
     searchBrowse: JSX.Element;
@@ -26,7 +26,7 @@ export interface XSearchButtonProps extends FormComponentProps<XObject> {
     inputStyle?: React.CSSProperties;
 }
 
-export class XSearchButton extends FormComponent<XObject, XSearchButtonProps> {
+export class XSearchButton extends FormComponent<XSearchButtonProps> {
 
     protected xAssoc: XAssoc;
 

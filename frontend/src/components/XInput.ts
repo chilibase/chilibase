@@ -3,14 +3,14 @@ import {FormComponent, FormComponentProps} from "./form";
 import {XField} from "../serverApi/XEntityMetadata";
 import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
 
-export interface XInputProps<T> extends FormComponentProps<T> {
+export interface XInputProps extends FormComponentProps {
     field: string;
     inputStyle?: React.CSSProperties;
     inputClassName?: string;
 }
 
 // spolocna nadtrieda pre jednoduche inputy (nie asociacne)
-export abstract class XInput<T, P extends XInputProps<T>> extends FormComponent<T, P> {
+export abstract class XInput<P extends XInputProps> extends FormComponent<P> {
 
     protected xField: XField;
 

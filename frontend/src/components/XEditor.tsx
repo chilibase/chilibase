@@ -3,11 +3,11 @@ import {XInput, XInputProps} from "./XInput";
 import {XUtils} from "./XUtils";
 import {XEditorBase} from "./XEditorBase";
 
-export interface XEditorProps extends XInputProps<string> {
+export interface XEditorProps extends XInputProps {
     labelOnTop: boolean;
 }
 
-export class XEditor extends XInput<string, XEditorProps> {
+export class XEditor extends XInput<XEditorProps> {
 
     public static defaultProps = {
         labelOnTop: false
