@@ -1,11 +1,10 @@
 import React from "react";
-import {FilterProp, FormComponent, FormComponentProps} from "./form";
-import {XAssoc} from "../serverApi/XEntityMetadata";
-import {XObject} from "./XObject";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XMultiSelectBase} from "./XMultiSelectBase";
+import {FilterProp, FormComponent, FormComponentProps} from "../form";
+import {XAssoc} from "../../serverApi/XEntityMetadata";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {MultiSelectBase} from "./MultiSelectBase";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
+import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
 
 // works in one of these 2 modes:
 // 1. entity of form uses ManyToMany assoc to work with options
@@ -13,7 +12,7 @@ import {XUtilsCommon} from "../serverApi/XUtilsCommon";
 // 2. entity of form uses OneToMany assoc to link rows (entity for link table must be created)
 //      in this case prop "assocToMany" is OneToMany assoc to link rows and prop "assocManyToOne" is ManyToOne assoc from link row to option row
 
-export interface XMultiSelectProps extends FormComponentProps {
+export interface MultiSelectProps extends FormComponentProps {
     assocToMany: string; // assoc ManyToMany to option rows or assoc OneToMany to link rows; can be also path (e.g. <assoc1>.<assoc2> - multiselect will run on <assoc2>)
     assocManyToOne?: string; // assoc from link row to option row - used only if prop "assocToMany" is OneToMany assoc to link rows
     displayField: string; // field of option row
@@ -24,12 +23,12 @@ export interface XMultiSelectProps extends FormComponentProps {
     scrollHeight?: string; // Maximum height of the suggestions panel.
 }
 
-export class XMultiSelect extends FormComponent<XMultiSelectProps> {
+export class MultiSelect extends FormComponent<MultiSelectProps> {
 
     protected xAssocToMany: XAssoc;
     protected xAssocManyToOne?: XAssoc;
 
-    constructor(props: XMultiSelectProps) {
+    constructor(props: MultiSelectProps) {
         super(props);
 
         this.xAssocToMany = XUtilsMetadataCommon.getXAssocToManyByPath(XUtilsMetadataCommon.getXEntity(props.form.getEntity()), props.assocToMany);
@@ -76,7 +75,7 @@ export class XMultiSelect extends FormComponent<XMultiSelectProps> {
     }
 
     onChange(value: any[]) {
-        // value coming from XMultiSelectBase is list of selected option rows
+        // value coming from MultiSelectBase is list of selected option rows
         let rowList: any[];
         if (this.props.assocManyToOne) {
             // assoc "assocToMany" expects link rows - we wrap options row into link rows, id is left undefined,
@@ -98,7 +97,7 @@ export class XMultiSelect extends FormComponent<XMultiSelectProps> {
         return (
             <div className="field grid">
                 <label htmlFor={this.props.assocToMany} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <XMultiSelectBase value={this.getValue()} onChange={this.onChange}
+                <MultiSelectBase value={this.getValue()} onChange={this.onChange}
                                   displayField={this.props.displayField}
                                   optionsQuery={{entity: this.xAssocManyToOne ? this.xAssocManyToOne.entityName : this.xAssocToMany.entityName, filter: () => this.getFilterBase(this.props.filter), sortField: this.props.sortField, fields: this.props.fields}}
                                   width={this.props.width} scrollHeight={this.props.scrollHeight}
@@ -107,3 +106,4 @@ export class XMultiSelect extends FormComponent<XMultiSelectProps> {
         );
     }
 }
+

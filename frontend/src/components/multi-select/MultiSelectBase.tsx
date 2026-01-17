@@ -1,12 +1,12 @@
 import React, {Component} from "react";
-import {XQuery, XUtils} from "./XUtils";
+import {XQuery, XUtils} from "../XUtils";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
 import {MultiSelect, MultiSelectChangeEvent} from "primereact/multiselect";
 
 // Base komponent pre MultiSelect - podobna uroven ako XAutoCompleteBase, resp. DropdownForEntity
 
-export interface XMultiSelectBaseProps {
+export interface MultiSelectBaseProps {
     value: any[];
     onChange: (value: any[]) => void;
     //options?: any[]; // ak su priamo zadane options, nepouziva sa optionsQuery (TODO - toto neviem ci potrebujeme, da sa priamo pouzit MultiSelect v tomto pripade)
@@ -20,7 +20,7 @@ export interface XMultiSelectBaseProps {
     error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
 }
 
-export class XMultiSelectBase extends Component<XMultiSelectBaseProps> {
+export class MultiSelectBase extends Component<MultiSelectBaseProps> {
 
     public static defaultProps = {
         //scrollHeight: '15rem'   // primereact has 200px
@@ -32,11 +32,11 @@ export class XMultiSelectBase extends Component<XMultiSelectBaseProps> {
         options: any[];
     };
 
-    constructor(props: XMultiSelectBaseProps) {
+    constructor(props: MultiSelectBaseProps) {
         super(props);
 
         if (!this.props.optionsQuery) {
-            throw `XMultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
+            throw `MultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
         }
         this.idField = XUtilsMetadataCommon.getXEntity(this.props.optionsQuery.entity).idField;
 
@@ -51,7 +51,7 @@ export class XMultiSelectBase extends Component<XMultiSelectBaseProps> {
 
     async loadOptions() {
         if (!this.props.optionsQuery) {
-            throw `XMultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
+            throw `MultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
         }
         const options: any[] = await XUtils.fetchRows(
             this.props.optionsQuery.entity,
@@ -81,3 +81,4 @@ export class XMultiSelectBase extends Component<XMultiSelectBaseProps> {
         );
     }
 }
+

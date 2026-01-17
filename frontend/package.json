@@ -76,6 +76,7 @@
     "./input-text": "./lib/components/input-text/index.js",
     "./input-textarea": "./lib/components/input-textarea/index.js",
     "./lazy-data-table": "./lib/components/lazy-data-table/index.js",
+    "./multi-select": "./lib/components/multi-select/index.js",
 
     "./useXStateLocal": "./lib/components/useXStateLocal.js",
     "./useXStateSession": "./lib/components/useXStateSession.js",
@@ -98,8 +99,6 @@
     "./XLocale": "./lib/components/XLocale.js",
     "./XLoginDialog": "./lib/components/XLoginDialog.js",
     "./XLoginForm": "./lib/components/XLoginForm.js",
-    "./XMultiSelect": "./lib/components/XMultiSelect.js",
-    "./XMultiSelectBase": "./lib/components/XMultiSelectBase.js",
     "./XObject": "./lib/components/XObject.js",
     "./XSearchButton": "./lib/components/XSearchButton.js",
     "./XToken": "./lib/components/XToken.js",
