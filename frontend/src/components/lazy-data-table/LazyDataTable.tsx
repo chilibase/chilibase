@@ -1232,6 +1232,9 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         else {
             bodyValue = valueAsUI(rowDataValue, xField, columnProps.contentType, columnProps.fieldSetId);
         }
+        if (columnProps.className || columnProps.style) {
+            bodyValue = <div className={columnProps.className} style={columnProps.style}>{bodyValue}</div>;
+        }
         return bodyValue;
     }
 
@@ -1746,6 +1749,8 @@ export interface LazyColumnProps {
     aggregateType?: XAggregateFunction;
     columnViewStatus: XViewStatusOrBoolean; // aby sme mohli mat Hidden stlpec (nedarilo sa mi priamo v kode "o-if-ovat" stlpec), zatial netreba funkciu, vola sa columnViewStatus lebo napr. v Edit tabulke moze byt viewStatus na row urovni
     filterElement?: FilterElementProp;
+    className?: string; // wraps the content of the column cell with div element with this className (prop is not applied if prop body is used)
+    style?: React.CSSProperties; // wraps the content of the column cell with div element with this style (prop is not applied if prop body is used)
     body?: React.ReactNode | ((data: any, options: ColumnBodyOptions) => React.ReactNode); // the same type as type of property Column.body
 }
 
