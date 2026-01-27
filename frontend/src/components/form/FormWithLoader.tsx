@@ -7,7 +7,7 @@ import {
     LoadObjectFunction,
 } from "./FormBase";
 import {OperationType, XUtils} from "../XUtils";
-import {XParams} from "../../serverApi/XUtilsCommon";
+import {XParams} from "../../common/XUtilsCommon";
 import {XEnvVar} from "../XEnvVars";
 import {XObject} from "../XObject";
 

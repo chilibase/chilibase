@@ -3,7 +3,7 @@ import {Auth0Provider as Auth0Auth0Provider, useAuth0} from "@auth0/auth0-react"
 import { XUtils } from '../XUtils';
 import { XEnvVar } from '../XEnvVars';
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
-import {XPostLoginRequest} from "../../serverApi/x-auth-api";
+import {XPostLoginRequest} from "../../common/x-auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
 export const Auth0Provider = ({children}: {children: ReactNode;}) => {

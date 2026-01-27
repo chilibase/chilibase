@@ -7,7 +7,7 @@ import {
 } from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
-import {XAssoc, XEntity} from "../serverApi/XEntityMetadata.js";
+import {XAssoc, XEntity} from "../common/XEntityMetadata.js";
 import {XUser} from "../administration/x-user.entity.js";
 import {XUtils} from "./XUtils.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
@@ -15,15 +15,15 @@ import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import * as bcrypt from 'bcrypt';
 import {FindParamRows} from "./FindParamRows.js";
-import {XPostLoginRequest, XPostLoginResponse} from "../serverApi/x-auth-api.js";
+import {XPostLoginRequest, XPostLoginResponse} from "../common/x-auth-api.js";
 import {XAuth, XEnvVar} from "./XEnvVars.js";
 import {join} from "path";
 import {unlinkSync} from "fs";
 import {XRowIdListToRemove} from "./XRowIdListToRemove.js";
 import {XParam} from "../administration/x-param.entity.js";
-import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../serverApi/XUtilsConversions.js";
+import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../common/XUtilsConversions.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
-import {XUnlockRowRequest} from "../serverApi/x-lib-api.js";
+import {XUnlockRowRequest} from "../common/x-lib-api.js";
 import {XAppError} from "./XAppError.js";
 import {xLocaleOption} from "./XLocale.js";
 

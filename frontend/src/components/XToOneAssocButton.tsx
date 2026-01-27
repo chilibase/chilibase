@@ -4,7 +4,7 @@ import React from "react";
 import {Button} from "primereact/button";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtils} from "./XUtils";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 
 export const XToOneAssocButton = (props: {form: FormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
 

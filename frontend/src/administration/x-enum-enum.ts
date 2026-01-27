@@ -1,4 +1,4 @@
-import {XUser} from "../serverApi/XUser";
+import {XUser} from "../common/XUser";
 import {XEnum} from "./x-enum";
 
 export interface XEnumEnum {

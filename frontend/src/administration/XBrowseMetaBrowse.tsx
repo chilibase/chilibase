@@ -1,7 +1,7 @@
 import {BrowseProps, LazyColumn, LazyDataTable} from "../components/lazy-data-table";
 import React from "react";
 import {XBrowseMetaForm} from "./XBrowseMetaForm";
-import {XBrowseMeta} from "../serverApi/XBrowseMetadata";
+import {XBrowseMeta} from "../common/XBrowseMetadata";
 
 export const XBrowseMetaBrowse = (props: BrowseProps) => {
 

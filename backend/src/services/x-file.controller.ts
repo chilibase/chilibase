@@ -6,7 +6,7 @@ import {XUtils} from "./XUtils.js";
 import {XFile} from "../administration/x-file.entity.js";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {join} from "path";
-import {XFileJsonField} from "../serverApi/XFileJsonField.js";
+import {XFileJsonField} from "../common/XFileJsonField.js";
 
 @Controller()
 export class XFileController {

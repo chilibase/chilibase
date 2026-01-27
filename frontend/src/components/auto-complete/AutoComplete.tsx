@@ -1,12 +1,12 @@
 import React from "react";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
-import {XAssoc} from "../../serverApi/XEntityMetadata";
+import {XAssoc} from "../../common/XEntityMetadata";
 import {OperationType} from "../XUtils";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
 import {XError} from "../XErrors";
 import {XObject} from "../XObject";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 

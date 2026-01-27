@@ -1,9 +1,9 @@
-import {XField} from "../serverApi/XEntityMetadata";
+import {XField} from "../common/XEntityMetadata";
 // WARNING - if you use import from index.ts (not from file FormComponentDT), app gives error during start:
 // Uncaught TypeError: Class extends value undefined is not a constructor or null
 // (probably XInputDT cannot be instantiated)
 import {FormComponentDT, FormComponentDTProps} from "./form-data-table/FormComponentDT";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 import React from "react";
 
 export interface XInputDTProps extends FormComponentDTProps {

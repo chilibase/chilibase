@@ -4,9 +4,9 @@ import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
 import {DropdownOptionsMap, TableFieldReadOnlyProp} from "../form-data-table";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XAssoc} from "../../serverApi/XEntityMetadata";
-import {XCustomFilter} from "../../serverApi/FindParam";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XAssoc} from "../../common/XEntityMetadata";
+import {XCustomFilter} from "../../common/FindParam";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
 
 export const DropdownDT = (props: {
         form: FormBase;

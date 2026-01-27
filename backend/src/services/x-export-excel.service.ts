@@ -2,9 +2,9 @@ import {Injectable, StreamableFile} from "@nestjs/common";
 import {XExportColumn, XExportService} from "./x-export.service.js";
 import {Buffer} from "buffer";
 import {Readable} from "stream";
-import {XMultilineExportType} from "../serverApi/ExportImportParam.js";
-import {XEntity} from "../serverApi/XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon.js";
+import {XMultilineExportType} from "../common/ExportImportParam.js";
+import {XEntity} from "../common/XEntityMetadata.js";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
 import * as ExcelJS from "exceljs";
 
 @Injectable()

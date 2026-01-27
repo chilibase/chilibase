@@ -6,7 +6,7 @@ import {Button} from "primereact/button";
 import {XUtils} from "./XUtils";
 import {Dialog} from "primereact/dialog";
 import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 
 export const XSearchButtonOld = (props: {form: FormBase; assocField: string; displayField: string, searchTable: any; assocForm?: any; label?: string; readOnly?: boolean; size?: number; inputStyle?: React.CSSProperties;}) => {
 

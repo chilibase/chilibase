@@ -1,4 +1,4 @@
-// TODO - move to common (serverApi)
+// TODO - move to common
 export interface SaveRowParam {
     entity: string;
     object: any;

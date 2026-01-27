@@ -1,8 +1,8 @@
-import {XField} from "../serverApi/XEntityMetadata";
+import {XField} from "../common/XEntityMetadata";
 import {XUtils} from "./XUtils";
-import {XBrowseMeta, XBrowseMetaMap} from "../serverApi/XBrowseMetadata";
+import {XBrowseMeta, XBrowseMetaMap} from "../common/XBrowseMetadata";
 import {BetweenFilterProp} from "./lazy-data-table";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 
 // idelany nazov: UtilsEntityMetadata - ale strasne dlhy
 // tato funkcionalita by mala ist bud do tried XEntity, XField alebo lepsie do nejakeho servisu

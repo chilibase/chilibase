@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Calendar, CalendarSelectEvent} from "primereact/calendar";
-import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, XDateScale} from "../../serverApi/XUtilsConversions";
+import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, XDateScale} from "../../common/XUtilsConversions";
 import {XUtils} from "../XUtils";
 import {FormEvent} from "primereact/ts-helpers";
 

@@ -2,15 +2,15 @@ import React from "react";
 import {Component} from "react";
 import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
 import {FormBase} from "./form";
-import {XAssoc, XEntity} from "../serverApi/XEntityMetadata";
+import {XAssoc, XEntity} from "../common/XEntityMetadata";
 import {XUtils} from "./XUtils";
 import {XObject} from "./XObject";
 import {XButton} from "./XButton";
 import {XButtonIconNarrow} from "./XButtonIconNarrow";
-import {numberAsUI} from "../serverApi/XUtilsConversions";
+import {numberAsUI} from "../common/XUtilsConversions";
 import {xLocaleOption} from "./XLocale";
-import {XFileJsonField} from "../serverApi/XFileJsonField";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XFileJsonField} from "../common/XFileJsonField";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 
 interface XFile {
     id: number;

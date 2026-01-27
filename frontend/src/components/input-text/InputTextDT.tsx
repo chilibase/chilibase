@@ -1,11 +1,11 @@
 import {FormBase} from "../form";
 import React from "react";
 import {InputText} from "primereact/inputtext";
-import {stringAsUI, stringFromUI} from "../../serverApi/XUtilsConversions";
-import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {stringAsUI, stringFromUI} from "../../common/XUtilsConversions";
+import {XUtilsCommon} from "../../common/XUtilsCommon";
 import {TableFieldReadOnlyProp} from "../form-data-table";
 import {XUtils} from "../XUtils";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
 
 export const InputTextDT = (props: {form: FormBase; entity: string; field: string; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 

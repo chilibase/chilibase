@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {XQuery, XUtils} from "../XUtils";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
 import {MultiSelect, MultiSelectChangeEvent} from "primereact/multiselect";
 
 // Base komponent pre MultiSelect - podobna uroven ako XAutoCompleteBase, resp. DropdownForEntity

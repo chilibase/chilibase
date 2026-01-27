@@ -1,19 +1,19 @@
 import {Injectable, StreamableFile} from '@nestjs/common';
-import {FindResult, XAggregateValues} from "../serverApi/FindResult.js";
+import {FindResult, XAggregateValues} from "../common/FindResult.js";
 import {DataSource, EntityManager, Repository, SelectQueryBuilder} from "typeorm";
 import {
     FindParam,
     ResultType, XCustomFilterItem,
     XFullTextSearch,
     XLazyAutoCompleteSuggestionsRequest
-} from "../serverApi/FindParam.js";
+} from "../common/FindParam.js";
 import {Response} from "express";
 import {
     ExportCsvParam,
     ExportExcelParam,
     ExportJsonParam,
     LazyDataTableQueryParam
-} from "../serverApi/ExportImportParam.js";
+} from "../common/ExportImportParam.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
 import {XMainQueryData} from "../x-query-data/XMainQueryData.js";
 import {XQueryData} from "../x-query-data/XQueryData.js";
@@ -22,11 +22,11 @@ import {XExportColumn} from "./x-export.service.js";
 import {XExportExcelService} from "./x-export-excel.service.js";
 import {XExportJsonService} from "./x-export-json.service.js";
 import {XExportCsvService} from "./x-export-csv.service.js";
-import {numberFromString} from "../serverApi/XUtilsConversions.js";
-import {DataTableSortMeta} from "../serverApi/PrimeFilterSortMeta.js";
-import {XAssoc, XEntity} from "../serverApi/XEntityMetadata.js";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon.js";
-import {XFindRowByIdRequest, XFindRowByIdResponse} from "../serverApi/x-lib-api.js";
+import {numberFromString} from "../common/XUtilsConversions.js";
+import {DataTableSortMeta} from "../common/PrimeFilterSortMeta.js";
+import {XAssoc, XEntity} from "../common/XEntityMetadata.js";
+import {XUtilsCommon} from "../common/XUtilsCommon.js";
+import {XFindRowByIdRequest, XFindRowByIdResponse} from "../common/x-lib-api.js";
 import {XLibService} from "./x-lib.service.js";
 
 @Injectable()

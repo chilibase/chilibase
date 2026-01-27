@@ -1,5 +1,5 @@
 import React from "react";
-import {numberAsUI, numberFromModel} from "../../serverApi/XUtilsConversions";
+import {numberAsUI, numberFromModel} from "../../common/XUtilsConversions";
 
 // sem pride v buducnosti cely XFieldSetBase, zatial su tu skopirovane len niektore typy
 
@@ -125,7 +125,7 @@ export class XFieldSetBase {
     }
 
     // api metoda na vyrenderovanie field set atributu
-    // logicky patri do src/serverApi/XUtilsConversions.ts a zisla by sa aj pri exporte do excelu ale XFieldXFieldMetaMap (a jeho "parent"-a XFieldSetBase) mame len na frontende
+    // logicky patri do src/common/XUtilsConversions.ts a zisla by sa aj pri exporte do excelu ale XFieldXFieldMetaMap (a jeho "parent"-a XFieldSetBase) mame len na frontende
     static xFieldSetValuesAsUI(xFieldSetValues: XFieldSetValues, xFieldXFieldMetaMap: XFieldXFieldMetaMap): string {
         // budeme mat vzdy spravne poradie? nebudeme... asi najjednoduchsie zosortovat tu "valueUIList" podla abecedy
         const valueUIList: string[] = [];

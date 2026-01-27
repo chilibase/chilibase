@@ -1,6 +1,6 @@
 import React, {ReactChild, useEffect, useRef, useState} from "react";
-import {FindResult} from "../serverApi/FindResult";
-import {FindParam} from "../serverApi/FindParam";
+import {FindResult} from "../common/FindResult";
+import {FindParam} from "../common/FindParam";
 import {XUtils} from "./XUtils";
 import {Button} from "primereact/button";
 import {DataTable} from "primereact/datatable";

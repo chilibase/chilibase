@@ -6,30 +6,30 @@ import {
     Res, StreamableFile, UseGuards
 } from '@nestjs/common';
 import {XLibService} from "./x-lib.service.js";
-import {FindResult} from "../serverApi/FindResult.js";
+import {FindResult} from "../common/FindResult.js";
 import {XLazyDataTableService} from "./x-lazy-data-table.service.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
-import {XEntityMap} from "../serverApi/XEntityMetadata.js";
-import {FindParam, XLazyAutoCompleteSuggestionsRequest} from "../serverApi/FindParam.js";
+import {XEntityMap} from "../common/XEntityMetadata.js";
+import {FindParam, XLazyAutoCompleteSuggestionsRequest} from "../common/FindParam.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
-import {XBrowseMetaMap} from "../serverApi/XBrowseMetadata.js";
+import {XBrowseMetaMap} from "../common/XBrowseMetadata.js";
 import {XBrowseFormMetadataService} from "./x-browse-form-metadata.service.js";
 import {Response} from 'express';
-import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../serverApi/ExportImportParam.js";
+import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../common/ExportImportParam.js";
 import {FindParamRows} from "./FindParamRows.js";
-import {XPostLoginRequest, XPostLoginResponse} from "../serverApi/x-auth-api.js";
+import {XPostLoginRequest, XPostLoginResponse} from "../common/x-auth-api.js";
 import {LocalAuthGuard} from "../auth/local-auth.guard.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
-import {XLocalAuthLoginResponse} from "../serverApi/x-auth-api.js";
+import {XLocalAuthLoginResponse} from "../common/x-auth-api.js";
 import {Public} from "../auth/public.js";
 import {
     XFindRowByIdRequest,
     XFindRowByIdResponse,
     XGetSequenceValueRequest,
     XGetSequenceValueResponse, XUnlockRowRequest
-} from "../serverApi/x-lib-api.js";
+} from "../common/x-lib-api.js";
 
 @Controller()
 export class XLibController {

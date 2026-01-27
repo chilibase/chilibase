@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {DataSource, SelectQueryBuilder} from "typeorm";
-import {XBrowseMetaMap} from "../serverApi/XBrowseMetadata.js";
+import {XBrowseMetaMap} from "../common/XBrowseMetadata.js";
 import {XBrowseMeta} from "../administration/x-browse-meta.entity.js";
 
 @Injectable()

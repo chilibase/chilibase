@@ -2,14 +2,14 @@ import {
     DataTableFilterMetaData,
     DataTableOperatorFilterMetaData,
     FilterMatchMode
-} from "../serverApi/PrimeFilterSortMeta.js";
+} from "../common/PrimeFilterSortMeta.js";
 import {ObjectLiteral} from "typeorm";
 import {XUtils} from "../services/XUtils.js";
 import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
-import {XEntity, XField} from "../serverApi/XEntityMetadata.js";
-import {stringAsDB} from "../serverApi/XUtilsConversions.js";
+import {XEntity, XField} from "../common/XEntityMetadata.js";
+import {stringAsDB} from "../common/XUtilsConversions.js";
 import {XEnvVar} from "../services/XEnvVars.js";
-import {XDataTableFilterMetaData, XFilterMatchMode} from "../serverApi/index.js";
+import {XDataTableFilterMetaData, XFilterMatchMode} from "../common/index.js";
 
 export abstract class XQueryData {
 

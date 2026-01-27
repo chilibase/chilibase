@@ -1,7 +1,7 @@
 import React from "react";
 import {FormComponent, FormComponentProps} from "./form";
-import {XField} from "../serverApi/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XField} from "../common/XEntityMetadata";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 
 export interface XInputProps extends FormComponentProps {
     field: string;

@@ -3,7 +3,7 @@ import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {XUtils} from "../XUtils";
 import {XEnvVar} from "../XEnvVars";
-import {XPostLoginRequest} from "../../serverApi/x-auth-api";
+import {XPostLoginRequest} from "../../common/x-auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
 export const AuthOffProvider = ({children}: {children: ReactNode;}) => {

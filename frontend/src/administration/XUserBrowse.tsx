@@ -4,7 +4,7 @@ import {
     type SearchBrowseProps
 } from "../components/lazy-data-table";
 import React from "react";
-import {XUser} from "../serverApi/XUser";
+import {XUser} from "../common/XUser";
 import {XUserForm} from "./XUserForm";
 import {XUtils} from "../components/XUtils";
 

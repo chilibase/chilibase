@@ -109,11 +109,11 @@
     "./XDocTemplateButton": "./lib/modules/docTemplates/XDocTemplateButton.js",
     "./xt-doc-template": "./lib/modules/docTemplates/xt-doc-template.js",
 
-    "./ExportImportParam": "./lib/serverApi/ExportImportParam.js",
-    "./FindParam": "./lib/serverApi/FindParam.js",
-    "./XUser": "./lib/serverApi/XUser.js",
-    "./XUtilsCommon": "./lib/serverApi/XUtilsCommon.js",
-    "./XUtilsConversions": "./lib/serverApi/XUtilsConversions.js",
-    "./XUtilsMetadataCommon": "./lib/serverApi/XUtilsMetadataCommon.js"
+    "./ExportImportParam": "./lib/common/ExportImportParam.js",
+    "./FindParam": "./lib/common/FindParam.js",
+    "./XUser": "./lib/common/XUser.js",
+    "./XUtilsCommon": "./lib/common/XUtilsCommon.js",
+    "./XUtilsConversions": "./lib/common/XUtilsConversions.js",
+    "./XUtilsMetadataCommon": "./lib/common/XUtilsMetadataCommon.js"
   }
 }

@@ -6,16 +6,16 @@ import {
     CsvParam, ExcelCsvParam,
     ExportCsvParam,
     XMultilineExportType
-} from "../serverApi/ExportImportParam.js";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon.js";
-import {dateFormat, datetimeFormat, numberFromModel} from "../serverApi/XUtilsConversions.js";
+} from "../common/ExportImportParam.js";
+import {XUtilsCommon} from "../common/XUtilsCommon.js";
+import {dateFormat, datetimeFormat, numberFromModel} from "../common/XUtilsConversions.js";
 // poznamka - ked tu bolo: import iconv from "iconv-lite"; tak to nefungovalo a zevraj to suvisi s nestjs
 import * as iconv from "iconv-lite";
 import {XExportColumn, XExportService} from "./x-export.service.js";
 import {SelectQueryBuilder} from "typeorm";
 import {ReadStream} from "fs";
-import {XEntity} from "../serverApi/XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon.js";
+import {XEntity} from "../common/XEntityMetadata.js";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
 
 // pomocna trieda
 export class XCsvWriter {

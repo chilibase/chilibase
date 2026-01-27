@@ -5,12 +5,12 @@ import {XUtils} from "./XUtils";
 import {Dialog} from "primereact/dialog";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {FilterProp, FormComponent, FormComponentProps} from "./form";
-import {XAssoc} from "../serverApi/XEntityMetadata";
+import {XAssoc} from "../common/XEntityMetadata";
 import {XObject} from "./XObject";
-import {XCustomFilter} from "../serverApi/FindParam";
+import {XCustomFilter} from "../common/FindParam";
 import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {XUtilsCommon} from "../common/XUtilsCommon";
 
 // faast-ovsky zoombutton - ked user zapise nieco do inputu a odide - ak sa najde presne 1 zaznam tak nastavi, ak sa najde viac zaznamov tak otvori searchBrowse
 // nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci XAutoComplete

@@ -2,10 +2,10 @@ import React, {Component} from "react";
 import {FormBase} from "./FormBase";
 import {XError} from "../XErrors";
 import {XObject} from "../XObject";
-import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {XUtilsCommon} from "../../common/XUtilsCommon";
 import {OperationType, XUtils} from "../XUtils";
 import {XFieldChangeEvent} from "../XFieldChangeEvent";
-import {XCustomFilter} from "../../serverApi/FindParam";
+import {XCustomFilter} from "../../common/FindParam";
 
 // typ metody pre onChange - pouzil som XFieldChangeEvent<any>, pri deklarovani onChange metody na komponente
 // sa da vdaka tomu pouzit (e: XFieldChangeEvent<Dobrovolnik>) a kompilator sa nestazuje. Je to hack, mozno existuje krajsie riesenie

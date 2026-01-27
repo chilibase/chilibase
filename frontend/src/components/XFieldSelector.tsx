@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {TreeTable} from "primereact/treetable";
 import {Column} from "primereact/column";
-import {XAssoc, XEntity} from "../serverApi/XEntityMetadata";
+import {XAssoc, XEntity} from "../common/XEntityMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {TreeNode} from "primereact/treenode";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 
 export const XFieldSelector = (props: {entity: string; assocSelectable: boolean; selectionField?: string; onSelectionChange: (selectedField: string) => void;}) => {
 

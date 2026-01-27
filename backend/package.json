@@ -78,13 +78,13 @@
     "./public": "./lib/auth/public.js",
     "./x-en": "./lib/locale/x-en.js",
 
-    "./serverApi": "./lib/serverApi/index.js",
+    "./common": "./lib/common/index.js",
     "./services": "./lib/services/index.js",
 
-    "./ExportImportParam": "./lib/serverApi/ExportImportParam.js",
-    "./XUtilsCommon": "./lib/serverApi/XUtilsCommon.js",
-    "./XUtilsConversions": "./lib/serverApi/XUtilsConversions.js",
-    "./XUtilsMetadataCommon": "./lib/serverApi/XUtilsMetadataCommon.js",
+    "./ExportImportParam": "./lib/common/ExportImportParam.js",
+    "./XUtilsCommon": "./lib/common/XUtilsCommon.js",
+    "./XUtilsConversions": "./lib/common/XUtilsConversions.js",
+    "./XUtilsMetadataCommon": "./lib/common/XUtilsMetadataCommon.js",
     "./x-browse-meta.entity": "./lib/administration/x-browse-meta.entity.js",
     "./x-column-meta.entity": "./lib/administration/x-column-meta.entity.js",
     "./x-enum.entity": "./lib/administration/x-enum.entity.js",

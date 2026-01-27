@@ -14,7 +14,7 @@ import {loginRequest, msalConfig} from "./msalConfig";
 import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {XUtils} from "../XUtils";
-import {XPostLoginRequest} from "../../serverApi/x-auth-api";
+import {XPostLoginRequest} from "../../common/x-auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
 export const MSEntraIDProvider = ({children}: {children: ReactNode;}) => {

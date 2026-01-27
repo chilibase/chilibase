@@ -2,7 +2,7 @@ import {HttpStatus, Injectable} from "@nestjs/common";
 import {XExportService} from "./x-export.service.js";
 import {SelectQueryBuilder} from "typeorm";
 import {Response} from "express";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon.js";
+import {XUtilsCommon} from "../common/XUtilsCommon.js";
 import {ReadStream} from "fs";
 
 @Injectable()

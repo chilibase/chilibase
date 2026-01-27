@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {XUtils} from "../XUtils";
-import {XLocalAuthLoginRequest, XLocalAuthLoginResponse, XPostLoginRequest} from "../../serverApi/x-auth-api";
+import {XLocalAuthLoginRequest, XLocalAuthLoginResponse, XPostLoginRequest} from "../../common/x-auth-api";
 import {XResponseError} from "../XResponseError";
 
 // is used by local auth

@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
-import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
-import {XAssoc, XField} from "../../serverApi/XEntityMetadata";
+import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {XAssoc, XField} from "../../common/XEntityMetadata";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
-import {XCustomFilter} from "../../serverApi/FindParam";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {XCustomFilter} from "../../common/FindParam";
 
 // pouzivany vo filtri v XLazyDataTable aj v XFormDataTable2
 export const DropdownDTFilter = (props: {entity: string; path: string; value: any; onValueChange: (field: string, displayValue: any) => void; filter?: XCustomFilter; sortField?: string;}) => {

@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {Dropdown, DropdownChangeEvent} from "primereact/dropdown";
 import {XUtils} from "../XUtils";
-import {XCustomFilter} from "../../serverApi/FindParam";
+import {XCustomFilter} from "../../common/FindParam";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
 
 export interface DropdownForEntityProps {
     id?: string;

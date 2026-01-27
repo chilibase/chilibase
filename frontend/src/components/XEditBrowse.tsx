@@ -2,13 +2,13 @@ import React, {Component} from "react";
 import {SourceCodeLinkEntity} from "./SourceCodeLinkEntity";
 import {XEditColumnDialog, XEditColumnDialogValues} from "./XEditColumnDialog";
 import * as _ from "lodash";
-import {XBrowseMeta, XColumnMeta} from "../serverApi/XBrowseMetadata";
+import {XBrowseMeta, XColumnMeta} from "../common/XBrowseMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XEntity} from "../serverApi/XEntityMetadata";
+import {XEntity} from "../common/XEntityMetadata";
 import {XUtils} from "./XUtils";
 import {EditModeHandlers, LazyColumn, LazyDataTable} from "./lazy-data-table";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {XUtilsCommon} from "../common/XUtilsCommon";
 
 export interface XEditBrowseProps {
     entity: string;

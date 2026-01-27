@@ -1,4 +1,4 @@
-// TODO - move to common (serverApi)
+// TODO - move to common
 export interface RemoveRowParam {
     entity: string;
     id: number;

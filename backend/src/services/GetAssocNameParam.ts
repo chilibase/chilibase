@@ -1,4 +1,4 @@
-// TODO - move to common (serverApi)
+// TODO - move to common
 export interface GetAssocNameParam {
     entity: string;
     assocField: string;

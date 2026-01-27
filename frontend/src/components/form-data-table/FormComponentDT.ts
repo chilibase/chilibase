@@ -1,10 +1,10 @@
 import {FormBase} from "../form";
 import React, {Component} from "react";
 import {XObject} from "../XObject";
-import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {XUtilsCommon} from "../../common/XUtilsCommon";
 import {OperationType, XUtils} from "../XUtils";
 import {XError} from "../XErrors";
-import {XCustomFilter} from "../../serverApi/FindParam";
+import {XCustomFilter} from "../../common/FindParam";
 import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
 
 export interface FormComponentDTProps {

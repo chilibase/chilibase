@@ -4,11 +4,11 @@ import {OperationType, XUtils} from "../XUtils";
 import {FieldOnChange, FormComponent} from "./FormComponent";
 import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
 import {XErrorMap, XErrors} from "../XErrors";
-import {XParams, XUtilsCommon} from "../../serverApi/XUtilsCommon";
-import {XEntity} from "../../serverApi/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
-import {XFindRowByIdResponse, XUnlockRowRequest} from "../../serverApi/x-lib-api";
-import {dateFromModel, datetimeAsUI} from "../../serverApi/XUtilsConversions";
+import {XParams, XUtilsCommon} from "../../common/XUtilsCommon";
+import {XEntity} from "../../common/XEntityMetadata";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {XFindRowByIdResponse, XUnlockRowRequest} from "../../common/x-lib-api";
+import {dateFromModel, datetimeAsUI} from "../../common/XUtilsConversions";
 import {xLocaleOption} from "../XLocale";
 
 export type OnSaveOrCancelProp = (object: XObject | null, objectChange: OperationType) => void;

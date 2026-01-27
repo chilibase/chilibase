@@ -1,5 +1,5 @@
 import {XtDocTemplateFieldToJoin} from "./xt-doc-template-field-to-join";
-import {XUser} from "../../serverApi/XUser";
+import {XUser} from "../../common/XUser";
 import {XFile} from "../files/x-file";
 import {XEnum} from "../../administration/x-enum";
 

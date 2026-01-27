@@ -4,8 +4,8 @@ import {SplitButton} from "primereact/splitbutton";
 import {MenuItem} from "primereact/menuitem";
 import {XtDocTemplate} from "./xt-doc-template";
 import {XUtils} from "../../components/XUtils";
-import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
-import {XtRunDocTemplateRequest} from "../../serverApi/x-lib-api";
+import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {XtRunDocTemplateRequest} from "../../common/x-lib-api";
 import {xLocaleOption} from "../../components/XLocale";
 
 export const XDocTemplateButton = (props: {

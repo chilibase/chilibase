@@ -2,7 +2,7 @@ import React, {ReactNode, useState} from 'react';
 import {XUtilsMetadata} from "../XUtilsMetadata";
 import {LoginForm} from "./LoginForm";
 import {XUtils} from "../XUtils";
-import {XPostLoginRequest} from "../../serverApi/x-auth-api";
+import {XPostLoginRequest} from "../../common/x-auth-api";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 
 export const AuthLocalProvider = ({children}: {children: ReactNode;}) => {

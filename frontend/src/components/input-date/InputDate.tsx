@@ -1,7 +1,7 @@
 import React from "react";
 import {InputDateBase} from "./InputDateBase";
 import {XInput, XInputProps} from "../XInput";
-import {dateFromModel, XDateScale} from "../../serverApi/XUtilsConversions";
+import {dateFromModel, XDateScale} from "../../common/XUtilsConversions";
 
 export interface InputDateProps extends XInputProps {
     scale?: XDateScale;

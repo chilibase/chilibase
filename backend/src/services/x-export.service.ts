@@ -1,8 +1,8 @@
-import {XMultilineExportType} from "../serverApi/ExportImportParam.js";
-import {XEntity, XField} from "../serverApi/XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon.js";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon.js";
-import {AsUIType, convertValueBase} from "../serverApi/XUtilsConversions.js";
+import {XMultilineExportType} from "../common/ExportImportParam.js";
+import {XEntity, XField} from "../common/XEntityMetadata.js";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
+import {XUtilsCommon} from "../common/XUtilsCommon.js";
+import {AsUIType, convertValueBase} from "../common/XUtilsConversions.js";
 import {SelectQueryBuilder} from "typeorm";
 import {RawSqlResultsToEntityTransformer} from "typeorm/query-builder/transformer/RawSqlResultsToEntityTransformer.js";
 

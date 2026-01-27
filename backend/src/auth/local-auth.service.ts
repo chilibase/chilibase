@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {DataSource, SelectQueryBuilder} from "typeorm";
 import {XUser} from "../administration/x-user.entity.js";
 import {JwtService} from '@nestjs/jwt';
-import {XLocalAuthLoginResponse} from "../serverApi/x-auth-api.js";
+import {XLocalAuthLoginResponse} from "../common/x-auth-api.js";
 import * as bcrypt from "bcrypt";
 
 @Injectable()

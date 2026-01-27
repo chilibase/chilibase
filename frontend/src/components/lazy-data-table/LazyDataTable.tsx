@@ -18,9 +18,9 @@ import {OperationType, XStorageType, XUtils, XViewStatus, XViewStatusOrBoolean} 
 import {XFieldFilter, XSearchBrowseParams} from "../XSearchBrowseParams";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
-import {XAssoc, XEntity, XField} from "../../serverApi/XEntityMetadata";
-import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../serverApi/XUtilsConversions";
-import {FindResult} from "../../serverApi/FindResult";
+import {XAssoc, XEntity, XField} from "../../common/XEntityMetadata";
+import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../common/XUtilsConversions";
+import {FindResult} from "../../common/FindResult";
 import {
     FindParam,
     ResultType,
@@ -29,11 +29,11 @@ import {
     XCustomFilter,
     XCustomFilterItem,
     XFullTextSearch, XDataTableFilterMetaData, XFilterMatchMode, XDataTableFilterMeta
-} from "../../serverApi/FindParam";
+} from "../../common/FindParam";
 import {XButtonIconSmall} from "../XButtonIconSmall";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
-import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
-import {LazyDataTableQueryParam} from "../../serverApi/ExportImportParam";
+import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {LazyDataTableQueryParam} from "../../common/ExportImportParam";
 import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRowsDialog";
 import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
 import {FormProps, OnSaveOrCancelProp} from "../form";
@@ -41,7 +41,7 @@ import {InputDateBase} from "../input-date";
 import {InputDecimalBase} from "../input-decimal";
 import {prLocaleOption, xLocaleOption} from "../XLocale";
 import {FtsInput, FtsInputValue} from "./FtsInput";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
 import {Editor} from "primereact/editor";

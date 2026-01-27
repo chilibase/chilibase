@@ -1,7 +1,7 @@
 import React from "react";
 import {BrowseProps, LazyColumn, LazyDataTable} from "../components/lazy-data-table";
 import {XParamForm} from "./XParamForm";
-import {XCustomFilter} from "../serverApi/FindParam";
+import {XCustomFilter} from "../common/FindParam";
 
 export const XParamBrowse = (props: BrowseProps & {customFilter?: XCustomFilter}) => {
 

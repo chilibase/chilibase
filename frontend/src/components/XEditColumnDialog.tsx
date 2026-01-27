@@ -4,7 +4,7 @@ import {XFieldSelector} from "./XFieldSelector";
 import {InputText} from "primereact/inputtext";
 import {Checkbox} from "primereact/checkbox";
 import {XButton} from "./XButton";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon";
+import {XUtilsCommon} from "../common/XUtilsCommon";
 
 export interface XEditColumnDialogValues {
     field: string;

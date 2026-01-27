@@ -1,10 +1,10 @@
 import React from "react";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
-import {XAssoc} from "../../serverApi/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../../serverApi/XUtilsMetadataCommon";
+import {XAssoc} from "../../common/XEntityMetadata";
+import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
 import {MultiSelectBase} from "./MultiSelectBase";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsCommon} from "../../serverApi/XUtilsCommon";
+import {XUtilsCommon} from "../../common/XUtilsCommon";
 
 // works in one of these 2 modes:
 // 1. entity of form uses ManyToMany assoc to work with options

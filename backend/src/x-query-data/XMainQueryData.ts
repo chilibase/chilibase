@@ -2,15 +2,15 @@ import {XQueryData} from "./XQueryData.js";
 import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
 import {OrderByCondition, SelectQueryBuilder} from "typeorm";
 import {XSubQueryData} from "./XSubQueryData.js";
-import {DataTableFilterMeta, DataTableSortMeta} from "../serverApi/PrimeFilterSortMeta.js";
+import {DataTableFilterMeta, DataTableSortMeta} from "../common/PrimeFilterSortMeta.js";
 import {
     XCustomFilterItem,
     XDataTableFilterMeta,
     XDataTableFilterMetaData,
     XFullTextSearch
-} from "../serverApi/FindParam.js";
-import {XAssoc} from "../serverApi/XEntityMetadata.js";
-import {XUtilsCommon} from "../serverApi/XUtilsCommon.js";
+} from "../common/FindParam.js";
+import {XAssoc} from "../common/XEntityMetadata.js";
+import {XUtilsCommon} from "../common/XUtilsCommon.js";
 
 export class XMainQueryData extends XQueryData {
 

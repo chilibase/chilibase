@@ -1,29 +1,29 @@
 import {XToken} from "./XToken";
-import {XEntity, XField} from "../serverApi/XEntityMetadata";
+import {XEntity, XField} from "../common/XEntityMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XParams, XUtilsCommon} from "../serverApi/XUtilsCommon";
+import {XParams, XUtilsCommon} from "../common/XUtilsCommon";
 import {
     CsvDecimalFormat,
     CsvEncoding,
     CsvSeparator,
     ExportType,
     XMultilineExportType
-} from "../serverApi/ExportImportParam";
+} from "../common/ExportImportParam";
 import {XResponseError} from "./XResponseError";
 import React from "react";
 import {XEnvVar} from "./XEnvVars";
 import {XError, XErrorMap} from "./XErrors";
-import {FindParam, ResultType, XCustomFilter} from "../serverApi/FindParam";
+import {FindParam, ResultType, XCustomFilter} from "../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 import {XObject} from "./XObject";
 import {TableFieldReadOnlyProp} from "./form-data-table";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
 import {xLocaleOption} from "./XLocale";
 import {LazyDataTableRef} from "./lazy-data-table";
 import {CreateObjectFunction, OnSaveOrCancelProp} from "./form";
 import {initMsalConfig} from "./auth";
-import {XFindRowByIdRequest, XFindRowByIdResponse} from "../serverApi/x-lib-api";
+import {XFindRowByIdRequest, XFindRowByIdResponse} from "../common/x-lib-api";
 
 export enum OperationType {
     None,

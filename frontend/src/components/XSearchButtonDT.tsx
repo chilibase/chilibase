@@ -6,7 +6,7 @@ import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
 import {XSearchBrowseParams} from "./XSearchBrowseParams";
 import {TableFieldReadOnlyProp} from "./form-data-table";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
 
 export const XSearchButtonDT = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {XAssoc, XAssocMap, XEntity, XEntityMap, XField, XFieldMap, XRelationType} from "../serverApi/XEntityMetadata.js";
+import {XAssoc, XAssocMap, XEntity, XEntityMap, XField, XFieldMap, XRelationType} from "../common/XEntityMetadata.js";
 import {DataSource, EntityMetadata, EntitySchema} from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {ColumnMetadata} from "typeorm/metadata/ColumnMetadata.js";
 import {MixedList} from "typeorm/common/MixedList.js";
-import {XUtilsMetadataCommon} from "../serverApi/XUtilsMetadataCommon.js";
+import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
 
 @Injectable()
 export class XEntityMetadataService {
