@@ -1,13 +1,11 @@
 // Re-export all files
 export * from "./auth-api.js";
-export * from "./BrowseMetadata.js";
 export * from "./EntityMetadata.js";
 export * from "./ExportImportParam.js";
 export * from "./FindParam.js";
 export * from "./FindResult.js";
 export * from "./lib-api.js";
 export * from "./types.js";
-export * from "./User.js";
 export * from "./UtilsCommon.js";
 export * from "./UtilsConversions.js";
 export * from "./UtilsMetadataCommon.js";
@@ -15,12 +13,6 @@ export * from "./PrimeFilterSortMeta.js";
 
 /** @deprecated */
 // X-prefixed aliases for backward compatibility
-export type {
-    BrowseMetaMap as XBrowseMetaMap
-} from "./BrowseMetadata.js";
-export type {
-    User as XUser
-} from "./User.js";
 export type {
     Params as XParams
 } from "./UtilsCommon.js";

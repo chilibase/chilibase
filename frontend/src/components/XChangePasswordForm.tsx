@@ -47,7 +47,7 @@ export const XChangePasswordForm = () => {
                     </div>
                     <div className="field grid">
                         <label className="col-fixed" style={{width:'14rem'}}>User</label>
-                        <InputText value={XUtils.getXToken()?.xUser?.username} readOnly={true}/>
+                        <InputText value={XUtils.getXToken()?.user?.username} readOnly={true}/>
                     </div>
                     <div className="field grid">
                         <label className="col-fixed" style={{width:'14rem'}}>Current password</label>

@@ -1,8 +1,8 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {XBrowseMeta} from "./x-browse-meta.entity.js";
+import {BrowseMeta} from "./browse-meta.entity.js";
 
 @Entity('x_column_meta')
-export class XColumnMeta {
+export class ColumnMeta {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -26,7 +26,7 @@ export class XColumnMeta {
     @Column({name: 'column_order', width: 3, nullable: false})
     columnOrder: number;
 
-    @ManyToOne('XBrowseMeta', 'columnMetaList', {nullable: false})
+    @ManyToOne('BrowseMeta', 'columnMetaList', {nullable: false})
     @JoinColumn({name: "x_browse_meta_id"})
-    browseMeta: XBrowseMeta;
+    browseMeta: BrowseMeta;
 }

@@ -86,7 +86,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         // TODO - tu provizorne accessToken: 'dummy', bolo accessToken: undefined
-        XUtils.setXToken({accessToken: 'dummy', xUser: xPostLoginResponse.user, logout: logout});
+        XUtils.setXToken({accessToken: 'dummy', user: xPostLoginResponse.user, logout: logout});
         setLoggedIn(true);
     }
 

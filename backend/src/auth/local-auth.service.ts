@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {DataSource, SelectQueryBuilder} from "typeorm";
-import {XUser} from "../administration/x-user.entity.js";
+import {User} from "../modules/administration/user.entity.js";
 import {JwtService} from '@nestjs/jwt';
 import {LocalAuthLoginResponse} from "../common/auth-api.js";
 import * as bcrypt from "bcrypt";
@@ -13,12 +13,12 @@ export class LocalAuthService {
         private jwtService: JwtService
     ) {}
 
-    async validateUser(username: string, password: string): Promise<XUser | null> {
+    async validateUser(username: string, password: string): Promise<User | null> {
 
-        const repository = this.dataSource.getRepository(XUser);
-        const selectQueryBuilder: SelectQueryBuilder<XUser> = repository.createQueryBuilder("xUser");
+        const repository = this.dataSource.getRepository(User);
+        const selectQueryBuilder: SelectQueryBuilder<User> = repository.createQueryBuilder("xUser");
         selectQueryBuilder.where("xUser.username = :username", {username: username});
-        const xUser: XUser | null = await selectQueryBuilder.getOne();
+        const xUser: User | null = await selectQueryBuilder.getOne();
         if (xUser && await this.validatePassword(password, xUser.password)) {
             delete xUser.password; // remove password property from security reason
             return xUser;
@@ -26,16 +26,16 @@ export class LocalAuthService {
         return null;
     }
 
-    async createJwtToken(user: XUser): Promise<LocalAuthLoginResponse> {
+    async createJwtToken(user: User): Promise<LocalAuthLoginResponse> {
         const payload = { username: user.username, sub: user.id };
         return {accessToken: this.jwtService.sign(payload)};
     }
 
-    async changePassword(user: XUser, request: {passwordCurrent: string; passwordNew: string;}) {
-        const repository = this.dataSource.getRepository(XUser);
-        const selectQueryBuilder: SelectQueryBuilder<XUser> = repository.createQueryBuilder("xUser");
+    async changePassword(user: User, request: {passwordCurrent: string; passwordNew: string;}) {
+        const repository = this.dataSource.getRepository(User);
+        const selectQueryBuilder: SelectQueryBuilder<User> = repository.createQueryBuilder("xUser");
         selectQueryBuilder.where("xUser.username = :username", {username: user.username});
-        const xUser: XUser = await selectQueryBuilder.getOneOrFail();
+        const xUser: User = await selectQueryBuilder.getOneOrFail();
         // validate the current password
         if (!await this.validatePassword(request.passwordCurrent, xUser.password)) {
             throw "Current password invalid.";

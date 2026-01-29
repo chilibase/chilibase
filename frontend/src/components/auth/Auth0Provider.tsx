@@ -111,7 +111,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         XUtils.setXToken({
             accessToken: XUtils.getXToken()?.accessToken,
-            xUser: xPostLoginResponse.user,
+            user: xPostLoginResponse.user,
             logout: () => logout({logoutParams: {returnTo: window.location.origin}})
         });
     }

@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {SourceCodeLinkEntity} from "./SourceCodeLinkEntity";
 import {XEditColumnDialog, XEditColumnDialogValues} from "./XEditColumnDialog";
 import * as _ from "lodash";
-import {BrowseMeta, ColumnMeta} from "../common/BrowseMetadata";
+import {BrowseMeta, ColumnMeta} from "../modules/administration";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {Entity} from "../common/EntityMetadata";
 import {XUtils} from "./XUtils";
@@ -65,9 +65,9 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
         const xEntity: Entity = UtilsMetadataCommon.getEntity(this.props.entity);
         const xFieldList = UtilsMetadataCommon.getFieldList(xEntity);
         for (const xField of xFieldList) {
-            xColumnMetaList.push({field: xField.name, header: xField.name, dropdownInFilter: false});
+            xColumnMetaList.push({field: xField.name, header: xField.name, dropdownInFilter: false} as ColumnMeta);
         }
-        return {entity: this.props.entity, rows: 15, columnMetaList: xColumnMetaList};
+        return {id: undefined!, entity: this.props.entity, rows: 15, browseId: null, columnMetaList: xColumnMetaList};
     }
 
     onEditModeStart() {
@@ -122,8 +122,8 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
                     xBrowseMeta.columnMetaList.splice(this.indexForAddColumn + 1, 0, {
                         field: xEditColumnDialogValues.field,
                         header: xEditColumnDialogValues.header,
-                        dropdownInFilter: xEditColumnDialogValues.dropdownInFilter
-                    });
+                        dropdownInFilter: xEditColumnDialogValues.dropdownInFilter,
+                    } as ColumnMeta);
                 }
                 else {
                     const xColumnMeta: ColumnMeta = xBrowseMeta.columnMetaList[this.indexForAddColumn];
@@ -237,9 +237,9 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
         }
         return (
             <div>
-                <LazyDataTable entity={xBrowseMeta.entity} rows={xBrowseMeta.rows} editMode={this.state.editMode} editModeHandlers={editModeHandlers} onEdit={this.onEdit} displayed={(this.props as any).displayed}>
+                <LazyDataTable entity={xBrowseMeta.entity} rows={xBrowseMeta.rows ?? undefined} editMode={this.state.editMode} editModeHandlers={editModeHandlers} onEdit={this.onEdit} displayed={(this.props as any).displayed}>
                     {xBrowseMeta.columnMetaList.map(function (xColumnMeta: ColumnMeta, index: number) {
-                            return (<LazyColumn key={index} field={xColumnMeta.field} header={xColumnMeta.header} dropdownInFilter={xColumnMeta.dropdownInFilter} align={xColumnMeta.align} width={xColumnMeta.width}/>);
+                            return (<LazyColumn key={index} field={xColumnMeta.field} header={xColumnMeta.header} dropdownInFilter={xColumnMeta.dropdownInFilter} align={xColumnMeta.align as "center" | "left" | "right" | undefined} width={xColumnMeta.width}/>);
                         }
                     )}
                 </LazyDataTable>

@@ -1,7 +1,7 @@
 import {XtDocTemplateFieldToJoin} from "./xt-doc-template-field-to-join";
-import {User} from "../../common/User";
+import {User} from "../administration/user.entity";
 import {XFile} from "../files/x-file";
-import {XEnum} from "../../administration/x-enum";
+import {XEnum} from "../administration/x-enum";
 
 export interface XtDocTemplate {
     id: number;

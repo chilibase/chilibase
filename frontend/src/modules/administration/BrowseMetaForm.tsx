@@ -1,12 +1,12 @@
-import {Form, FormBase} from "../components/form";
-import {InputDecimal} from "../components/input-decimal";
-import {InputText} from "../components/input-text";
+import {Form, FormBase} from "../../components/form";
+import {InputDecimal} from "../../components/input-decimal";
+import {InputText} from "../../components/input-text";
 import React from "react";
-import {FormColumn, FormDataTable} from "../components/form-data-table";
-import {FormFooter} from "../components/form";
+import {FormColumn, FormDataTable} from "../../components/form-data-table";
+import {FormFooter} from "../../components/form";
 
-@Form("XBrowseMeta")
-export class XBrowseMetaForm extends FormBase {
+@Form("BrowseMeta")
+export class BrowseMetaForm extends FormBase {
 
     render() {
         return (

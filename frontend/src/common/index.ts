@@ -1,25 +1,17 @@
 // Re-export all files
 export * from "./auth-api";
-export * from "./BrowseMetadata";
 export * from "./EntityMetadata";
 export * from "./ExportImportParam";
 export * from "./FindParam";
 export * from "./FindResult";
 export * from "./lib-api";
 export * from "./types";
-export * from "./User";
 export * from "./UtilsCommon";
 export * from "./UtilsConversions";
 export * from "./UtilsMetadataCommon";
 
 /** @deprecated */
 // X-prefixed aliases for backward compatibility
-export type {
-    BrowseMetaMap as XBrowseMetaMap
-} from "./BrowseMetadata";
-export type {
-    User as XUser
-} from "./User";
 export type {
     Params as XParams
 } from "./UtilsCommon";

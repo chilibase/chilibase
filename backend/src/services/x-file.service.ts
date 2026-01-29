@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {DataSource, Repository, SelectQueryBuilder} from "typeorm";
-import {XFile} from "../administration/x-file.entity.js";
+import {XFile} from "../modules/administration/x-file.entity.js";
 
 @Injectable()
 export class XFileService {

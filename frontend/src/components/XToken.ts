@@ -2,6 +2,6 @@
 // now, this stuff is available via XUtils, so be sure that the new approach is also available everywhere where XUtils.getXToken() is used
 export interface XToken {
     accessToken?: string | (() => Promise<string>); // pouziva sa pri Auth0/MSEntraID/Local autentifikacii (should be required)
-    xUser?: any; // XUser - aktualny user, nastavuje sa po logine, pouziva sa napr. na nastavenie atributu vytvoril/modifikoval
+    user?: any; // User - aktualny user, nastavuje sa po logine, pouziva sa napr. na nastavenie atributu vytvoril/modifikoval
     logout?: () => void; // logout method, set after login, used after click on menu item logout
 }

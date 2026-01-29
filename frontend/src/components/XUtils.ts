@@ -428,7 +428,7 @@ export class XUtils {
     static fetchByIdWithLockBase(path: string, entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<FindRowByIdResponse> {
         let request: FindRowByIdRequest = {entity: entity, fields: fields, id: id};
         if (lockRow) {
-            request = {...request, lockDate: new Date(), lockUser: XUtils.getXToken()?.xUser, overwriteLock: overwriteLock ?? false};
+            request = {...request, lockDate: new Date(), lockUser: XUtils.getXToken()?.user, overwriteLock: overwriteLock ?? false};
         }
         return XUtils.fetchOne(path, request);
     }
@@ -460,7 +460,7 @@ export class XUtils {
     }
 
     static getUsername(): string | undefined {
-        return XUtils.getXToken()?.xUser?.username;
+        return XUtils.getXToken()?.user?.username;
     }
 
     static getXBackendUrl(): string {

@@ -1,4 +1,4 @@
-import {User} from "./User.js";
+import {User} from "../modules/administration/user.entity.js";
 
 // misc api used in lib
 
@@ -34,14 +34,14 @@ export interface UnlockRowRequest {
 
 // ********** modules/components **********
 
-// modul doc-templates (can be moved to new doc-templates-api.ts)
+// module doc-templates (can be moved to new doc-templates-api.ts)
 export interface RunDocTemplateRequest {
     docTemplateId: number;
     rowId: number; // id of the row in DB that is going to be used for creating document from template
     user?: User; // current user
 }
 
-// modul files
+// module files
 export interface FileJsonField {
     filename: string;
     subdir?: string;

@@ -5,7 +5,7 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn, VersionColumn,
 } from "typeorm";
-import {XUser} from "./x-user.entity.js";
+import {User} from "./user.entity.js";
 
 @Entity("x_param")
 export class XParam {
@@ -24,9 +24,9 @@ export class XParam {
     @Column("timestamp without time zone", { name: "modif_date", nullable: true })
     modifDate: Date | null;
 
-    @ManyToOne(() => XUser, { nullable: true })
+    @ManyToOne(() => User, { nullable: true })
     @JoinColumn([{ name: "modif_x_user_id", referencedColumnName: "id" }])
-    modifUser: XUser | null;
+    modifUser: User | null;
 
     @VersionColumn()
     version: number;

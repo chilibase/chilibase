@@ -2,11 +2,11 @@ import {
     LazyColumn,
     LazyDataTable,
     type SearchBrowseProps
-} from "../components/lazy-data-table";
+} from "../../components/lazy-data-table";
 import React from "react";
-import {User} from "../common/User";
+import {User} from "./user.entity";
 import {XUserForm} from "./XUserForm";
-import {XUtils} from "../components/XUtils";
+import {XUtils} from "../../components/XUtils";
 
 export const XUserBrowse = (props: SearchBrowseProps) => {
 
@@ -17,14 +17,14 @@ export const XUserBrowse = (props: SearchBrowseProps) => {
         }
 
         if (window.confirm('Are you sure to remove the selected row?')) {
-            await XUtils.removeRow("XUser", selectedRow);
+            await XUtils.removeRow("User", selectedRow);
             return true;
         }
         return false;
     }
 
     return (
-        <LazyDataTable entity="XUser" label="Users" rows={30}
+        <LazyDataTable entity="User" label="Users" rows={30}
                         EditForm={XUserForm} removeRow={onRemoveRow}
                         searchBrowseParams={props.searchBrowseParams}>
             <LazyColumn field="id" header="ID"/>

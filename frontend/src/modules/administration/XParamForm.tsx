@@ -1,12 +1,12 @@
 import React from "react";
-import {FormBaseModif} from "../components/form";
-import {Form} from "../components/form";
-import {XObject} from "../components/XObject";
-import {InputDecimal} from "../components/input-decimal";
-import {InputDate} from "../components/input-date";
-import {InputText} from "../components/input-text";
-import {FormFooter} from "../components/form";
-import {FormHeader} from "../components/form";
+import {FormBaseModif} from "../../components/form";
+import {Form} from "../../components/form";
+import {XObject} from "../../components/XObject";
+import {InputDecimal} from "../../components/input-decimal";
+import {InputDate} from "../../components/input-date";
+import {InputText} from "../../components/input-text";
+import {FormFooter} from "../../components/form";
+import {FormHeader} from "../../components/form";
 
 @Form("XParam")
 export class XParamForm extends FormBaseModif {

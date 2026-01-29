@@ -44,13 +44,13 @@ export const LoginForm = (props: {
 
         // if (xUserAuthenticationResponse.authenticationOk) {
         //     //console.log("Autentifikacia uspesne zbehla");
-        //     //console.log(xUserAuthenticationResponse.xUser);
+        //     //console.log(xUserAuthenticationResponse.user);
         //     let customUser = undefined;
         //     if (props.customUserService) {
         //         customUser = await XUtils.fetchOne(props.customUserService, {username: username}, {username: username, password: password});
         //     }
         //     // zatial si ulozime len username/password (koli http basic autentifikacii)
-        //     props.setXToken({username: username, password: password, xUser: customUser});
+        //     props.setXToken({username: username, password: password, user: customUser});
         //     // metoda pouzivana v LoginDialog
         //     if (props.onLogin) {
         //         props.onLogin();

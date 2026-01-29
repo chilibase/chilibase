@@ -5,5 +5,7 @@ export interface User {
     name: string;
     enabled: boolean;
     admin: boolean;
+    modifDate: Date;
+    modifUser: User;
+    version: number;
 }
-

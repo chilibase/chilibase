@@ -1,6 +1,6 @@
 import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, VersionColumn} from "typeorm";
 import {XEnum} from "./x-enum.entity.js";
-import {XUser} from "./x-user.entity.js";
+import {User} from "./user.entity.js";
 
 @Entity({name: 'x_enum_enum'})
 export class XEnumEnum {
@@ -23,9 +23,9 @@ export class XEnumEnum {
     @Column({name: 'modif_date', type: 'timestamp', nullable: true})
     modifDate: Date;
 
-    @ManyToOne(() => XUser, {nullable: true})
+    @ManyToOne(() => User, {nullable: true})
     @JoinColumn({ name: 'modif_x_user_id' })
-    modifUser: XUser;
+    modifUser: User;
 
     @VersionColumn()
     version: number;

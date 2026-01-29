@@ -3,7 +3,7 @@ import {XFileService} from "./x-file.service.js";
 import {createReadStream, existsSync, mkdirSync, renameSync} from "fs";
 import {Readable} from "stream";
 import {XUtils} from "./XUtils.js";
-import {XFile} from "../administration/x-file.entity.js";
+import {XFile} from "../modules/administration/x-file.entity.js";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {join} from "path";
 import {FileJsonField} from "../common/lib-api.js";

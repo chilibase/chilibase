@@ -1,7 +1,7 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, VersionColumn} from "typeorm";
 
 @Entity('x_user')
-export class XUser {
+export class User {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -26,9 +26,9 @@ export class XUser {
     @Column({name: 'modif_date', type: 'timestamp', nullable: true})
     modifDate: Date;
 
-    @ManyToOne(() => XUser, {nullable: true})
+    @ManyToOne(() => User, {nullable: true})
     @JoinColumn({ name: 'modif_x_user_id' })
-    modifUser: XUser;
+    modifUser: User;
 
     @VersionColumn()
     version: number;

@@ -1,8 +1,9 @@
 import {Field} from "../common/EntityMetadata";
 import {XUtils} from "./XUtils";
-import {BrowseMeta, BrowseMetaMap} from "../common/BrowseMetadata";
+import {BrowseMeta} from "../modules/administration";
 import {BetweenFilterProp} from "./lazy-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {BrowseMetaMap} from "../common/types";
 
 // idelany nazov: UtilsEntityMetadata - ale strasne dlhy
 // tato funkcionalita by mala ist bud do tried XEntity, XField alebo lepsie do nejakeho servisu

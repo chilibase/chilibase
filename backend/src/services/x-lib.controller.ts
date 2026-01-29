@@ -14,7 +14,7 @@ import {FindParam, LazyAutoCompleteSuggestionsRequest} from "../common/FindParam
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
-import {BrowseMetaMap} from "../common/BrowseMetadata.js";
+import {BrowseMetaMap} from "../common/types.js";
 import {XBrowseFormMetadataService} from "./x-browse-form-metadata.service.js";
 import {Response} from 'express';
 import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../common/ExportImportParam.js";

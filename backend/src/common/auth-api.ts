@@ -1,4 +1,4 @@
-import {User} from "./User.js";
+import {User} from "../modules/administration/user.entity.js";
 
 export interface LocalAuthLoginRequest {
     username: string;

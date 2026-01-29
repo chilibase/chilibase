@@ -1,4 +1,4 @@
-import {User} from "../common/User";
+import {User} from "./user.entity";
 import {XEnum} from "./x-enum";
 
 export interface XEnumEnum {

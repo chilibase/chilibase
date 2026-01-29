@@ -1,8 +1,8 @@
 import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {XColumnMeta} from "./x-column-meta.entity.js";
+import {ColumnMeta} from "./column-meta.entity.js";
 
 @Entity('x_browse_meta')
-export class XBrowseMeta {
+export class BrowseMeta {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,11 +11,11 @@ export class XBrowseMeta {
     entity: string;
 
     @Column({name: 'browse_id', length: 64, nullable: true})
-    browseId: string;
+    browseId: string | null;
 
     @Column({width: 6, nullable: true})
-    rows: number;
+    rows: number | null;
 
-    @OneToMany('XColumnMeta', 'browseMeta', {cascade: ["insert", "update", "remove"]})
-    columnMetaList: XColumnMeta[];
+    @OneToMany('ColumnMeta', 'browseMeta', {cascade: ["insert", "update", "remove"]})
+    columnMetaList: ColumnMeta[];
 }

@@ -16,7 +16,7 @@ export const Menubar = (props: MenubarProps) => {
         <div className="flex" style={{width: '100%'}}>
             <div className="flex align-content-center" style={{marginLeft: 'auto'}}>
                 {!XUtils.isMobile() ? <div style={{padding: '0.5rem'}}>Backend: {XUtils.getXBackendUrl()}</div> : null}
-                <div style={{padding: '0.5rem'}}>User: {/*XUtils.getUsername()*/XUtils.getXToken()?.xUser?.name}</div>
+                <div style={{padding: '0.5rem'}}>User: {/*XUtils.getUsername()*/XUtils.getXToken()?.user?.name}</div>
             </div>
         </div>
     );

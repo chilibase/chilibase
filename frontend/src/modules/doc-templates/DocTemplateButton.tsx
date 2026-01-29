@@ -42,7 +42,7 @@ export const DocTemplateButton = (props: {
             return;
         }
 
-        const xtRunDocTemplateRequest: RunDocTemplateRequest = {docTemplateId: xtDocTemplate.id, rowId: props.rowId!, user: XUtils.getXToken()?.xUser};
+        const xtRunDocTemplateRequest: RunDocTemplateRequest = {docTemplateId: xtDocTemplate.id, rowId: props.rowId!, user: XUtils.getXToken()?.user};
 
         // TODO - pridat id-cko do nazvu? alebo na XtDocTemplate vytvorit nejaky atribut pre nazov suboru vo forme Klient-{klient.meno}-{klient.priezvisko}.xlsx
         // ale to by chcelo vytvorit ten nazov v service (po tom co bude nacitany row) a nejako ho dostat sem

@@ -8,7 +8,7 @@ import {
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
 import {Assoc, Entity} from "../common/EntityMetadata.js";
-import {XUser} from "../administration/x-user.entity.js";
+import {User} from "../modules/administration/user.entity.js";
 import {XUtils} from "./XUtils.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
@@ -20,7 +20,7 @@ import {XAuth, XEnvVar} from "./XEnvVars.js";
 import {join} from "path";
 import {unlinkSync} from "fs";
 import {XRowIdListToRemove} from "./XRowIdListToRemove.js";
-import {XParam} from "../administration/x-param.entity.js";
+import {XParam} from "../modules/administration/x-param.entity.js";
 import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../common/UtilsConversions.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
 import {UnlockRowRequest} from "../common/lib-api.js";
@@ -563,10 +563,10 @@ export class XLibService {
             username = reqUser.preferred_username
         }
 
-        const repository = this.dataSource.getRepository(XUser);
-        const selectQueryBuilder: SelectQueryBuilder<XUser> = repository.createQueryBuilder("xUser");
+        const repository = this.dataSource.getRepository(User);
+        const selectQueryBuilder: SelectQueryBuilder<User> = repository.createQueryBuilder("xUser");
         selectQueryBuilder.where("xUser.username = :username", {username: username});
-        const xUser: XUser | null = await selectQueryBuilder.getOne();
+        const xUser: User | null = await selectQueryBuilder.getOne();
         // synchronizaciu udajov vypneme, lebo pri auth0 kontach nam prepisuje meno e-mailom
         // if (xUser !== null) {
         //     // synchronizacia udajov

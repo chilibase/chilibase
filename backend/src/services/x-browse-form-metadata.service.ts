@@ -1,7 +1,7 @@
 import {Injectable} from "@nestjs/common";
 import {DataSource, SelectQueryBuilder} from "typeorm";
-import {BrowseMetaMap} from "../common/BrowseMetadata.js";
-import {XBrowseMeta} from "../administration/x-browse-meta.entity.js";
+import {BrowseMetaMap} from "../common/types.js";
+import {BrowseMeta} from "../modules/administration/browse-meta.entity.js";
 
 @Injectable()
 export class XBrowseFormMetadataService {
@@ -12,11 +12,11 @@ export class XBrowseFormMetadataService {
 
     async getXBrowseMetaMap(): Promise<BrowseMetaMap> {
 
-        const repository = this.dataSource.getRepository(XBrowseMeta);
-        const selectQueryBuilder: SelectQueryBuilder<XBrowseMeta> = repository.createQueryBuilder("xBrowseMeta");
+        const repository = this.dataSource.getRepository(BrowseMeta);
+        const selectQueryBuilder: SelectQueryBuilder<BrowseMeta> = repository.createQueryBuilder("xBrowseMeta");
         selectQueryBuilder.leftJoinAndSelect("xBrowseMeta.columnMetaList", "xColumnMeta");
         selectQueryBuilder.orderBy({"xBrowseMeta.id": "ASC", "xColumnMeta.columnOrder": "ASC"});
-        const xBrowseMetaList: XBrowseMeta[] = await selectQueryBuilder.getMany();
+        const xBrowseMetaList: BrowseMeta[] = await selectQueryBuilder.getMany();
 
         const xBrowseMetaMap: BrowseMetaMap = {};
         for (const xBrowseMeta of xBrowseMetaList) {

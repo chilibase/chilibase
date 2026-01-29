@@ -50,12 +50,6 @@
     "lib/**/*"
   ],
   "exports": {
-    "./XBrowseMetaBrowse": "./lib/administration/XBrowseMetaBrowse.js",
-    "./XBrowseMetaForm": "./lib/administration/XBrowseMetaForm.js",
-    "./XParamBrowse": "./lib/administration/XParamBrowse.js",
-    "./XParamForm": "./lib/administration/XParamForm.js",
-    "./XUserBrowse": "./lib/administration/XUserBrowse.js",
-    "./XUserForm": "./lib/administration/XUserForm.js",
 
     "./auth": "./lib/components/auth/index.js",
     "./app-layout": "./lib/components/app-layout/index.js",
@@ -109,6 +103,7 @@
     "./XUtilsMetadata": "./lib/components/XUtilsMetadata.js",
 
     "./doc-templates": "./lib/modules/doc-templates/index.js",
+    "./administration": "./lib/modules/administration/index.js",
 
     "./ExportImportParam": "./lib/common/ExportImportParam.js",
     "./FindParam": "./lib/common/FindParam.js",

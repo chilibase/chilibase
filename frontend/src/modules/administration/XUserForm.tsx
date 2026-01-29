@@ -1,21 +1,21 @@
-import type {FormProps} from "../components/form";
-import {InputText} from "../components/input-text";
+import type {FormProps} from "../../components/form";
+import {InputText} from "../../components/input-text";
 import React from "react";
-import {InputDecimal} from "../components/input-decimal";
+import {InputDecimal} from "../../components/input-decimal";
 import {Password} from "primereact/password";
-import {OperationType, XUtils} from "../components/XUtils";
-import {FormFooter} from "../components/form";
-import {Checkbox} from "../components/checkbox";
-import {XEnvVar, XViteAuth} from "../components/XEnvVars";
-import {FormBaseModif} from "../components/form";
-import {InputDate} from "../components/input-date";
-import {XObject} from "../components/XObject";
-import {FormHeader} from "../components/form";
+import {OperationType, XUtils} from "../../components/XUtils";
+import {FormFooter} from "../../components/form";
+import {Checkbox} from "../../components/checkbox";
+import {XEnvVar, XViteAuth} from "../../components/XEnvVars";
+import {FormBaseModif} from "../../components/form";
+import {InputDate} from "../../components/input-date";
+import {XObject} from "../../components/XObject";
+import {FormHeader} from "../../components/form";
 
 export class XUserForm extends FormBaseModif {
 
     constructor(props: FormProps) {
-        super(props, "XUser");
+        super(props, "User");
 
         this.state.usernameEnabledReadOnly = false;
         this.state.passwordNew = '';
