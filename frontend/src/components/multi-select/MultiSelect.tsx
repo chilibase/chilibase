@@ -1,10 +1,10 @@
 import React from "react";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
-import {XAssoc} from "../../common/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {Assoc} from "../../common/EntityMetadata";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelectBase} from "./MultiSelectBase";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {UtilsCommon} from "../../common/UtilsCommon";
 
 // works in one of these 2 modes:
 // 1. entity of form uses ManyToMany assoc to work with options
@@ -25,15 +25,15 @@ export interface MultiSelectProps extends FormComponentProps {
 
 export class MultiSelect extends FormComponent<MultiSelectProps> {
 
-    protected xAssocToMany: XAssoc;
-    protected xAssocManyToOne?: XAssoc;
+    protected xAssocToMany: Assoc;
+    protected xAssocManyToOne?: Assoc;
 
     constructor(props: MultiSelectProps) {
         super(props);
 
-        this.xAssocToMany = XUtilsMetadataCommon.getXAssocToManyByPath(XUtilsMetadataCommon.getXEntity(props.form.getEntity()), props.assocToMany);
+        this.xAssocToMany = UtilsMetadataCommon.getAssocToManyByPath(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocToMany);
         if (props.assocManyToOne) {
-            this.xAssocManyToOne = XUtilsMetadataCommon.getXAssocToOneByPath(XUtilsMetadataCommon.getXEntity(this.xAssocToMany.entityName), props.assocManyToOne);
+            this.xAssocManyToOne = UtilsMetadataCommon.getAssocToOneByPath(UtilsMetadataCommon.getEntity(this.xAssocToMany.entityName), props.assocManyToOne);
         }
 
         if (props.assocManyToOne) {
@@ -60,7 +60,7 @@ export class MultiSelect extends FormComponent<MultiSelectProps> {
         if (this.props.assocManyToOne) {
             // assoc "assocToMany" contains link rows - these link rows have to be transformed to option rows
             if (rowList !== null) {
-                optionRowList = rowList.map((linkRow: any) => XUtilsCommon.getValueByPath(linkRow, this.props.assocManyToOne!));
+                optionRowList = rowList.map((linkRow: any) => UtilsCommon.getValueByPath(linkRow, this.props.assocManyToOne!));
             } else {
                 // this.props.form.state.object was not initialised yet
                 optionRowList = [];

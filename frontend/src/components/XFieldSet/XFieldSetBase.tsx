@@ -1,5 +1,5 @@
 import React from "react";
-import {numberAsUI, numberFromModel} from "../../common/XUtilsConversions";
+import {numberAsUI, numberFromModel} from "../../common/UtilsConversions";
 
 // sem pride v buducnosti cely XFieldSetBase, zatial su tu skopirovane len niektore typy
 
@@ -10,7 +10,7 @@ export interface XFieldSetMeta {
     //table: string;
     xFieldMetaRoot: XFieldMeta; // root field (neda sa zmazat)
     modifDate: Date | null;
-    modifXUser: any | null;
+    modifUser: any | null;
     version: number;
 }
 

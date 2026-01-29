@@ -6,7 +6,7 @@ import {XUtils} from "./XUtils.js";
 import {XFile} from "../administration/x-file.entity.js";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {join} from "path";
-import {XFileJsonField} from "../common/XFileJsonField.js";
+import {FileJsonField} from "../common/lib-api.js";
 
 @Controller()
 export class XFileController {
@@ -20,7 +20,7 @@ export class XFileController {
     async uploadFileIntoFileSystem(@Body() body: any, @UploadedFile() file: Express.Multer.File/*, @Res() res: Response*/): Promise<XFile> {
 
         // body.jsonField je string, treba ho explicitne konvertovat na objekt, ani ked specifikujem typ pre "body" tak nefunguje
-        const jsonField: XFileJsonField = JSON.parse(body.jsonField);
+        const jsonField: FileJsonField = JSON.parse(body.jsonField);
 
         // insertneme zaznam XFile a vratime ho
         // file.originalname ma zlu diakritiku, preto vezmeme filename z json-u
@@ -33,7 +33,7 @@ export class XFileController {
             pathName: null,
             data: null,
             modifDate: jsonField.modifDate,
-            modifXUser: jsonField.modifXUser
+            modifUser: jsonField.modifUser
         });
 
         // subor ulozime do adresara app-files/x-files/<jsonField.filepath>
@@ -76,7 +76,7 @@ export class XFileController {
     uploadFileIntoDb(@Body() body: any, @UploadedFile() file: Express.Multer.File/*, @Res() res: Response*/): Promise<XFile> {
 
         // body.jsonField je string, treba ho explicitne konvertovat na objekt, ani ked specifikujem typ pre "body" tak nefunguje
-        const jsonField: XFileJsonField = JSON.parse(body.jsonField);
+        const jsonField: FileJsonField = JSON.parse(body.jsonField);
 
         // insertneme zaznam XFile a vratime ho
         // file.originalname ma zlu diakritiku, preto vezmeme filename z json fieldu
@@ -87,7 +87,7 @@ export class XFileController {
             pathName: null,
             data: file.buffer,
             modifDate: jsonField.modifDate,
-            modifXUser: jsonField.modifXUser
+            modifUser: jsonField.modifUser
         });
     }
 

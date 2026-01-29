@@ -23,7 +23,7 @@ export class XParamForm extends FormBaseModif {
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
                         <InputDate form={this} field="modifDate" label="Modified at" readOnly={true}/>
-                        <InputText form={this} field="modifXUser.name" label="Modified by" inputStyle={{width:'12.5rem'}}/>
+                        <InputText form={this} field="modifUser.name" label="Modified by" inputStyle={{width:'12.5rem'}}/>
                         <InputText form={this} field="code" label="Code" inputStyle={{width:'16rem'}}/>
                         <InputText form={this} field="name" label="Name" inputStyle={{width:'45rem'}}/>
                         <InputText form={this} field="value" label="Value" inputStyle={{width:'45rem'}}/>

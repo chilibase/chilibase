@@ -12,7 +12,7 @@ import {Column, ColumnBodyOptions} from "primereact/column";
 import {XButton} from "../XButton";
 import {InputTextDT} from "../input-text";
 import {XSearchButtonDT} from "../XSearchButtonDT";
-import {XAssoc, XEntity, XField} from "../../common/XEntityMetadata";
+import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 import {XUtils, XViewStatus, XViewStatusOrBoolean} from "../XUtils";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
@@ -22,17 +22,17 @@ import {CheckboxDT} from "../checkbox";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
 import {XTableFieldChangeEvent} from "../XFieldChangeEvent";
-import {XCustomFilter} from "../../common/FindParam";
+import {CustomFilter} from "../../common/FindParam";
 import {AutoCompleteDT} from "../auto-complete";
 import {FormComponentDT} from "./FormComponentDT";
 import {XErrorMap} from "../XErrors";
 import {XButtonIconNarrow} from "../XButtonIconNarrow";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {UtilsCommon} from "../../common/UtilsCommon";
 import {xLocaleOption} from "../XLocale";
 import {InputIntervalDT} from "../input-interval/InputIntervalDT";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {SearchBrowseProps} from "../lazy-data-table";
 import {InputTextareaDT} from "../input-textarea";
 import {SuggestionsLoadProp} from "../auto-complete";
@@ -116,11 +116,11 @@ export class FormDataTable extends Component<FormDataTableProps> {
         super(props);
         this.props = props;
         this.dataKey = props.dataKey;
-        const xEntityForm: XEntity = XUtilsMetadataCommon.getXEntity(props.form.getEntity());
-        const xAssocToMany: XAssoc = XUtilsMetadataCommon.getXAssocToMany(xEntityForm, props.assocField);
+        const xEntityForm: Entity = UtilsMetadataCommon.getEntity(props.form.getEntity());
+        const xAssocToMany: Assoc = UtilsMetadataCommon.getAssocToMany(xEntityForm, props.assocField);
         this.entity = xAssocToMany.entityName;
         if (this.dataKey === undefined) {
-            this.dataKey = XUtilsMetadataCommon.getXEntity(this.entity).idField;
+            this.dataKey = UtilsMetadataCommon.getEntity(this.entity).idField;
         }
         this.state = {
             selectedRow: undefined,
@@ -180,7 +180,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
     }
 
-    static getHeader(columnProps: FormColumnBaseProps, xEntity: XEntity, field: string, xField: XField): string {
+    static getHeader(columnProps: FormColumnBaseProps, xEntity: Entity, field: string, xField: Field): string {
         // poznamky - parametre field a xField by sme mohli vyratavat na zaklade columnProps ale kedze ich uz mame, setrime performance a neduplikujeme vypocet
         // nie je to tu uplne idealne nakodene, ale je to pomerne prehladne
         let isNullable: boolean = true;
@@ -192,19 +192,19 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
         else if (columnProps.type === "dropdown") {
             const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
-            const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(xEntity, columnPropsDropdown.assocField);
+            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsDropdown.assocField);
             isNullable = xAssoc.isNullable;
             readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "autoComplete") {
             const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
-            const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(xEntity, columnPropsAutoComplete.assocField);
+            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsAutoComplete.assocField);
             isNullable = xAssoc.isNullable;
             readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "searchButton") {
             const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
-            const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(xEntity, columnPropsSearchButton.assocField);
+            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsSearchButton.assocField);
             isNullable = xAssoc.isNullable;
             readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
@@ -228,7 +228,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     static isReadOnlyHeader(path: string | undefined , readOnly: TableFieldReadOnlyProp | undefined): boolean {
         let isReadOnly: boolean;
 
-        if (path && !XUtilsCommon.isSingleField(path)) {
+        if (path && !UtilsCommon.isSingleField(path)) {
             // if the length of field is 2 or more, then readOnly
             isReadOnly = true;
         }
@@ -265,7 +265,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             return initFilters;
         }
 
-        const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(this.getEntity());
+        const xEntity: Entity = UtilsMetadataCommon.getEntity(this.getEntity());
 
         // TODO - asi by bolo fajn si tieto field, xField niekam ulozit a iterovat ulozene hodnoty, pouziva sa to na viacerych miestach
         for (const child of this.props.children) {
@@ -273,7 +273,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             // zatial nepodporujeme filter pre custom stlpce
             if (childColumn.props.type !== "custom") {
                 const field: string | undefined = this.getPathForColumn(childColumn.props);
-                const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, field);
+                const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
                 // TODO column.props.dropdownInFilter - pre "menu" by bolo fajn mat zoznam "enumov"
                 const filterMatchMode: FilterMatchMode = this.getFilterMatchMode(xField);
                 let filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData;
@@ -296,7 +296,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         return initFilters;
     }
 
-    getFilterMatchMode(xField: XField): FilterMatchMode {
+    getFilterMatchMode(xField: Field): FilterMatchMode {
         let filterMatchMode: FilterMatchMode;
         if (xField.type === "string" || xField.type === "jsonb") {
             filterMatchMode = FilterMatchMode.CONTAINS;
@@ -396,7 +396,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     }
 */
     // body={(rowData: any) => bodyTemplate(childColumn.props.field, rowData)}
-    bodyTemplate(columnProps: FormColumnBaseProps, tableReadOnly: boolean, rowData: any, xEntity: XEntity): any {
+    bodyTemplate(columnProps: FormColumnBaseProps, tableReadOnly: boolean, rowData: any, xEntity: Entity): any {
         let body: any;
         // columnProps.columnViewStatus "ReadOnly" has higher prio then tableReadOnly
         // tableReadOnly has higher prio then property readOnly
@@ -413,7 +413,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
         if (columnProps.type === "inputSimple") {
             const columnPropsInputSimple = (columnProps as FormColumnProps);
-            const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, columnPropsInputSimple.field);
+            const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, columnPropsInputSimple.field);
             if (xField.type === "decimal" || xField.type === "number") {
                 body = <InputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
@@ -555,7 +555,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     }
 
     render() {
-        const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(this.getEntity());
+        const xEntity: Entity = UtilsMetadataCommon.getEntity(this.getEntity());
 
         const paginator: boolean = this.props.paginator !== undefined ? this.props.paginator : false;
         let rows: number | undefined = undefined;
@@ -660,7 +660,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                     const field: string = thisLocal.getPathForColumn(childColumnProps);
 
                     // TODO - toto by sa mohlo vytiahnut vyssie, aj v bodyTemplate sa vola metoda XUtilsMetadata.getXFieldByPath
-                    const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, field);
+                    const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
 
                     // *********** header ***********
                     header = FormDataTable.getHeader(childColumnProps, xEntity, field, xField);
@@ -792,7 +792,7 @@ export type TableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => 
 
 // typ property pre vytvorenie filtra na assoc fieldoch (XAutoComplete, Dropdown, ...)
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
-export type TableFieldFilterProp = XCustomFilter | ((object: any, rowData: any) => XCustomFilter | undefined);
+export type TableFieldFilterProp = CustomFilter | ((object: any, rowData: any) => CustomFilter | undefined);
 
 export interface FormColumnBaseProps {
     type: "inputSimple" | "dropdown" | "autoComplete" | "searchButton" | "textarea" | "custom";
@@ -819,7 +819,7 @@ export interface FormDropdownColumnProps extends FormColumnBaseProps {
     assocField: string;
     displayField: string;
     sortField?: string;
-    filter?: XCustomFilter;
+    filter?: CustomFilter;
 }
 
 export interface FormAutoCompleteColumnProps extends FormColumnBaseProps {

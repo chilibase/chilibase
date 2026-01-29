@@ -5,17 +5,17 @@ import {
     CsvEncoding,
     CsvParam, ExcelCsvParam,
     ExportCsvParam,
-    XMultilineExportType
+    MultilineExportType
 } from "../common/ExportImportParam.js";
-import {XUtilsCommon} from "../common/XUtilsCommon.js";
-import {dateFormat, datetimeFormat, numberFromModel} from "../common/XUtilsConversions.js";
+import {UtilsCommon} from "../common/UtilsCommon.js";
+import {dateFormat, datetimeFormat, numberFromModel} from "../common/UtilsConversions.js";
 // poznamka - ked tu bolo: import iconv from "iconv-lite"; tak to nefungovalo a zevraj to suvisi s nestjs
 import * as iconv from "iconv-lite";
 import {XExportColumn, XExportService} from "./x-export.service.js";
 import {SelectQueryBuilder} from "typeorm";
 import {ReadStream} from "fs";
-import {XEntity} from "../common/XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
+import {Entity} from "../common/EntityMetadata.js";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon.js";
 
 // pomocna trieda
 export class XCsvWriter {
@@ -44,7 +44,7 @@ export class XCsvWriter {
             }
             csvRow += valueStr;
         }
-        csvRow += XUtilsCommon.newLine;
+        csvRow += UtilsCommon.newLine;
         this.res.write(iconv.encode(csvRow, this.csvParam.csvEncoding)); // neviem ci toto je idealny sposob ako pouzivat iconv, ale funguje...
     }
 
@@ -123,17 +123,17 @@ export class XExportCsvService extends XExportService {
 
     // simple api for custom export
     export(csvParam: CsvParam, columns: XExportColumn[], entity: string | undefined, rows: any[], res: Response) {
-        this.exportBase(csvParam, columns, true, XMultilineExportType.Multiline, undefined, entity, rows, res);
+        this.exportBase(csvParam, columns, true, MultilineExportType.Multiline, undefined, entity, rows, res);
     }
 
     // extended api for custom export
     // TODO - nepouzivame stream ale zapisujeme do res: Response, nevraciame Promise<StreamableFile> - je to take zvlastne, nie je to moc pekne
     // (ak to chceme mat poriadne, asi by sme mali mat 2 rest metody v controlleri - jednu na stream (pouziva res: Response) a druhu na list (vracia Promise<StreamableFile>))
-    exportBase(csvParam: CsvParam, columns: XExportColumn[], createHeaders: boolean, multilineExportType: XMultilineExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[], res: Response) {
+    exportBase(csvParam: CsvParam, columns: XExportColumn[], createHeaders: boolean, multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[], res: Response) {
 
         const xCsvWriter: XCsvWriter = this.startExport(csvParam, columns, createHeaders, res);
 
-        const xEntity: XEntity | undefined = entity ? XUtilsMetadataCommon.getXEntity(entity) : undefined;
+        const xEntity: Entity | undefined = entity ? UtilsMetadataCommon.getEntity(entity) : undefined;
 
         for (const row of rows) {
             this.exportRowToCsv(columns, multilineExportType, fieldsToDuplicateValues, xEntity, row, xCsvWriter);
@@ -156,7 +156,7 @@ export class XExportCsvService extends XExportService {
 
         const readStream: ReadStream = await selectQueryBuilder.stream();
 
-        const xEntity = XUtilsMetadataCommon.getXEntity(exportCsvParam.queryParam.entity);
+        const xEntity = UtilsMetadataCommon.getEntity(exportCsvParam.queryParam.entity);
 
         readStream.on('data', data => {
             const entityObj = this.transformToEntity(data, selectQueryBuilder);
@@ -205,7 +205,7 @@ export class XExportCsvService extends XExportService {
     }
 
     // helper
-    private exportRowToCsv(columns: XExportColumn[], multilineExportType: XMultilineExportType, fieldsToDuplicateValues: string[], xEntity: XEntity, row: any, xCsvWriter: XCsvWriter) {
+    private exportRowToCsv(columns: XExportColumn[], multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[], xEntity: Entity, row: any, xCsvWriter: XCsvWriter) {
         // metoda this.exportRow skonvertuje hodnoty na typy (napr. number, Date) a xCsvWriter.writeRow skonvertuje typy na string
         const resultRowList: Array<Array<any>> = this.exportRow(columns, multilineExportType, fieldsToDuplicateValues, xEntity, row);
         for (const resultRow of resultRowList) {

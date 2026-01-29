@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {
     stringAsUI,
     stringFromUI
-} from "../../common/XUtilsConversions";
+} from "../../common/UtilsConversions";
 import {XUtils} from "../XUtils";
 import {InputText} from "primereact/inputtext";
 

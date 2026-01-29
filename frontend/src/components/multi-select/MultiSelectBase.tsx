@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {XQuery, XUtils} from "../XUtils";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelect, MultiSelectChangeEvent} from "primereact/multiselect";
 
 // Base komponent pre MultiSelect - podobna uroven ako XAutoCompleteBase, resp. DropdownForEntity
@@ -38,7 +38,7 @@ export class MultiSelectBase extends Component<MultiSelectBaseProps> {
         if (!this.props.optionsQuery) {
             throw `MultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
         }
-        this.idField = XUtilsMetadataCommon.getXEntity(this.props.optionsQuery.entity).idField;
+        this.idField = UtilsMetadataCommon.getEntity(this.props.optionsQuery.entity).idField;
 
         this.state = {
             options: []

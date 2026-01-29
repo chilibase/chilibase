@@ -2,13 +2,13 @@ import React, {Component} from "react";
 import {SourceCodeLinkEntity} from "./SourceCodeLinkEntity";
 import {XEditColumnDialog, XEditColumnDialogValues} from "./XEditColumnDialog";
 import * as _ from "lodash";
-import {XBrowseMeta, XColumnMeta} from "../common/XBrowseMetadata";
+import {BrowseMeta, ColumnMeta} from "../common/BrowseMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XEntity} from "../common/XEntityMetadata";
+import {Entity} from "../common/EntityMetadata";
 import {XUtils} from "./XUtils";
 import {EditModeHandlers, LazyColumn, LazyDataTable} from "./lazy-data-table";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
-import {XUtilsCommon} from "../common/XUtilsCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {UtilsCommon} from "../common/UtilsCommon";
 
 export interface XEditBrowseProps {
     entity: string;
@@ -18,7 +18,7 @@ export interface XEditBrowseProps {
 // TODO - pouzit extends XEditBrowseBase, ako je tomu pri CarForm?
 export class XEditBrowse extends Component<XEditBrowseProps> {
 
-    state: {xBrowseMeta: XBrowseMeta; editMode: boolean; editColumnDialogOpened: boolean;};
+    state: {xBrowseMeta: BrowseMeta; editMode: boolean; editColumnDialogOpened: boolean;};
     indexForAddColumn?: number;
     addColumn: boolean;
     xEditColumnDialogValues?: XEditColumnDialogValues;
@@ -29,7 +29,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
 
         this.getXBrowseMeta = this.getXBrowseMeta.bind(this);
 
-        const xBrowseMeta: XBrowseMeta = this.getXBrowseMeta();
+        const xBrowseMeta: BrowseMeta = this.getXBrowseMeta();
         this.state = {
             xBrowseMeta: xBrowseMeta,
             editMode: false,
@@ -52,18 +52,18 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
         this.onEdit = this.onEdit.bind(this);
     }
 
-    getXBrowseMeta(): XBrowseMeta {
-        let xBrowseMeta: XBrowseMeta = XUtilsMetadata.getXBrowseMeta(this.props.entity, this.props.browseId);
+    getXBrowseMeta(): BrowseMeta {
+        let xBrowseMeta: BrowseMeta = XUtilsMetadata.getXBrowseMeta(this.props.entity, this.props.browseId);
         if (xBrowseMeta === undefined) {
             xBrowseMeta = this.createDefaultXBrowseMeta();
         }
         return xBrowseMeta;
     }
 
-    createDefaultXBrowseMeta(): XBrowseMeta {
-        const xColumnMetaList: XColumnMeta[] = [];
-        const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(this.props.entity);
-        const xFieldList = XUtilsMetadataCommon.getXFieldList(xEntity);
+    createDefaultXBrowseMeta(): BrowseMeta {
+        const xColumnMetaList: ColumnMeta[] = [];
+        const xEntity: Entity = UtilsMetadataCommon.getEntity(this.props.entity);
+        const xFieldList = UtilsMetadataCommon.getFieldList(xEntity);
         for (const xField of xFieldList) {
             xColumnMetaList.push({field: xField.name, header: xField.name, dropdownInFilter: false});
         }
@@ -72,7 +72,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
 
     onEditModeStart() {
         // zmeny budeme robit na klonovanych datach - aby sme sa vedeli cez cancel vratit do povodneho stavu
-        let xBrowseMetaCloned: XBrowseMeta = _.cloneDeep(this.state.xBrowseMeta);
+        let xBrowseMetaCloned: BrowseMeta = _.cloneDeep(this.state.xBrowseMeta);
         this.setState({xBrowseMeta: xBrowseMetaCloned, editMode: true});
     }
 
@@ -101,7 +101,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
 
     onEditModeCancel() {
         // vratime formular z cache, resp. defaultny formular
-        const xBrowseMeta: XBrowseMeta = this.getXBrowseMeta();
+        const xBrowseMeta: BrowseMeta = this.getXBrowseMeta();
         this.setState({editMode: false, xBrowseMeta: xBrowseMeta});
     }
 
@@ -126,7 +126,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
                     });
                 }
                 else {
-                    const xColumnMeta: XColumnMeta = xBrowseMeta.columnMetaList[this.indexForAddColumn];
+                    const xColumnMeta: ColumnMeta = xBrowseMeta.columnMetaList[this.indexForAddColumn];
                     xColumnMeta.header = xEditColumnDialogValues.header;
                     xColumnMeta.dropdownInFilter = xEditColumnDialogValues.dropdownInFilter;
                 }
@@ -144,7 +144,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
         this.indexForAddColumn = this.getIndexForColumn(field);
         const xBrowseMeta = this.state.xBrowseMeta;
         if (this.indexForAddColumn !== undefined) {
-            const xColumnMeta: XColumnMeta = xBrowseMeta.columnMetaList[this.indexForAddColumn];
+            const xColumnMeta: ColumnMeta = xBrowseMeta.columnMetaList[this.indexForAddColumn];
             this.addColumn = false;
             this.xEditColumnDialogValues = {field: xColumnMeta.field, header: xColumnMeta.header, dropdownInFilter: xColumnMeta.dropdownInFilter ?? false}; // values are used for dialog initialization
             this.setState({editColumnDialogOpened: true});
@@ -174,7 +174,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
         const index = this.getIndexForColumn(field);
         if (index !== undefined) {
             const xBrowseMeta = this.state.xBrowseMeta;
-            XUtilsCommon.arrayMoveElement(xBrowseMeta.columnMetaList, index, offset);
+            UtilsCommon.arrayMoveElement(xBrowseMeta.columnMetaList, index, offset);
             // TODO - tu mozno treba setnut funkciu - koli moznej asynchronicite
             this.setState({xBrowseMeta: xBrowseMeta});
         }
@@ -196,7 +196,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
 
         const formElement = XUtils.getAppForm(this.props.entity);
         if (formElement !== undefined) {
-            const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(this.props.entity);
+            const xEntity: Entity = UtilsMetadataCommon.getEntity(this.props.entity);
             const id = selectedRow[xEntity.idField];
             // we add property id={selectedRow.<id>} into formElement
             const formElementCloned = React.cloneElement(formElement, {id: id}, formElement.children);
@@ -238,7 +238,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
         return (
             <div>
                 <LazyDataTable entity={xBrowseMeta.entity} rows={xBrowseMeta.rows} editMode={this.state.editMode} editModeHandlers={editModeHandlers} onEdit={this.onEdit} displayed={(this.props as any).displayed}>
-                    {xBrowseMeta.columnMetaList.map(function (xColumnMeta: XColumnMeta, index: number) {
+                    {xBrowseMeta.columnMetaList.map(function (xColumnMeta: ColumnMeta, index: number) {
                             return (<LazyColumn key={index} field={xColumnMeta.field} header={xColumnMeta.header} dropdownInFilter={xColumnMeta.dropdownInFilter} align={xColumnMeta.align} width={xColumnMeta.width}/>);
                         }
                     )}

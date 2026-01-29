@@ -1,7 +1,7 @@
 // ExportType a LazyDataTableQueryParam sa pouzivaju v samostatnom servise ktory data streamuje
 // (na rozdiel od ResultType.AllRows ktory by sa ani nemal pouzivat - nemali by sa vsetky rows tahat na klienta v jednom velkom requeste)
 import {DataTableSortMeta} from "./PrimeFilterSortMeta.js";
-import {XCustomFilterItem, XDataTableFilterMeta, XFullTextSearch} from "./FindParam.js";
+import {CustomFilterItem, ExtendedDataTableFilterMeta, FullTextSearch} from "./FindParam.js";
 
 // ************** export ***************
 
@@ -28,9 +28,9 @@ export interface ExportJsonParam {
 }
 
 export interface LazyDataTableQueryParam {
-    filters: XDataTableFilterMeta;
-    fullTextSearch?: XFullTextSearch;
-    customFilterItems?: XCustomFilterItem[];
+    filters: ExtendedDataTableFilterMeta;
+    fullTextSearch?: FullTextSearch;
+    customFilterItems?: CustomFilterItem[];
     multiSortMeta?: DataTableSortMeta[]; // typ []
     entity: string;
     fields: string[];
@@ -39,13 +39,13 @@ export interface LazyDataTableQueryParam {
 // parametre pouzivane pri exporte do excelu a do csv
 export interface ExcelCsvParam {
     headers?: string[]; // ak je undefined, tak nevytvori header line
-    toManyAssocExport: XMultilineExportType; // export toMany asociacii
-    multilineTextExport: XMultilineExportType; // export viacriadkovych textov (contentType = multiline/html)
+    toManyAssocExport: MultilineExportType; // export toMany asociacii
+    multilineTextExport: MultilineExportType; // export viacriadkovych textov (contentType = multiline/html)
     fieldsToDuplicateValues?: string[]; // (podmnozina LazyDataTableQueryParam.fields)
 }
 
 // exportovanie hodnot z toMany asociacii, pripadne viacriadkovych textov
-export enum XMultilineExportType {
+export enum MultilineExportType {
     Singleline = "singleline", // hodnoty sa pospajaju do jednej dlhej hodnoty
     Multiline = "multiline", // hodnoty sa zapisu pod seba do stlpca
     Off = "off" // stlpce obsahujuce viac hodnot/riadkov sa vynechaju z exportu

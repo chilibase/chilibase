@@ -6,7 +6,7 @@ export class FormBaseModif extends FormBase {
 
     preSave(object: XObject) {
         object.modifDate = new Date();
-        object.modifXUser = XUtils.getXToken()?.xUser;
+        object.modifUser = XUtils.getXToken()?.xUser;
     }
 }
 

@@ -6,16 +6,16 @@ import {Button} from "primereact/button";
 import {XUtils} from "./XUtils";
 import {Dialog} from "primereact/dialog";
 import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
 export const XSearchButtonOld = (props: {form: FormBase; assocField: string; displayField: string, searchTable: any; assocForm?: any; label?: string; readOnly?: boolean; size?: number; inputStyle?: React.CSSProperties;}) => {
 
     props.form.addField(props.assocField + '.' + props.displayField);
 
-    const xEntity = XUtilsMetadataCommon.getXEntity(props.form.getEntity());
-    const xAssoc = XUtilsMetadataCommon.getXAssocToOne(xEntity, props.assocField);
-    const xEntityAssoc = XUtilsMetadataCommon.getXEntity(xAssoc.entityName);
-    const xDisplayField = XUtilsMetadataCommon.getXFieldByPath(xEntityAssoc, props.displayField);
+    const xEntity = UtilsMetadataCommon.getEntity(props.form.getEntity());
+    const xAssoc = UtilsMetadataCommon.getAssocToOne(xEntity, props.assocField);
+    const xEntityAssoc = UtilsMetadataCommon.getEntity(xAssoc.entityName);
+    const xDisplayField = UtilsMetadataCommon.getFieldByPath(xEntityAssoc, props.displayField);
 
     // POVODNY KOD
     //const overlayPanelEl = useRef<any>(null);

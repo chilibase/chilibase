@@ -1,11 +1,11 @@
 import {Injectable, StreamableFile} from '@nestjs/common';
-import {FindResult, XAggregateValues} from "../common/FindResult.js";
+import {FindResult, AggregateValues} from "../common/FindResult.js";
 import {DataSource, EntityManager, Repository, SelectQueryBuilder} from "typeorm";
 import {
     FindParam,
-    ResultType, XCustomFilterItem,
-    XFullTextSearch,
-    XLazyAutoCompleteSuggestionsRequest
+    ResultType, CustomFilterItem,
+    FullTextSearch,
+    LazyAutoCompleteSuggestionsRequest
 } from "../common/FindParam.js";
 import {Response} from "express";
 import {
@@ -22,11 +22,11 @@ import {XExportColumn} from "./x-export.service.js";
 import {XExportExcelService} from "./x-export-excel.service.js";
 import {XExportJsonService} from "./x-export-json.service.js";
 import {XExportCsvService} from "./x-export-csv.service.js";
-import {numberFromString} from "../common/XUtilsConversions.js";
+import {numberFromString} from "../common/UtilsConversions.js";
 import {DataTableSortMeta} from "../common/PrimeFilterSortMeta.js";
-import {XAssoc, XEntity} from "../common/XEntityMetadata.js";
-import {XUtilsCommon} from "../common/XUtilsCommon.js";
-import {XFindRowByIdRequest, XFindRowByIdResponse} from "../common/x-lib-api.js";
+import {Assoc, Entity} from "../common/EntityMetadata.js";
+import {UtilsCommon} from "../common/UtilsCommon.js";
+import {FindRowByIdRequest, FindRowByIdResponse} from "../common/lib-api.js";
 import {XLibService} from "./x-lib.service.js";
 
 @Injectable()
@@ -51,7 +51,7 @@ export class XLazyDataTableService {
         const xMainQueryData: XMainQueryData = new XMainQueryData(this.xEntityMetadataService, findParam.entity, "t", findParam.filters, findParam.fullTextSearch, findParam.customFilterItems);
 
         let rowCount: number;
-        const aggregateValues: XAggregateValues = {};
+        const aggregateValues: AggregateValues = {};
         if (findParam.resultType === ResultType.OnlyRowCount || findParam.resultType === ResultType.RowCountAndPagedRows) {
             //const xEntity: XEntity = this.xEntityMetadataService.getXEntity(findParam.entity);
             const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(xMainQueryData.xEntity.name, xMainQueryData.rootAlias);
@@ -189,7 +189,7 @@ export class XLazyDataTableService {
 
     // docasne sem dame findRowById, lebo pouzivame podobne joinovanie ako pri citani dat pre lazy tabulky
     // (v buducnosti mozme viac zjednotit s lazy tabulkou)
-    async findRowById(findRowRequest: XFindRowByIdRequest): Promise<XFindRowByIdResponse> {
+    async findRowById(findRowRequest: FindRowByIdRequest): Promise<FindRowByIdResponse> {
         // we use transaction only by locking (we spare the commands START TRANSACTION and COMMIT when we don't use transaction)
         if (findRowRequest.lockDate) {
             return this.dataSource.transaction(manager => this.findRowByIdWithLockInTransaction(manager, findRowRequest));
@@ -200,14 +200,14 @@ export class XLazyDataTableService {
         }
     }
 
-    private async findRowByIdWithLockInTransaction(manager: EntityManager, findRowRequest: XFindRowByIdRequest): Promise<XFindRowByIdResponse> {
+    private async findRowByIdWithLockInTransaction(manager: EntityManager, findRowRequest: FindRowByIdRequest): Promise<FindRowByIdResponse> {
         // we select the row in transaction, in order to use SELECT FOR UPDATE and write the lock (if the row is not locked)
         const rowForUpdate: any = await this.xLibService.findRowByIdForLocking(manager, findRowRequest.entity, findRowRequest.id);
         let lockAcquired: boolean = false;
         if (rowForUpdate.lockDate === null || findRowRequest.overwriteLock) {
             // row is not locked (or we do lock overwrite), put the lock
             rowForUpdate.lockDate = findRowRequest.lockDate;
-            rowForUpdate.lockXUser = findRowRequest.lockXUser;
+            rowForUpdate.lockUser = findRowRequest.lockUser;
             await manager.getRepository(findRowRequest.entity).save(rowForUpdate); // zatial dame save, lebo update inkrementuje version atribut (version ale pojde prec)
             lockAcquired = true;
         }
@@ -216,7 +216,7 @@ export class XLazyDataTableService {
         return {row: row, lockAcquired: lockAcquired};
     }
 
-    async findRowByIdBase(manager: EntityManager, findRowRequest: XFindRowByIdRequest): Promise<any> {
+    async findRowByIdBase(manager: EntityManager, findRowRequest: FindRowByIdRequest): Promise<any> {
         // select the whole row (also with assocs)
         const xMainQueryData: XMainQueryData = new XMainQueryData(this.xEntityMetadataService, findRowRequest.entity, "t", undefined, undefined, undefined);
         xMainQueryData.addSelectItems(findRowRequest.fields);
@@ -228,14 +228,14 @@ export class XLazyDataTableService {
 
     // sorts all oneToMany assocs with cascade (insert and update) by id - it is default sorting used by XFormDataTable2 on the frontend
     // helper method to avoid explicit sorting, used usually after XLazyDataTableService.findRowById
-    sortCascadeAssocsByIdField(xEntity: XEntity, row: any) {
-        const assocOneToManyList: XAssoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many"]).filter((assoc: XAssoc) => assoc.isCascadeInsert && assoc.isCascadeUpdate);
+    sortCascadeAssocsByIdField(xEntity: Entity, row: any) {
+        const assocOneToManyList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many"]).filter((assoc: Assoc) => assoc.isCascadeInsert && assoc.isCascadeUpdate);
         for (const assoc of assocOneToManyList) {
             const assocRowList: any[] = row[assoc.name];
-            const xEntityAssoc: XEntity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xEntityAssoc: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
             // not all associations must be read from DB (if join is missing that assocRowList is undefined)
             if (assocRowList) {
-                row[assoc.name] = XUtilsCommon.arraySort(assocRowList, xEntityAssoc.idField);
+                row[assoc.name] = UtilsCommon.arraySort(assocRowList, xEntityAssoc.idField);
             }
         }
     }
@@ -312,7 +312,7 @@ export class XLazyDataTableService {
         return [this.createQueryBuilderFromXMainQuery(null, xMainQueryData), xMainQueryData.assocXSubQueryDataMap.size > 0];
     }
 
-    private createDefaultFieldsForFullTextSearch(fullTextSearch: XFullTextSearch | undefined, fields: string[] | undefined) {
+    private createDefaultFieldsForFullTextSearch(fullTextSearch: FullTextSearch | undefined, fields: string[] | undefined) {
         if (fullTextSearch) {
             if (!fullTextSearch.fields) {
                 fullTextSearch.fields = fields; // ako default stlpce pouzijeme stlpce browsu
@@ -322,7 +322,7 @@ export class XLazyDataTableService {
 
     // ************** podpora pre autocomplete ******************
 
-    async lazyAutoCompleteSuggestions(suggestionsRequest: XLazyAutoCompleteSuggestionsRequest): Promise<FindResult> {
+    async lazyAutoCompleteSuggestions(suggestionsRequest: LazyAutoCompleteSuggestionsRequest): Promise<FindResult> {
 
         const findParamRows: FindParam = {
             resultType: ResultType.OnlyPagedRows,
@@ -363,7 +363,7 @@ export class XLazyDataTableService {
 */
     // ************** fetch rows - zodpoveda metode XUtils.fetchRows na frontend-e ******************
 
-    async fetchRows(entity: string, customFilterItems?: XCustomFilterItem[] | undefined, multiSortMeta?: DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
+    async fetchRows(entity: string, customFilterItems?: CustomFilterItem[] | undefined, multiSortMeta?: DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
         const findParam: FindParam = {resultType: ResultType.AllRows, entity: entity, customFilterItems: customFilterItems, multiSortMeta: multiSortMeta, fields: fields};
         const findResult: FindResult = await this.findRows(findParam);
         return findResult.rowList;

@@ -1,10 +1,10 @@
 import {FormBase} from "../form";
 import React, {Component} from "react";
 import {XObject} from "../XObject";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType, XUtils} from "../XUtils";
 import {XError} from "../XErrors";
-import {XCustomFilter} from "../../common/FindParam";
+import {CustomFilter} from "../../common/FindParam";
 import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
 
 export interface FormComponentDTProps {
@@ -48,7 +48,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
         let rowDataValue: any = null;
         // test na undefined je tu koli insertu noveho riadku
         if (this.props.rowData !== undefined && this.props.rowData !== null) {
-            rowDataValue = XUtilsCommon.getValueByPath(this.props.rowData, this.getField());
+            rowDataValue = UtilsCommon.getValueByPath(this.props.rowData, this.getField());
             //  pre istotu dame na null, null je standard
             if (rowDataValue === undefined) {
                 rowDataValue = null;
@@ -72,7 +72,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
     isReadOnly(): boolean {
 
         let readOnly: boolean;
-        if (!XUtilsCommon.isSingleField(this.getField())) {
+        if (!UtilsCommon.isSingleField(this.getField())) {
             // if the length of field is 2 or more, then readOnly
             readOnly = true;
         }
@@ -178,8 +178,8 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
     }
 
     // len pre assoc fieldy sa pouziva, aj to nie pre vsetky
-    getFilterBase(filter: TableFieldFilterProp | undefined): XCustomFilter | undefined {
-        let customFilter: XCustomFilter | undefined = undefined;
+    getFilterBase(filter: TableFieldFilterProp | undefined): CustomFilter | undefined {
+        let customFilter: CustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
             customFilter = filter;
         }

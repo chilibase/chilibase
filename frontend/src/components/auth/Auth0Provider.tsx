@@ -3,7 +3,7 @@ import {Auth0Provider as Auth0Auth0Provider, useAuth0} from "@auth0/auth0-react"
 import { XUtils } from '../XUtils';
 import { XEnvVar } from '../XEnvVars';
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
-import {XPostLoginRequest} from "../../common/x-auth-api";
+import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
 export const Auth0Provider = ({children}: {children: ReactNode;}) => {
@@ -74,9 +74,9 @@ function AppAuth0({children}: {children: ReactNode;}) {
         // zavolame post-login
         // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
         // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
-        let xPostLoginResponse;
+        let xPostLoginResponse: PostLoginResponse;
         try {
-            const xPostLoginRequest: XPostLoginRequest = {username: user?.name};
+            const xPostLoginRequest: PostLoginRequest = {username: user?.name};
             xPostLoginResponse = await XUtils.fetch('post-login', xPostLoginRequest);
         }
         catch (e) {
@@ -94,14 +94,14 @@ function AppAuth0({children}: {children: ReactNode;}) {
             throw 'post-login failed';
         }
 
-        if (xPostLoginResponse.xUser === undefined) {
+        if (xPostLoginResponse.user === undefined) {
             // nenasli sme usera v DB
             alert(`User account "${user?.email}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
-        if (!xPostLoginResponse.xUser.enabled) {
+        if (!xPostLoginResponse.user.enabled) {
             // user je disablovany
             alert(`User account "${user?.email}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
@@ -111,7 +111,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         XUtils.setXToken({
             accessToken: XUtils.getXToken()?.accessToken,
-            xUser: xPostLoginResponse.xUser,
+            xUser: xPostLoginResponse.user,
             logout: () => logout({logoutParams: {returnTo: window.location.origin}})
         });
     }

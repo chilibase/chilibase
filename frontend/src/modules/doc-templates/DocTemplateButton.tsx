@@ -4,11 +4,12 @@ import {SplitButton} from "primereact/splitbutton";
 import {MenuItem} from "primereact/menuitem";
 import {XtDocTemplate} from "./xt-doc-template";
 import {XUtils} from "../../components/XUtils";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
-import {XtRunDocTemplateRequest} from "../../common/x-lib-api";
+import {UtilsCommon} from "../../common/UtilsCommon";
+import {RunDocTemplateRequest} from "../../common/lib-api";
 import {xLocaleOption} from "../../components/XLocale";
 
-export const XDocTemplateButton = (props: {
+// TODO - DocTemplateButton is missing endpoint 'xt-run-doc-template' for this moment (endpoint was not moved to backend lib)
+export const DocTemplateButton = (props: {
     entity: string;
     rowId: number | undefined;
     docTemplates?: (entity: string) => Promise<XtDocTemplate[]>; // function returning list of templates that can be used by user (for the case if we need project specific way of fetching templates)
@@ -28,7 +29,7 @@ export const XDocTemplateButton = (props: {
         }
         else {
             // default
-            docTemplateListLocal = await XUtils.fetchRows('XtDocTemplate', XUtilsCommon.createCustomFilter(`[entity] = '${props.entity}' AND [availableInForms] = TRUE`), "label", ["templateXFile.name"]);
+            docTemplateListLocal = await XUtils.fetchRows('XtDocTemplate', UtilsCommon.createCustomFilter(`[entity] = '${props.entity}' AND [availableInForms] = TRUE`), "label", ["templateXFile.name"]);
         }
         setDocTemplateList(docTemplateListLocal);
     }
@@ -41,10 +42,11 @@ export const XDocTemplateButton = (props: {
             return;
         }
 
-        const xtRunDocTemplateRequest: XtRunDocTemplateRequest = {xtDocTemplateId: xtDocTemplate.id, rowId: props.rowId!, xUser: XUtils.getXToken()?.xUser};
+        const xtRunDocTemplateRequest: RunDocTemplateRequest = {docTemplateId: xtDocTemplate.id, rowId: props.rowId!, user: XUtils.getXToken()?.xUser};
 
         // TODO - pridat id-cko do nazvu? alebo na XtDocTemplate vytvorit nejaky atribut pre nazov suboru vo forme Klient-{klient.meno}-{klient.priezvisko}.xlsx
         // ale to by chcelo vytvorit ten nazov v service (po tom co bude nacitany row) a nejako ho dostat sem
+        // TODO - endpoint 'xt-run-doc-template' was still not moved to backend lib (from project)
         XUtils.downloadFile('xt-run-doc-template', xtRunDocTemplateRequest, xtDocTemplate.templateXFile.name);
     }
 

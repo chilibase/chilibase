@@ -4,23 +4,23 @@ import {OrderByCondition, SelectQueryBuilder} from "typeorm";
 import {XSubQueryData} from "./XSubQueryData.js";
 import {DataTableFilterMeta, DataTableSortMeta} from "../common/PrimeFilterSortMeta.js";
 import {
-    XCustomFilterItem,
-    XDataTableFilterMeta,
-    XDataTableFilterMetaData,
-    XFullTextSearch
+    CustomFilterItem,
+    ExtendedDataTableFilterMeta,
+    ExtendedDataTableFilterMetaData,
+    FullTextSearch
 } from "../common/FindParam.js";
-import {XAssoc} from "../common/XEntityMetadata.js";
-import {XUtilsCommon} from "../common/XUtilsCommon.js";
+import {Assoc} from "../common/EntityMetadata.js";
+import {UtilsCommon} from "../common/UtilsCommon.js";
 
 export class XMainQueryData extends XQueryData {
 
     // key in this map is main table alias with OneToMany assoc that creates this XSubQueryData, e.g. "t0.assocXList"
     assocXSubQueryDataMap: Map<string, XSubQueryData>;
     selectItems: string[]; // not used now
-    fullTextSearch: XFullTextSearch | undefined;
+    fullTextSearch: FullTextSearch | undefined;
     orderByItems: OrderByCondition;
 
-    constructor(xEntityMetadataService: XEntityMetadataService, entity: string, rootAlias: string, filters: DataTableFilterMeta | undefined, fullTextSearch: XFullTextSearch | undefined, customFilterItems: XCustomFilterItem[] | undefined) {
+    constructor(xEntityMetadataService: XEntityMetadataService, entity: string, rootAlias: string, filters: DataTableFilterMeta | undefined, fullTextSearch: FullTextSearch | undefined, customFilterItems: CustomFilterItem[] | undefined) {
         super(xEntityMetadataService, entity, rootAlias);
         this.assocXSubQueryDataMap = new Map<string, XSubQueryData>();
         this.selectItems = [];
@@ -40,14 +40,14 @@ export class XMainQueryData extends XQueryData {
 
     // ******************* methods for creating data in member variables  ********************
 
-    addFilters(filters: XDataTableFilterMeta | undefined) {
+    addFilters(filters: ExtendedDataTableFilterMeta | undefined) {
         if (filters) {
             for (const [filterField, filterValue] of Object.entries(filters)) {
                 // test this.isFilterValueNotNull je tu hlavne na to aby sa nevytvarali zbytocne join-y pri SELECT COUNT(1)
                 if (this.isFilterValueNotNull(filterValue)) {
-                    if (!('operator' in filterValue) && (filterValue as XDataTableFilterMetaData).customFilterItems) {
+                    if (!('operator' in filterValue) && (filterValue as ExtendedDataTableFilterMetaData).customFilterItems) {
                         // for simple condition, if there is customFilterItems (used when autocomplete is used), we use customFilterItems
-                        this.addCustomFilterItems((filterValue as XDataTableFilterMetaData).customFilterItems);
+                        this.addCustomFilterItems((filterValue as ExtendedDataTableFilterMetaData).customFilterItems);
                     }
                     else {
                         const [xQueryData, filterFieldNew]: [XQueryData, string] = this.getQueryForPathField(filterField);
@@ -63,7 +63,7 @@ export class XMainQueryData extends XQueryData {
             const fields: string[] = this.fullTextSearch.fields;
             if (fields) {
                 for (const field of fields) {
-                    const [prefix, fieldOnly]: [string | null, string] = XUtilsCommon.getPrefixAndField(field);
+                    const [prefix, fieldOnly]: [string | null, string] = UtilsCommon.getPrefixAndField(field);
                     const [xQueryData, filterFieldNew]: [XQueryData, string] = this.getQueryForPathField(fieldOnly);
                     xQueryData.addFtsField(prefix, filterFieldNew);
                 }
@@ -71,7 +71,7 @@ export class XMainQueryData extends XQueryData {
         }
     }
 
-    addCustomFilterItems(customFilterItems: XCustomFilterItem[] | undefined) {
+    addCustomFilterItems(customFilterItems: CustomFilterItem[] | undefined) {
         if (customFilterItems) {
             // kedze fieldy v custom filtri mozu patrit do rozlicnych queries (mozu byt pouzite OneToMany asociacie),
             // mame tu specialnu podporu pre custom filtre zlozene z viacerych items
@@ -115,7 +115,7 @@ export class XMainQueryData extends XQueryData {
         }
     }
 
-    private addCustomFilterItem(xCustomFilterItem: XCustomFilterItem) {
+    private addCustomFilterItem(xCustomFilterItem: CustomFilterItem) {
         const [sqlExpWithAliases, xQueryData] = this.replacePathFieldQueryData(xCustomFilterItem.where);
         xQueryData.addWhereItem(sqlExpWithAliases);
         xQueryData.addParams(xCustomFilterItem.params);
@@ -128,7 +128,7 @@ export class XMainQueryData extends XQueryData {
         let sqlExp: string = sqlExpParam;
         let match: string;
         let xQueryDataForItem: XQueryData | null = null;
-        while ((match = XUtilsCommon.findFirstMatch(/\[[a-zA-Z0-9_.]+\]/, sqlExp)) != null) {
+        while ((match = UtilsCommon.findFirstMatch(/\[[a-zA-Z0-9_.]+\]/, sqlExp)) != null) {
             const filterField: string = match.substring(1, match.length - 1); // remove []
             const [xQueryData, filterFieldNew]: [XQueryData, string] = this.getQueryForPathField(filterField);
             if (xQueryDataForItem === null) {
@@ -156,7 +156,7 @@ export class XMainQueryData extends XQueryData {
         // simple version returning only string (can be used as api function for application code)
         // works for single path field as well as for expression with path fields (e.g. [assocA.attrB] = 'abc')
         let sqlExp: string;
-        if (XUtilsCommon.isPathField(pathFieldOrPathFieldExp)) {
+        if (UtilsCommon.isPathField(pathFieldOrPathFieldExp)) {
             sqlExp = this.getDBFieldForPathField(pathFieldOrPathFieldExp);
         }
         else {
@@ -168,9 +168,9 @@ export class XMainQueryData extends XQueryData {
 
     getQueryForPathField(pathField: string): [XQueryData, string] {
         // ak mame OneToMany asociaciu, vytvorime/pouzijeme subquery
-        const [field, restPath]: [string, string | null] = XUtilsCommon.getFieldAndRestPath(pathField);
+        const [field, restPath]: [string, string | null] = UtilsCommon.getFieldAndRestPath(pathField);
         if (restPath !== null) {
-            const xAssoc: XAssoc = this.xEntityMetadataService.getXAssoc(this.xEntity, field);
+            const xAssoc: Assoc = this.xEntityMetadataService.getXAssoc(this.xEntity, field);
             if (xAssoc.relationType === "one-to-many") {
                 const xSubQueryData: XSubQueryData = this.getXSubQueryData(xAssoc);
                 //console.log("created subquery for pathField = " + pathField);
@@ -180,7 +180,7 @@ export class XMainQueryData extends XQueryData {
         return [this, pathField];
     }
 
-    getXSubQueryData(xAssocOneToMany: XAssoc): XSubQueryData {
+    getXSubQueryData(xAssocOneToMany: Assoc): XSubQueryData {
         const aliasAssocOneToMany: string = `${this.rootAlias}.${xAssocOneToMany.name}`;
         let xSubQueryData: XSubQueryData = this.assocXSubQueryDataMap.get(aliasAssocOneToMany);
         if (xSubQueryData === undefined) {

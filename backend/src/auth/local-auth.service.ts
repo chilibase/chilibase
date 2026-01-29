@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {DataSource, SelectQueryBuilder} from "typeorm";
 import {XUser} from "../administration/x-user.entity.js";
 import {JwtService} from '@nestjs/jwt';
-import {XLocalAuthLoginResponse} from "../common/x-auth-api.js";
+import {LocalAuthLoginResponse} from "../common/auth-api.js";
 import * as bcrypt from "bcrypt";
 
 @Injectable()
@@ -26,7 +26,7 @@ export class LocalAuthService {
         return null;
     }
 
-    async createJwtToken(user: XUser): Promise<XLocalAuthLoginResponse> {
+    async createJwtToken(user: XUser): Promise<LocalAuthLoginResponse> {
         const payload = { username: user.username, sub: user.id };
         return {accessToken: this.jwtService.sign(payload)};
     }

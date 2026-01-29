@@ -4,7 +4,7 @@ import React from "react";
 import {Button} from "primereact/button";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtils} from "./XUtils";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
 export const XToOneAssocButton = (props: {form: FormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
 
@@ -17,8 +17,8 @@ export const XToOneAssocButton = (props: {form: FormBase; assocField: string; as
     const assocObject = object !== null ? object[props.assocField] : null;
 
     const onClickButton = (e: any) => {
-        const xEntity = XUtilsMetadataCommon.getXEntity(props.form.getEntity());
-        const xEntityAssoc = XUtilsMetadataCommon.getXEntityForAssocToOne(xEntity, props.assocField)
+        const xEntity = UtilsMetadataCommon.getEntity(props.form.getEntity());
+        const xEntityAssoc = UtilsMetadataCommon.getEntityForAssocToOne(xEntity, props.assocField)
         // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
         const id = assocObject !== null ? assocObject[xEntityAssoc.idField] : null;
         // klonovanim elementu pridame atribut id

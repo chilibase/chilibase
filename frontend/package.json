@@ -65,6 +65,8 @@
     "./XFormRow": "./lib/components/XFormRowCol/XFormRow.js",
     "./XFormRowCol": "./lib/components/XFormRowCol/XFormRowCol.js",
 
+    "./common": "./lib/common/index.js",
+
     "./auto-complete": "./lib/components/auto-complete/index.js",
     "./checkbox": "./lib/components/checkbox/index.js",
     "./dropdown": "./lib/components/dropdown/index.js",
@@ -106,8 +108,7 @@
     "./XUtils": "./lib/components/XUtils.js",
     "./XUtilsMetadata": "./lib/components/XUtilsMetadata.js",
 
-    "./XDocTemplateButton": "./lib/modules/docTemplates/XDocTemplateButton.js",
-    "./xt-doc-template": "./lib/modules/docTemplates/xt-doc-template.js",
+    "./doc-templates": "./lib/modules/doc-templates/index.js",
 
     "./ExportImportParam": "./lib/common/ExportImportParam.js",
     "./FindParam": "./lib/common/FindParam.js",

@@ -18,21 +18,21 @@ import {OperationType, XStorageType, XUtils, XViewStatus, XViewStatusOrBoolean} 
 import {XFieldFilter, XSearchBrowseParams} from "../XSearchBrowseParams";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
-import {XAssoc, XEntity, XField} from "../../common/XEntityMetadata";
-import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../common/XUtilsConversions";
+import {Assoc, Entity, Field} from "../../common/EntityMetadata";
+import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../common/UtilsConversions";
 import {FindResult} from "../../common/FindResult";
 import {
     FindParam,
     ResultType,
-    XSimpleAggregateItem,
-    XAggregateFunction,
-    XCustomFilter,
-    XCustomFilterItem,
-    XFullTextSearch, XDataTableFilterMetaData, XFilterMatchMode, XDataTableFilterMeta
+    SimpleAggregateItem,
+    AggregateFunction,
+    CustomFilter,
+    CustomFilterItem,
+    FullTextSearch, ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode, ExtendedDataTableFilterMeta
 } from "../../common/FindParam";
 import {XButtonIconSmall} from "../XButtonIconSmall";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {UtilsCommon} from "../../common/UtilsCommon";
 import {LazyDataTableQueryParam} from "../../common/ExportImportParam";
 import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRowsDialog";
 import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
@@ -41,7 +41,7 @@ import {InputDateBase} from "../input-date";
 import {InputDecimalBase} from "../input-decimal";
 import {prLocaleOption, xLocaleOption} from "../XLocale";
 import {FtsInput, FtsInputValue} from "./FtsInput";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
 import {Editor} from "primereact/editor";
@@ -55,8 +55,8 @@ import {InputTextBase} from "../input-text";
 import {useXStateStorage} from "../useXStateStorage";
 import {useXStateStorageBase} from "../useXStateStorageBase";
 import * as _ from "lodash";
-import {XtDocTemplate} from "../../modules/docTemplates/xt-doc-template";
-import {XDocTemplateButton} from "../../modules/docTemplates/XDocTemplateButton";
+import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
+import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
 import {FormDialog, FormDialogState} from "../form";
 
 // typ pouzivany len v XLazyDataTable
@@ -90,7 +90,7 @@ export interface AppButtonForRow {
 
 export interface OptionalCustomFilter {
     label: string;
-    filter: XCustomFilter;
+    filter: CustomFilter;
 }
 
 export interface AssocToSort {
@@ -181,7 +181,7 @@ export interface LazyDataTableProps {
     appButtonsForRow?: AppButtonForRow[]; // do funkcii tychto buttonov sa posiela vyselectovany row
     appButtons?: any; // vseobecne buttons (netreba im poslat vyselectovany row) - mozno by sa mali volat appButtonsGeneral
     filters?: DataTableFilterMeta; // pouzivatelsky filter
-    customFilter?: XCustomFilter; // (programatorsky) filter ktory sa aplikuje na zobrazovane data (uzivatel ho nedokaze zmenit)
+    customFilter?: CustomFilter; // (programatorsky) filter ktory sa aplikuje na zobrazovane data (uzivatel ho nedokaze zmenit)
     optionalCustomFilters?: OptionalCustomFilter[]; // programatorom predpripravene filtre, user si moze vybrat predpripraveny filter v dropdown-e vedla Filter/Clear buttonov
     sortField?: string | DataTableSortMeta[];
     fullTextSearch?: boolean | string[]; // false - nemame full-text search, true - mame full-text search na default stlpcoch, string[] - full-text search na danych stlpcoch
@@ -251,11 +251,11 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     };
 
     // must be here, is used in createFiltersInit()
-    const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(props.entity);
+    const xEntity: Entity = UtilsMetadataCommon.getEntity(props.entity);
 
-    const createAggregateItems = (): XSimpleAggregateItem[] => {
+    const createAggregateItems = (): SimpleAggregateItem[] => {
 
-        let aggregateItems: XSimpleAggregateItem[] = [];
+        let aggregateItems: SimpleAggregateItem[] = [];
 
         let columns = props.children;
         for (let column of columns) {
@@ -289,7 +289,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             // better place for initializing filters is probably creating columns - function(child)
             //if (XUtils.xViewStatus(xLazyColumn.props.columnViewStatus) !== XViewStatus.Hidden) {
                 const field: string = xLazyColumn.props.field;
-                const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, field);
+                const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
                 // TODO column.props.dropdownInFilter - pre "menu" by bolo fajn mat zoznam "enumov"
                 const filterMatchMode: FilterMatchMode = getInitFilterMatchMode(xLazyColumn.props, xField);
                 filtersInit[field] = createFilterItem(props.filterDisplay!, {value: null, matchMode: filterMatchMode});
@@ -308,13 +308,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return filtersInit;
     }
 
-    const getInitFilterMatchMode = (xLazyColumnProps: LazyColumnProps, xField: XField) : FilterMatchMode => {
+    const getInitFilterMatchMode = (xLazyColumnProps: LazyColumnProps, xField: Field) : FilterMatchMode => {
         let filterMatchMode: FilterMatchMode;
         if (xLazyColumnProps.filterElement !== undefined) {
-            filterMatchMode = XFilterMatchMode.X_FILTER_ELEMENT as unknown as FilterMatchMode; // little hack
+            filterMatchMode = ExtendedFilterMatchMode.FILTER_ELEMENT as unknown as FilterMatchMode; // little hack
         }
         else if (isAutoCompleteInFilterEnabled(xLazyColumnProps)) {
-            filterMatchMode = XFilterMatchMode.X_AUTO_COMPLETE as unknown as FilterMatchMode; // little hack
+            filterMatchMode = ExtendedFilterMatchMode.AUTO_COMPLETE as unknown as FilterMatchMode; // little hack
         }
         else if (xField.type === "string" || xField.type === "jsonb") {
             filterMatchMode = FilterMatchMode.CONTAINS;
@@ -324,7 +324,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             filterMatchMode = FilterMatchMode.EQUALS;
         }
         else {
-            throw `XField ${xField.name}: unknown xField.type = ${xField.type}`;
+            throw `Field ${xField.name}: unknown xField.type = ${xField.type}`;
         }
 
         return filterMatchMode;
@@ -408,14 +408,14 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     // premenne platne pre cely component (obdoba member premennych v class-e)
     const primeReactContext: APIOptions = React.useContext(PrimeReactContext); // probably does not work and deprecated PrimeReact.filterMatchModeOptions is used
     const dataTableEl = useRef<any>(null);
-    let customFilterItems: XCustomFilterItem[] | undefined = XUtilsCommon.createCustomFilterItems(props.customFilter);
+    let customFilterItems: CustomFilterItem[] | undefined = UtilsCommon.createCustomFilterItems(props.customFilter);
     if (props.searchBrowseParams !== undefined) {
         // ak mame props.searchBrowseParams.customFilterFunction, pridame filter
         if (props.searchBrowseParams.customFilter) {
-            customFilterItems = XUtilsCommon.filterAnd(customFilterItems, XUtils.evalFilter(props.searchBrowseParams.customFilter));
+            customFilterItems = UtilsCommon.filterAnd(customFilterItems, XUtils.evalFilter(props.searchBrowseParams.customFilter));
         }
     }
-    let aggregateItems: XSimpleAggregateItem[] = createAggregateItems();
+    let aggregateItems: SimpleAggregateItem[] = createAggregateItems();
 
     // poznamka k useXStateSession - v buducnosti nahradit useXStateStorage, ktory bude mat parameter session/local/none a parameter bude riadit aky storage sa pouzije
     // zatial vzdy ukladame do session
@@ -449,7 +449,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const [ftsInputValue, setFtsInputValue] = useXStateStorage<FtsInputValue | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.ftsInputValue), initFtsInputValue);
     const [optionalCustomFilter, setOptionalCustomFilter] = useXStateStorage<OptionalCustomFilter | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.optionalCustomFilter), undefined);
     const [multilineSwitchValue, setMultilineSwitchValue] = props.multilineSwitchValue ?? useXStateStorage<MultilineRenderType>(props.stateStorage!, getStateKey(StateKeySuffix.multilineSwitchValue), props.multilineSwitchInitValue!);
-    const [multiSortMeta, setMultiSortMeta] = useXStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.multiSortMeta), XUtilsCommon.createMultiSortMeta(props.sortField));
+    const [multiSortMeta, setMultiSortMeta] = useXStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.multiSortMeta), UtilsCommon.createMultiSortMeta(props.sortField));
     const [selectedRow, setSelectedRow] = useXStateStorage<any>(props.stateStorage!, getStateKey(StateKeySuffix.selectedRow), null);
     /**
      * @deprecated was used to reread data after save/cancel of the form when using XFormNavigator (deprecated)
@@ -496,7 +496,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }));
 
     // TODO - preco je to tu? presunut dole ak sa da...
-    const dataKey = props.dataKey !== undefined ? props.dataKey : XUtilsMetadataCommon.getXEntity(props.entity).idField;
+    const dataKey = props.dataKey !== undefined ? props.dataKey : UtilsMetadataCommon.getEntity(props.entity).idField;
 
     const onPage = async (event: any) => {
 
@@ -524,22 +524,22 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             const filterValueOld: DataTableFilterMetaData | DataTableOperatorFilterMetaData = filters[changedField];
             const filterValue: DataTableFilterMetaData | DataTableOperatorFilterMetaData = e.filters[changedField];
             if (filterValueOld && filterValue) { // should be always true
-                const xFilterValueOld: XDataTableFilterMetaData = filterValueOld as XDataTableFilterMetaData; // works only for filterDisplay="row"
-                const xFilterValue: XDataTableFilterMetaData = filterValue as XDataTableFilterMetaData; // works only for filterDisplay="row"
+                const xFilterValueOld: ExtendedDataTableFilterMetaData = filterValueOld as ExtendedDataTableFilterMetaData; // works only for filterDisplay="row"
+                const xFilterValue: ExtendedDataTableFilterMetaData = filterValue as ExtendedDataTableFilterMetaData; // works only for filterDisplay="row"
                 if (xFilterValue.matchMode !== xFilterValueOld.matchMode) {
                     const isNotNullValueAlias: string = `<${xLocaleOption('xIsNotNull')}>`;
                     const isNullValueAlias: string = `<${xLocaleOption('xIsNull')}>`;
-                    const xFilterMatchMode: XFilterMatchMode = xFilterValue.matchMode as unknown as XFilterMatchMode;
-                    if (xFilterMatchMode === XFilterMatchMode.X_IS_NOT_NULL || xFilterMatchMode === XFilterMatchMode.X_IS_NULL) {
+                    const xFilterMatchMode: ExtendedFilterMatchMode = xFilterValue.matchMode as unknown as ExtendedFilterMatchMode;
+                    if (xFilterMatchMode === ExtendedFilterMatchMode.IS_NOT_NULL || xFilterMatchMode === ExtendedFilterMatchMode.IS_NULL) {
                         let newValue: any = null;
                         // for string types we set alias, for other types we set null (alias is not displayed -> NaN or Invalid date are displayed)
-                        const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, changedField);
+                        const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, changedField);
                         if (xField.type === "string" || xField.type === "jsonb") {
-                            if (xFilterMatchMode === XFilterMatchMode.X_IS_NOT_NULL) {
+                            if (xFilterMatchMode === ExtendedFilterMatchMode.IS_NOT_NULL) {
                                 newValue = isNotNullValueAlias;
                             }
                             else {
-                                // xFilterMatchMode === XFilterMatchMode.X_IS_NULL
+                                // xFilterMatchMode === ExtendedFilterMatchMode.IS_NULL
                                 newValue = isNullValueAlias;
                             }
                         }
@@ -547,11 +547,11 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                         xFilterValue.value = newValue;
                         filtersChanged = true;
                     }
-                    else if (xFilterMatchMode === XFilterMatchMode.X_AUTO_COMPLETE) {
+                    else if (xFilterMatchMode === ExtendedFilterMatchMode.AUTO_COMPLETE) {
                         xFilterValue.value = null;
                         filtersChanged = true;
                     }
-                    // all other match modes - change to null, if previous match mode was X_IS_NOT_NULL or X_IS_NULL or X_AUTO_COMPLETE
+                    // all other match modes - change to null, if previous match mode was IS_NOT_NULL or IS_NULL or AUTO_COMPLETE
                     else if (xFilterValue.value === isNotNullValueAlias || xFilterValue.value === isNullValueAlias || typeof xFilterValue.value === 'object') {
                         xFilterValue.value = null;
                         filtersChanged = true;
@@ -584,7 +584,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         loadDataBase(findParam);
     }
 
-    const loadDataBaseIfAutoFilter = (filters: XDataTableFilterMeta, fieldAutoFilter: boolean) => {
+    const loadDataBaseIfAutoFilter = (filters: ExtendedDataTableFilterMeta, fieldAutoFilter: boolean) => {
         if (props.autoFilter || fieldAutoFilter) {
             const findParam: FindParam = createFindParam();
             findParam.filters = filters; // prepiseme filters, lebo je tam stara hodnota
@@ -633,7 +633,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
         setMultilineSwitchValue(props.multilineSwitchInitValue!);
 
-        const multiSortMetaLocal: DataTableSortMeta[] | undefined = XUtilsCommon.createMultiSortMeta(props.sortField);
+        const multiSortMetaLocal: DataTableSortMeta[] | undefined = UtilsCommon.createMultiSortMeta(props.sortField);
         setMultiSortMeta(multiSortMetaLocal);
 
         setSelectedRow(null);
@@ -725,7 +725,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     for (const assocToSort of props.assocsToSort) {
                         const assocRowList: any[] = row[assocToSort.assoc];
                         if (assocRowList) {
-                            row[assocToSort.assoc] = XUtilsCommon.arraySort(assocRowList, assocToSort.sortField);
+                            row[assocToSort.assoc] = UtilsCommon.arraySort(assocRowList, assocToSort.sortField);
                         }
                     }
                 }
@@ -767,8 +767,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 */
 
-    const createXFullTextSearch = (ftsInputValue: FtsInputValue | undefined): XFullTextSearch | undefined => {
-        let xFullTextSearch: XFullTextSearch | undefined = undefined; // default
+    const createXFullTextSearch = (ftsInputValue: FtsInputValue | undefined): FullTextSearch | undefined => {
+        let xFullTextSearch: FullTextSearch | undefined = undefined; // default
         if (ftsInputValue && ftsInputValue.value !== null) {
             xFullTextSearch = {
                 fields: Array.isArray(props.fullTextSearch) ? props.fullTextSearch : undefined,
@@ -780,8 +780,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return xFullTextSearch;
     }
 
-    const createXCustomFilterItems = (customFilterItems: XCustomFilterItem[] | undefined, optionalCustomFilter: OptionalCustomFilter | undefined): XCustomFilterItem[] | undefined => {
-        return XUtilsCommon.filterAnd(customFilterItems, optionalCustomFilter?.filter);
+    const createXCustomFilterItems = (customFilterItems: CustomFilterItem[] | undefined, optionalCustomFilter: OptionalCustomFilter | undefined): CustomFilterItem[] | undefined => {
+        return UtilsCommon.filterAnd(customFilterItems, optionalCustomFilter?.filter);
     }
 
     const getFields = (addPropsFields: boolean): string[] => {
@@ -1042,8 +1042,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const existsToManyAssoc = (fields: string[]): boolean => {
-        const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(props.entity);
-        return fields.some((value: string) => XUtilsMetadataCommon.hasPathToManyAssoc(xEntity, value));
+        const xEntity: Entity = UtilsMetadataCommon.getEntity(props.entity);
+        return fields.some((value: string) => UtilsMetadataCommon.hasPathToManyAssoc(xEntity, value));
     }
 
     const onClickChoose = () => {
@@ -1093,9 +1093,9 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // vseobecna metodka - nastavi hodnotu do filtra
     // ak je matchMode === undefined, tak zachova povodnu hodnotu matchMode
-    const setFilterValue = (field: string, value: any | null, matchMode: any | undefined, customFilterItems: XCustomFilterItem[] | undefined, fieldAutoFilter: boolean) => {
+    const setFilterValue = (field: string, value: any | null, matchMode: any | undefined, customFilterItems: CustomFilterItem[] | undefined, fieldAutoFilter: boolean) => {
 
-        const filterValue: XDataTableFilterMetaData = filters[field] as XDataTableFilterMetaData; // funguje len pre filterDisplay="row"
+        const filterValue: ExtendedDataTableFilterMetaData = filters[field] as ExtendedDataTableFilterMetaData; // funguje len pre filterDisplay="row"
         filterValue.value = value;
         if (matchMode !== undefined) {
             filterValue.matchMode = matchMode;
@@ -1190,7 +1190,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
 
-    const valueAsUI = (value: any, xField: XField, contentType: ContentType | undefined, fieldSetId: string | undefined): React.ReactNode => {
+    const valueAsUI = (value: any, xField: Field, contentType: ContentType | undefined, fieldSetId: string | undefined): React.ReactNode => {
         let valueResult: React.ReactNode;
         if (xField.type === "boolean") {
             // TODO - efektivnejsie by bolo renderovat len prislusne ikonky
@@ -1213,7 +1213,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 // ak mame viacriadkovy text a multilineSwitch nastaveny na viac ako 1 riadok (defaultne je nastaveny na "allLines") pouzijeme MultilineRenderer
                 if (contentType === "multiline" && multilineSwitchValue !== "singleLine") {
                     if (xField.type === "string" && typeof valueResult === "string" && valueResult) {
-                        const lines: string[] = valueResult.split(XUtilsCommon.newLine);
+                        const lines: string[] = valueResult.split(UtilsCommon.newLine);
                         valueResult = <MultilineRenderer valueList={lines} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!} multilineContent={true}/>;
                     }
                 }
@@ -1222,9 +1222,9 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return valueResult;
     }
 
-    const bodyTemplate = (columnProps: LazyColumnProps, rowData: any, xField: XField): React.ReactNode => {
+    const bodyTemplate = (columnProps: LazyColumnProps, rowData: any, xField: Field): React.ReactNode => {
         let bodyValue: React.ReactNode;
-        const rowDataValue: any | any[] = XUtilsCommon.getValueOrValueListByPath(rowData, columnProps.field);
+        const rowDataValue: any | any[] = UtilsCommon.getValueOrValueListByPath(rowData, columnProps.field);
         if (Array.isArray(rowDataValue)) {
             const elemList: React.ReactNode[] = rowDataValue.map((value: any) => valueAsUI(value, xField, columnProps.contentType, columnProps.fieldSetId));
             bodyValue = <MultilineRenderer valueList={elemList} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
@@ -1384,7 +1384,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
             // (vzdy musime robit manipulacie so stlpcom, lebo potrebujeme pridat filter={true} sortable={true}
             const childColumn = child as any as {props: LazyColumnProps}; // nevedel som to krajsie...
-            const xField: XField = XUtilsMetadataCommon.getXFieldByPath(xEntity, childColumn.props.field);
+            const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, childColumn.props.field);
 
             // *********** header ***********
             const headerLabel = childColumn.props.header !== undefined ? childColumn.props.header : childColumn.props.field;
@@ -1413,7 +1413,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             if (childColumn.props.filterElement !== undefined) {
                 // if we use matchModeLabel and this special match mode is chosen then we use custom filter element
                 // if we don't use matchModeLabel (undefined) then we use custom filter element always
-                if ((childColumn.props.filterElement.matchModeLabel && getFilterMatchMode(childColumn.props.field) === XFilterMatchMode.X_FILTER_ELEMENT)
+                if ((childColumn.props.filterElement.matchModeLabel && getFilterMatchMode(childColumn.props.field) === ExtendedFilterMatchMode.FILTER_ELEMENT)
                         || childColumn.props.filterElement.matchModeLabel === undefined) {
                     filterElement = (options: ColumnFilterElementTemplateOptions): React.ReactNode => {
                         // compilator sa stazoval ze childColumn.props.filterElement moze byt undefined, preto som pridal "!"
@@ -1422,7 +1422,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 }
             }
             if (filterElement === null) {
-                if (getFilterMatchMode(childColumn.props.field) === XFilterMatchMode.X_AUTO_COMPLETE) {
+                if (getFilterMatchMode(childColumn.props.field) === ExtendedFilterMatchMode.AUTO_COMPLETE) {
                     let assocField: string | undefined = undefined; // path to manyToOne assoc
                     let displayField: string | string[] | undefined = undefined; // field/fields displayed in autocomplete (can be path)
                     // if childColumn.props.autoComplete = true, then autoComplete = undefined and default autocomplete is created
@@ -1446,7 +1446,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     }
                     if (assocField === undefined) {
                         // default - take assocField/displayField from childColumn.props.field
-                        const [assocFieldTemp, displayFieldTemp] = XUtilsCommon.getPathToAssocAndField(childColumn.props.field);
+                        const [assocFieldTemp, displayFieldTemp] = UtilsCommon.getPathToAssocAndField(childColumn.props.field);
                         if (assocFieldTemp === null) {
                             throw `LazyColumn with field "${childColumn.props.field}": unexpected error - path of length >= 2 expected`;
                         }
@@ -1455,7 +1455,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                             displayField = displayFieldTemp;
                         }
                     }
-                    const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOneByPath(xEntity, assocField);
+                    const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOneByPath(xEntity, assocField);
                     const object: any | null = getFilterValue(childColumn.props.field);
                     filterElement = <AutoCompleteBase value={object}
                                                        onChange={(object: any, objectChange: OperationType) => setFilterValue(childColumn.props.field, object, undefined, object !== null ? [{
@@ -1491,10 +1491,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                                                            sortField={childColumn.props.dropdownSortField}/>
                     } else if (xField.type === "string") {
                         const stringValue: string | null = getFilterValue(childColumn.props.field);
-                        const xFilterMatchMode: XFilterMatchMode = getFilterMatchMode(childColumn.props.field);
+                        const xFilterMatchMode: ExtendedFilterMatchMode = getFilterMatchMode(childColumn.props.field);
                         filterElement = <InputTextBase value={stringValue}
                                                         onChange={(value: string | null) => setFilterValue(childColumn.props.field, value, undefined, undefined, childColumn.props.autoFilter)}
-                                                        readOnly={xFilterMatchMode === XFilterMatchMode.X_IS_NOT_NULL || xFilterMatchMode === XFilterMatchMode.X_IS_NULL}/>
+                                                        readOnly={xFilterMatchMode === ExtendedFilterMatchMode.IS_NOT_NULL || xFilterMatchMode === ExtendedFilterMatchMode.IS_NULL}/>
                     } else if (xField.type === "date" || xField.type === "datetime") {
                         betweenFilter = getBetweenFilter(childColumn.props.betweenFilter, props.betweenFilter);
                         if (betweenFilter !== undefined) {
@@ -1568,13 +1568,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 filterMatchModeOptions = (primeReactContext && primeReactContext.filterMatchModeOptions![dataType].map((key) => ({ label: prLocaleOption(key), value: key }))) ||
                                             PrimeReact.filterMatchModeOptions![dataType].map((key) => ({ label: prLocaleOption(key), value: key }));
 
-                filterMatchModeOptions.push({label: xLocaleOption('xIsNotNull'), value: XFilterMatchMode.X_IS_NOT_NULL});
-                filterMatchModeOptions.push({label: xLocaleOption('xIsNull'), value: XFilterMatchMode.X_IS_NULL});
+                filterMatchModeOptions.push({label: xLocaleOption('xIsNotNull'), value: ExtendedFilterMatchMode.IS_NOT_NULL});
+                filterMatchModeOptions.push({label: xLocaleOption('xIsNull'), value: ExtendedFilterMatchMode.IS_NULL});
                 if (isAutoCompleteInFilterEnabled(childColumn.props)) {
-                    filterMatchModeOptions.push({label: xLocaleOption('xAutoComplete'), value: XFilterMatchMode.X_AUTO_COMPLETE});
+                    filterMatchModeOptions.push({label: xLocaleOption('xAutoComplete'), value: ExtendedFilterMatchMode.AUTO_COMPLETE});
                 }
                 if (childColumn.props.filterElement?.matchModeLabel) {
-                    filterMatchModeOptions.push({label: childColumn.props.filterElement?.matchModeLabel, value: XFilterMatchMode.X_FILTER_ELEMENT});
+                    filterMatchModeOptions.push({label: childColumn.props.filterElement?.matchModeLabel, value: ExtendedFilterMatchMode.FILTER_ELEMENT});
                 }
             }
 
@@ -1685,7 +1685,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 {(props.onEdit !== false && (editFormExists || props.onEdit !== undefined)) && props.searchBrowseParams === undefined ? <XButton key="editRow" icon="pi pi-pencil" label={xLocaleOption('editRow')} onClick={onClickEditRow}/> : null}
                 {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <XButton key="removeRow" icon="pi pi-times" label={xLocaleOption('removeRow')} onClick={onClickRemoveRow}/> : null}
                 {exportRows ? <XButton key="exportRows" icon="pi pi-file-export" label={xLocaleOption('exportRows')} onClick={onClickExport} /> : null}
-                {props.docTemplates && !isMobile && props.searchBrowseParams === undefined ? <XDocTemplateButton key="docTemplates" entity={props.entity} rowId={selectedRow ? selectedRow[dataKey] : undefined} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/> : null}
+                {props.docTemplates && !isMobile && props.searchBrowseParams === undefined ? <DocTemplateButton key="docTemplates" entity={props.entity} rowId={selectedRow ? selectedRow[dataKey] : undefined} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/> : null}
                 {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: AppButtonForRow) => <XButton key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}
                 {props.searchBrowseParams === undefined ? props.appButtons : null}
                 {props.searchBrowseParams !== undefined ? <XButton key="choose" label={xLocaleOption('chooseRow')} onClick={onClickChoose}/> : null}
@@ -1712,7 +1712,7 @@ export type FilterElementProp = {element: (params: FilterElementParams) => React
 export type AutoCompleteInFilterProps = {
     // copy of some props in XAutoComplete (?)
     assocField?: string; // overrides default splitting of field prop (example: if field is "assocA.assocB.attrC", default assocField is "assocA.assocB", using this prop we can set assocField="assocA")
-    filter?: XCustomFilter;
+    filter?: CustomFilter;
     sortField?: string | DataTableSortMeta[];
     fields?: string[];
     // copy of some props in AutoCompleteBase (?)
@@ -1735,7 +1735,7 @@ export interface LazyColumnProps {
     header?: any;
     align?: "left" | "center" | "right";
     dropdownInFilter?: boolean;
-    dropdownFilter?: XCustomFilter;
+    dropdownFilter?: CustomFilter;
     dropdownSortField?: string;
     autoComplete?: AutoCompleteInFilterProps | true; // if autoComplete = true, the autocomplete is created automatically according to "field"
     //autoCompleteEnabled: true | false | "forStringOnly"; // default is "forStringOnly" (autocomplete enabled only on attributes of string type)
@@ -1746,7 +1746,7 @@ export interface LazyColumnProps {
     contentType?: ContentType; // multiline (output from InputTextarea) - wraps the content; html (output from Editor) - for rendering raw html
     fieldSetId?: string; // in case that we render json attribute (output from XFieldSet), here is id of XFieldSet (saved in x_field_set_meta), fieldSet metadata is needed to get labels of field set attributes
                         // note: better solution would be take fieldSetId from json attribute from model, but we would have to create decorator for this purpose...
-    aggregateType?: XAggregateFunction;
+    aggregateType?: AggregateFunction;
     columnViewStatus: XViewStatusOrBoolean; // aby sme mohli mat Hidden stlpec (nedarilo sa mi priamo v kode "o-if-ovat" stlpec), zatial netreba funkciu, vola sa columnViewStatus lebo napr. v Edit tabulke moze byt viewStatus na row urovni
     filterElement?: FilterElementProp;
     className?: string; // wraps the content of the column cell with div element with this className (prop is not applied if prop body is used)

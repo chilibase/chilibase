@@ -2,10 +2,10 @@ import React, {Component} from "react";
 import {FormBase} from "./FormBase";
 import {XError} from "../XErrors";
 import {XObject} from "../XObject";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType, XUtils} from "../XUtils";
 import {XFieldChangeEvent} from "../XFieldChangeEvent";
-import {XCustomFilter} from "../../common/FindParam";
+import {CustomFilter} from "../../common/FindParam";
 
 // typ metody pre onChange - pouzil som XFieldChangeEvent<any>, pri deklarovani onChange metody na komponente
 // sa da vdaka tomu pouzit (e: XFieldChangeEvent<Dobrovolnik>) a kompilator sa nestazuje. Je to hack, mozno existuje krajsie riesenie
@@ -14,9 +14,9 @@ export type FieldOnChange = (e: XFieldChangeEvent<any>) => void;
 export type ReadOnlyProp = boolean | ((object: any) => boolean);
 
 // typ property pre pridanie filtra na vyber associable rows - pouziva sa na assoc fieldoch (XAutoComplete, Dropdown, ...)
-// bud sa do property zapise priamo XCustomFilter alebo sa vytvara funkcia ktora XCustomFilter vrati (v tomto pripade moze XCustomFilter zavisiet od aktualne editovaneho objektu "object")
+// bud sa do property zapise priamo CustomFilter alebo sa vytvara funkcia ktora CustomFilter vrati (v tomto pripade moze CustomFilter zavisiet od aktualne editovaneho objektu "object")
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
-export type FilterProp = XCustomFilter | ((object: any) => XCustomFilter | undefined);
+export type FilterProp = CustomFilter | ((object: any) => CustomFilter | undefined);
 
 export interface FormComponentProps {
     form: FormBase;
@@ -61,7 +61,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
         let objectValue: any = null;
         const object: XObject | null = this.props.form.state.object;
         if (object !== null) {
-            objectValue = XUtilsCommon.getValueByPath(object, this.getField());
+            objectValue = UtilsCommon.getValueByPath(object, this.getField());
             //  pre istotu dame na null, null je standard
             if (objectValue === undefined) {
                 objectValue = null;
@@ -105,7 +105,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
         }
         else {
             // readOnly is undefined
-            if (!XUtilsCommon.isSingleField(this.getField())) {
+            if (!UtilsCommon.isSingleField(this.getField())) {
                 // if the length of field is 2 or more, then readOnly
                 readOnly = true;
             }
@@ -209,8 +209,8 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
     }
 
     // len pre assoc fieldy sa pouziva
-    getFilterBase(filter: FilterProp | undefined): XCustomFilter | undefined {
-        let customFilter: XCustomFilter | undefined = undefined;
+    getFilterBase(filter: FilterProp | undefined): CustomFilter | undefined {
+        let customFilter: CustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
             customFilter = filter;
         }

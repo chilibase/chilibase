@@ -1,9 +1,9 @@
 import React from "react";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
-import {XAssoc} from "../../common/XEntityMetadata";
+import {Assoc} from "../../common/EntityMetadata";
 import {XObject} from "../XObject";
 import {DropdownForEntity} from "./DropdownForEntity";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export interface DropdownProps extends FormComponentProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - dropdown will run on <assoc2>)
@@ -14,12 +14,12 @@ export interface DropdownProps extends FormComponentProps {
 
 export class Dropdown extends FormComponent<DropdownProps> {
 
-    protected xAssoc: XAssoc;
+    protected xAssoc: Assoc;
 
     constructor(props: DropdownProps) {
         super(props);
 
-        this.xAssoc = XUtilsMetadataCommon.getXAssocToOneByPath(XUtilsMetadataCommon.getXEntity(props.form.getEntity()), props.assocField);
+        this.xAssoc = UtilsMetadataCommon.getAssocToOneByPath(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
 
         props.form.addField(props.assocField + '.' + props.displayField);
     }

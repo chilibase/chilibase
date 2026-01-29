@@ -7,5 +7,5 @@ export interface XFile {
     //data: Buffer;
 
     modifDate: Date;
-    modifXUser: number;
+    modifUser: number;
 }

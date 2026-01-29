@@ -1,9 +1,9 @@
-import {XField} from "../common/XEntityMetadata";
+import {Field} from "../common/EntityMetadata";
 // WARNING - if you use import from index.ts (not from file FormComponentDT), app gives error during start:
 // Uncaught TypeError: Class extends value undefined is not a constructor or null
 // (probably XInputDT cannot be instantiated)
 import {FormComponentDT, FormComponentDTProps} from "./form-data-table/FormComponentDT";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import React from "react";
 
 export interface XInputDTProps extends FormComponentDTProps {
@@ -14,12 +14,12 @@ export interface XInputDTProps extends FormComponentDTProps {
 // spolocna nadtrieda pre jednoduche inputy (nie asociacne)
 export abstract class XInputDT<P extends XInputDTProps> extends FormComponentDT<P> {
 
-    protected xField: XField;
+    protected xField: Field;
 
     protected constructor(props: P) {
         super(props);
 
-        this.xField = XUtilsMetadataCommon.getXFieldByPathStr(props.entity, props.field);
+        this.xField = UtilsMetadataCommon.getFieldByPathStr(props.entity, props.field);
     }
 
     getField(): string {

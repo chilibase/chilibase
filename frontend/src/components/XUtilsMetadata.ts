@@ -1,19 +1,19 @@
-import {XField} from "../common/XEntityMetadata";
+import {Field} from "../common/EntityMetadata";
 import {XUtils} from "./XUtils";
-import {XBrowseMeta, XBrowseMetaMap} from "../common/XBrowseMetadata";
+import {BrowseMeta, BrowseMetaMap} from "../common/BrowseMetadata";
 import {BetweenFilterProp} from "./lazy-data-table";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
 // idelany nazov: UtilsEntityMetadata - ale strasne dlhy
 // tato funkcionalita by mala ist bud do tried XEntity, XField alebo lepsie do nejakeho servisu
 // ekvivalentna funkcionalita sa nachadza aj na servri v servise XEntityMetadataService.ts (TODO - v buducnosti spravit spolocnu triedu/servis)
 export class XUtilsMetadata {
     // nacachovane metadata (setuju sa v App.fetchAndSetXMetadata)
-    private static xBrowseMetaMap: XBrowseMetaMap;
+    private static xBrowseMetaMap: BrowseMetaMap;
 
     static async fetchAndSetXEntityMap(): Promise<any> {
-        if (XUtilsMetadataCommon.getXEntityMap() === undefined) {
-            XUtilsMetadataCommon.setXEntityMap(await XUtils.fetch("getXEntityMap", {dummy: "dummy"}));
+        if (UtilsMetadataCommon.getEntityMap() === undefined) {
+            UtilsMetadataCommon.setEntityMap(await XUtils.fetch("getXEntityMap", {dummy: "dummy"}));
         }
     }
 
@@ -24,7 +24,7 @@ export class XUtilsMetadata {
     }
 
     // docasne sem, kym nemame jednotny InputDecimal/InputDecimalDT
-    static getParamsForInputNumber(xField: XField): {useGrouping: boolean; fractionDigits?: number; min?: number; max?: number; size?: number} {
+    static getParamsForInputNumber(xField: Field): {useGrouping: boolean; fractionDigits?: number; min?: number; max?: number; size?: number} {
         let useGrouping: boolean = true;
         let scale: number | undefined = undefined;
         let precision: number | undefined = undefined; // total number of digits (before + after decimal point (scale))
@@ -73,7 +73,7 @@ export class XUtilsMetadata {
     //static CHAR_SIZE: number = 0.57; // 0.57rem (8px)
     static CHAR_SIZE: number = 0.5; // 0.5rem (7px) - skusime
 
-    static computeColumnWidth(xField: XField, betweenFilter: BetweenFilterProp, filterMenuInFilterRow: boolean, formColumnType: string | undefined, header: string | undefined, sortableButtonInHeader: boolean, filterButtonInHeader: boolean): string | undefined {
+    static computeColumnWidth(xField: Field, betweenFilter: BetweenFilterProp, filterMenuInFilterRow: boolean, formColumnType: string | undefined, header: string | undefined, sortableButtonInHeader: boolean, filterButtonInHeader: boolean): string | undefined {
         let width: number | undefined;
         if (formColumnType === undefined) {
             // lazy datatable (no inputs, no buttons, only text and padding)
@@ -94,7 +94,7 @@ export class XUtilsMetadata {
                 width = 1.43 + 0.5 + 0.5; // checkbox ma sirku 20px
             }
             else {
-                throw `XField ${xField.name}: unknown xField.type = ${xField.type}`;
+                throw `Field ${xField.name}: unknown xField.type = ${xField.type}`;
             }
             if (betweenFilter === "row" && width) {
                 width *= 2;
@@ -134,7 +134,7 @@ export class XUtilsMetadata {
                     width = 1.43 + 0.5 + 0.5; // checkbox ma sirku 20px
                 }
                 else {
-                    throw `XField ${xField.name}: unknown xField.type = ${xField.type}`;
+                    throw `Field ${xField.name}: unknown xField.type = ${xField.type}`;
                 }
             }
             else if (formColumnType === "dropdown" || formColumnType === "autoComplete" || formColumnType === "searchButton") {
@@ -154,7 +154,7 @@ export class XUtilsMetadata {
                     width = XUtilsMetadata.computeColumnWidthBase(10 + 9, padding + padding); // napr. 31.12.2021 03:03:00
                 }
                 else {
-                    throw `XField ${xField.name}: xField.type = ${xField.type} not implemented for dropdown/autoComplete/searchButton`;
+                    throw `Field ${xField.name}: xField.type = ${xField.type} not implemented for dropdown/autoComplete/searchButton`;
                 }
                 // pridame sirku buttonu
                 if (formColumnType === "dropdown") {
@@ -213,13 +213,13 @@ export class XUtilsMetadata {
         return width;
     }
 
-    static getXBrowseMeta(entity: string, browseId?: string): XBrowseMeta {
+    static getXBrowseMeta(entity: string, browseId?: string): BrowseMeta {
         const key = XUtilsMetadata.getXBrowseFormMetaKey(entity, browseId);
-        const xBrowseMeta: XBrowseMeta = XUtilsMetadata.xBrowseMetaMap[key];
+        const xBrowseMeta: BrowseMeta = XUtilsMetadata.xBrowseMetaMap[key];
         return xBrowseMeta;
     }
 
-    static setXBrowseMeta(entity: string, browseId: string | undefined, xBrowseMeta: XBrowseMeta) {
+    static setXBrowseMeta(entity: string, browseId: string | undefined, xBrowseMeta: BrowseMeta) {
         const key = XUtilsMetadata.getXBrowseFormMetaKey(entity, browseId);
         XUtilsMetadata.xBrowseMetaMap[key] = xBrowseMeta;
     }

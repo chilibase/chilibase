@@ -1,8 +1,8 @@
-import {XMultilineExportType} from "../common/ExportImportParam.js";
-import {XEntity, XField} from "../common/XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
-import {XUtilsCommon} from "../common/XUtilsCommon.js";
-import {AsUIType, convertValueBase} from "../common/XUtilsConversions.js";
+import {MultilineExportType} from "../common/ExportImportParam.js";
+import {Entity, Field} from "../common/EntityMetadata.js";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon.js";
+import {UtilsCommon} from "../common/UtilsCommon.js";
+import {AsUIType, convertValueBase} from "../common/UtilsConversions.js";
 import {SelectQueryBuilder} from "typeorm";
 import {RawSqlResultsToEntityTransformer} from "typeorm/query-builder/transformer/RawSqlResultsToEntityTransformer.js";
 
@@ -23,7 +23,7 @@ export interface XExportColumn {
 export abstract class XExportService {
 
     // funkcia pouzivana v XExportExcelService a XExportCsvService
-    exportRow(columns: XExportColumn[], multilineExportType: XMultilineExportType, fieldsToDuplicateValues: string[] | undefined, xEntity: XEntity | undefined, row: any): Array<Array<any>> {
+    exportRow(columns: XExportColumn[], multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, xEntity: Entity | undefined, row: any): Array<Array<any>> {
 
         // vytvarany excel/csv row je tvoreny stlpcami - standardne ma stlpec presne 1 hodnotu,
         // ak sa vsak jedna o field dotahovany cez one-to-many asociaciu, ma dany stlpec vsetky hodnoty dotiahnute cez danu asociaciu (moze byt aj 0 hodnot)
@@ -42,7 +42,7 @@ export abstract class XExportService {
                 // ak nemame explicitny typ a mame zadanu entitu, skusime najst typ v metadatach
                 if (!fieldType) {
                     if (xEntity) {
-                        const xField: XField | undefined = XUtilsMetadataCommon.getXFieldByPathBase(xEntity, xExportColumn.field);
+                        const xField: Field | undefined = UtilsMetadataCommon.getFieldByPathBase(xEntity, xExportColumn.field);
                         if (xField) {
                             fieldType = xField.type;
                             scale = xField.scale; // pouzivane pri decimal a date
@@ -50,7 +50,7 @@ export abstract class XExportService {
                     }
                 }
 
-                value = XUtilsCommon.getValueOrValueListByPath(row, xExportColumn.field);
+                value = UtilsCommon.getValueOrValueListByPath(row, xExportColumn.field);
             }
 
             let columnValues: any[];
@@ -58,7 +58,7 @@ export abstract class XExportService {
             if (Array.isArray(value)) {
                 columnValues = value;
 
-                if (multilineExportType === XMultilineExportType.Singleline) {
+                if (multilineExportType === MultilineExportType.Singleline) {
                     // zlucime vsetky hodnoty do jednej string hodnoty
                     if (fieldType) {
                         // TODO - ak nemame k dispozicii metadata, tak nam moze chybat scale

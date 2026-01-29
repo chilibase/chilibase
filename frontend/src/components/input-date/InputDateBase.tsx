@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Calendar, CalendarSelectEvent} from "primereact/calendar";
-import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, XDateScale} from "../../common/XUtilsConversions";
+import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, DateScale} from "../../common/UtilsConversions";
 import {XUtils} from "../XUtils";
 import {FormEvent} from "primereact/ts-helpers";
 
@@ -12,7 +12,7 @@ export const InputDateBase = (props: {
     onChange: (value: Date | null) => void;
     readOnly?: boolean;
     error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
-    scale: XDateScale;
+    scale: DateScale;
     datetime?: boolean;
 }) => {
 
@@ -70,15 +70,15 @@ export const InputDateBase = (props: {
         return inputValue;
     }
 
-    const getView = (dateScale: XDateScale): "date" | "month" | "year" => {
+    const getView = (dateScale: DateScale): "date" | "month" | "year" => {
         let view: "date" | "month" | "year";
-        if (dateScale === XDateScale.Date) {
+        if (dateScale === DateScale.Date) {
             view = "date";
         }
-        else if (dateScale === XDateScale.Month) {
+        else if (dateScale === DateScale.Month) {
             view = "month";
         }
-        else if (dateScale === XDateScale.Year) {
+        else if (dateScale === DateScale.Year) {
             view = "year";
         }
         else {
@@ -100,6 +100,6 @@ export const InputDateBase = (props: {
 }
 
 InputDateBase.defaultProps = {
-    scale: XDateScale.Date
+    scale: DateScale.Date
 };
 

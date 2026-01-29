@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {TreeTable} from "primereact/treetable";
 import {Column} from "primereact/column";
-import {XAssoc, XEntity} from "../common/XEntityMetadata";
+import {Assoc, Entity} from "../common/EntityMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {TreeNode} from "primereact/treenode";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
 export const XFieldSelector = (props: {entity: string; assocSelectable: boolean; selectionField?: string; onSelectionChange: (selectedField: string) => void;}) => {
 
@@ -18,8 +18,8 @@ export const XFieldSelector = (props: {entity: string; assocSelectable: boolean;
 
     const createTreeNodeList = (entity: string, keyPrefix: string): TreeNode[] => {
         const treeNodeList: TreeNode[] = [];
-        const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(entity);
-        const xFieldList = XUtilsMetadataCommon.getXFieldList(xEntity);
+        const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
+        const xFieldList = UtilsMetadataCommon.getFieldList(xEntity);
         for (const xField of xFieldList) {
             treeNodeList.push({
                 key: keyPrefix + xField.name,
@@ -27,7 +27,7 @@ export const XFieldSelector = (props: {entity: string; assocSelectable: boolean;
                 children: []
             });
         }
-        const assocToOneList: XAssoc[] = XUtilsMetadataCommon.getXAssocList(xEntity, ["many-to-one", "one-to-one"]);
+        const assocToOneList: Assoc[] = UtilsMetadataCommon.getAssocList(xEntity, ["many-to-one", "one-to-one"]);
         for (const xAssoc of assocToOneList) {
             const itemKey = keyPrefix + xAssoc.name;
             treeNodeList.push({

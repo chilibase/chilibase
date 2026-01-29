@@ -1,4 +1,4 @@
-export interface XUser {
+export interface User {
     id: number;
     username: string;
     password: string;
@@ -6,3 +6,4 @@ export interface XUser {
     enabled: boolean;
     admin: boolean;
 }
+

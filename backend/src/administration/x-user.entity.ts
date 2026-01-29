@@ -28,7 +28,7 @@ export class XUser {
 
     @ManyToOne(() => XUser, {nullable: true})
     @JoinColumn({ name: 'modif_x_user_id' })
-    modifXUser: XUser;
+    modifUser: XUser;
 
     @VersionColumn()
     version: number;

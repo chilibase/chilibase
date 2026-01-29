@@ -29,5 +29,5 @@ export class XFile {
 
     // tuto len jednoduchy number atribut, lebo namiesto XUser triedy pouzivame v aplikacii specificku napr. XUserSkch a nefunguje start backendu koli tomu
     @Column({name: 'modif_x_user_id', nullable: true})
-    modifXUser: number;
+    modifUser: number;
 }

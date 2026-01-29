@@ -1,7 +1,7 @@
 import React from "react";
 import {XInputDT, XInputDTProps} from "../XInputDT";
 import {InputDateBase} from "./InputDateBase";
-import {dateFromModel} from "../../common/XUtilsConversions";
+import {dateFromModel} from "../../common/UtilsConversions";
 
 export interface InputDateDTProps extends XInputDTProps {
 }

@@ -1,23 +1,23 @@
-export interface XEntityMap {
-    [name: string]: XEntity;
+export interface EntityMap {
+    [name: string]: Entity;
 }
 
-export interface XEntity {
+export interface Entity {
     name: string;
     idField: string;
-    fieldMap: XFieldMap;
-    assocMap: XAssocMap;
+    fieldMap: FieldMap;
+    assocMap: AssocMap;
 }
 
-export interface XFieldMap {
-    [name: string]: XField;
+export interface FieldMap {
+    [name: string]: Field;
 }
 
-export interface XAssocMap {
-    [name: string]: XAssoc;
+export interface AssocMap {
+    [name: string]: Assoc;
 }
 
-export interface XField {
+export interface Field {
     name: string;
     type: string;
     isNullable: boolean;
@@ -28,10 +28,10 @@ export interface XField {
 }
 
 // copy of RelationMetadata.RelationType
-export type XRelationType = "one-to-one" | "one-to-many" | "many-to-one" | "many-to-many";
+export type RelationType = "one-to-one" | "one-to-many" | "many-to-one" | "many-to-many";
 
-export interface XAssoc {
-    relationType: XRelationType;
+export interface Assoc {
+    relationType: RelationType;
     name: string;
     entityName: string; // entita na druhej strane asociacie
     inverseAssocName?: string; // opacna asociacia
@@ -40,3 +40,4 @@ export interface XAssoc {
     isCascadeRemove: boolean;
     isNullable: boolean; // pouzivane (zatial) len pre *ToOne asociacie
 }
+

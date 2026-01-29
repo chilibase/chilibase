@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {XAssoc, XAssocMap, XEntity, XEntityMap, XField, XFieldMap, XRelationType} from "../common/XEntityMetadata.js";
+import {Assoc, AssocMap, Entity, EntityMap, Field, FieldMap, RelationType} from "../common/EntityMetadata.js";
 import {DataSource, EntityMetadata, EntitySchema} from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {ColumnMetadata} from "typeorm/metadata/ColumnMetadata.js";
 import {MixedList} from "typeorm/common/MixedList.js";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon.js";
 
 @Injectable()
 export class XEntityMetadataService {
@@ -15,25 +15,25 @@ export class XEntityMetadataService {
         private readonly dataSource: DataSource
     ) {}
 
-    getXEntityMap(): XEntityMap {
-        let xEntityMap: XEntityMap | undefined = XUtilsMetadataCommon.getXEntityMap();
+    getXEntityMap(): EntityMap {
+        let xEntityMap: EntityMap | undefined = UtilsMetadataCommon.getEntityMap();
         if (xEntityMap === undefined) {
             xEntityMap = {};
             const entityMetadataList = this.dataSource.entityMetadatas;
             for (const entityMetadata of entityMetadataList) {
                 if (!entityMetadata.isJunction) { // tabulky vytvorene manyToMany asociaciami nechceme
-                    const xEntity: XEntity = this.getXEntityForEntityMetadata(entityMetadata);
+                    const xEntity: Entity = this.getXEntityForEntityMetadata(entityMetadata);
                     xEntityMap[xEntity.name] = xEntity;
                 }
             }
-            XUtilsMetadataCommon.setXEntityMap(xEntityMap);
+            UtilsMetadataCommon.setEntityMap(xEntityMap);
         }
         return xEntityMap;
     }
 
-    private getXEntityForEntityMetadata(entityMetadata: EntityMetadata): XEntity {
+    private getXEntityForEntityMetadata(entityMetadata: EntityMetadata): Entity {
 
-        const fieldMap: XFieldMap = {};
+        const fieldMap: FieldMap = {};
         // entityMetadata.columns obsahuje aj asociacie (napr. ManyToOne), preto ich vyfiltrujeme
         let columnMetadataList: ColumnMetadata[] = entityMetadata.columns.filter((columnMetadata: ColumnMetadata) => columnMetadata.relationMetadata?.relationType === undefined);
         for (const columnMetadata of columnMetadataList) {
@@ -99,12 +99,12 @@ export class XEntityMetadataService {
             idField = columnMetadataList.map((value: ColumnMetadata) => value.propertyName).join(", ");
         }
 
-        const assocMap: XAssocMap = this.createAssocMap([...entityMetadata.manyToOneRelations, ...entityMetadata.oneToOneRelations, ...entityMetadata.oneToManyRelations, ...entityMetadata.manyToManyRelations]);
+        const assocMap: AssocMap = this.createAssocMap([...entityMetadata.manyToOneRelations, ...entityMetadata.oneToOneRelations, ...entityMetadata.oneToManyRelations, ...entityMetadata.manyToManyRelations]);
         return {name: entityMetadata.name, idField: idField, fieldMap: fieldMap, assocMap: assocMap};
     }
 
-    private createAssocMap(relationMetadataList: RelationMetadata[]): XAssocMap {
-        const assocMap: XAssocMap = {};
+    private createAssocMap(relationMetadataList: RelationMetadata[]): AssocMap {
+        const assocMap: AssocMap = {};
         for (const relationMetadata of relationMetadataList) {
             const assocName = relationMetadata.propertyName;
             const inverseAssoc = relationMetadata.inverseRelation?.propertyName;
@@ -125,24 +125,24 @@ export class XEntityMetadataService {
 
     // TODO - zrusit tieto metody a pouzivat priamo XUtilsMetadataCommon
 
-    getXEntity(entity: string): XEntity {
+    getXEntity(entity: string): Entity {
         this.getXEntityMap(); // pre istotu, nech sa zoznam nainicializuje, ak treba
-        return XUtilsMetadataCommon.getXEntity(entity);
+        return UtilsMetadataCommon.getEntity(entity);
     }
 
-    getXField(xEntity: XEntity, field: string): XField {
-        return XUtilsMetadataCommon.getXField(xEntity, field);
+    getXField(xEntity: Entity, field: string): Field {
+        return UtilsMetadataCommon.getField(xEntity, field);
     }
 
-    getXFieldByPath(xEntity: XEntity, path: string): XField {
-        return XUtilsMetadataCommon.getXFieldByPath(xEntity, path);
+    getXFieldByPath(xEntity: Entity, path: string): Field {
+        return UtilsMetadataCommon.getFieldByPath(xEntity, path);
     }
 
-    getXAssocList(xEntity: XEntity, relationTypeList?: XRelationType[]): XAssoc[] {
-        return XUtilsMetadataCommon.getXAssocList(xEntity, relationTypeList);
+    getXAssocList(xEntity: Entity, relationTypeList?: RelationType[]): Assoc[] {
+        return UtilsMetadataCommon.getAssocList(xEntity, relationTypeList);
     }
 
-    public getXAssoc(xEntity: XEntity, assocField: string, relationTypeList?: XRelationType[]): XAssoc {
-        return XUtilsMetadataCommon.getXAssoc(xEntity, assocField, relationTypeList);
+    public getXAssoc(xEntity: Entity, assocField: string, relationTypeList?: RelationType[]): Assoc {
+        return UtilsMetadataCommon.getAssoc(xEntity, assocField, relationTypeList);
     }
 }

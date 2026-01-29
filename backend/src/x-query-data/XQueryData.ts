@@ -6,16 +6,16 @@ import {
 import {ObjectLiteral} from "typeorm";
 import {XUtils} from "../services/XUtils.js";
 import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
-import {XEntity, XField} from "../common/XEntityMetadata.js";
-import {stringAsDB} from "../common/XUtilsConversions.js";
+import {Entity, Field} from "../common/EntityMetadata.js";
+import {stringAsDB} from "../common/UtilsConversions.js";
 import {XEnvVar} from "../services/XEnvVars.js";
-import {XDataTableFilterMetaData, XFilterMatchMode} from "../common/index.js";
+import {ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode} from "../common/index.js";
 
 export abstract class XQueryData {
 
     // helper members
     xEntityMetadataService: XEntityMetadataService;
-    xEntity: XEntity;
+    xEntity: Entity;
 
     rootAlias: string; // alias for root table of the query, e.g. "t0"
     assocAliasMap: Map<string, string>; // assoc1.assoc2.fieldX = :valueX -> (t0.assoc1, t1), (t1.assoc2, t2)
@@ -60,9 +60,9 @@ export abstract class XQueryData {
         return (filterItem.value !== null && filterItem.value !== ''
                 && !(filterItem.matchMode === FilterMatchMode.BETWEEN && Array.isArray(filterItem.value) && filterItem.value.length === 2 && filterItem.value[0] === null && filterItem.value[1] === null)
                 // toto je hotfix - je to tu koli tomu ze nevieme po zmene match mode vymazat hodnotu a v urcitych pripadoch pride na backend (matchMode = X_FILTER_ELEMENT && customFilterItems = undefined && value = "nieco") a spadne to
-                && !(filterItem.matchMode as XFilterMatchMode === XFilterMatchMode.X_AUTO_COMPLETE && (filterItem as XDataTableFilterMetaData).customFilterItems === undefined)
-                && !(filterItem.matchMode as XFilterMatchMode === XFilterMatchMode.X_FILTER_ELEMENT && (filterItem as XDataTableFilterMetaData).customFilterItems === undefined))
-                || filterItem.matchMode as XFilterMatchMode === XFilterMatchMode.X_IS_NOT_NULL || filterItem.matchMode as XFilterMatchMode === XFilterMatchMode.X_IS_NULL;
+                && !(filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.AUTO_COMPLETE && (filterItem as ExtendedDataTableFilterMetaData).customFilterItems === undefined)
+                && !(filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.FILTER_ELEMENT && (filterItem as ExtendedDataTableFilterMetaData).customFilterItems === undefined))
+                || filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.IS_NOT_NULL || filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.IS_NULL;
     }
 
     addFilterField(filterField: string, filterValue: DataTableFilterMetaData | DataTableOperatorFilterMetaData) {
@@ -163,10 +163,10 @@ export abstract class XQueryData {
                         console.log(`FilterMatchMode "${filterItem.matchMode}": value is expected to be array of length = 2`);
                     }
                     break;
-                case XFilterMatchMode.X_IS_NOT_NULL as unknown as FilterMatchMode:
+                case ExtendedFilterMatchMode.IS_NOT_NULL as unknown as FilterMatchMode:
                     whereItem = `${field} IS NOT NULL`;
                     break;
-                case XFilterMatchMode.X_IS_NULL as unknown as FilterMatchMode:
+                case ExtendedFilterMatchMode.IS_NULL as unknown as FilterMatchMode:
                     whereItem = `${field} IS NULL`;
                     break;
                 default:
@@ -235,7 +235,7 @@ export abstract class XQueryData {
     }
 
     addDBCastIfNeeded(dbField: string, field: string): string {
-        const xField: XField = this.xEntityMetadataService.getXFieldByPath(this.xEntity, field);
+        const xField: Field = this.xEntityMetadataService.getXFieldByPath(this.xEntity, field);
         if (xField.type === "jsonb") {
             // ak neprecastujeme typ jsonb, tak nam vyhodi chybu
             // toto je potrebne ak chceme aby fungovalo jednoduche zadanie textu do filtra na stlpci ktory zobrazuje jsonb atribut
@@ -260,7 +260,7 @@ export abstract class XQueryData {
 
     addFtsField(prefix: string | null, ftsField: string) {
         const dbField: string = this.getFieldFromPathField(ftsField);
-        const xField: XField = this.xEntityMetadataService.getXFieldByPath(this.xEntity, ftsField);
+        const xField: Field = this.xEntityMetadataService.getXFieldByPath(this.xEntity, ftsField);
         // TODO - add other conversions if needed
         // TODO - create DB conversion functions if used on multiple places
         let dbFieldWithCast: string;

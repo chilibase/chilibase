@@ -1,15 +1,15 @@
 import {FormBase} from "../form";
 import React from "react";
 import {InputText} from "primereact/inputtext";
-import {stringAsUI, stringFromUI} from "../../common/XUtilsConversions";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
+import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
+import {UtilsCommon} from "../../common/UtilsCommon";
 import {TableFieldReadOnlyProp} from "../form-data-table";
 import {XUtils} from "../XUtils";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export const InputTextDT = (props: {form: FormBase; entity: string; field: string; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
-    const xField = XUtilsMetadataCommon.getXFieldByPathStr(props.entity, props.field);
+    const xField = UtilsMetadataCommon.getFieldByPathStr(props.entity, props.field);
 
     const onValueChange = (field: string, rowData: any, newValue: any) => {
 
@@ -22,7 +22,7 @@ export const InputTextDT = (props: {form: FormBase; entity: string; field: strin
     let fieldValue = "";
     // test na undefined je tu koli insertu noveho riadku
     if (props.rowData !== undefined && props.rowData !== null) {
-        let rowDataValue = XUtilsCommon.getValueByPath(props.rowData, props.field);
+        let rowDataValue = UtilsCommon.getValueByPath(props.rowData, props.field);
         //  pri inserte noveho riadku su (zatial) vsetky fieldy undefined, dame na null, null je standard
         if (rowDataValue === undefined) {
             rowDataValue = null;

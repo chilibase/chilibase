@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {XUtils} from "../XUtils";
-import {XLocalAuthLoginRequest, XLocalAuthLoginResponse, XPostLoginRequest} from "../../common/x-auth-api";
+import {LocalAuthLoginRequest, LocalAuthLoginResponse, PostLoginRequest} from "../../common/auth-api";
 import {XResponseError} from "../XResponseError";
 
 // is used by local auth
@@ -17,10 +17,10 @@ export const LoginForm = (props: {
 
     const onLogin = async () => {
 
-        let xLocalAuthLoginResponse: XLocalAuthLoginResponse;
+        let xLocalAuthLoginResponse: LocalAuthLoginResponse;
         try {
             // object with properties username and password is processed by LocalStrategy -> they come into method LocalStrategy.validate
-            const xLocalAuthLoginRequest: XLocalAuthLoginRequest = {username: username, password: password};
+            const xLocalAuthLoginRequest: LocalAuthLoginRequest = {username: username, password: password};
             xLocalAuthLoginResponse = await XUtils.fetchOne('x-local-auth-login', xLocalAuthLoginRequest, false);
         }
         catch (e) {

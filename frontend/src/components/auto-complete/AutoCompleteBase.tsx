@@ -5,12 +5,12 @@ import {OperationType, XQuery, XUtils} from "../XUtils";
 import {Button} from "primereact/button";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 import {XSearchBrowseParams} from "../XSearchBrowseParams";
-import {XCustomFilter, XLazyAutoCompleteSuggestionsRequest} from "../../common/FindParam";
+import {CustomFilter, LazyAutoCompleteSuggestionsRequest} from "../../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 import {FindResult} from "../../common/FindResult";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
-import {XEntity} from "../../common/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsCommon} from "../../common/UtilsCommon";
+import {Entity} from "../../common/EntityMetadata";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FormDialog, FormDialogState} from "../form";
 import {FormProps} from "../form";
 import {XSearchBrowseDialog, XSearchBrowseDialogState} from "../XSearchBrowseDialog";
@@ -101,7 +101,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                                 // - raz z onBlur - ak uzivatel typovanim "vybral" prave jeden zaznam do suggestions dropdown-u
                                 // a druhy raz z onSelect ked uzivatel klikol na tento jeden "vybraty" zaznam
 
-    xEntity: XEntity | undefined;
+    xEntity: Entity | undefined;
 
     constructor(props: AutoCompleteBaseProps) {
         super(props);
@@ -135,7 +135,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             }
             entity = this.props.suggestionsQuery.entity;
         }
-        this.xEntity = entity ? XUtilsMetadataCommon.getXEntity(entity) : undefined;
+        this.xEntity = entity ? UtilsMetadataCommon.getEntity(entity) : undefined;
 
         this.completeMethod = this.completeMethod.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -298,13 +298,13 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             if (!this.props.suggestionsQuery) {
                 throw `AutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
             }
-            let filter: XCustomFilter | undefined = XUtils.evalFilter(this.props.suggestionsQuery.filter);
-            const suggestionsRequest: XLazyAutoCompleteSuggestionsRequest = {
+            let filter: CustomFilter | undefined = XUtils.evalFilter(this.props.suggestionsQuery.filter);
+            const suggestionsRequest: LazyAutoCompleteSuggestionsRequest = {
                 maxRows: this.props.lazyLoadMaxRows + 1,
                 fullTextSearch: {fields: this.getFields(), value: event.query.trim(), splitValue: this.props.splitQueryValue, matchMode: "contains"},
                 entity: this.props.suggestionsQuery.entity,
-                filterItems: XUtilsCommon.createCustomFilterItems(filter),
-                multiSortMeta: XUtilsCommon.createMultiSortMeta(this.getSortField()),
+                filterItems: UtilsCommon.createCustomFilterItems(filter),
+                multiSortMeta: UtilsCommon.createMultiSortMeta(this.getSortField()),
                 fields: this.props.suggestionsQuery.fields
             };
             const findResult: FindResult = await XUtils.fetchOne('x-lazy-auto-complete-suggestions', suggestionsRequest);
@@ -312,7 +312,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             // ak sme nesortovali v DB (co je draha operacia) tak zosortujeme teraz
             // (itemTemplateString sa vola duplicitne ale pre tych cca 20 zaznamov je to ok)
             if (this.props.suggestionsQuery.sortField === undefined) {
-                filteredSuggestions = XUtilsCommon.arraySort(filteredSuggestions, this.itemTemplateString);
+                filteredSuggestions = UtilsCommon.arraySort(filteredSuggestions, this.itemTemplateString);
             }
             // ak mame o 1 zaznam viac ako je lazyLoadMaxRows, zmenime posledny zaznam na ...
             // TODO - lepsie by bolo posledny zaznam vyhodit a popisok ... zobrazit do footer-a (odpadnu problemy z pripadnou selekciou pseudozaznamu ...)
@@ -664,7 +664,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             displayValue = suggestion;
         }
         else {
-            displayValue = XUtilsCommon.createDisplayValue(suggestion, this.xEntity, this.getFields());
+            displayValue = UtilsCommon.createDisplayValue(suggestion, this.xEntity, this.getFields());
         }
         return displayValue;
     }

@@ -2,7 +2,7 @@ import {HttpStatus, Injectable} from "@nestjs/common";
 import {XExportService} from "./x-export.service.js";
 import {SelectQueryBuilder} from "typeorm";
 import {Response} from "express";
-import {XUtilsCommon} from "../common/XUtilsCommon.js";
+import {UtilsCommon} from "../common/UtilsCommon.js";
 import {ReadStream} from "fs";
 
 @Injectable()
@@ -12,7 +12,7 @@ export class XExportJsonService extends XExportService {
 
         const rowList: any[] = await selectQueryBuilder.getMany();
 
-        res.write(XUtilsCommon.objectAsJSON(rowList), "utf8");
+        res.write(UtilsCommon.objectAsJSON(rowList), "utf8");
 
         res.status(HttpStatus.OK);
         res.end();
@@ -35,13 +35,13 @@ export class XExportJsonService extends XExportService {
             else {
                 rowStr += ",";
             }
-            rowStr += XUtilsCommon.newLine;
-            rowStr += XUtilsCommon.objectAsJSON(entityObj);
+            rowStr += UtilsCommon.newLine;
+            rowStr += UtilsCommon.objectAsJSON(entityObj);
             res.write(rowStr, "utf8");
         });
 
         readStream.on('end', () => {
-            res.write(XUtilsCommon.newLine + "]", "utf8");
+            res.write(UtilsCommon.newLine + "]", "utf8");
             res.status(HttpStatus.OK);
             res.end();
         });

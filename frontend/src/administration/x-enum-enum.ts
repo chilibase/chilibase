@@ -1,4 +1,4 @@
-import {XUser} from "../common/XUser";
+import {User} from "../common/User";
 import {XEnum} from "./x-enum";
 
 export interface XEnumEnum {
@@ -8,6 +8,6 @@ export interface XEnumEnum {
     readOnly: boolean;
     xEnumList: XEnum[];
     modifDate: Date;
-    modifXUser: XUser;
+    modifUser: User;
     version: number;
 }

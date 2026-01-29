@@ -1,6 +1,6 @@
-import {XUtilsCommon} from "./XUtilsCommon.js";
-import {XAssoc, XEntity, XField} from "./XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "./XUtilsMetadataCommon.js";
+import {UtilsCommon} from "./UtilsCommon.js";
+import {Assoc, Entity, Field} from "./EntityMetadata.js";
+import {UtilsMetadataCommon} from "./UtilsMetadataCommon.js";
 import {IPostgresInterval} from "postgres-interval";
 
 export function stringFromUI(stringValue: string): string | null {
@@ -31,7 +31,7 @@ export function intFromUI(stringValue: string): number | null | undefined {
         value = null;
     }
     else {
-        if (XUtilsCommon.isInt(stringValue)) {
+        if (UtilsCommon.isInt(stringValue)) {
             // 1234xxx vrati number 1234, preto sme spravili test isInt
             value = parseInt(stringValue, 10);
             if (isNaN(value)) {
@@ -77,7 +77,7 @@ export function numberFromString(valueString: string): number | null {
 }
 
 // upresnenie typu datumu - pouzivame typ number, lebo zneuzivame atribut scale v TypeORM na zadanie upresnenia
-export enum XDateScale {
+export enum DateScale {
     Date = 1, // dd.mm.yyyy (default)
     Month = 2, // mm.yyyy
     Year = 3 // yyyy
@@ -97,7 +97,7 @@ export function dateFromModel(value: any): Date | null {
     return dateValue;
 }
 
-export function dateFromUI(valueString: string, dateScale: XDateScale = XDateScale.Date): Date | null | undefined {
+export function dateFromUI(valueString: string, dateScale: DateScale = DateScale.Date): Date | null | undefined {
     // converts valueString (e.g. 21.2.2024) into Date
     // if valueString is invalid, returns undefined
     let valueDate: Date | null | undefined = undefined;
@@ -110,7 +110,7 @@ export function dateFromUI(valueString: string, dateScale: XDateScale = XDateSca
         let month: number | null | undefined = null;
         let year: number | null | undefined = null;
 
-        if (dateScale === XDateScale.Date) {
+        if (dateScale === DateScale.Date) {
             // format "dd.mm.yyyy"
             const posDot = valueString.indexOf('.');
             if (posDot === -1) {
@@ -129,7 +129,7 @@ export function dateFromUI(valueString: string, dateScale: XDateScale = XDateSca
                 }
             }
         }
-        else if (dateScale === XDateScale.Month) {
+        else if (dateScale === DateScale.Month) {
             // format "mm.yyyy"
             day = 1;
             const posDot = valueString.indexOf('.');
@@ -141,7 +141,7 @@ export function dateFromUI(valueString: string, dateScale: XDateScale = XDateSca
                 year = intFromUI(valueString.substring(posDot + 1));
             }
         }
-        else if (dateScale === XDateScale.Year) {
+        else if (dateScale === DateScale.Year) {
             // format "yyyy"
             day = 1;
             month = 1;
@@ -153,10 +153,10 @@ export function dateFromUI(valueString: string, dateScale: XDateScale = XDateSca
 
         // doplnime mesiac a rok ak uzivatel nezadal (ak mame undefined, tak umyselne nedoplname)
         if (month === null) {
-            month = XUtilsCommon.today().getMonth() + 1; // o 1 mesiac viac (januar je 0)
+            month = UtilsCommon.today().getMonth() + 1; // o 1 mesiac viac (januar je 0)
         }
         if (year === null) {
-            year = XUtilsCommon.today().getFullYear();
+            year = UtilsCommon.today().getFullYear();
         }
 
         // ak day alebo month alebo year zostal undefined, tak user zadal nekorektnu hodnotu - vratime undefined
@@ -180,7 +180,7 @@ export function dateFromUI(valueString: string, dateScale: XDateScale = XDateSca
 }
 
 
-export function dateAsUI(value: Date | null, dateScale: XDateScale = XDateScale.Date): string {
+export function dateAsUI(value: Date | null, dateScale: DateScale = DateScale.Date): string {
     if (value !== null) {
         return dateFormat(value, dateFormatUI(dateScale));
     }
@@ -274,15 +274,15 @@ export function timeFromModel(value: any): Date | null {
     return timeValue;
 }
 
-export function dateFormatUI(dateScale: XDateScale = XDateScale.Date): string {
+export function dateFormatUI(dateScale: DateScale = DateScale.Date): string {
     let format: string;
-    if (dateScale === XDateScale.Date) {
+    if (dateScale === DateScale.Date) {
         format = "dd.MM.yyyy";
     }
-    else if (dateScale === XDateScale.Month) {
+    else if (dateScale === DateScale.Month) {
         format = "MM.yyyy";
     }
-    else if (dateScale === XDateScale.Year) {
+    else if (dateScale === DateScale.Year) {
         format = "yyyy";
     }
     else {
@@ -291,15 +291,15 @@ export function dateFormatUI(dateScale: XDateScale = XDateScale.Date): string {
     return format;
 }
 
-export function dateFormatCalendar(dateScale: XDateScale = XDateScale.Date): string {
+export function dateFormatCalendar(dateScale: DateScale = DateScale.Date): string {
     let format: string;
-    if (dateScale === XDateScale.Date) {
+    if (dateScale === DateScale.Date) {
         format = "dd.mm.yy";
     }
-    else if (dateScale === XDateScale.Month) {
+    else if (dateScale === DateScale.Month) {
         format = "mm.yy";
     }
-    else if (dateScale === XDateScale.Year) {
+    else if (dateScale === DateScale.Year) {
         format = "yy";
     }
     else {
@@ -395,16 +395,16 @@ export enum AsUIType {
  */
 export function convertObject(entity: string, object: any, fromModel: boolean, asUI: AsUIType | undefined) {
 
-    const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(entity);
+    const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
 
     for (const [field, value] of Object.entries(object)) {
-        const xField: XField | undefined = XUtilsMetadataCommon.getXFieldBase(xEntity, field);
+        const xField: Field | undefined = UtilsMetadataCommon.getFieldBase(xEntity, field);
         if (xField) {
             object[field] = convertValue(xField, value, fromModel, asUI);
         }
         else {
             // nenasli sme medzi fieldami, skusime hladat xAssoc
-            const xAssoc: XAssoc | undefined = XUtilsMetadataCommon.getXAssocBase(xEntity, field);
+            const xAssoc: Assoc | undefined = UtilsMetadataCommon.getAssocBase(xEntity, field);
             if (xAssoc) {
                 if (value) {
                     if (xAssoc.relationType === "many-to-one" || xAssoc.relationType === "one-to-one") {
@@ -425,7 +425,7 @@ export function convertObject(entity: string, object: any, fromModel: boolean, a
 
 }
 
-export function convertValue(xField: XField, value: any, fromModel: boolean, asUI: AsUIType | undefined): any {
+export function convertValue(xField: Field, value: any, fromModel: boolean, asUI: AsUIType | undefined): any {
     return convertValueBase(xField.type, xField.scale, value, fromModel, asUI);
 }
 
@@ -442,7 +442,7 @@ export function convertValueBase(fieldType: string, scale: number | undefined, v
         if (fromModel) {
             value = dateFromModel(value);
         }
-        if (asUI && (asUI !== AsUIType.Excel || scale === XDateScale.Month || scale === XDateScale.Year)) {
+        if (asUI && (asUI !== AsUIType.Excel || scale === DateScale.Month || scale === DateScale.Year)) {
             value = dateAsUI(value, scale);
         }
     }
@@ -470,7 +470,7 @@ export function convertValueBase(fieldType: string, scale: number | undefined, v
     else if (fieldType === "jsonb") {
         // konverziu z modelu (json objekt-u) netreba
         if (asUI) {
-            value = XUtilsCommon.objectAsJSON(value);
+            value = UtilsCommon.objectAsJSON(value);
         }
     }
     else {
@@ -481,3 +481,4 @@ export function convertValueBase(fieldType: string, scale: number | undefined, v
     }
     return value;
 }
+

@@ -9,27 +9,27 @@ import {XLibService} from "./x-lib.service.js";
 import {FindResult} from "../common/FindResult.js";
 import {XLazyDataTableService} from "./x-lazy-data-table.service.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
-import {XEntityMap} from "../common/XEntityMetadata.js";
-import {FindParam, XLazyAutoCompleteSuggestionsRequest} from "../common/FindParam.js";
+import {EntityMap} from "../common/EntityMetadata.js";
+import {FindParam, LazyAutoCompleteSuggestionsRequest} from "../common/FindParam.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
-import {XBrowseMetaMap} from "../common/XBrowseMetadata.js";
+import {BrowseMetaMap} from "../common/BrowseMetadata.js";
 import {XBrowseFormMetadataService} from "./x-browse-form-metadata.service.js";
 import {Response} from 'express';
 import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../common/ExportImportParam.js";
 import {FindParamRows} from "./FindParamRows.js";
-import {XPostLoginRequest, XPostLoginResponse} from "../common/x-auth-api.js";
+import {PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
 import {LocalAuthGuard} from "../auth/local-auth.guard.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
-import {XLocalAuthLoginResponse} from "../common/x-auth-api.js";
+import {LocalAuthLoginResponse} from "../common/auth-api.js";
 import {Public} from "../auth/public.js";
 import {
-    XFindRowByIdRequest,
-    XFindRowByIdResponse,
-    XGetSequenceValueRequest,
-    XGetSequenceValueResponse, XUnlockRowRequest
-} from "../common/x-lib-api.js";
+    FindRowByIdRequest,
+    FindRowByIdResponse,
+    GetSequenceValueRequest,
+    GetSequenceValueResponse, UnlockRowRequest
+} from "../common/lib-api.js";
 
 @Controller()
 export class XLibController {
@@ -74,7 +74,7 @@ export class XLibController {
     }
 
     @Post('x-lazy-auto-complete-suggestions')
-    lazyAutoCompleteSuggestions(@Body() body: XLazyAutoCompleteSuggestionsRequest): Promise<FindResult> {
+    lazyAutoCompleteSuggestions(@Body() body: LazyAutoCompleteSuggestionsRequest): Promise<FindResult> {
         return this.xLazyDataTableService.lazyAutoCompleteSuggestions(body);
     }
 
@@ -93,7 +93,7 @@ export class XLibController {
     }
 
     @Post('x-find-row-by-id')
-    async findRowById(@Body() body: XFindRowByIdRequest): Promise<XFindRowByIdResponse> {
+    async findRowById(@Body() body: FindRowByIdRequest): Promise<FindRowByIdResponse> {
         return await this.xLazyDataTableService.findRowById(body);
     }
 
@@ -103,7 +103,7 @@ export class XLibController {
     }
 
     @Post('x-unlock-row')
-    async unlockRow(@Body() body: XUnlockRowRequest) {
+    async unlockRow(@Body() body: UnlockRowRequest) {
         await this.xLibService.unlockRow(body);
     }
 
@@ -139,7 +139,7 @@ export class XLibController {
     @Public() // suppress JwtAuthGuard
     @UseGuards(LocalAuthGuard)
     @Post('x-local-auth-login')
-    async localAuthLogin(@Request() req: any): Promise<XLocalAuthLoginResponse> {
+    async localAuthLogin(@Request() req: any): Promise<LocalAuthLoginResponse> {
         // LocalAuthGuard invokes method LocalStrategy.validate that returns object XUser,
         // passport framework puts the object into "req.user" and the request pipeline continues with this method
         // we return jwt token that will be used by other requests invoked after login
@@ -148,7 +148,7 @@ export class XLibController {
     }
 
     @Post('post-login')
-    async postLogin(@Request() req: any, @Body() xPostLoginRequest: XPostLoginRequest): Promise<XPostLoginResponse> {
+    async postLogin(@Request() req: any, @Body() xPostLoginRequest: PostLoginRequest): Promise<PostLoginResponse> {
         return await this.xLibService.postLogin(req.user, xPostLoginRequest);
     }
 
@@ -160,7 +160,7 @@ export class XLibController {
     // helper functions - maybe better XUtilsController
 
     @Post('x-get-sequence-value')
-    async getSequenceValue(@Body() xGetSequenceValueRequest: XGetSequenceValueRequest): Promise<XGetSequenceValueResponse> {
+    async getSequenceValue(@Body() xGetSequenceValueRequest: GetSequenceValueRequest): Promise<GetSequenceValueResponse> {
         return {value: await this.xLibService.getSequenceValue(xGetSequenceValueRequest.name)};
     }
 
@@ -170,13 +170,13 @@ export class XLibController {
     }
 
     @Post('getXEntityMap')
-    async getXEntityMap(@Body() body: any): Promise<XEntityMap> {
+    async getXEntityMap(@Body() body: any): Promise<EntityMap> {
         console.log("************************* zavolany getXEntityMap *******************************************");
         return this.xEntityMetadataService.getXEntityMap();
     }
 
     @Post('getXBrowseMetaMap')
-    async getXBrowseMetaMap(@Body() body: any): Promise<XBrowseMetaMap> {
+    async getXBrowseMetaMap(@Body() body: any): Promise<BrowseMetaMap> {
         console.log("*********************** zavolany getXBrowseMetaMap *****************************************");
         return this.xBrowseFormMetadataService.getXBrowseMetaMap();
     }

@@ -1,29 +1,29 @@
 import {XToken} from "./XToken";
-import {XEntity, XField} from "../common/XEntityMetadata";
+import {Entity, Field} from "../common/EntityMetadata";
 import {XUtilsMetadata} from "./XUtilsMetadata";
-import {XParams, XUtilsCommon} from "../common/XUtilsCommon";
+import {Params, UtilsCommon} from "../common/UtilsCommon";
 import {
     CsvDecimalFormat,
     CsvEncoding,
     CsvSeparator,
     ExportType,
-    XMultilineExportType
+    MultilineExportType
 } from "../common/ExportImportParam";
 import {XResponseError} from "./XResponseError";
 import React from "react";
 import {XEnvVar} from "./XEnvVars";
 import {XError, XErrorMap} from "./XErrors";
-import {FindParam, ResultType, XCustomFilter} from "../common/FindParam";
+import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 import {XObject} from "./XObject";
 import {TableFieldReadOnlyProp} from "./form-data-table";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
 import {xLocaleOption} from "./XLocale";
 import {LazyDataTableRef} from "./lazy-data-table";
 import {CreateObjectFunction, OnSaveOrCancelProp} from "./form";
 import {initMsalConfig} from "./auth";
-import {XFindRowByIdRequest, XFindRowByIdResponse} from "../common/x-lib-api";
+import {FindRowByIdRequest, FindRowByIdResponse} from "../common/lib-api";
 
 export enum OperationType {
     None,
@@ -59,7 +59,7 @@ export type XGetEnvVarValue = (envVarEnum: string) => string;
 
 // XQuery zatial docasne sem - ale je to globalny objekt - parametre pre XUtils.fetchRows, taky jednoduchsi FindParam (este sem mozme pridat fullTextSearch ak bude treba)
 
-export type XFilterOrFunction = XCustomFilter | (() => XCustomFilter | undefined);
+export type XFilterOrFunction = CustomFilter | (() => CustomFilter | undefined);
 
 export interface XQuery {
     entity: string;
@@ -93,7 +93,7 @@ export class XUtils {
     static exportTypeOptions = [ExportType.Excel, ExportType.Csv, ExportType.Json];
 
     // moznost Off zatial nie je implementovana
-    static multilineExportTypeOptions = [XMultilineExportType.Multiline, XMultilineExportType.Singleline/*, XMultilineExportType.Off*/];
+    static multilineExportTypeOptions = [MultilineExportType.Multiline, MultilineExportType.Singleline/*, MultilineExportType.Off*/];
 
     static csvSeparatorOptions = [CsvSeparator.Semicolon, CsvSeparator.Comma];
 
@@ -276,15 +276,15 @@ export class XUtils {
     }
 
     // pomocna metodka pouzivajuca lazyDataTable service
-    static async fetchRows(entity: string, customFilter?: XCustomFilter | undefined, sortField?: string | DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
-        const findParam: FindParam = {resultType: ResultType.AllRows, entity: entity, customFilterItems: XUtilsCommon.createCustomFilterItems(customFilter), multiSortMeta: XUtilsCommon.createMultiSortMeta(sortField), fields: fields};
+    static async fetchRows(entity: string, customFilter?: CustomFilter | undefined, sortField?: string | DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
+        const findParam: FindParam = {resultType: ResultType.AllRows, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter), multiSortMeta: UtilsCommon.createMultiSortMeta(sortField), fields: fields};
         const {rowList}: {rowList: any[];} = await XUtils.fetchOne('lazyDataTableFindRows', findParam);
         return rowList;
     }
 
     // pomocna metodka pouzivajuca lazyDataTable service
-    static async fetchRowCount(entity: string, customFilter?: XCustomFilter | undefined): Promise<number> {
-        const findParam: FindParam = {resultType: ResultType.OnlyRowCount, entity: entity, customFilterItems: XUtilsCommon.createCustomFilterItems(customFilter)};
+    static async fetchRowCount(entity: string, customFilter?: CustomFilter | undefined): Promise<number> {
+        const findParam: FindParam = {resultType: ResultType.OnlyRowCount, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter)};
         const {totalRecords}: {totalRecords: number;} = await XUtils.fetchOne('lazyDataTableFindRows', findParam);
         return totalRecords;
     }
@@ -337,14 +337,14 @@ export class XUtils {
     }
 
     static fetchBasicJson(path: string, value: any, useToken: boolean = true): Promise<Response> {
-        return XUtils.fetchBasic(path, {'Content-Type': 'application/json'}, XUtilsCommon.objectAsJSON(value), useToken);
+        return XUtils.fetchBasic(path, {'Content-Type': 'application/json'}, UtilsCommon.objectAsJSON(value), useToken);
     }
 
     static async fetchFile(path: string, jsonFieldValue: any, fileToPost: any): Promise<any> {
         const formData = new FormData();
         formData.append(
             "jsonField",
-            XUtilsCommon.objectAsJSON(jsonFieldValue)
+            UtilsCommon.objectAsJSON(jsonFieldValue)
         );
         formData.append(
             "fileField",
@@ -410,25 +410,25 @@ export class XUtils {
     static async fetchById(entity: string, assocList: string[], id: number): Promise<any> {
         // little quick fix - we create fieldList (adding id), better would be to have param assocList in api
         const fieldList: string[] = assocList.map<string>(assoc => assoc + ".id");
-        const response: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
+        const response: FindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
         return response.row;
     }
 
     // version with fieldList (used by old projects), preferred is fetchById, maybe in the future will be used to avoid overfetching
     static async fetchByIdFieldList(entity: string, fieldList: string[], id: number): Promise<any> {
-        const response: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
+        const response: FindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
         return response.row;
     }
 
     // more general function - can also lock the row
-    static fetchByIdWithLock(entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<XFindRowByIdResponse> {
+    static fetchByIdWithLock(entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<FindRowByIdResponse> {
         return XUtils.fetchByIdWithLockBase('x-find-row-by-id', entity, fields, id, lockRow, overwriteLock);
     }
 
-    static fetchByIdWithLockBase(path: string, entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<XFindRowByIdResponse> {
-        let request: XFindRowByIdRequest = {entity: entity, fields: fields, id: id};
+    static fetchByIdWithLockBase(path: string, entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<FindRowByIdResponse> {
+        let request: FindRowByIdRequest = {entity: entity, fields: fields, id: id};
         if (lockRow) {
-            request = {...request, lockDate: new Date(), lockXUser: XUtils.getXToken()?.xUser, overwriteLock: overwriteLock ?? false};
+            request = {...request, lockDate: new Date(), lockUser: XUtils.getXToken()?.xUser, overwriteLock: overwriteLock ?? false};
         }
         return XUtils.fetchOne(path, request);
     }
@@ -509,7 +509,7 @@ export class XUtils {
     // funkcionalita ktoru by bolo dobre dat do servisov
 
     static async removeRow(entity: string, row: any) {
-        const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(entity);
+        const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
         const id = row[xEntity.idField];
         await XUtils.post('removeRow', {entity: entity, id: id});
     }
@@ -518,7 +518,7 @@ export class XUtils {
     static isReadOnly(path: string, readOnlyInit?: boolean): boolean {
         // ak mame path dlzky 2 a viac, field je vzdy readOnly
         let readOnly: boolean;
-        if (!XUtilsCommon.isSingleField(path)) {
+        if (!UtilsCommon.isSingleField(path)) {
             readOnly = true;
         }
         else {
@@ -532,7 +532,7 @@ export class XUtils {
 
         let isReadOnly: boolean;
 
-        if (path && !XUtilsCommon.isSingleField(path)) {
+        if (path && !UtilsCommon.isSingleField(path)) {
             // if the length of field is 2 or more, then readOnly
             isReadOnly = true;
         }
@@ -567,7 +567,7 @@ export class XUtils {
     }
 
     static showErrorMessage(message: string, e: unknown) {
-        let msg = message + XUtilsCommon.newLine;
+        let msg = message + UtilsCommon.newLine;
         if (e instanceof XResponseError) {
             if (e.xResponseErrorBody.exceptionName === 'XAppError') {
                 // app error from backend, we show only the error message
@@ -578,7 +578,7 @@ export class XUtils {
                 msg += xLocaleOption('optimisticLockFailed');
             }
             else {
-                msg += e.message + XUtilsCommon.newLine;
+                msg += e.message + UtilsCommon.newLine;
                 msg += JSON.stringify(e.xResponseErrorBody, null, 4);
             }
         }
@@ -623,7 +623,7 @@ export class XUtils {
             if (xError) {
                 const errorMessage: string | undefined = XUtils.getErrorMessage(xError);
                 if (errorMessage) {
-                    msg += `${xError.fieldLabel ?? field}: ${errorMessage}${XUtilsCommon.newLine}`;
+                    msg += `${xError.fieldLabel ?? field}: ${errorMessage}${UtilsCommon.newLine}`;
                 }
             }
         }
@@ -663,8 +663,8 @@ export class XUtils {
     }
 
     // pomocna metodka
-    static evalFilter(filter: XFilterOrFunction | undefined): XCustomFilter | undefined {
-        let customFilter: XCustomFilter | undefined = undefined;
+    static evalFilter(filter: XFilterOrFunction | undefined): CustomFilter | undefined {
+        let customFilter: CustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
             customFilter = filter;
         }
@@ -711,10 +711,10 @@ export class XUtils {
             valueObject = {_xValue: value};
         }
         if (xStorageType === "session") {
-            sessionStorage.setItem(key, XUtilsCommon.objectAsJSON(valueObject));
+            sessionStorage.setItem(key, UtilsCommon.objectAsJSON(valueObject));
         }
         else if (xStorageType === "local") {
-            localStorage.setItem(key, XUtilsCommon.objectAsJSON(valueObject));
+            localStorage.setItem(key, UtilsCommon.objectAsJSON(valueObject));
         }
     }
 
@@ -883,12 +883,12 @@ export class XUtils {
     // }
 
     static getDefaultCreateObject<T>(entity: string): CreateObjectFunction<T> {
-        const xEntity: XEntity = XUtilsMetadataCommon.getXEntity(entity);
-        const xField: XField = xEntity.fieldMap["version"];
+        const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
+        const xField: Field = xEntity.fieldMap["version"];
         let object: XObject = {};
         if (xField) {
             object = {version: 0};
         }
-        return async (params?: XParams) => (object as T);
+        return async (params?: Params) => (object as T);
     }
 }

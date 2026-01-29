@@ -7,7 +7,7 @@ import {
 } from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
-import {XAssoc, XEntity} from "../common/XEntityMetadata.js";
+import {Assoc, Entity} from "../common/EntityMetadata.js";
 import {XUser} from "../administration/x-user.entity.js";
 import {XUtils} from "./XUtils.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
@@ -15,15 +15,15 @@ import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import * as bcrypt from 'bcrypt';
 import {FindParamRows} from "./FindParamRows.js";
-import {XPostLoginRequest, XPostLoginResponse} from "../common/x-auth-api.js";
+import {PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
 import {XAuth, XEnvVar} from "./XEnvVars.js";
 import {join} from "path";
 import {unlinkSync} from "fs";
 import {XRowIdListToRemove} from "./XRowIdListToRemove.js";
 import {XParam} from "../administration/x-param.entity.js";
-import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../common/XUtilsConversions.js";
+import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../common/UtilsConversions.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
-import {XUnlockRowRequest} from "../common/x-lib-api.js";
+import {UnlockRowRequest} from "../common/lib-api.js";
 import {XAppError} from "./XAppError.js";
 import {xLocaleOption} from "./XLocale.js";
 
@@ -103,7 +103,7 @@ export class XLibService {
         // je pravdepodobne, ze tento atribut robi tu odprogramovany "orphan removal",
         // mal by byt zadany na ManyToOne asociacii (https://john-hu.medium.com/typeorm-deletes-one-to-many-orphans-a7404f922895)
 
-        const xEntity: XEntity = this.xEntityMetadataService.getXEntity(row.entity);
+        const xEntity: Entity = this.xEntityMetadataService.getXEntity(row.entity);
 
         // ak mame vygenerovane id-cko, zmenime ho na undefined (aby sme mali priamy insert a korektne id-cko)
         if (row.object.__x_generatedRowId) {
@@ -111,13 +111,13 @@ export class XLibService {
             delete row.object.__x_generatedRowId; // v pripade ze objekt vraciame klientovi (reload === true), nechceme tam __x_generatedRowId
         }
 
-        let assocOneToManyList: XAssoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many"]);
+        let assocOneToManyList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many"]);
         const rowId = row.object[xEntity.idField];
         const insert: boolean = (rowId === undefined);
-        assocOneToManyList = assocOneToManyList.filter(insert ? (assoc: XAssoc) => assoc.isCascadeInsert : (assoc: XAssoc) => assoc.isCascadeUpdate);
+        assocOneToManyList = assocOneToManyList.filter(insert ? (assoc: Assoc) => assoc.isCascadeInsert : (assoc: Assoc) => assoc.isCascadeUpdate);
 
         for (const assoc of assocOneToManyList) {
-            const xChildEntity: XEntity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xChildEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
 
             // uprava toho co prislo z klienta - vynullujeme umelo vytvorene id-cka
             // (robime to tu a nie na klientovi, lebo ak nam nezbehne save, tak formular zostava otvoreny)
@@ -145,7 +145,7 @@ export class XLibService {
             // kedze nam chyba "remove orphaned entities" na asociaciach s detailami, tak ho zatial musime odprogramovat rucne
             // asi je to jedno ci pred save alebo po save (ak po save, tak cascade "remove" musi byt vypnuty - nefuguje ale tento remove zbehne skor)
             for (const assoc of assocOneToManyList) {
-                const xChildEntity: XEntity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+                const xChildEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
 
                 const idList: any[] = [];
                 const childRowList = row.object[assoc.name];
@@ -225,11 +225,11 @@ export class XLibService {
 
         // asi by nebolo od veci v buducnosti prejst na cascade delete realizovany v DB cez FK constrainty, ked sa preto v TypeORM rozhodli...
 
-        const xEntity: XEntity = this.xEntityMetadataService.getXEntity(row.entity);
+        const xEntity: Entity = this.xEntityMetadataService.getXEntity(row.entity);
         return this.removeRowsInTransaction(manager, xEntity, [row.id], fileListToRemove, row.assocsToRemove);
     }
 
-    async removeRowsInTransaction(manager: EntityManager, xEntity: XEntity, rowIdList: any[], fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
+    async removeRowsInTransaction(manager: EntityManager, xEntity: Entity, rowIdList: any[], fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
         // vygenerujeme query - jednym selectom nacitame cely strom zaznamov ktory ideme vymazat
         // prejdeme rekurzivne cez vsetky asociacie ktore maju nastaveny cascade "remove"
         const alias: string = "t";
@@ -262,26 +262,26 @@ export class XLibService {
         }
     }
 
-    addAssocsOfEntity(selectQueryBuilder: SelectQueryBuilder<unknown>, xEntity: XEntity, alias: string, assocsToRemove?: string[]): boolean {
+    addAssocsOfEntity(selectQueryBuilder: SelectQueryBuilder<unknown>, xEntity: Entity, alias: string, assocsToRemove?: string[]): boolean {
         // prejdeme vsetky asociacie (ktore maju cascade "remove", aj *toMany aj *toOne) a pridame ich do query
         let leftJoinAdded: boolean = false;
-        const assocList: XAssoc[] = this.xEntityMetadataService.getXAssocList(xEntity).filter((assoc: XAssoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
+        const assocList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const [index, assoc] of assocList.entries()) {
             const aliasForAssoc: string = `${alias}_${index}`; // chceme mat unique alias v ramci celeho stromu, tak vytvarame nieco ako napr. t_2_0_1
             selectQueryBuilder.leftJoinAndSelect(`${alias}.${assoc.name}`, aliasForAssoc);
             leftJoinAdded = true;
-            const xAssocEntity: XEntity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xAssocEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
             this.addAssocsOfEntity(selectQueryBuilder, xAssocEntity, aliasForAssoc, undefined); // zatial zimplementovane len pre prvu uroven
         }
         return leftJoinAdded;
     }
 
-    addRowOfEntityToRemove(xEntity: XEntity, row: any, rowIdListToRemove: XRowIdListToRemove, fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
+    addRowOfEntityToRemove(xEntity: Entity, row: any, rowIdListToRemove: XRowIdListToRemove, fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
         // vymazeme "row" aj s jeho asociovanymi objektmi
         // musime mazat v spravnom poradi aby sme nenarusili FK constrainty (a ak asociacie vytvaraju cyklus, tak nam ani spravne poradie nepomoze...)
 
         // najprv *toMany asociacie
-        const assocToManyList: XAssoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: XAssoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
+        const assocToManyList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const assoc of assocToManyList) {
             const assocRowList: any[] = row[assoc.name];
             for (const assocRow of assocRowList) {
@@ -303,7 +303,7 @@ export class XLibService {
         }
 
         // teraz mozme vymazat *toOne asociacie
-        const assocToOneList: XAssoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-one", "many-to-one"]).filter((assoc: XAssoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
+        const assocToOneList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-one", "many-to-one"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const assoc of assocToOneList) {
             const assocRow: any = row[assoc.name];
             // ak je v FK-stlpci null, potom je myslim asociacia null (este by mohla byt undefined (nepritomna))
@@ -314,7 +314,7 @@ export class XLibService {
     }
 
     // pomocna metodka
-    filterForAssocToRemove(assoc: XAssoc, assocsToRemove?: string[]): boolean {
+    filterForAssocToRemove(assoc: Assoc, assocsToRemove?: string[]): boolean {
         return assoc.isCascadeRemove || (assocsToRemove !== undefined && assocsToRemove.includes(assoc.name));
     }
 
@@ -337,58 +337,58 @@ export class XLibService {
         }
     }
 
-    // this method is supposed to be called in transaction and before save of the "object" (method sets lockDate and lockXUser to null)
+    // this method is supposed to be called in transaction and before save of the "object" (method sets lockDate and lockUser to null)
     async unlockRowForSave(manager: EntityManager, entity: string, object: any) {
 
         const lockDate: Date | null = dateFromModel(object.lockDate ?? null);
         if (lockDate) {
-            const xEntity: XEntity = this.xEntityMetadataService.getXEntity(entity);
+            const xEntity: Entity = this.xEntityMetadataService.getXEntity(entity);
             const rowId: number = object[xEntity.idField];
             const rowFromDB: any = await this.findRowByIdForLocking(manager, entity, rowId);
             // if the lock was not replaced by newer lock, remove the lock
-            // TODO - select also id of lockXUser and compare with lockXUser from request
+            // TODO - select also id of lockUser and compare with lockUser from request
             const lockDateFromDB: Date | null = rowFromDB.lockDate;
             if (lockDateFromDB && lockDateFromDB.getTime() === lockDate.getTime()) {
                 object.lockDate = null;
-                object.lockXUser = null;
+                object.lockUser = null;
             }
             else {
                 // someone overtook the lock (and may already finished the editing)
                 // we use exception to inform user (like by optimistic locking)
                 if (lockDateFromDB) {
-                    const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "lockXUser");
-                    throw new XAppError(xLocaleOption('pessimisticLockFailedLockPresent', {lockUser: rowFromDBWithUser.lockXUser?.name, lockDate: datetimeAsUI(lockDateFromDB)}));
+                    const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "lockUser");
+                    throw new XAppError(xLocaleOption('pessimisticLockFailedLockPresent', {lockUser: rowFromDBWithUser.lockUser?.name, lockDate: datetimeAsUI(lockDateFromDB)}));
                 }
                 else {
                     // editing by other user has finished
-                    // TODO - check if attributes modifDate/modifXUser exist in entity
-                    const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "modifXUser");
-                    throw new XAppError(xLocaleOption('pessimisticLockFailedLockFinished', {modifUser: rowFromDBWithUser.modifXUser?.name, modifDate: datetimeAsUI(rowFromDBWithUser.modifDate)}));
+                    // TODO - check if attributes modifDate/modifUser exist in entity
+                    const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "modifUser");
+                    throw new XAppError(xLocaleOption('pessimisticLockFailedLockFinished', {modifUser: rowFromDBWithUser.modifUser?.name, modifDate: datetimeAsUI(rowFromDBWithUser.modifDate)}));
                 }
             }
         }
     }
 
     // unlock row for cancel
-    async unlockRow(unlockRowRequest: XUnlockRowRequest) {
+    async unlockRow(unlockRowRequest: UnlockRowRequest) {
         return this.dataSource.transaction(manager => this.unlockRowInTransaction(manager, unlockRowRequest));
     }
 
-    private async unlockRowInTransaction(manager: EntityManager, unlockRowRequest: XUnlockRowRequest) {
+    private async unlockRowInTransaction(manager: EntityManager, unlockRowRequest: UnlockRowRequest) {
         const row: any = await this.findRowByIdForLocking(manager, unlockRowRequest.entity, unlockRowRequest.id);
         // if the lock was not replaced by newer lock, remove the lock
-        // TODO - select also id of lockXUser and compare with lockXUser from request
+        // TODO - select also id of lockUser and compare with lockUser from request
         const lockDateFromDB: Date | null = row.lockDate;
         if (lockDateFromDB && lockDateFromDB.getTime() === dateFromModel(unlockRowRequest.lockDate).getTime()) {
             row.lockDate = null;
-            row.lockXUser = null;
+            row.lockUser = null;
             await manager.getRepository(unlockRowRequest.entity).save(row); // zatial dame save, lebo update inkrementuje version atribut
         }
     }
 
     async findRowByIdForLocking(manager: EntityManager, entity: string, id: number): Promise<any> {
         // simple select without outer joins (SELECT FOR UPDATE does not work if there is outer join in select (in postgres))
-        // TODO - optimalisation - select only attribute lockDate + id of lockXUser
+        // TODO - optimization - select only attribute lockDate + id of lockUser
         const selectQueryBuilderForUpdate: SelectQueryBuilder<unknown> = manager.getRepository(entity).createQueryBuilder("t");
         selectQueryBuilderForUpdate.whereInIds([id]);
         selectQueryBuilderForUpdate.setLock("pessimistic_write"); // SELECT FOR UPDATE
@@ -396,7 +396,7 @@ export class XLibService {
     }
 
     private async findRowByIdWithAssoc(manager: EntityManager, entity: string, id: number, assoc: string): Promise<any> {
-        // TODO - optimalisation - select only proper attributes
+        // TODO - optimisation - select only proper attributes
         const selectQueryBuilder: SelectQueryBuilder<unknown> = manager.getRepository(entity).createQueryBuilder("t");
         selectQueryBuilder.leftJoinAndSelect(`t.${assoc}`, "t1");
         selectQueryBuilder.whereInIds([id]);
@@ -406,12 +406,12 @@ export class XLibService {
     /* old simple removeRow
     async removeRowInTransactionOld(manager: EntityManager, row: RemoveRowParam): Promise<void> {
 
-        const xEntity: XEntity = this.xEntityMetadataService.getXEntity(row.entity);
+        const xEntity: Entity = this.xEntityMetadataService.getXEntity(row.entity);
 
         // prejdeme vsetky *ToMany asociacie (ktore maju cascade "remove") a zmazeme ich child zaznamy
-        const assocList: XAssoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: XAssoc) => assoc.isCascadeRemove);
+        const assocList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => assoc.isCascadeRemove);
         for (const assoc of assocList) {
-            const xChildEntity: XEntity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xChildEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
             if (assoc.inverseAssocName === undefined) {
                 throw `Assoc ${xEntity.name}.${assoc.name} has no inverse assoc.`;
             }
@@ -528,7 +528,7 @@ export class XLibService {
     }
     */
 
-    async postLogin(reqUser: any, xPostLoginRequest: XPostLoginRequest): Promise<XPostLoginResponse> {
+    async postLogin(reqUser: any, xPostLoginRequest: PostLoginRequest): Promise<PostLoginResponse> {
         let username: string;
         if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.OFF) {
             username = xPostLoginRequest.username;
@@ -575,7 +575,7 @@ export class XLibService {
         //         await repository.save(xUser);
         //     }
         // }
-        return {xUser: xUser !== null ? xUser : undefined};
+        return {user: xUser !== null ? xUser : undefined};
     }
 
     // helper functions - maybe better XUtilsService

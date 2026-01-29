@@ -7,7 +7,7 @@ import {
     LoadObjectFunction,
 } from "./FormBase";
 import {OperationType, XUtils} from "../XUtils";
-import {XParams} from "../../common/XUtilsCommon";
+import {Params} from "../../common/UtilsCommon";
 import {XEnvVar} from "../XEnvVars";
 import {XObject} from "../XObject";
 
@@ -44,10 +44,10 @@ export function FormWithLoader<T = any>(
             let assocListFunction: AssocListFunction | undefined = (FormType as any).assocList;
             if (!assocListFunction && !legacyObjectLoading) {
                 // default assocList function (returns empty string array - no join to the other entity used)
-                assocListFunction = (params?: XParams)=> [];
+                assocListFunction = (params?: Params)=> [];
             }
             if (assocListFunction) {
-                loadObject = (id: number, params?: XParams) => {
+                loadObject = (id: number, params?: Params) => {
                     const assocList: string[] = assocListFunction!(params);
                     return XUtils.fetchById(entity, assocList, id);
                 };

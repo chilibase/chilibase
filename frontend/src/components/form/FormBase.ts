@@ -4,11 +4,11 @@ import {OperationType, XUtils} from "../XUtils";
 import {FieldOnChange, FormComponent} from "./FormComponent";
 import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
 import {XErrorMap, XErrors} from "../XErrors";
-import {XParams, XUtilsCommon} from "../../common/XUtilsCommon";
-import {XEntity} from "../../common/XEntityMetadata";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
-import {XFindRowByIdResponse, XUnlockRowRequest} from "../../common/x-lib-api";
-import {dateFromModel, datetimeAsUI} from "../../common/XUtilsConversions";
+import {Params, UtilsCommon} from "../../common/UtilsCommon";
+import {Entity} from "../../common/EntityMetadata";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
+import {FindRowByIdResponse, UnlockRowRequest} from "../../common/lib-api";
+import {dateFromModel, datetimeAsUI} from "../../common/UtilsConversions";
 import {xLocaleOption} from "../XLocale";
 
 export type OnSaveOrCancelProp = (object: XObject | null, objectChange: OperationType) => void;
@@ -36,7 +36,7 @@ export interface FormProps {
     onSaveOrCancel?: OnSaveOrCancelProp; // pouziva sa pri zobrazeni formulara v dialogu (napr. v XAutoCompleteBase) - pri onSave odovzdava updatnuty/insertnuty objekt, pri onCancel odovzdava null,
     // pouziva sa aj pri navrate do browsu - v tejto metode sa zavola reread browsu
     isInDialog?: boolean; // flag, if form is opened in Dialog (usually true) - really needed here?
-    params?: XParams;
+    params?: Params;
 }
 
 export interface FormWithLoaderProps {
@@ -45,7 +45,7 @@ export interface FormWithLoaderProps {
     initValues?: object; // DEPRECATED (forwarded to FormProps)
     onSaveOrCancel?: OnSaveOrCancelProp; // forwarded to FormProps
     isInDialog?: boolean; // flag, if form is opened in Dialog (usually true), (forwarded to FormProps)
-    params?: XParams; // various params used in methods createObject/loadObject, (forwarded to FormProps)
+    params?: Params; // various params used in methods createObject/loadObject, (forwarded to FormProps)
 }
 
 // type for Form param - either Form is used (Form={CarForm}) or formElement is used (formElement={<CarForm/>})
@@ -58,17 +58,17 @@ export interface FormWithLoaderProps {
 // ********** types of static methods used on forms to load objects *********
 
 // type used for method createObject (used by insert)
-export type CreateObjectFunction<T> = (params?: XParams) => Promise<T>;
+export type CreateObjectFunction<T> = (params?: Params) => Promise<T>;
 
 // type used for method assocList (used by update, simple alternative to loadObject)
-export type AssocListFunction = (params?: XParams) => string[];
+export type AssocListFunction = (params?: Params) => string[];
 
 // type used for method fieldList (used by update, simple alternative to loadObject)
 // reserved for future use if needed (if we want to list exact fields to load (to avoid overfetching), now the method assocList should be enough)
 //export type FieldListFunction = (params?: XParams) => string[];
 
 // type used for method loadObject (used by update)
-export type LoadObjectFunction<T> = (id: number, params?: XParams) => Promise<T>;
+export type LoadObjectFunction<T> = (id: number, params?: Params) => Promise<T>;
 
 
 // class decorator ktory nastavuje property entity (dalo by sa to nastavovat v konstruktore ale decorator je menej ukecany)
@@ -88,7 +88,7 @@ export function Form(entity: string, pessimisticLocking?: boolean) {
 export abstract class FormBase extends Component<FormProps> {
 
     entity?: string; // typ objektu, napr. Car, pouziva sa pri citani objektu z DB
-    xEntity: XEntity | undefined; // zistene podla this.entity
+    xEntity: Entity | undefined; // zistene podla this.entity
 
     formDataChanged: boolean; // true if user changed some attribute of the form - used (only) to create confirm if user clicks cancel
 
@@ -127,7 +127,7 @@ export abstract class FormBase extends Component<FormProps> {
         // using vite I had problem to get decorator to work, so this param entity is another way how to set this.entity
         if (entity) {
             this.entity = entity;
-            this.xEntity = XUtilsMetadataCommon.getXEntity(this.entity);
+            this.xEntity = UtilsMetadataCommon.getEntity(this.entity);
         }
         //this.entity = props.entity; - nastavuje sa cez decorator @Form
         // this.pessimisticLocking was originally set by decorator @Form
@@ -194,7 +194,7 @@ export abstract class FormBase extends Component<FormProps> {
                 for (const assocToSort of this.assocToSortList) {
                     const assocRowList: any[] = object[assocToSort.assoc];
                     if (assocRowList) {
-                        object[assocToSort.assoc] = XUtilsCommon.arraySort(assocRowList, assocToSort.sortField);
+                        object[assocToSort.assoc] = UtilsCommon.arraySort(assocRowList, assocToSort.sortField);
                     }
                 }
 
@@ -291,7 +291,7 @@ export abstract class FormBase extends Component<FormProps> {
         // (zlozitejsie riesenie by bolo zapisovat errors do specialneho technickeho atributu asociovaneho objektu ale zatial to nechame takto jednoducho)
 
         const object: XObject = this.getXObject();
-        XUtilsCommon.setValueByPath(object, field, value);
+        UtilsCommon.setValueByPath(object, field, value);
 
         const errorMap: XErrorMap = this.state.errorMap;
         errorMap[field] = {...errorMap[field], onChange: error};
@@ -650,17 +650,17 @@ export abstract class FormBase extends Component<FormProps> {
     // this method can be overriden in subclass if needed (custom load object)
     // legacy way of loading object
     async loadObjectLegacy(id: number): Promise<XObject> {
-        // in constructor, member pessimisticLocking is still not set, that's why here we add the "lockXUser.name"
+        // in constructor, member pessimisticLocking is still not set, that's why here we add the "lockUser.name"
         if (this.pessimisticLocking) {
-            this.addField("lockXUser.name");
+            this.addField("lockUser.name");
         }
-        const xFindRowByIdResponse: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking!);
+        const xFindRowByIdResponse: FindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking!);
         let object: any = xFindRowByIdResponse.row;
         if (this.pessimisticLocking) {
             if (!xFindRowByIdResponse.lockAcquired) {
-                if (window.confirm(xLocaleOption('pessimisticLockNotAcquired', {lockXUser: object.lockXUser?.name, lockDate: datetimeAsUI(dateFromModel(object.lockDate))}))) {
+                if (window.confirm(xLocaleOption('pessimisticLockNotAcquired', {lockUser: object.lockUser?.name, lockDate: datetimeAsUI(dateFromModel(object.lockDate))}))) {
                     // overwrite the lock in DB
-                    const xFindRowByIdResponse: XFindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking, true);
+                    const xFindRowByIdResponse: FindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking, true);
                     object = xFindRowByIdResponse.row;
                     this.rowLocked = true;
                 }
@@ -697,11 +697,11 @@ export abstract class FormBase extends Component<FormProps> {
     // this method can be overriden in subclass if needed (custom unlock row)
     async unlockRow() {
         if (this.rowLocked) {
-            const xUnlockRowRequest: XUnlockRowRequest = {
+            const xUnlockRowRequest: UnlockRowRequest = {
                 entity: this.getEntity(),
                 id: this.state.object[this.xEntity!.idField],
                 lockDate: this.state.object.lockDate,
-                lockXUser: this.state.object.lockXUser
+                lockUser: this.state.object.lockUser
             };
             await XUtils.post('x-unlock-row', xUnlockRowRequest);
             this.rowLocked = false;

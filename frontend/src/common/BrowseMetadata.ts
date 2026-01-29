@@ -1,19 +1,19 @@
-// the key in XBrowseMetaMap is <entity> or <entity>_<browseId> (if browseId !== undefined)
-export interface XBrowseMetaMap {
-    [name: string]: XBrowseMeta;
+// the key in BrowseMetaMap is <entity> or <entity>_<browseId> (if browseId !== undefined)
+export interface BrowseMetaMap {
+    [name: string]: BrowseMeta;
 }
 
 // zodpoveda priblizne props na XLazyDataTable
-export interface XBrowseMeta {
+export interface BrowseMeta {
     id?: number; // hodnota undefined (?) sa pouziva pri inserte do DB
     entity: string;
     browseId?: string;
     rows?: number;
-    columnMetaList: XColumnMeta[];
+    columnMetaList: ColumnMeta[];
 }
 
 // zodpoveda typu XLazyColumnProps
-export interface XColumnMeta {
+export interface ColumnMeta {
     id?: number; // hodnota undefined (?) sa pouziva pri inserte do DB
     field: string;
     header?: any;
@@ -22,3 +22,4 @@ export interface XColumnMeta {
     width?: string;
     columnOrder?: number;
 }
+

@@ -1,11 +1,11 @@
 import React from "react";
 import {FormComponentDT, FormComponentDTProps} from "../form-data-table";
-import {XAssoc} from "../../common/XEntityMetadata";
+import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../XUtils";
 import {XError} from "../XErrors";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
 import {TableFieldFilterProp} from "../form-data-table";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {DataTableSortMeta} from "primereact/datatable";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
@@ -38,13 +38,13 @@ export interface AutoCompleteDTProps extends FormComponentDTProps {
 
 export class AutoCompleteDT extends FormComponentDT<AutoCompleteDTProps> {
 
-    protected xAssoc: XAssoc;
+    protected xAssoc: Assoc;
     protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
 
     constructor(props: AutoCompleteDTProps) {
         super(props);
 
-        this.xAssoc = XUtilsMetadataCommon.getXAssocToOne(XUtilsMetadataCommon.getXEntity(props.entity), props.assocField);
+        this.xAssoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.entity), props.assocField);
         this.errorInBase = undefined;
 
         this.onChangeAutoCompleteBase = this.onChangeAutoCompleteBase.bind(this);
@@ -87,7 +87,7 @@ export class AutoCompleteDT extends FormComponentDT<AutoCompleteDTProps> {
     }
 
     render() {
-        const xEntityAssoc = XUtilsMetadataCommon.getXEntity(this.xAssoc.entityName);
+        const xEntityAssoc = UtilsMetadataCommon.getEntity(this.xAssoc.entityName);
         //const xDisplayField = XUtilsMetadataCommon.getXFieldByPath(xEntityAssoc, this.props.displayField);
 
         // TODO - size

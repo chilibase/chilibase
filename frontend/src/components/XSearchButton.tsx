@@ -5,12 +5,12 @@ import {XUtils} from "./XUtils";
 import {Dialog} from "primereact/dialog";
 import {XUtilsMetadata} from "./XUtilsMetadata";
 import {FilterProp, FormComponent, FormComponentProps} from "./form";
-import {XAssoc} from "../common/XEntityMetadata";
+import {Assoc} from "../common/EntityMetadata";
 import {XObject} from "./XObject";
-import {XCustomFilter} from "../common/FindParam";
+import {CustomFilter} from "../common/FindParam";
 import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
-import {XUtilsCommon} from "../common/XUtilsCommon";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {UtilsCommon} from "../common/UtilsCommon";
 
 // faast-ovsky zoombutton - ked user zapise nieco do inputu a odide - ak sa najde presne 1 zaznam tak nastavi, ak sa najde viac zaznamov tak otvori searchBrowse
 // nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci XAutoComplete
@@ -28,7 +28,7 @@ export interface XSearchButtonProps extends FormComponentProps {
 
 export class XSearchButton extends FormComponent<XSearchButtonProps> {
 
-    protected xAssoc: XAssoc;
+    protected xAssoc: Assoc;
 
     inputTextRef: any;
 
@@ -41,7 +41,7 @@ export class XSearchButton extends FormComponent<XSearchButtonProps> {
     constructor(props: XSearchButtonProps) {
         super(props);
 
-        this.xAssoc = XUtilsMetadataCommon.getXAssocToOne(XUtilsMetadataCommon.getXEntity(props.form.getEntity()), props.assocField);
+        this.xAssoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
 
         this.inputTextRef = React.createRef();
         // POVODNY KOD
@@ -67,8 +67,8 @@ export class XSearchButton extends FormComponent<XSearchButtonProps> {
     render() {
         const props = this.props;
 
-        const xEntityAssoc = XUtilsMetadataCommon.getXEntity(this.xAssoc.entityName);
-        const xDisplayField = XUtilsMetadataCommon.getXFieldByPath(xEntityAssoc, props.displayField);
+        const xEntityAssoc = UtilsMetadataCommon.getEntity(this.xAssoc.entityName);
+        const xDisplayField = UtilsMetadataCommon.getFieldByPath(xEntityAssoc, props.displayField);
 
         // tu boli hook-y kedysi...
         const inputChanged: boolean = this.state.inputChanged;
@@ -116,9 +116,9 @@ export class XSearchButton extends FormComponent<XSearchButtonProps> {
                     //     displayField: props.displayField,
                     //     filter: e.target.value
                     // });
-                    const displayFieldFilter: XCustomFilter = {where: `[${props.displayField}] LIKE :xDisplayFieldValue`, params: {"xDisplayFieldValue": `${e.target.value}%`}};
-                    const customFilter: XCustomFilter | undefined = this.getFilterBase(this.props.filter);
-                    const rows: any[] = await XUtils.fetchRows(this.xAssoc.entityName, XUtilsCommon.filterAnd(displayFieldFilter, customFilter));
+                    const displayFieldFilter: CustomFilter = {where: `[${props.displayField}] LIKE :xDisplayFieldValue`, params: {"xDisplayFieldValue": `${e.target.value}%`}};
+                    const customFilter: CustomFilter | undefined = this.getFilterBase(this.props.filter);
+                    const rows: any[] = await XUtils.fetchRows(this.xAssoc.entityName, UtilsCommon.filterAnd(displayFieldFilter, customFilter));
                     if (rows.length === 0) {
                         // POVODNY KOD
                         //overlayPanelEl.current.toggle(e);

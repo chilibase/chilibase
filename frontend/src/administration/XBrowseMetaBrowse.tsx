@@ -1,11 +1,11 @@
 import {BrowseProps, LazyColumn, LazyDataTable} from "../components/lazy-data-table";
 import React from "react";
 import {XBrowseMetaForm} from "./XBrowseMetaForm";
-import {XBrowseMeta} from "../common/XBrowseMetadata";
+import {BrowseMeta} from "../common/BrowseMetadata";
 
 export const XBrowseMetaBrowse = (props: BrowseProps) => {
 
-    const onEdit = (selectedRow: XBrowseMeta) => {
+    const onEdit = (selectedRow: BrowseMeta) => {
 
         // openForm pridavame automaticky v XFormNavigator3 pri renderovani komponentu
         props.openForm!(<XBrowseMetaForm id={selectedRow.id}/>);

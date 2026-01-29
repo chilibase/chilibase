@@ -4,9 +4,9 @@ import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
 import {DropdownOptionsMap, TableFieldReadOnlyProp} from "../form-data-table";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XAssoc} from "../../common/XEntityMetadata";
-import {XCustomFilter} from "../../common/FindParam";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {Assoc} from "../../common/EntityMetadata";
+import {CustomFilter} from "../../common/FindParam";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export const DropdownDT = (props: {
         form: FormBase;
@@ -14,7 +14,7 @@ export const DropdownDT = (props: {
         assocField: string;
         displayField: string;
         sortField?: string;
-        filter?: XCustomFilter;
+        filter?: CustomFilter;
         dropdownOptionsMap: DropdownOptionsMap;
         onDropdownOptionsMapChange: (dropdownOptionsMap: DropdownOptionsMap) => void;
         rowData: any;
@@ -24,8 +24,8 @@ export const DropdownDT = (props: {
     // poznamka: nacitanie/ulozenie options je vytiahnute do parent komponentu XFormDataTable koli tomu aby sme nenacitavali options pre kazdy riadok tabulky
 
     // "members"
-    const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(XUtilsMetadataCommon.getXEntity(props.entity), props.assocField);
-    const idField: string = XUtilsMetadataCommon.getXEntity(xAssoc.entityName).idField;
+    const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.entity), props.assocField);
+    const idField: string = UtilsMetadataCommon.getEntity(xAssoc.entityName).idField;
 
     // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
     useEffect(() => {
@@ -47,7 +47,7 @@ export const DropdownDT = (props: {
             // ak by tu tento riadok nebol, tak by sa options nacitavali tolkokrat, kolko je riadkov v tabulke
             props.dropdownOptionsMap[props.assocField] = [];
 
-            const xAssoc: XAssoc = XUtilsMetadataCommon.getXAssocToOne(XUtilsMetadataCommon.getXEntity(props.entity), props.assocField);
+            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.entity), props.assocField);
 
             //options = await XUtils.fetchMany('findRowsForAssoc', {entity: props.entity, assocField: props.assocField});
             options = await XUtils.fetchRows(xAssoc.entityName, props.filter, props.sortField ?? props.displayField);

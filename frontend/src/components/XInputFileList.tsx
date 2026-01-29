@@ -2,15 +2,15 @@ import React from "react";
 import {Component} from "react";
 import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
 import {FormBase} from "./form";
-import {XAssoc, XEntity} from "../common/XEntityMetadata";
+import {Assoc, Entity} from "../common/EntityMetadata";
 import {XUtils} from "./XUtils";
 import {XObject} from "./XObject";
 import {XButton} from "./XButton";
 import {XButtonIconNarrow} from "./XButtonIconNarrow";
-import {numberAsUI} from "../common/XUtilsConversions";
+import {numberAsUI} from "../common/UtilsConversions";
 import {xLocaleOption} from "./XLocale";
-import {XFileJsonField} from "../common/XFileJsonField";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon";
+import {FileJsonField} from "../common/lib-api";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
 interface XFile {
     id: number;
@@ -50,12 +50,12 @@ export class XInputFileList extends Component<XInputFileListProps> {
         this.fileUploadRef = React.createRef();
 
         this.props = props;
-        const xEntityForm: XEntity = XUtilsMetadataCommon.getXEntity(props.form.getEntity());
-        const xAssocToMany: XAssoc = XUtilsMetadataCommon.getXAssocToMany(xEntityForm, props.assocField);
+        const xEntityForm: Entity = UtilsMetadataCommon.getEntity(props.form.getEntity());
+        const xAssocToMany: Assoc = UtilsMetadataCommon.getAssocToMany(xEntityForm, props.assocField);
         this.entity = xAssocToMany.entityName;
-        const xEntity = XUtilsMetadataCommon.getXEntity(this.entity);
+        const xEntity = UtilsMetadataCommon.getEntity(this.entity);
         this.idField = xEntity.idField;
-        this.xFileField = XUtilsMetadataCommon.getXAssocToOneByAssocEntity(xEntity, 'XFile').name;
+        this.xFileField = UtilsMetadataCommon.getAssocToOneByAssocEntity(xEntity, 'XFile').name;
 
         this.onDownloadFile = this.onDownloadFile.bind(this);
         this.onRemoveFile = this.onRemoveFile.bind(this);
@@ -77,11 +77,11 @@ export class XInputFileList extends Component<XInputFileListProps> {
                 continue; // ideme na dalsi subor
             }
             // uploadneme subor na server, insertne sa tam zaznam XFile a tento insertnuty zaznam pride sem a zapiseme ho do zoznamu form.object.<assocField>
-            const jsonFieldValue: XFileJsonField = {
+            const jsonFieldValue: FileJsonField = {
                 filename: file.name,
                 subdir: this.props.subdir,
                 modifDate: new Date(),
-                modifXUser: XUtils.getXToken()?.xUser?.id
+                modifUser: XUtils.getXToken()?.xUser?.id
             }
             let xFile: XFile;
             try {

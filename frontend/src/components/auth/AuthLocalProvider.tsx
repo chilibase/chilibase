@@ -2,7 +2,7 @@ import React, {ReactNode, useState} from 'react';
 import {XUtilsMetadata} from "../XUtilsMetadata";
 import {LoginForm} from "./LoginForm";
 import {XUtils} from "../XUtils";
-import {XPostLoginRequest} from "../../common/x-auth-api";
+import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 
 export const AuthLocalProvider = ({children}: {children: ReactNode;}) => {
@@ -41,9 +41,9 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
         // zavolame post-login
         // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
         // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
-        let xPostLoginResponse;
+        let xPostLoginResponse: PostLoginResponse;
         try {
-            const xPostLoginRequest: XPostLoginRequest = {username: username};
+            const xPostLoginRequest: PostLoginRequest = {username: username};
             xPostLoginResponse = await XUtils.fetch('post-login', xPostLoginRequest);
         }
         catch (e) {
@@ -61,14 +61,14 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
             throw 'post-login failed';
         }
 
-        if (xPostLoginResponse.xUser === undefined) {
+        if (xPostLoginResponse.user === undefined) {
             // nenasli sme usera v DB
             alert(`User account "${username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
-        if (!xPostLoginResponse.xUser.enabled) {
+        if (!xPostLoginResponse.user.enabled) {
             // user je disablovany
             alert(`User account "${username}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
@@ -78,7 +78,7 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         XUtils.setXToken({
             accessToken: XUtils.getXToken()?.accessToken,
-            xUser: xPostLoginResponse.xUser,
+            xUser: xPostLoginResponse.user,
             logout: logout
         });
     }

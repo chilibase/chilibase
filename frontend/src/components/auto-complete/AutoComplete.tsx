@@ -1,12 +1,12 @@
 import React from "react";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
-import {XAssoc} from "../../common/XEntityMetadata";
+import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../XUtils";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
 import {XError} from "../XErrors";
 import {XObject} from "../XObject";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
@@ -39,13 +39,13 @@ export interface AutoCompleteProps extends FormComponentProps {
 
 export class AutoComplete extends FormComponent<AutoCompleteProps> {
 
-    protected xAssoc: XAssoc;
+    protected xAssoc: Assoc;
     protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
 
     constructor(props: AutoCompleteProps) {
         super(props);
 
-        this.xAssoc = XUtilsMetadataCommon.getXAssocToOneByPath(XUtilsMetadataCommon.getXEntity(props.form.getEntity()), props.assocField);
+        this.xAssoc = UtilsMetadataCommon.getAssocToOneByPath(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
         this.errorInBase = undefined;
 
         this.onChangeAutoCompleteBase = this.onChangeAutoCompleteBase.bind(this);
@@ -94,7 +94,7 @@ export class AutoComplete extends FormComponent<AutoCompleteProps> {
 
     render() {
 
-        const xEntityAssoc = XUtilsMetadataCommon.getXEntity(this.xAssoc.entityName);
+        const xEntityAssoc = UtilsMetadataCommon.getEntity(this.xAssoc.entityName);
 
         // div className="col" nam zabezpeci aby AutoCompleteBase nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
         return (

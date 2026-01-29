@@ -2,9 +2,9 @@ import {Injectable, StreamableFile} from "@nestjs/common";
 import {XExportColumn, XExportService} from "./x-export.service.js";
 import {Buffer} from "buffer";
 import {Readable} from "stream";
-import {XMultilineExportType} from "../common/ExportImportParam.js";
-import {XEntity} from "../common/XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "../common/XUtilsMetadataCommon.js";
+import {MultilineExportType} from "../common/ExportImportParam.js";
+import {Entity} from "../common/EntityMetadata.js";
+import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon.js";
 import * as ExcelJS from "exceljs";
 
 @Injectable()
@@ -12,11 +12,11 @@ export class XExportExcelService extends XExportService {
 
     // simple api for custom export
     export(worksheetName: string, columns: XExportColumn[], entity: string | undefined, rows: any[]): Promise<StreamableFile> {
-        return this.exportBase(worksheetName, columns, true, XMultilineExportType.Singleline, undefined, entity, rows);
+        return this.exportBase(worksheetName, columns, true, MultilineExportType.Singleline, undefined, entity, rows);
     }
 
     // extended api for custom export
-    exportBase(worksheetName: string, columns: XExportColumn[], createHeaders: boolean, multilineExportType: XMultilineExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[]): Promise<StreamableFile> {
+    exportBase(worksheetName: string, columns: XExportColumn[], createHeaders: boolean, multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[]): Promise<StreamableFile> {
 
         const workbook: ExcelJS.Workbook = new ExcelJS.Workbook();
         const worksheet: ExcelJS.Worksheet = this.createWorksheet(workbook, worksheetName, createHeaders);
@@ -25,7 +25,7 @@ export class XExportExcelService extends XExportService {
             worksheet.columns = columns.map((value: XExportColumn) => {return {header: value.header, width: value.width ?? this.computeWidth(value.header)};});
         }
 
-        const xEntity: XEntity | undefined = entity ? XUtilsMetadataCommon.getXEntity(entity) : undefined;
+        const xEntity: Entity | undefined = entity ? UtilsMetadataCommon.getEntity(entity) : undefined;
 
         for (const row of rows) {
             //convertObject(entity, row, true, AsUIType.Text); // pomeni row!

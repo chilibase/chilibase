@@ -14,7 +14,7 @@ import {loginRequest, msalConfig} from "./msalConfig";
 import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {XUtils} from "../XUtils";
-import {XPostLoginRequest} from "../../common/x-auth-api";
+import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
 export const MSEntraIDProvider = ({children}: {children: ReactNode;}) => {
@@ -77,9 +77,9 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
         // zavolame post-login
         // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
         // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
-        let xPostLoginResponse;
+        let xPostLoginResponse: PostLoginResponse;
         try {
-            const xPostLoginRequest: XPostLoginRequest = {username: accountInfo?.username};
+            const xPostLoginRequest: PostLoginRequest = {username: accountInfo?.username};
             xPostLoginResponse = await XUtils.fetch('post-login', xPostLoginRequest);
         }
         catch (e) {
@@ -97,14 +97,14 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
             throw 'post-login failed';
         }
 
-        if (xPostLoginResponse.xUser === undefined) {
+        if (xPostLoginResponse.user === undefined) {
             // nenasli sme usera v DB
             alert(`User account "${accountInfo?.username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
-        if (!xPostLoginResponse.xUser.enabled) {
+        if (!xPostLoginResponse.user.enabled) {
             // user je disablovany
             alert(`User account "${accountInfo?.username}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
@@ -114,7 +114,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         XUtils.setXToken({
             accessToken: XUtils.getXToken()?.accessToken,
-            xUser: xPostLoginResponse.xUser,
+            xUser: xPostLoginResponse.user,
             logout: logoutWithRedirect
         });
     }

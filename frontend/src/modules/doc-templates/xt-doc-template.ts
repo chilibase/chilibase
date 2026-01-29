@@ -1,5 +1,5 @@
 import {XtDocTemplateFieldToJoin} from "./xt-doc-template-field-to-join";
-import {XUser} from "../../common/XUser";
+import {User} from "../../common/User";
 import {XFile} from "../files/x-file";
 import {XEnum} from "../../administration/x-enum";
 
@@ -14,6 +14,6 @@ export interface XtDocTemplate {
     templateXFile: XFile;
     availableInForms: boolean;
     modifDate: Date | null;
-    modifXUser: XUser | null;
+    modifUser: User | null;
     version: number;
 }

@@ -7,7 +7,7 @@ import {
     ExportJsonParam,
     ExportType,
     LazyDataTableQueryParam,
-    XMultilineExportType
+    MultilineExportType
 } from "../../common/ExportImportParam";
 import React, {useState} from "react";
 import {Dialog} from "primereact/dialog";
@@ -16,7 +16,7 @@ import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from "primereact/checkbox";
 import {XButton} from "../XButton";
 import {XUtils} from "../XUtils";
-import {numberAsUI} from "../../common/XUtilsConversions";
+import {numberAsUI} from "../../common/UtilsConversions";
 import {xLocaleOption} from "../XLocale";
 
 // parametre pre dialog
@@ -43,7 +43,7 @@ export const ExportRowsDialog = (props: {
 
     const [exportType, setExportType] = useState<ExportType>(ExportType.Excel);
     const [createHeaderLine, setCreateHeaderLine] = useState<boolean>(true);
-    const [detailRowsExport, setDetailRowsExport] = useState<XMultilineExportType>(XMultilineExportType.Multiline);
+    const [detailRowsExport, setDetailRowsExport] = useState<MultilineExportType>(MultilineExportType.Multiline);
     const [csvSeparator, setCsvSeparator] = useState(CsvSeparator.Semicolon);
     const [decimalFormat, setDecimalFormat] = useState(CsvDecimalFormat.Comma);
     const [csvEncoding, setCsvEncoding] = useState(CsvEncoding.Win1250);
@@ -53,7 +53,7 @@ export const ExportRowsDialog = (props: {
 
         setExportType(ExportType.Excel);
         setCreateHeaderLine(true);
-        setDetailRowsExport(XMultilineExportType.Multiline);
+        setDetailRowsExport(MultilineExportType.Multiline);
         setCsvSeparator(CsvSeparator.Semicolon);
         setDecimalFormat(CsvDecimalFormat.Comma);
         setCsvEncoding(CsvEncoding.Win1250);
@@ -113,7 +113,7 @@ export const ExportRowsDialog = (props: {
             headers: createHeaderLine ? exportParams.headers : undefined,
             fieldsToDuplicateValues: exportParams.fieldsToDuplicateValues,
             toManyAssocExport: detailRowsExport,
-            multilineTextExport: XMultilineExportType.Multiline // TODO - dorobit aj tuto dropdown kde si uzivatel vyberie ci chce mat v texte \n alebo nechce - aj na backende treba dorobit
+            multilineTextExport: MultilineExportType.Multiline // TODO - dorobit aj tuto dropdown kde si uzivatel vyberie ci chce mat v texte \n alebo nechce - aj na backende treba dorobit
         };
     }
 

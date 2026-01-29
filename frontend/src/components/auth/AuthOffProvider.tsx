@@ -3,7 +3,7 @@ import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {XUtils} from "../XUtils";
 import {XEnvVar} from "../XEnvVars";
-import {XPostLoginRequest} from "../../common/x-auth-api";
+import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {XUtilsMetadata} from "../XUtilsMetadata";
 
 export const AuthOffProvider = ({children}: {children: ReactNode;}) => {
@@ -50,9 +50,9 @@ function AppAuthOff({children}: {children: ReactNode;}) {
 
         // zavolame post-login
         const username: string = XUtils.getEnvVarValue(XEnvVar.VITE_AUTH_OFF_USERNAME);
-        let xPostLoginResponse;
+        let xPostLoginResponse: PostLoginResponse;
         try {
-            const xPostLoginRequest: XPostLoginRequest = {username: username};
+            const xPostLoginRequest: PostLoginRequest = {username: username};
             xPostLoginResponse = await XUtils.fetch('post-login', xPostLoginRequest);
         }
         catch (e) {
@@ -70,14 +70,14 @@ function AppAuthOff({children}: {children: ReactNode;}) {
             throw 'post-login failed';
         }
 
-        if (xPostLoginResponse.xUser === undefined) {
+        if (xPostLoginResponse.user === undefined) {
             // nenasli sme usera v DB
             alert(`User account "${username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
-        if (!xPostLoginResponse.xUser.enabled) {
+        if (!xPostLoginResponse.user.enabled) {
             // user je disablovany
             alert(`User account "${username}" is not enabled. Ask admin to enable user account.`);
             // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
@@ -86,7 +86,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         // TODO - tu provizorne accessToken: 'dummy', bolo accessToken: undefined
-        XUtils.setXToken({accessToken: 'dummy', xUser: xPostLoginResponse.xUser, logout: logout});
+        XUtils.setXToken({accessToken: 'dummy', xUser: xPostLoginResponse.user, logout: logout});
         setLoggedIn(true);
     }
 

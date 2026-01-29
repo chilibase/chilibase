@@ -4,13 +4,13 @@ import {
     type SearchBrowseProps
 } from "../components/lazy-data-table";
 import React from "react";
-import {XUser} from "../common/XUser";
+import {User} from "../common/User";
 import {XUserForm} from "./XUserForm";
 import {XUtils} from "../components/XUtils";
 
 export const XUserBrowse = (props: SearchBrowseProps) => {
 
-    const onRemoveRow = async (selectedRow: XUser): Promise<boolean> => {
+    const onRemoveRow = async (selectedRow: User): Promise<boolean> => {
         if (selectedRow.username === XUtils.getUsername()) {
             alert("Can not remove current user.");
             return false;

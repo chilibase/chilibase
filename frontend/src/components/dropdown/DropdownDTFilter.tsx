@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from "react";
 import {XUtils} from "../XUtils";
 import {Dropdown} from "primereact/dropdown";
-import {XUtilsCommon} from "../../common/XUtilsCommon";
-import {XAssoc, XField} from "../../common/XEntityMetadata";
+import {UtilsCommon} from "../../common/UtilsCommon";
+import {Assoc, Field} from "../../common/EntityMetadata";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
-import {XCustomFilter} from "../../common/FindParam";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
+import {CustomFilter} from "../../common/FindParam";
 
 // pouzivany vo filtri v XLazyDataTable aj v XFormDataTable2
-export const DropdownDTFilter = (props: {entity: string; path: string; value: any; onValueChange: (field: string, displayValue: any) => void; filter?: XCustomFilter; sortField?: string;}) => {
+export const DropdownDTFilter = (props: {entity: string; path: string; value: any; onValueChange: (field: string, displayValue: any) => void; filter?: CustomFilter; sortField?: string;}) => {
 
     const [options, setOptions] = useState<any[]>([]);
 
-    const fieldList: string[] = XUtilsCommon.getFieldListForPath(props.path);
+    const fieldList: string[] = UtilsCommon.getFieldListForPath(props.path);
     if (fieldList.length < 2) {
         throw `DropdownDTFilter: prop path (${props.path}) must have at least 2 items`;
     }
@@ -28,7 +28,7 @@ export const DropdownDTFilter = (props: {entity: string; path: string; value: an
     }
 
     const findOptions = async (entity: string, path: string, displayField: string) => {
-        const xAssoc: XAssoc = XUtilsMetadataCommon.getLastXAssocByPath(XUtilsMetadataCommon.getXEntity(entity), path);
+        const xAssoc: Assoc = UtilsMetadataCommon.getLastAssocByPath(UtilsMetadataCommon.getEntity(entity), path);
         const options: any[] = await XUtils.fetchRows(xAssoc.entityName, props.filter, props.sortField ?? displayField);
         const emptyOption: {[field: string]: any;} = {};
         emptyOption[displayField] = XUtils.dropdownEmptyOptionValue;

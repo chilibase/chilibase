@@ -1,39 +1,38 @@
 // Re-export all files
-export * from "./auth-api.js";
-export * from "./BrowseMetadata.js";
-export * from "./EntityMetadata.js";
-export * from "./ExportImportParam.js";
-export * from "./FindParam.js";
-export * from "./FindResult.js";
-export * from "./lib-api.js";
-export * from "./types.js";
-export * from "./User.js";
-export * from "./UtilsCommon.js";
-export * from "./UtilsConversions.js";
-export * from "./UtilsMetadataCommon.js";
-export * from "./PrimeFilterSortMeta.js";
+export * from "./auth-api";
+export * from "./BrowseMetadata";
+export * from "./EntityMetadata";
+export * from "./ExportImportParam";
+export * from "./FindParam";
+export * from "./FindResult";
+export * from "./lib-api";
+export * from "./types";
+export * from "./User";
+export * from "./UtilsCommon";
+export * from "./UtilsConversions";
+export * from "./UtilsMetadataCommon";
 
 /** @deprecated */
 // X-prefixed aliases for backward compatibility
 export type {
     BrowseMetaMap as XBrowseMetaMap
-} from "./BrowseMetadata.js";
+} from "./BrowseMetadata";
 export type {
     User as XUser
-} from "./User.js";
+} from "./User";
 export type {
     Params as XParams
-} from "./UtilsCommon.js";
+} from "./UtilsCommon";
 export {
     UtilsCommon as XUtilsCommon
-} from "./UtilsCommon.js";
+} from "./UtilsCommon";
 export {
     UtilsMetadataCommon as XUtilsMetadataCommon
-} from "./UtilsMetadataCommon.js";
+} from "./UtilsMetadataCommon";
 export type {
     DateScale as XDateScale,
     AsUIType as XAsUIType
-} from "./UtilsConversions.js";
+} from "./UtilsConversions";
 export type {
     ResultType as XResultType,
     CustomFilterItem as XCustomFilterItem,
@@ -46,11 +45,11 @@ export type {
     SimpleAggregateItem as XSimpleAggregateItem,
     FindParam as XFindParam,
     LazyAutoCompleteSuggestionsRequest as XLazyAutoCompleteSuggestionsRequest
-} from "./FindParam.js";
+} from "./FindParam";
 export type {
     AggregateValues as XAggregateValues,
     FindResult as XFindResult
-} from "./FindResult.js";
+} from "./FindResult";
 export type {
     ExportType as XExportType,
     ExportExcelParam as XExportExcelParam,
@@ -66,7 +65,7 @@ export type {
     ImportType as XImportType,
     ImportParam as XImportParam,
     ImportResponse as XImportResponse
-} from "./ExportImportParam.js";
+} from "./ExportImportParam";
 export type {
     GetSequenceValueRequest as XGetSequenceValueRequest,
     GetSequenceValueResponse as XGetSequenceValueResponse,
@@ -75,13 +74,13 @@ export type {
     UnlockRowRequest as XUnlockRowRequest,
     RunDocTemplateRequest as XtRunDocTemplateRequest,
     FileJsonField as XFileJsonField
-} from "./lib-api.js";
+} from "./lib-api";
 export type {
     LocalAuthLoginRequest as XLocalAuthLoginRequest,
     LocalAuthLoginResponse as XLocalAuthLoginResponse,
     PostLoginRequest as XPostLoginRequest,
     PostLoginResponse as XPostLoginResponse
-} from "./auth-api.js";
+} from "./auth-api";
 export type {
     EntityRow as XEntityRow
-} from "./types.js";
+} from "./types";

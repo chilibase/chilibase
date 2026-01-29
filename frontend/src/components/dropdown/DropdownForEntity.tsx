@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {Dropdown, DropdownChangeEvent} from "primereact/dropdown";
 import {XUtils} from "../XUtils";
-import {XCustomFilter} from "../../common/FindParam";
+import {CustomFilter} from "../../common/FindParam";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XUtilsMetadataCommon} from "../../common/XUtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export interface DropdownForEntityProps {
     id?: string;
@@ -15,7 +15,7 @@ export interface DropdownForEntityProps {
     readOnly?: boolean;
     isNotNull?: boolean;
     error?: string;
-    filter?: XCustomFilter;
+    filter?: CustomFilter;
 }
 
 // vseobecny Dropdown ktoreho parametrom je entity, zobrazuje zaznamy danej entity, po selectnuti vracia zaznam danej entity
@@ -36,7 +36,7 @@ export class DropdownForEntity extends Component<DropdownForEntityProps> {
     constructor(props: DropdownForEntityProps) {
         super(props);
 
-        this.idField = XUtilsMetadataCommon.getXEntity(this.props.entity).idField;
+        this.idField = UtilsMetadataCommon.getEntity(this.props.entity).idField;
 
         this.state = {
             options: []

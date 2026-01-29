@@ -1,23 +1,23 @@
-import {XEntity, XField} from "./XEntityMetadata.js";
-import {XUtilsMetadataCommon} from "./XUtilsMetadataCommon.js";
-import {AsUIType, convertValue, dateAsYYYY_MM_DD, dateFormat, datetimeFormat} from "./XUtilsConversions.js";
-import {XCustomFilter, XCustomFilterItem} from "./FindParam.js";
+import {Entity, Field} from "./EntityMetadata.js";
+import {UtilsMetadataCommon} from "./UtilsMetadataCommon.js";
+import {AsUIType, convertValue, dateAsYYYY_MM_DD, dateFormat, datetimeFormat} from "./UtilsConversions.js";
+import {CustomFilter, CustomFilterItem} from "./FindParam.js";
 import {DataTableSortMeta} from "./PrimeFilterSortMeta.js";
 
 // common types for frontend and backend
 
-export interface XParams {
+export interface Params {
     [key: string]: any;
 }
 
 // common functions for frontend and backend
-export class XUtilsCommon {
+export class UtilsCommon {
 
     static newLine: string = '\n';
 
     // TODO - toto by sme mohli doplnit o kontrolu ak programator urobil preklep
     static getValueByPath(object: any, path: string): any {
-        const [field, restPath] = XUtilsCommon.getFieldAndRestPath(path);
+        const [field, restPath] = UtilsCommon.getFieldAndRestPath(path);
         if (restPath === null) {
             return object[field];
         }
@@ -25,7 +25,7 @@ export class XUtilsCommon {
             const assocObject = object[field];
             // pri vytvarani noveho riadku - assocObject neni v novom objekte ani ako null (je undefined)
             if (assocObject !== null && assocObject !== undefined) {
-                return XUtilsCommon.getValueByPath(assocObject, restPath);
+                return UtilsCommon.getValueByPath(assocObject, restPath);
             }
             else {
                 return null; // asociovany objekt je null, aj hodnota atributu bude null
@@ -36,7 +36,7 @@ export class XUtilsCommon {
     // vseobecnejsia verzia, ktora funguje aj pre *toMany asociacie
     // TODO - toto by sme mohli doplnit o kontrolu ak programator urobil preklep
     static getValueOrValueListByPath(object: any, path: string): any | any[] {
-        const [field, restPath] = XUtilsCommon.getFieldAndRestPath(path);
+        const [field, restPath] = UtilsCommon.getFieldAndRestPath(path);
         if (restPath === null) {
             return object[field];
         }
@@ -47,7 +47,7 @@ export class XUtilsCommon {
                 const resultValueList: any[] = [];
                 for (const assocObjectItem of assocObject) {
                     if (assocObjectItem !== null && assocObjectItem !== undefined) { // pre istotu, nemalo by nastat
-                        const itemValue: any | any[] = XUtilsCommon.getValueOrValueListByPath(assocObjectItem, restPath);
+                        const itemValue: any | any[] = UtilsCommon.getValueOrValueListByPath(assocObjectItem, restPath);
                         if (Array.isArray(itemValue)) {
                             resultValueList.push(...itemValue);
                         }
@@ -64,7 +64,7 @@ export class XUtilsCommon {
             else {
                 // pri vytvarani noveho riadku - assocObject neni v novom objekte ani ako null (je undefined)
                 if (assocObject !== null && assocObject !== undefined) {
-                    return XUtilsCommon.getValueOrValueListByPath(assocObject, restPath);
+                    return UtilsCommon.getValueOrValueListByPath(assocObject, restPath);
                 }
                 else {
                     return null; // asociovany objekt je null, aj hodnota atributu bude null
@@ -74,12 +74,12 @@ export class XUtilsCommon {
     }
 
     static setValueByPath(object: any, path: string, value: any) {
-        const [pathToAssoc, field]: [string | null, string] = XUtilsCommon.getPathToAssocAndField(path);
+        const [pathToAssoc, field]: [string | null, string] = UtilsCommon.getPathToAssocAndField(path);
         if (pathToAssoc !== null) {
-            const assocObject = XUtilsCommon.getValueByPath(object, pathToAssoc);
+            const assocObject = UtilsCommon.getValueByPath(object, pathToAssoc);
             // if null or undefined or is not object, then error
             if (assocObject === null || assocObject === undefined || typeof assocObject !== 'object') {
-                console.log(`XUtilsCommon.setValueByPath: could not set value ${value} into object property ${path}. Assoc object not found (found value: ${assocObject}). Main object:`);
+                console.log(`UtilsCommon.setValueByPath: could not set value ${value} into object property ${path}. Assoc object not found (found value: ${assocObject}). Main object:`);
                 console.log(object);
                 throw `setValueByPath: could not set value ${value} into object property ${path}. Assoc object not found. The main object can be seen in log.`;
             }
@@ -140,10 +140,10 @@ export class XUtilsCommon {
         }
     }
 
-    static createDisplayValue(object: any, xEntity: XEntity | undefined, fields: string[]): string {
+    static createDisplayValue(object: any, xEntity: Entity | undefined, fields: string[]): string {
         let displayValue: string = "";
         for (const field of fields) {
-            const valueStr: string = XUtilsCommon.createDisplayValueForField(object, xEntity, field);
+            const valueStr: string = UtilsCommon.createDisplayValueForField(object, xEntity, field);
             if (valueStr !== "") {
                 if (displayValue !== "") {
                     displayValue += " ";
@@ -154,21 +154,21 @@ export class XUtilsCommon {
         return displayValue;
     }
 
-    static createDisplayValueForField(object: any, xEntity: XEntity | undefined, field: string): string {
+    static createDisplayValueForField(object: any, xEntity: Entity | undefined, field: string): string {
         // pouziva sa podobny algoritmus ako v XLazyDataTable - metoda bodyTemplate
         // (ale nie je to take komplexne ako v XLazyDataTable - nevie renderovat napr. html (rich text))
-        const [prefix, fieldOnly]: [string | null, string] = XUtilsCommon.getPrefixAndField(field);
-        let xField: XField | undefined = undefined;
+        const [prefix, fieldOnly]: [string | null, string] = UtilsCommon.getPrefixAndField(field);
+        let xField: Field | undefined = undefined;
         if (xEntity) {
-            xField = XUtilsMetadataCommon.getXFieldByPath(xEntity, fieldOnly);
+            xField = UtilsMetadataCommon.getFieldByPath(xEntity, fieldOnly);
         }
         let displayValue: string;
-        const valueOrValueList: any | any[] = XUtilsCommon.getValueOrValueListByPath(object, fieldOnly);
+        const valueOrValueList: any | any[] = UtilsCommon.getValueOrValueListByPath(object, fieldOnly);
         if (Array.isArray(valueOrValueList)) {
             // zatial je zoznam hodnot OneToMany asociacie oddeleny " ", nedat zoznam napr. do zatvoriek [<zoznam>] ?
             displayValue = "";
             for (const value of valueOrValueList) {
-                const valueAsUI: string = XUtilsCommon.displayValueAsUI(prefix, value, xField);
+                const valueAsUI: string = UtilsCommon.displayValueAsUI(prefix, value, xField);
                 if (valueAsUI !== "") {
                     if (displayValue !== "") {
                         displayValue += " ";
@@ -178,12 +178,12 @@ export class XUtilsCommon {
             }
         }
         else {
-            displayValue = XUtilsCommon.displayValueAsUI(prefix, valueOrValueList, xField);
+            displayValue = UtilsCommon.displayValueAsUI(prefix, valueOrValueList, xField);
         }
         return displayValue;
     }
 
-    static displayValueAsUI(prefix: string | null, value: any, xField: XField | undefined): string {
+    static displayValueAsUI(prefix: string | null, value: any, xField: Field | undefined): string {
         let displayValue: string;
         if (xField) {
             // null hodnoty konvertuje na ""
@@ -341,20 +341,20 @@ export class XUtilsCommon {
         return Array.from(new Set([...idListA, ...idListB])); // new Set(...) removes duplicates automatically
     }
 
-    // ************* XCustomFilter/XCustomFilterItem/DataTableSortMeta **************
+    // ************* CustomFilter/CustomFilterItem/DataTableSortMeta **************
 
     // pomocna metodka - aby sme nemuseli v kode vypisovat {where: <filter>, params: {}}
-    static createCustomFilter(filter: string | undefined | null): XCustomFilterItem | undefined {
-        let customFilterItem: XCustomFilterItem | undefined = undefined;
+    static createCustomFilter(filter: string | undefined | null): CustomFilterItem | undefined {
+        let customFilterItem: CustomFilterItem | undefined = undefined;
         if (filter) {
             customFilterItem = {where: filter, params: {}};
         }
         return customFilterItem;
     }
 
-    // pomocna metodka - konvertuje XCustomFilter -> XCustomFilterItem[]
-    static createCustomFilterItems(customFilter: XCustomFilter | undefined): XCustomFilterItem[] | undefined {
-        let customFilterItems: XCustomFilterItem[] | undefined = undefined;
+    // pomocna metodka - konvertuje CustomFilter -> CustomFilterItem[]
+    static createCustomFilterItems(customFilter: CustomFilter | undefined): CustomFilterItem[] | undefined {
+        let customFilterItems: CustomFilterItem[] | undefined = undefined;
         if (customFilter) {
             if (Array.isArray(customFilter)) {
                 customFilterItems = customFilter;
@@ -389,12 +389,12 @@ export class XUtilsCommon {
     }
 
     // pomocna metodka
-    static filterAnd(...filters: (XCustomFilter | undefined)[]): XCustomFilterItem[] | undefined {
-        let customFilterItemsResult: XCustomFilterItem[] | undefined = undefined;
+    static filterAnd(...filters: (CustomFilter | undefined)[]): CustomFilterItem[] | undefined {
+        let customFilterItemsResult: CustomFilterItem[] | undefined = undefined;
         if (filters.length > 0) {
             customFilterItemsResult = [];
             for (const filter of filters) {
-                const customFilterItems: XCustomFilterItem[] | undefined = XUtilsCommon.createCustomFilterItems(filter);
+                const customFilterItems: CustomFilterItem[] | undefined = UtilsCommon.createCustomFilterItems(filter);
                 if (customFilterItems) {
                     customFilterItemsResult.push(...customFilterItems);
                 }
@@ -405,14 +405,14 @@ export class XUtilsCommon {
 
     // pomocna metodka
     // ak je idList prazdny, vytvori podmienku id IN (0) a nevrati ziadne zaznamy
-    static filterIdIn(idField: string, idList: number[]): XCustomFilter {
+    static filterIdIn(idField: string, idList: number[]): CustomFilter {
         return {where: `[${idField}] IN (:...idList)`, params: {"idList": idList.length > 0 ? idList : [0]}};
     }
 
     // helper
     static createPathFieldExp(pathFieldOrPathFieldExp: string): string {
         // if fieldOrPathFieldExp is only pathField (e.g. attrX or assocA.attrB) then make path field expression (enclose field into [])
-        if (XUtilsCommon.isPathField(pathFieldOrPathFieldExp)) {
+        if (UtilsCommon.isPathField(pathFieldOrPathFieldExp)) {
             pathFieldOrPathFieldExp = `[${pathFieldOrPathFieldExp}]`;
         }
         return pathFieldOrPathFieldExp;
@@ -454,7 +454,7 @@ export class XUtilsCommon {
         }
         else if (date1 !== null && date2 !== null) {
             // to avoid problems with time part, we use dateCompare
-            result = (XUtilsCommon.dateCompare(date1, date2) === 0);
+            result = (UtilsCommon.dateCompare(date1, date2) === 0);
             // mali sme problem - funkcia dateFromModel() konvertovala string "2025-02-04" na Tue Feb 04 2025 01:00:00 GMT+0100 (Central European Standard Time)
             // a XCalendar pri vykliknuti datumu vracal Tue Feb 04 2025 00:00:00 GMT+0100 (Central European Standard Time) -> opravili sme XCalendar
             //result = date1.getFullYear() === date2.getFullYear()
@@ -465,7 +465,7 @@ export class XUtilsCommon {
     }
 
     static dateIntersect(date1From: Date, date1To: Date, date2From: Date, date2To: Date): boolean {
-        return XUtilsCommon.dateCompare(date1From, date2To) <= 0 && XUtilsCommon.dateCompare(date2From, date1To) <= 0;
+        return UtilsCommon.dateCompare(date1From, date2To) <= 0 && UtilsCommon.dateCompare(date2From, date1To) <= 0;
     }
 
     // because of time part, the usual compare (using <=) sometimes does not work correct
@@ -549,7 +549,7 @@ export class XUtilsCommon {
     }
 
     static currentMonth(): Date {
-        return XUtilsCommon.dateAsMonth(XUtilsCommon.today())!;
+        return UtilsCommon.dateAsMonth(UtilsCommon.today())!;
     }
 
     static dateAsMonth(date: Date | null): Date | null {

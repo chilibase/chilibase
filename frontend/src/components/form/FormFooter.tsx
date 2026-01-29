@@ -2,8 +2,8 @@ import React from "react";
 import {FormBase} from "./FormBase";
 import {XButton} from "../XButton";
 import {xLocaleOption} from "../XLocale";
-import {XDocTemplateButton} from "../../modules/docTemplates/XDocTemplateButton";
-import {XtDocTemplate} from "../../modules/docTemplates/xt-doc-template";
+import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
+import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
 import {XUtils} from "../XUtils";
 
 // constant to be used in method formReadOnly to identify save button
@@ -24,7 +24,7 @@ export const FormFooter = (props: {
 
     // template button is rendered only for update (id !== undefined; row must exist in DB), not for insert
     if (props.docTemplates && !XUtils.isMobile() && props.form.props.id !== undefined) {
-        rightNodeList.push(<XDocTemplateButton key="docTemplates" entity={props.form.getEntity()} rowId={props.form.props.id} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/>);
+        rightNodeList.push(<DocTemplateButton key="docTemplates" entity={props.form.getEntity()} rowId={props.form.props.id} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/>);
     }
 
     if (props.bodyRight) {
@@ -32,7 +32,7 @@ export const FormFooter = (props: {
     }
 
     if (props.indentWidth && rightNodeList.length > 0) {
-        // used only to create some distance between buttons Cancel and XDocTemplateButton (all content is centered), because Cancel is frequently used
+        // used only to create some distance between buttons Cancel and DocTemplateButton (all content is centered), because Cancel is frequently used
         leftCompensationElem = <div style={{width: props.indentWidth}}/>;
         rightNodeList =
             [<div className="flex justify-content-end" style={{width: props.indentWidth}}>
