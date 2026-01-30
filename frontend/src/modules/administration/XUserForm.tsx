@@ -9,7 +9,7 @@ import {Checkbox} from "../../components/checkbox";
 import {XEnvVar, XViteAuth} from "../../components/XEnvVars";
 import {FormBaseModif} from "../../components/form";
 import {InputDate} from "../../components/input-date";
-import {XObject} from "../../components/XObject";
+import {EntityRow} from "../../common/types";
 import {FormHeader} from "../../components/form";
 
 export class XUserForm extends FormBaseModif {
@@ -24,11 +24,11 @@ export class XUserForm extends FormBaseModif {
         this.onClickSave = this.onClickSave.bind(this);
     }
 
-    createNewObject(): XObject {
+    createNewObject(): EntityRow {
         return {enabled: true, admin: false, version: 0};
     }
 
-    preInitForm(object: XObject, operationType: OperationType.Insert | OperationType.Update) {
+    preInitForm(object: EntityRow, operationType: OperationType.Insert | OperationType.Update) {
         // current user cannot change username, enabled and admin status
         const username = object.username;
         if (operationType === OperationType.Update && username === XUtils.getUsername()) {
@@ -70,7 +70,7 @@ export class XUserForm extends FormBaseModif {
         const isAddRow = this.isAddRow();
 
         // zapise this.state.object do DB - samostatny servis koli hashovaniu password-u
-        let object: XObject;
+        let object: EntityRow;
         try {
             object = await XUtils.post('userSaveRow', {entity: this.getEntity(), object: this.state.object});
         }

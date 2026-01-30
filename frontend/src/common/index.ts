@@ -74,5 +74,5 @@ export type {
     PostLoginResponse as XPostLoginResponse
 } from "./auth-api";
 export type {
-    EntityRow as XEntityRow
+    EntityRow as XObject
 } from "./types";

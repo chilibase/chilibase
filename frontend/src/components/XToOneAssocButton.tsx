@@ -1,8 +1,7 @@
 import {FormBase} from "./form";
-import {XObject} from "./XObject";
+import {EntityRow} from "../common/types";
 import React from "react";
 import {Button} from "primereact/button";
-import {XUtilsMetadata} from "./XUtilsMetadata";
 import {XUtils} from "./XUtils";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
@@ -13,7 +12,7 @@ export const XToOneAssocButton = (props: {form: FormBase; assocField: string; as
 
     const label = props.label !== undefined ? props.label : props.assocField;
 
-    const object: XObject | null = props.form.state.object;
+    const object: EntityRow | null = props.form.state.object;
     const assocObject = object !== null ? object[props.assocField] : null;
 
     const onClickButton = (e: any) => {

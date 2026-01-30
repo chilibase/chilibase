@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {XObject} from "../XObject";
+import {EntityRow} from "../../common/types";
 import {OperationType, XUtils} from "../XUtils";
 import {FieldOnChange, FormComponent} from "./FormComponent";
 import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
@@ -11,7 +11,7 @@ import {FindRowByIdResponse, UnlockRowRequest} from "../../common/lib-api";
 import {dateFromModel, datetimeAsUI} from "../../common/UtilsConversions";
 import {xLocaleOption} from "../XLocale";
 
-export type OnSaveOrCancelProp = (object: XObject | null, objectChange: OperationType) => void;
+export type OnSaveOrCancelProp = (object: EntityRow | null, objectChange: OperationType) => void;
 
 // poznamka - v assoc button-e (XSearchButton, XToOneAssocButton, FormSearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
 // pri tomto zapise sa nezadava property id (id sa doplni automaticky pri otvoreni assoc formularu cez klonovanie elementu)
@@ -21,7 +21,7 @@ export interface FormPropsOld {
     ref?: React.Ref<FormBase>;
     id?: number;
     loaderData?: object; // objekt nacitany cez clientLoader (id by malo byt undefined, initValues je tiez undefined, v buducnosti nahradi id)
-    initValues?: object; // pri inserte (id je undefined) mozme cez tuto property poslat do formulara default hodnoty ktore sa nastavia do objektu vytvoreneho v metode this.createNewObject(): XObject
+    initValues?: object; // pri inserte (id je undefined) mozme cez tuto property poslat do formulara default hodnoty ktore sa nastavia do objektu vytvoreneho v metode this.createNewObject(): EntityRow
     onSaveOrCancel?: OnSaveOrCancelProp; // pouziva sa pri zobrazeni formulara v dialogu (napr. v XAutoCompleteBase) - pri onSave odovzdava updatnuty/insertnuty objekt, pri onCancel odovzdava null,
                                             // pouziva sa aj pri navrate do browsu - v tejto metode sa zavola reread browsu
     isInDialog?: boolean; // flag, if form is opened in Dialog (usually true)
@@ -29,7 +29,7 @@ export interface FormPropsOld {
 
 export interface FormProps {
     ref?: React.Ref<FormBase>;
-    object?: XObject; // object(row) created/loaded using methods createObject(id undefined)/loadObject (id exists)
+    object?: EntityRow; // object(row) created/loaded using methods createObject(id undefined)/loadObject (id exists)
                     // "?" is DEPRECATED - if object is undefined then object is loaded in componentDidMount - legacy way of loading
     id?: number; // DEPRECATED - used only if object is undefined (legacy way of loading)
     initValues?: object; // DEPRECATED - used to init object by insert in case of legacy object loading - could/will be replaced with params/object
@@ -97,7 +97,7 @@ export abstract class FormBase extends Component<FormProps> {
     readOnly: boolean; // used if the lock was not acquired (other user holds the lock)
 
     fieldSet: Set<string>; // zoznam zobrazovanych fieldov (vcetne asoc. objektov) - potrebujeme koli nacitavaniu root objektu
-    state: {object: XObject | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
+    state: {object: EntityRow | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
     formComponentList: Array<FormComponent<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
@@ -172,7 +172,7 @@ export abstract class FormBase extends Component<FormProps> {
         //}
 
         if (!this.legacyObjectLoading) {
-            let object: XObject = this.state.object;
+            let object: EntityRow = this.state.object;
             const operationType: OperationType.Insert | OperationType.Update = this.isAddRow() ? OperationType.Insert : OperationType.Update;
             // i am not sure if preInitForm (and call in componentDidMount is needed) but unlike legacy version,
             // developer has to call this.setState({object: object}); if changes in this.object have been made and shoud be rendered in form)
@@ -181,7 +181,7 @@ export abstract class FormBase extends Component<FormProps> {
         }
         else {
             // legacy version (this.state.object === null, clientLoader not used)
-            let object: XObject;
+            let object: EntityRow;
             let operationType: OperationType.Insert | OperationType.Update;
             if (this.props.id !== undefined) {
                 //console.log('FormBase.componentDidMount ide nacitat objekt');
@@ -234,7 +234,7 @@ export abstract class FormBase extends Component<FormProps> {
         return this.entity;
     }
 
-    getXObject(): XObject {
+    getEntityRow(): EntityRow {
         if (this.state.object === null) {
             throw "FormBase: this.state.object is null";
         }
@@ -242,7 +242,7 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     getObject(): any {
-        return this.getXObject() as any;
+        return this.getEntityRow() as any;
     }
 
     setFormDataChanged(formDataChanged: boolean) {
@@ -290,7 +290,7 @@ export abstract class FormBase extends Component<FormProps> {
         // v takom pripade sa do errorMap zapise ako key cely field <assocX>.<fieldY>
         // (zlozitejsie riesenie by bolo zapisovat errors do specialneho technickeho atributu asociovaneho objektu ale zatial to nechame takto jednoducho)
 
-        const object: XObject = this.getXObject();
+        const object: EntityRow = this.getEntityRow();
         UtilsCommon.setValueByPath(object, field, value);
 
         const errorMap: XErrorMap = this.state.errorMap;
@@ -308,7 +308,7 @@ export abstract class FormBase extends Component<FormProps> {
 
     onTableFieldChange(rowData: any, field: string, value: any, error?: string | undefined, onChange?: TableFieldOnChange, assocObjectChange?: OperationType) {
 
-        const object: XObject = this.getXObject();
+        const object: EntityRow = this.getEntityRow();
         rowData[field] = value;
 
         // nastavime error do rowData do tech fieldu
@@ -329,7 +329,7 @@ export abstract class FormBase extends Component<FormProps> {
      * @deprecated - mal by sa pouzivat onTableFieldChange
      */
     onObjectDataChange(row?: any, onChange?: TableFieldOnChange) {
-        const object: XObject | null = this.state.object;
+        const object: EntityRow | null = this.state.object;
 
         // tu zavolame onChange komponentu - object uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
@@ -349,8 +349,15 @@ export abstract class FormBase extends Component<FormProps> {
         this.setState({object: this.state.object, errorMap: this.state.errorMap}, callback);
     }
 
+    /**
+     * @deprecated
+     */
+    setStateXForm(callback?: () => void) {
+        this.setStateForm(callback);
+    }
+
     onTableAddRow(assocField: string, newRow: any, dataKey?: string, selectedRow?: {}) {
-        const object: XObject = this.getXObject();
+        const object: EntityRow = this.getEntityRow();
         const rowList: any[] = object[assocField];
         // ak vieme id-cko a id-cko nie je vyplnene, tak ho vygenerujeme (predpokladame ze id-cko je vzdy number)
         // id-cka potrebujeme, lebo by nam bez nich nekorektne fungovala tabulka
@@ -392,7 +399,7 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     onTableRemoveRow(assocField: string, row: {}) {
-        const object: XObject = this.getXObject();
+        const object: EntityRow = this.getEntityRow();
         const rowList: any[] = object[assocField];
         // poznamka: indexOf pri vyhladavani pouziva strict equality (===), 2 objekty su rovnake len ak porovnavame 2 smerniky na totozny objekt
         const index = rowList.indexOf(row);
@@ -468,7 +475,7 @@ export abstract class FormBase extends Component<FormProps> {
         // if (object !== null) {
         //     const carDate = object['carDatetime'];
         //     if (carDate !== undefined && carDate !== null) {
-        //         //(object as XObject)['carDate'] = dateFormat(carDate, 'yyyy-mm-dd');
+        //         //(object as EntityRow)['carDate'] = dateFormat(carDate, 'yyyy-mm-dd');
         //         console.log(dateFormat(carDate, 'yyyy-mm-dd HH:MM:ss'))
         //         console.log(carDate.getHours());
         //         console.log(carDate.getMinutes());
@@ -481,7 +488,7 @@ export abstract class FormBase extends Component<FormProps> {
         const isAddRow = this.isAddRow();
 
         //console.log(this.state.object);
-        let object: XObject;
+        let object: EntityRow;
         try {
             object = await this.saveRow();
         }
@@ -572,7 +579,7 @@ export abstract class FormBase extends Component<FormProps> {
         const xErrorMap: XErrorMap = this.fieldValidation();
 
         // form validation
-        const xErrors: XErrors = await this.validate(this.getXObject());
+        const xErrors: XErrors = await this.validate(this.getEntityRow());
         for (const [field, error] of Object.entries(xErrors)) {
             if (error) {
                 // skusime zistit label
@@ -605,7 +612,7 @@ export abstract class FormBase extends Component<FormProps> {
 
     getErrorMessagesForAssoc(oneToManyAssoc: string): string {
         let msg: string = "";
-        const object: XObject = this.getXObject();
+        const object: EntityRow = this.getEntityRow();
         const rowList: any[] = object[oneToManyAssoc];
         if (!Array.isArray(rowList)) {
             throw `Array for the assoc ${oneToManyAssoc} not found in the form object`;
@@ -632,24 +639,24 @@ export abstract class FormBase extends Component<FormProps> {
     // this method can be overriden in subclass if needed
     // (the purpose is to put the whole form to read only mode (maybe with exception a few fields))
     // if returns true for the param "field", then the field is read only, otherwise the property readOnly of the XInput* is processed
-    formReadOnly(object: XObject, field: string): boolean {
+    formReadOnly(object: EntityRow, field: string): boolean {
         return this.readOnly;
     }
 
     // this method can be overriden in subclass if needed (to set some default values for insert)
-    createNewObject(): XObject {
+    createNewObject(): EntityRow {
         return {};
     }
 
     // this method can be overriden in subclass if needed (to set some default values for insert)
     // if createNewObject() returns empty object {}, then createNewObjectAsync() is called
-    async createNewObjectAsync(): Promise<XObject> {
+    async createNewObjectAsync(): Promise<EntityRow> {
         return {};
     }
 
     // this method can be overriden in subclass if needed (custom load object)
     // legacy way of loading object
-    async loadObjectLegacy(id: number): Promise<XObject> {
+    async loadObjectLegacy(id: number): Promise<EntityRow> {
         // in constructor, member pessimisticLocking is still not set, that's why here we add the "lockUser.name"
         if (this.pessimisticLocking) {
             this.addField("lockUser.name");
@@ -677,16 +684,16 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     // this method can be overriden in subclass if needed (to modify/save object after read from DB and before set into the form)
-    preInitForm(object: XObject, operationType: OperationType.Insert | OperationType.Update) {
+    preInitForm(object: EntityRow, operationType: OperationType.Insert | OperationType.Update) {
     }
 
     // this method can be overriden in subclass if needed (custom validation)
-    async validate(object: XObject): Promise<XErrors> {
+    async validate(object: EntityRow): Promise<XErrors> {
         return {};
     }
 
     // this method can be overriden in subclass if needed (to modify object before save)
-    preSave(object: XObject) {
+    preSave(object: EntityRow) {
     }
 
     // this method can be overriden in subclass if needed (to use another service then default 'saveRow')

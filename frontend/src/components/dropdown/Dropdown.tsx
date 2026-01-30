@@ -1,7 +1,6 @@
 import React from "react";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
-import {XObject} from "../XObject";
 import {DropdownForEntity} from "./DropdownForEntity";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 

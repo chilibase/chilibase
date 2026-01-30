@@ -1,6 +1,6 @@
 import {FormBase} from "../form";
 import React, {Component} from "react";
-import {XObject} from "../XObject";
+import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType, XUtils} from "../XUtils";
 import {XError} from "../XErrors";
@@ -87,9 +87,9 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
         }
         else if (typeof this.props.readOnly === 'function') {
             // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
-            const object: XObject = this.props.form.state.object;
+            const object: EntityRow = this.props.form.state.object;
             if (object) {
-                readOnly = this.props.readOnly(this.props.form.getXObject(), this.props.rowData);
+                readOnly = this.props.readOnly(this.props.form.getEntityRow(), this.props.rowData);
             }
             else {
                 readOnly = true;
@@ -168,7 +168,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
 
     callOnChangeFromOnBlur() {
         if (this.valueChanged && this.props.onChange) {
-            const object: XObject = this.props.form.getXObject();
+            const object: EntityRow = this.props.form.getEntityRow();
             // developer v onChange nastavi atributy na object-e
             this.props.onChange({object: object, tableRow: this.props.rowData, assocObjectChange: undefined});
             // rovno zavolame form.setState({...}), nech to nemusi robit developer
@@ -184,8 +184,8 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
             customFilter = filter;
         }
         if (typeof filter === 'function') {
-            //const object: XObject = this.props.form.getXObject();
-            const object: XObject = this.props.form.state.object;
+            //const object: EntityRow = this.props.form.getEntityRow();
+            const object: EntityRow = this.props.form.state.object;
             // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii object
             // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre XFormBase))
             //if (object) {

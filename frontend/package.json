@@ -95,7 +95,6 @@
     "./XLocale": "./lib/components/XLocale.js",
     "./XLoginDialog": "./lib/components/XLoginDialog.js",
     "./XLoginForm": "./lib/components/XLoginForm.js",
-    "./XObject": "./lib/components/XObject.js",
     "./XSearchButton": "./lib/components/XSearchButton.js",
     "./XToken": "./lib/components/XToken.js",
     "./XToOneAssocButton": "./lib/components/XToOneAssocButton.js",

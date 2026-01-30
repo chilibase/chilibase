@@ -4,7 +4,6 @@ import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../XUtils";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
 import {XError} from "../XErrors";
-import {XObject} from "../XObject";
 import {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FormProps} from "../form";

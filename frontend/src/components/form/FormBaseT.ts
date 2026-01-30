@@ -4,7 +4,7 @@ import {FormBase} from "./FormBase";
 export abstract class FormBaseT<T> extends FormBase {
 
     getObject(): T {
-        return this.getXObject() as any;
+        return this.getEntityRow() as any;
     }
 }
 

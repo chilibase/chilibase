@@ -1,7 +1,7 @@
 import React from "react";
 import {FormBaseModif} from "../../components/form";
 import {Form} from "../../components/form";
-import {XObject} from "../../components/XObject";
+import {EntityRow} from "../../common/types";
 import {InputDecimal} from "../../components/input-decimal";
 import {InputDate} from "../../components/input-date";
 import {InputText} from "../../components/input-text";
@@ -11,7 +11,7 @@ import {FormHeader} from "../../components/form";
 @Form("XParam")
 export class XParamForm extends FormBaseModif {
 
-    createNewObject(): XObject {
+    createNewObject(): EntityRow {
         return {version: 0};
     }
 

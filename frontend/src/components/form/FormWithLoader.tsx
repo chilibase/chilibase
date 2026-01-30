@@ -9,7 +9,7 @@ import {
 import {OperationType, XUtils} from "../XUtils";
 import {Params} from "../../common/UtilsCommon";
 import {XEnvVar} from "../XEnvVars";
-import {XObject} from "../XObject";
+import {EntityRow} from "../../common/types";
 
 // HOC component - wraps form component (e.g. CarForm - either as component type or as JSX element (with custom props))
 // into enhanced component that renders/reads data
@@ -99,13 +99,13 @@ export function FormWithLoader<T = any>(
 
             if (Form) {
                 // we use component type (idiomatic way)
-                return <Form ref={props.formBaseRef} object={data as XObject} id={props.id} initValues={props.initValues} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
+                return <Form ref={props.formBaseRef} object={data as EntityRow} id={props.id} initValues={props.initValues} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
                 return React.cloneElement(formElement!, {
                     ref: props.formBaseRef,
-                    object: data as XObject,
+                    object: data as EntityRow,
                     id: props.id,
                     initValues: props.initValues,
                     onSaveOrCancel: props.onSaveOrCancel,

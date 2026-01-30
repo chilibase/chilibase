@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {FormBase} from "./FormBase";
 import {XError} from "../XErrors";
-import {XObject} from "../XObject";
+import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType, XUtils} from "../XUtils";
 import {XFieldChangeEvent} from "../XFieldChangeEvent";
@@ -15,7 +15,7 @@ export type ReadOnlyProp = boolean | ((object: any) => boolean);
 
 // typ property pre pridanie filtra na vyber associable rows - pouziva sa na assoc fieldoch (XAutoComplete, Dropdown, ...)
 // bud sa do property zapise priamo CustomFilter alebo sa vytvara funkcia ktora CustomFilter vrati (v tomto pripade moze CustomFilter zavisiet od aktualne editovaneho objektu "object")
-// pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
+// pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo EntityRow)
 export type FilterProp = CustomFilter | ((object: any) => CustomFilter | undefined);
 
 export interface FormComponentProps {
@@ -59,7 +59,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
     // can be overridden, but this should work for every component
     getValueFromObject(): any {
         let objectValue: any = null;
-        const object: XObject | null = this.props.form.state.object;
+        const object: EntityRow | null = this.props.form.state.object;
         if (object !== null) {
             objectValue = UtilsCommon.getValueByPath(object, this.getField());
             //  pre istotu dame na null, null je standard
@@ -95,9 +95,9 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
         }
         else if (typeof this.props.readOnly === 'function') {
             // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
-            const object: XObject = this.props.form.state.object;
+            const object: EntityRow = this.props.form.state.object;
             if (object) {
-                readOnly = this.props.readOnly(this.props.form.getXObject());
+                readOnly = this.props.readOnly(this.props.form.getEntityRow());
             }
             else {
                 readOnly = true;
@@ -199,7 +199,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
 
     callOnChangeFromOnBlur() {
         if (this.valueChanged && this.props.onChange) {
-            const object: XObject = this.props.form.getXObject();
+            const object: EntityRow = this.props.form.getEntityRow();
             // developer v onChange nastavi atributy na object-e
             this.props.onChange({object: object});
             // rovno zavolame form.setState({...}), nech to nemusi robit developer
@@ -215,8 +215,8 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
             customFilter = filter;
         }
         if (typeof filter === 'function') {
-            //const object: XObject = this.props.form.getXObject();
-            const object: XObject = this.props.form.state.object;
+            //const object: EntityRow = this.props.form.getEntityRow();
+            const object: EntityRow = this.props.form.state.object;
             // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii object
             // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre FormBase))
             //if (object) {

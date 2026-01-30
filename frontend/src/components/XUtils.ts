@@ -15,7 +15,7 @@ import {XEnvVar} from "./XEnvVars";
 import {XError, XErrorMap} from "./XErrors";
 import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
-import {XObject} from "./XObject";
+import {EntityRow} from "../common/types";
 import {TableFieldReadOnlyProp} from "./form-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
@@ -68,7 +68,7 @@ export interface XQuery {
     fields?: string[];
 }
 
-// general type used for params (note: the same like XObject (in XObject.ts))
+// general type used for params (note: the same like EntityRow (in types.ts))
 // may be moved to XUtilsCommon if needed
 // there is already XParams
 //export type XParams = Record<string, any>;
@@ -528,7 +528,7 @@ export class XUtils {
     }
 
     // docasna funkcia, kym sa vsade nebude pouzivat FormComponentDT a jej isReadOnly()
-    static isReadOnlyTableField(path: string | undefined, readOnly: TableFieldReadOnlyProp | undefined, object: XObject | null, tableRow: any): boolean {
+    static isReadOnlyTableField(path: string | undefined, readOnly: TableFieldReadOnlyProp | undefined, object: EntityRow | null, tableRow: any): boolean {
 
         let isReadOnly: boolean;
 
@@ -885,7 +885,7 @@ export class XUtils {
     static getDefaultCreateObject<T>(entity: string): CreateObjectFunction<T> {
         const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
         const xField: Field = xEntity.fieldMap["version"];
-        let object: XObject = {};
+        let object: EntityRow = {};
         if (xField) {
             object = {version: 0};
         }

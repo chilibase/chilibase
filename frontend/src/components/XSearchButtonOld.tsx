@@ -1,11 +1,10 @@
 import {FormBase} from "./form";
-import {XObject} from "./XObject";
+import {EntityRow} from "../common/types";
 import React, {useRef, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {XUtils} from "./XUtils";
 import {Dialog} from "primereact/dialog";
-import {XUtilsMetadata} from "./XUtilsMetadata";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
 export const XSearchButtonOld = (props: {form: FormBase; assocField: string; displayField: string, searchTable: any; assocForm?: any; label?: string; readOnly?: boolean; size?: number; inputStyle?: React.CSSProperties;}) => {
@@ -30,7 +29,7 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
     const computeInputValue = () : any => {
         let inputValue = null;
         if (!inputChanged) {
-            const object: XObject | null = props.form.state.object;
+            const object: EntityRow | null = props.form.state.object;
             if (object !== null) {
                 // TODO - pridat cez generikum typ fieldu (ak sa da)
                 // poznamka: ak assocObject === null tak treba do inputu zapisovat prazdny retazec, ak by sme pouzili null, neprejavila by sa zmena v modeli na null
@@ -103,7 +102,7 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
         }
         else {
             if (props.assocForm !== undefined) {
-                const object: XObject | null = props.form.state.object;
+                const object: EntityRow | null = props.form.state.object;
                 if (object !== null) {
                     const assocObject = object[props.assocField];
                     // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat

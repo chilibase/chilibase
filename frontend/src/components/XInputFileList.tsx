@@ -4,7 +4,7 @@ import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
 import {FormBase} from "./form";
 import {Assoc, Entity} from "../common/EntityMetadata";
 import {XUtils} from "./XUtils";
-import {XObject} from "./XObject";
+import {EntityRow} from "../common/types";
 import {XButton} from "./XButton";
 import {XButtonIconNarrow} from "./XButtonIconNarrow";
 import {numberAsUI} from "../common/UtilsConversions";
@@ -121,7 +121,7 @@ export class XInputFileList extends Component<XInputFileListProps> {
         const label = this.props.label ?? this.props.assocField;
         const readOnly = this.props.form.formReadOnlyBase(this.props.assocField) || (this.props.readOnly ?? false);
 
-        const object: XObject | null = this.props.form.state.object;
+        const object: EntityRow | null = this.props.form.state.object;
         const fileItemList: any[] = object !== null ? object[this.props.assocField] : [];
 
         let elemList: any[] = [];

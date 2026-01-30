@@ -1,5 +1,5 @@
 import {FormBase, FormProps} from "../form";
-import {XObject} from "../XObject";
+import {EntityRow} from "../../common/types";
 import React, {Component, ReactChild} from "react";
 import {DropdownDT} from "../dropdown/DropdownDT";
 import {
@@ -496,7 +496,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
     validate() {
         // zvalidujeme vsetky rows a pripadne chyby zapiseme do specialneho fieldu __x_rowTechData
-        const object: XObject = this.props.form.getXObject();
+        const object: EntityRow = this.props.form.getEntityRow();
         const rowList: any[] = object[this.props.assocField];
         for (const row of rowList) {
             const rowTechData: RowTechData = FormBase.getRowTechData(row);
@@ -514,7 +514,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
     // getErrorMessages(): string {
     //     let msg: string = "";
-    //     const object: XObject = this.props.form.getXObject();
+    //     const object: EntityRow = this.props.form.getEntityRow();
     //     const rowList: any[] = object[this.props.assocField];
     //     for (const row of rowList) {
     //         const rowTechData: RowTechData = XFormBase.getRowTechData(row);
@@ -538,9 +538,9 @@ export class FormDataTable extends Component<FormDataTableProps> {
         // TODO
         // else if (typeof this.props.readOnly === 'function') {
         //     // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
-        //     const object: XObject = this.props.form.state.object;
+        //     const object: EntityRow = this.props.form.state.object;
         //     if (object) {
-        //         readOnly = this.props.readOnly(this.props.form.getXObject());
+        //         readOnly = this.props.readOnly(this.props.form.getEntityRow());
         //     }
         //     else {
         //         readOnly = true;
@@ -581,7 +581,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         // v bloku function (child) nejde pouzit priamo this, thisLocal uz ide pouzit
         const thisLocal = this;
 
-        const object: XObject | null = this.props.form.state.object;
+        const object: EntityRow | null = this.props.form.state.object;
         const valueList = object !== null ? object[this.props.assocField] : [];
 
         let scrollWidth: string | undefined = undefined; // vypnute horizontalne scrollovanie
@@ -791,7 +791,7 @@ export type TableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => 
 //export type FormColumnViewStatusProp = XViewStatusOrBoolean | ((object: any) => XViewStatusOrBoolean);
 
 // typ property pre vytvorenie filtra na assoc fieldoch (XAutoComplete, Dropdown, ...)
-// pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo XObject)
+// pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo EntityRow)
 export type TableFieldFilterProp = CustomFilter | ((object: any, rowData: any) => CustomFilter | undefined);
 
 export interface FormColumnBaseProps {
