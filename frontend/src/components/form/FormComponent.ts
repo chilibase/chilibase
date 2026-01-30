@@ -4,12 +4,20 @@ import {XError} from "../XErrors";
 import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType, XUtils} from "../XUtils";
-import {XFieldChangeEvent} from "../XFieldChangeEvent";
 import {CustomFilter} from "../../common/FindParam";
 
-// typ metody pre onChange - pouzil som XFieldChangeEvent<any>, pri deklarovani onChange metody na komponente
-// sa da vdaka tomu pouzit (e: XFieldChangeEvent<Dobrovolnik>) a kompilator sa nestazuje. Je to hack, mozno existuje krajsie riesenie
-export type FieldOnChange = (e: XFieldChangeEvent<any>) => void;
+// event pre onChange metody na komponentoch formulara (XInputText, XAutoComplete, ...)
+// pouzivame event, aby sme v buducnosti vedeli pridat dalsie atributy do eventu ak bude treba
+// assocObjectChange - info ci bol vybraty assoc object zmeneny v DB (pozri XAutoCompleteBase)
+// TODO - OperationType sem presunut
+export interface FieldChangeEvent<ER = EntityRow> {
+    entityRow: ER;
+    assocObjectChange?: OperationType
+}
+
+// typ metody pre onChange - pouzil som FieldChangeEvent<any>, pri deklarovani onChange metody na komponente
+// sa da vdaka tomu pouzit (e: FieldChangeEvent<Dobrovolnik>) a kompilator sa nestazuje. Je to hack, mozno existuje krajsie riesenie
+export type FieldOnChange = (e: FieldChangeEvent<any>) => void;
 
 export type ReadOnlyProp = boolean | ((object: any) => boolean);
 
@@ -201,7 +209,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
         if (this.valueChanged && this.props.onChange) {
             const entityRow: EntityRow = this.props.form.getEntityRow();
             // developer v onChange nastavi atributy na entityRow-e
-            this.props.onChange({object: entityRow});
+            this.props.onChange({entityRow: entityRow});
             // rovno zavolame form.setState({...}), nech to nemusi robit developer
             this.props.form.setStateForm();
             this.valueChanged = false; // resetneme na false (dalsi onChange volame az ked user zmeni hodnotu)

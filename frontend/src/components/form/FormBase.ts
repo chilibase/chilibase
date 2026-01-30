@@ -298,7 +298,7 @@ export abstract class FormBase extends Component<FormProps> {
 
         // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
-            onChange({object: entityRow, assocObjectChange: assocObjectChange});
+            onChange({entityRow: entityRow, assocObjectChange: assocObjectChange});
         }
 
         this.setState({entityRow: entityRow, errorMap: errorMap});
@@ -317,7 +317,7 @@ export abstract class FormBase extends Component<FormProps> {
 
         // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
-            onChange({object: entityRow, tableRow: rowData, assocObjectChange: assocObjectChange});
+            onChange({entityRow: entityRow, tableRow: rowData, assocObjectChange: assocObjectChange});
         }
 
         this.setState({entityRow: entityRow/*, errorMap: errorMap*/});
@@ -334,7 +334,7 @@ export abstract class FormBase extends Component<FormProps> {
         // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
             // TODO - assocObjectChange dorobit
-            onChange({object: entityRow, tableRow: row, assocObjectChange: undefined});
+            onChange({entityRow: entityRow, tableRow: row, assocObjectChange: undefined});
         }
 
         this.setState({entityRow: entityRow});

@@ -170,7 +170,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
         if (this.valueChanged && this.props.onChange) {
             const entityRow: EntityRow = this.props.form.getEntityRow();
             // developer v onChange nastavi atributy na entityRow-e
-            this.props.onChange({object: entityRow, tableRow: this.props.rowData, assocObjectChange: undefined});
+            this.props.onChange({entityRow: entityRow, tableRow: this.props.rowData, assocObjectChange: undefined});
             // rovno zavolame form.setState({...}), nech to nemusi robit developer
             this.props.form.setStateForm();
             this.valueChanged = false; // resetneme na false (dalsi onChange volame az ked user zmeni hodnotu)

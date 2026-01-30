@@ -88,7 +88,6 @@
     "./XEditorBase": "./lib/components/XEditorBase.js",
     "./XEnvVars": "./lib/components/XEnvVars.js",
     "./XErrors": "./lib/components/XErrors.js",
-    "./XFieldChangeEvent": "./lib/components/XFieldChangeEvent.js",
     "./XFormNavigator3": "./lib/components/XFormNavigator3.js",
     "./XHolders": "./lib/components/XHolders.js",
     "./XInputFileList": "./lib/components/XInputFileList.js",

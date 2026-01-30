@@ -14,14 +14,13 @@ import {InputTextDT} from "../input-text";
 import {XSearchButtonDT} from "../XSearchButtonDT";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {XUtilsMetadata} from "../XUtilsMetadata";
-import {XUtils, XViewStatus, XViewStatusOrBoolean} from "../XUtils";
+import {OperationType, XUtils, XViewStatus, XViewStatusOrBoolean} from "../XUtils";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
 import {InputDecimalDT} from "../input-decimal";
 import {InputDateDT} from "../input-date";
 import {CheckboxDT} from "../checkbox";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
-import {XTableFieldChangeEvent} from "../XFieldChangeEvent";
 import {CustomFilter} from "../../common/FindParam";
 import {AutoCompleteDT} from "../auto-complete";
 import {FormComponentDT} from "./FormComponentDT";
@@ -783,7 +782,14 @@ export class FormDataTable extends Component<FormDataTableProps> {
     }
 }
 
-export type TableFieldOnChange = (e: XTableFieldChangeEvent<any, any>) => void;
+// we use event to add additional props if needed
+export interface TableFieldChangeEvent<ER = EntityRow, TR = any> {
+    entityRow: ER;
+    tableRow: TR;
+    assocObjectChange?: OperationType
+}
+
+export type TableFieldOnChange = (e: TableFieldChangeEvent<any, any>) => void;
 
 export type TableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => boolean);
 
