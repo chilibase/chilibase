@@ -4,9 +4,9 @@ import {XUtils} from "../XUtils";
 
 export class FormBaseModif extends FormBase {
 
-    preSave(object: EntityRow) {
-        object.modifDate = new Date();
-        object.modifUser = XUtils.getXToken()?.user;
+    preSave(entityRow: EntityRow) {
+        entityRow.modifDate = new Date();
+        entityRow.modifUser = XUtils.getXToken()?.user;
     }
 }
 

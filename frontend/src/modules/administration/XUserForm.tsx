@@ -28,9 +28,9 @@ export class XUserForm extends FormBaseModif {
         return {enabled: true, admin: false, version: 0};
     }
 
-    preInitForm(object: EntityRow, operationType: OperationType.Insert | OperationType.Update) {
+    preInitForm(entityRow: EntityRow, operationType: OperationType.Insert | OperationType.Update) {
         // current user cannot change username, enabled and admin status
-        const username = object.username;
+        const username = entityRow.username;
         if (operationType === OperationType.Update && username === XUtils.getUsername()) {
             this.setState({usernameEnabledReadOnly: true});
         }
@@ -70,9 +70,9 @@ export class XUserForm extends FormBaseModif {
         const isAddRow = this.isAddRow();
 
         // zapise this.state.object do DB - samostatny servis koli hashovaniu password-u
-        let object: EntityRow;
+        let entityRow: EntityRow;
         try {
-            object = await XUtils.post('userSaveRow', {entity: this.getEntity(), object: this.state.object});
+            entityRow = await XUtils.post('userSaveRow', {entity: this.getEntity(), object: this.state.object});
         }
         catch (e) {
             XUtils.showErrorMessage("Save row failed.", e);
@@ -80,7 +80,7 @@ export class XUserForm extends FormBaseModif {
         }
 
         // formular je zobrazeny v dialogu
-        this.props.onSaveOrCancel!(object, isAddRow ? OperationType.Insert : OperationType.Update);
+        this.props.onSaveOrCancel!(entityRow, isAddRow ? OperationType.Insert : OperationType.Update);
     }
 
     render() {

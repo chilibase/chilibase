@@ -496,8 +496,8 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
     validate() {
         // zvalidujeme vsetky rows a pripadne chyby zapiseme do specialneho fieldu __x_rowTechData
-        const object: EntityRow = this.props.form.getEntityRow();
-        const rowList: any[] = object[this.props.assocField];
+        const entityRow: EntityRow = this.props.form.getEntityRow();
+        const rowList: any[] = entityRow[this.props.assocField];
         for (const row of rowList) {
             const rowTechData: RowTechData = FormBase.getRowTechData(row);
             const xErrorMap: XErrorMap = {};
@@ -514,8 +514,8 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
     // getErrorMessages(): string {
     //     let msg: string = "";
-    //     const object: EntityRow = this.props.form.getEntityRow();
-    //     const rowList: any[] = object[this.props.assocField];
+    //     const entityRow: EntityRow = this.props.form.getEntityRow();
+    //     const rowList: any[] = entityRow[this.props.assocField];
     //     for (const row of rowList) {
     //         const rowTechData: RowTechData = XFormBase.getRowTechData(row);
     //         msg += XUtils.getErrorMessages(rowTechData.errorMap);
@@ -538,7 +538,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         // TODO
         // else if (typeof this.props.readOnly === 'function') {
         //     // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
-        //     const object: EntityRow = this.props.form.state.object;
+        //     const entityRow: EntityRow = this.props.form.state.object;
         //     if (object) {
         //         readOnly = this.props.readOnly(this.props.form.getEntityRow());
         //     }
@@ -581,8 +581,8 @@ export class FormDataTable extends Component<FormDataTableProps> {
         // v bloku function (child) nejde pouzit priamo this, thisLocal uz ide pouzit
         const thisLocal = this;
 
-        const object: EntityRow | null = this.props.form.state.object;
-        const valueList = object !== null ? object[this.props.assocField] : [];
+        const entityRow: EntityRow | null = this.props.form.state.object;
+        const valueList = entityRow !== null ? entityRow[this.props.assocField] : [];
 
         let scrollWidth: string | undefined = undefined; // vypnute horizontalne scrollovanie
         let scrollHeight: string | undefined = undefined; // vypnute vertikalne scrollovanie

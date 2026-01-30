@@ -59,9 +59,9 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
     // can be overridden, but this should work for every component
     getValueFromObject(): any {
         let objectValue: any = null;
-        const object: EntityRow | null = this.props.form.state.object;
-        if (object !== null) {
-            objectValue = UtilsCommon.getValueByPath(object, this.getField());
+        const entityRow: EntityRow | null = this.props.form.state.object;
+        if (entityRow !== null) {
+            objectValue = UtilsCommon.getValueByPath(entityRow, this.getField());
             //  pre istotu dame na null, null je standard
             if (objectValue === undefined) {
                 objectValue = null;
@@ -94,9 +94,9 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
             readOnly = this.props.readOnly;
         }
         else if (typeof this.props.readOnly === 'function') {
-            // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
-            const object: EntityRow = this.props.form.state.object;
-            if (object) {
+            // TODO - tazko povedat ci niekedy bude entityRow === null (asi ano vid metodu getFilterBase)
+            const entityRow: EntityRow = this.props.form.state.object;
+            if (entityRow) {
                 readOnly = this.props.readOnly(this.props.form.getEntityRow());
             }
             else {
@@ -199,9 +199,9 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
 
     callOnChangeFromOnBlur() {
         if (this.valueChanged && this.props.onChange) {
-            const object: EntityRow = this.props.form.getEntityRow();
-            // developer v onChange nastavi atributy na object-e
-            this.props.onChange({object: object});
+            const entityRow: EntityRow = this.props.form.getEntityRow();
+            // developer v onChange nastavi atributy na entityRow-e
+            this.props.onChange({object: entityRow});
             // rovno zavolame form.setState({...}), nech to nemusi robit developer
             this.props.form.setStateForm();
             this.valueChanged = false; // resetneme na false (dalsi onChange volame az ked user zmeni hodnotu)
@@ -215,12 +215,12 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
             customFilter = filter;
         }
         if (typeof filter === 'function') {
-            //const object: EntityRow = this.props.form.getEntityRow();
-            const object: EntityRow = this.props.form.state.object;
-            // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii object
+            //const entityRow: EntityRow = this.props.form.getEntityRow();
+            const entityRow: EntityRow = this.props.form.state.object;
+            // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii entityRow
             // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre FormBase))
-            //if (object) {
-                customFilter = filter(object);
+            //if (entityRow) {
+                customFilter = filter(entityRow);
             //}
         }
         return customFilter;

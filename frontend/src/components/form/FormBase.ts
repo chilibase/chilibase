@@ -11,7 +11,7 @@ import {FindRowByIdResponse, UnlockRowRequest} from "../../common/lib-api";
 import {dateFromModel, datetimeAsUI} from "../../common/UtilsConversions";
 import {xLocaleOption} from "../XLocale";
 
-export type OnSaveOrCancelProp = (object: EntityRow | null, objectChange: OperationType) => void;
+export type OnSaveOrCancelProp = (entityRow: EntityRow | null, objectChange: OperationType) => void;
 
 // poznamka - v assoc button-e (XSearchButton, XToOneAssocButton, FormSearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
 // pri tomto zapise sa nezadava property id (id sa doplni automaticky pri otvoreni assoc formularu cez klonovanie elementu)
@@ -172,58 +172,58 @@ export abstract class FormBase extends Component<FormProps> {
         //}
 
         if (!this.legacyObjectLoading) {
-            let object: EntityRow = this.state.object;
+            let entityRow: EntityRow = this.state.object;
             const operationType: OperationType.Insert | OperationType.Update = this.isAddRow() ? OperationType.Insert : OperationType.Update;
             // i am not sure if preInitForm (and call in componentDidMount is needed) but unlike legacy version,
-            // developer has to call this.setState({object: object}); if changes in this.object have been made and shoud be rendered in form)
+            // developer has to call this.setState({object: entityRow}); if changes in this.object have been made and shoud be rendered in form)
             // HINT - maybe this could be made by some other ways (methods)
-            this.preInitForm(object, operationType);
+            this.preInitForm(entityRow, operationType);
         }
         else {
             // legacy version (this.state.object === null, clientLoader not used)
-            let object: EntityRow;
+            let entityRow: EntityRow;
             let operationType: OperationType.Insert | OperationType.Update;
             if (this.props.id !== undefined) {
                 //console.log('FormBase.componentDidMount ide nacitat objekt');
                 //console.log(this.fields);
-                //object = await XUtils.fetchByIdFieldList(this.entity, Array.from(this.fieldSet), this.props.id);
-                object = await this.loadObjectLegacy(this.props.id);
+                //entityRow = await XUtils.fetchByIdFieldList(this.entity, Array.from(this.fieldSet), this.props.id);
+                entityRow = await this.loadObjectLegacy(this.props.id);
                 operationType = OperationType.Update;
 
                 // sortovanie, aby sme nemuseli sortovat v DB (neviem co je efektivnejsie)
                 for (const assocToSort of this.assocToSortList) {
-                    const assocRowList: any[] = object[assocToSort.assoc];
+                    const assocRowList: any[] = entityRow[assocToSort.assoc];
                     if (assocRowList) {
-                        object[assocToSort.assoc] = UtilsCommon.arraySort(assocRowList, assocToSort.sortField);
+                        entityRow[assocToSort.assoc] = UtilsCommon.arraySort(assocRowList, assocToSort.sortField);
                     }
                 }
 
                 //console.log('FormBase.componentDidMount nacital objekt:');
-                //console.log(object);
-                // const price = (object as any).price;
+                //console.log(entityRow);
+                // const price = (entityRow as any).price;
                 // console.log(typeof price);
                 // console.log(price);
-                // const date = (object as any).carDate;
+                // const date = (entityRow as any).carDate;
                 // console.log(typeof date);
                 // console.log(date);
             }
             else {
                 // add new row
-                object = this.createNewObject();
-                // if object is {} then call async version
-                if (Object.keys(object).length === 0) {
-                    object = await this.createNewObjectAsync();
+                entityRow = this.createNewObject();
+                // if entityRow is {} then call async version
+                if (Object.keys(entityRow).length === 0) {
+                    entityRow = await this.createNewObjectAsync();
                 }
                 // pridame pripadne "init values", ktore pridu cez prop object (pouziva sa napr. pri insertovani cez XAutoComplete na predplnenie hodnoty)
                 if (this.props.initValues !== undefined) {
-                    object = {...object, ...this.props.initValues}; // values from this.props.initValues will override values from object (if key is the same)
+                    entityRow = {...entityRow, ...this.props.initValues}; // values from this.props.initValues will override values from entityRow (if key is the same)
                 }
                 operationType = OperationType.Insert;
             }
 
-            this.preInitForm(object, operationType);
+            this.preInitForm(entityRow, operationType);
             //console.log("volany FormBase.componentDidMount() - ideme setnut object");
-            this.setState({object: object}/*, () => console.log("************** volany FormBase.componentDidMount() - callback setState")*/);
+            this.setState({object: entityRow}/*, () => console.log("************** volany FormBase.componentDidMount() - callback setState")*/);
         }
     }
 
@@ -290,37 +290,37 @@ export abstract class FormBase extends Component<FormProps> {
         // v takom pripade sa do errorMap zapise ako key cely field <assocX>.<fieldY>
         // (zlozitejsie riesenie by bolo zapisovat errors do specialneho technickeho atributu asociovaneho objektu ale zatial to nechame takto jednoducho)
 
-        const object: EntityRow = this.getEntityRow();
-        UtilsCommon.setValueByPath(object, field, value);
+        const entityRow: EntityRow = this.getEntityRow();
+        UtilsCommon.setValueByPath(entityRow, field, value);
 
         const errorMap: XErrorMap = this.state.errorMap;
         errorMap[field] = {...errorMap[field], onChange: error};
 
-        // tu zavolame onChange komponentu - object uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
+        // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
-            onChange({object: object, assocObjectChange: assocObjectChange});
+            onChange({object: entityRow, assocObjectChange: assocObjectChange});
         }
 
-        this.setState({object: object, errorMap: errorMap});
+        this.setState({object: entityRow, errorMap: errorMap});
 
         this.setFormDataChanged(true);
     }
 
     onTableFieldChange(rowData: any, field: string, value: any, error?: string | undefined, onChange?: TableFieldOnChange, assocObjectChange?: OperationType) {
 
-        const object: EntityRow = this.getEntityRow();
+        const entityRow: EntityRow = this.getEntityRow();
         rowData[field] = value;
 
         // nastavime error do rowData do tech fieldu
         const errorMap: XErrorMap = FormBase.getRowTechData(rowData).errorMap;
         errorMap[field] = {...errorMap[field], onChange: error};
 
-        // tu zavolame onChange komponentu - object uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
+        // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
-            onChange({object: object, tableRow: rowData, assocObjectChange: assocObjectChange});
+            onChange({object: entityRow, tableRow: rowData, assocObjectChange: assocObjectChange});
         }
 
-        this.setState({object: object/*, errorMap: errorMap*/});
+        this.setState({object: entityRow/*, errorMap: errorMap*/});
 
         this.setFormDataChanged(true);
     }
@@ -329,15 +329,15 @@ export abstract class FormBase extends Component<FormProps> {
      * @deprecated - mal by sa pouzivat onTableFieldChange
      */
     onObjectDataChange(row?: any, onChange?: TableFieldOnChange) {
-        const object: EntityRow | null = this.state.object;
+        const entityRow: EntityRow | null = this.state.object;
 
-        // tu zavolame onChange komponentu - object uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
+        // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
             // TODO - assocObjectChange dorobit
-            onChange({object: object, tableRow: row, assocObjectChange: undefined});
+            onChange({object: entityRow, tableRow: row, assocObjectChange: undefined});
         }
 
-        this.setState({object: object});
+        this.setState({object: entityRow});
     }
 
     // lepsi nazov ako onObjectDataChange
@@ -357,8 +357,8 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     onTableAddRow(assocField: string, newRow: any, dataKey?: string, selectedRow?: {}) {
-        const object: EntityRow = this.getEntityRow();
-        const rowList: any[] = object[assocField];
+        const entityRow: EntityRow = this.getEntityRow();
+        const rowList: any[] = entityRow[assocField];
         // ak vieme id-cko a id-cko nie je vyplnene, tak ho vygenerujeme (predpokladame ze id-cko je vzdy number)
         // id-cka potrebujeme, lebo by nam bez nich nekorektne fungovala tabulka
         // asi cistejsie by bolo citat id-cka zo sekvencie z DB, ale MySql nema sekvencie na styl Oracle
@@ -382,7 +382,7 @@ export abstract class FormBase extends Component<FormProps> {
         else {
             rowList.push(newRow); // na koniec
         }
-        this.setState({object: object});
+        this.setState({object: entityRow});
 
         this.setFormDataChanged(true);
     }
@@ -399,8 +399,8 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     onTableRemoveRow(assocField: string, row: {}) {
-        const object: EntityRow = this.getEntityRow();
-        const rowList: any[] = object[assocField];
+        const entityRow: EntityRow = this.getEntityRow();
+        const rowList: any[] = entityRow[assocField];
         // poznamka: indexOf pri vyhladavani pouziva strict equality (===), 2 objekty su rovnake len ak porovnavame 2 smerniky na totozny objekt
         const index = rowList.indexOf(row);
         if (index === -1) {
@@ -408,7 +408,7 @@ export abstract class FormBase extends Component<FormProps> {
         }
         rowList.splice(index, 1);
 
-        this.setState({object: object});
+        this.setState({object: entityRow});
 
         this.setFormDataChanged(true);
     }
@@ -488,9 +488,9 @@ export abstract class FormBase extends Component<FormProps> {
         const isAddRow = this.isAddRow();
 
         //console.log(this.state.object);
-        let object: EntityRow;
+        let entityRow: EntityRow;
         try {
-            object = await this.saveRow();
+            entityRow = await this.saveRow();
         }
         catch (e) {
             XUtils.showErrorMessage("Save row failed.", e);
@@ -499,7 +499,7 @@ export abstract class FormBase extends Component<FormProps> {
 
         if (this.props.onSaveOrCancel !== undefined) {
             // formular je zobrazeny v dialogu
-            this.props.onSaveOrCancel(object, isAddRow ? OperationType.Insert : OperationType.Update);
+            this.props.onSaveOrCancel(entityRow, isAddRow ? OperationType.Insert : OperationType.Update);
         }
         else {
             this.openFormNull();
@@ -612,8 +612,8 @@ export abstract class FormBase extends Component<FormProps> {
 
     getErrorMessagesForAssoc(oneToManyAssoc: string): string {
         let msg: string = "";
-        const object: EntityRow = this.getEntityRow();
-        const rowList: any[] = object[oneToManyAssoc];
+        const entityRow: EntityRow = this.getEntityRow();
+        const rowList: any[] = entityRow[oneToManyAssoc];
         if (!Array.isArray(rowList)) {
             throw `Array for the assoc ${oneToManyAssoc} not found in the form object`;
         }
@@ -639,7 +639,7 @@ export abstract class FormBase extends Component<FormProps> {
     // this method can be overriden in subclass if needed
     // (the purpose is to put the whole form to read only mode (maybe with exception a few fields))
     // if returns true for the param "field", then the field is read only, otherwise the property readOnly of the XInput* is processed
-    formReadOnly(object: EntityRow, field: string): boolean {
+    formReadOnly(entityRow: EntityRow, field: string): boolean {
         return this.readOnly;
     }
 
@@ -684,16 +684,16 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     // this method can be overriden in subclass if needed (to modify/save object after read from DB and before set into the form)
-    preInitForm(object: EntityRow, operationType: OperationType.Insert | OperationType.Update) {
+    preInitForm(entityRow: EntityRow, operationType: OperationType.Insert | OperationType.Update) {
     }
 
     // this method can be overriden in subclass if needed (custom validation)
-    async validate(object: EntityRow): Promise<XErrors> {
+    async validate(entityRow: EntityRow): Promise<XErrors> {
         return {};
     }
 
     // this method can be overriden in subclass if needed (to modify object before save)
-    preSave(object: EntityRow) {
+    preSave(entityRow: EntityRow) {
     }
 
     // this method can be overriden in subclass if needed (to use another service then default 'saveRow')

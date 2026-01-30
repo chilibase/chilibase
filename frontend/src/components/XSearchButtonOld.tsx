@@ -29,11 +29,11 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
     const computeInputValue = () : any => {
         let inputValue = null;
         if (!inputChanged) {
-            const object: EntityRow | null = props.form.state.object;
-            if (object !== null) {
+            const entityRow: EntityRow | null = props.form.state.object;
+            if (entityRow !== null) {
                 // TODO - pridat cez generikum typ fieldu (ak sa da)
                 // poznamka: ak assocObject === null tak treba do inputu zapisovat prazdny retazec, ak by sme pouzili null, neprejavila by sa zmena v modeli na null
-                const assocObject = object[props.assocField];
+                const assocObject = entityRow[props.assocField];
                 inputValue = (assocObject !== null && assocObject !== undefined) ? assocObject[props.displayField] : "";
             }
         }
@@ -102,9 +102,9 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
         }
         else {
             if (props.assocForm !== undefined) {
-                const object: EntityRow | null = props.form.state.object;
-                if (object !== null) {
-                    const assocObject = object[props.assocField];
+                const entityRow: EntityRow | null = props.form.state.object;
+                if (entityRow !== null) {
+                    const assocObject = entityRow[props.assocField];
                     // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
                     const id = (assocObject !== null && assocObject !== undefined) ? assocObject[xEntityAssoc.idField] : null;
                     // klonovanim elementu pridame atribut id

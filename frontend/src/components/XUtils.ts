@@ -528,7 +528,7 @@ export class XUtils {
     }
 
     // docasna funkcia, kym sa vsade nebude pouzivat FormComponentDT a jej isReadOnly()
-    static isReadOnlyTableField(path: string | undefined, readOnly: TableFieldReadOnlyProp | undefined, object: EntityRow | null, tableRow: any): boolean {
+    static isReadOnlyTableField(path: string | undefined, readOnly: TableFieldReadOnlyProp | undefined, entityRow: EntityRow | null, tableRow: any): boolean {
 
         let isReadOnly: boolean;
 
@@ -546,9 +546,9 @@ export class XUtils {
             isReadOnly = readOnly;
         }
         else if (typeof readOnly === 'function') {
-            // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
-            if (object) {
-                isReadOnly = readOnly(object, tableRow);
+            // TODO - tazko povedat ci niekedy bude entityRow === null (asi ano vid metodu getFilterBase)
+            if (entityRow) {
+                isReadOnly = readOnly(entityRow, tableRow);
             }
             else {
                 isReadOnly = true;
@@ -885,10 +885,10 @@ export class XUtils {
     static getDefaultCreateObject<T>(entity: string): CreateObjectFunction<T> {
         const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
         const xField: Field = xEntity.fieldMap["version"];
-        let object: EntityRow = {};
+        let entityRow: EntityRow = {};
         if (xField) {
-            object = {version: 0};
+            entityRow = {version: 0};
         }
-        return async (params?: Params) => (object as T);
+        return async (params?: Params) => (entityRow as T);
     }
 }
