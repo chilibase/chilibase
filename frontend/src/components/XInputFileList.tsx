@@ -121,7 +121,7 @@ export class XInputFileList extends Component<XInputFileListProps> {
         const label = this.props.label ?? this.props.assocField;
         const readOnly = this.props.form.formReadOnlyBase(this.props.assocField) || (this.props.readOnly ?? false);
 
-        const entityRow: EntityRow | null = this.props.form.state.object;
+        const entityRow: EntityRow | null = this.props.form.state.entityRow;
         const fileItemList: any[] = entityRow !== null ? entityRow[this.props.assocField] : [];
 
         let elemList: any[] = [];

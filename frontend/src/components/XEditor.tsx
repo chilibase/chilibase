@@ -46,7 +46,7 @@ export class XEditor extends XInput<XEditorProps> {
         return (
             <div className={!this.props.labelOnTop ? 'field grid' : 'field grid x-editor-label-on-top'}>
                 <label htmlFor={this.props.field} className={!this.props.labelOnTop ? 'col-fixed' : undefined} style={this.getLabelStyle()}>{this.getLabel()}</label>
-                {this.props.form.state.object ?
+                {this.props.form.state.entityRow ?
                     <XEditorBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()}
                                  style={style} error={this.getError()}/>
                     : null

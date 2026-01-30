@@ -538,7 +538,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         // TODO
         // else if (typeof this.props.readOnly === 'function') {
         //     // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
-        //     const entityRow: EntityRow = this.props.form.state.object;
+        //     const entityRow: EntityRow = this.props.form.state.entityRow;
         //     if (object) {
         //         readOnly = this.props.readOnly(this.props.form.getEntityRow());
         //     }
@@ -581,7 +581,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         // v bloku function (child) nejde pouzit priamo this, thisLocal uz ide pouzit
         const thisLocal = this;
 
-        const entityRow: EntityRow | null = this.props.form.state.object;
+        const entityRow: EntityRow | null = this.props.form.state.entityRow;
         const valueList = entityRow !== null ? entityRow[this.props.assocField] : [];
 
         let scrollWidth: string | undefined = undefined; // vypnute horizontalne scrollovanie

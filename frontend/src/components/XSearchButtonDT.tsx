@@ -110,7 +110,7 @@ export const XSearchButtonDT = (props: {form: FormBase; entity: string; assocFie
     // vypocitame inputValue
     const inputValue = computeInputValue();
 
-    const readOnly: boolean = XUtils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.object, props.rowData);
+    const readOnly: boolean = XUtils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.entityRow, props.rowData);
 
     return (
         <div>

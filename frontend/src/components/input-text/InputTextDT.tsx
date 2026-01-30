@@ -31,7 +31,7 @@ export const InputTextDT = (props: {form: FormBase; entity: string; field: strin
         fieldValue = stringAsUI(rowDataValue);
     }
 
-    const readOnly: boolean = XUtils.isReadOnlyTableField(props.field, props.readOnly, props.form.state.object, props.rowData);
+    const readOnly: boolean = XUtils.isReadOnlyTableField(props.field, props.readOnly, props.form.state.entityRow, props.rowData);
 
     return (
         <InputText id={props.field} value={fieldValue} onChange={(e: any) => onValueChange(props.field, props.rowData, e.target.value)}

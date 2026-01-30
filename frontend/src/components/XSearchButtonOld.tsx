@@ -29,7 +29,7 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
     const computeInputValue = () : any => {
         let inputValue = null;
         if (!inputChanged) {
-            const entityRow: EntityRow | null = props.form.state.object;
+            const entityRow: EntityRow | null = props.form.state.entityRow;
             if (entityRow !== null) {
                 // TODO - pridat cez generikum typ fieldu (ak sa da)
                 // poznamka: ak assocObject === null tak treba do inputu zapisovat prazdny retazec, ak by sme pouzili null, neprejavila by sa zmena v modeli na null
@@ -102,7 +102,7 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
         }
         else {
             if (props.assocForm !== undefined) {
-                const entityRow: EntityRow | null = props.form.state.object;
+                const entityRow: EntityRow | null = props.form.state.entityRow;
                 if (entityRow !== null) {
                     const assocObject = entityRow[props.assocField];
                     // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat

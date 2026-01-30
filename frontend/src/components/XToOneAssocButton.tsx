@@ -12,7 +12,7 @@ export const XToOneAssocButton = (props: {form: FormBase; assocField: string; as
 
     const label = props.label !== undefined ? props.label : props.assocField;
 
-    const entityRow: EntityRow | null = props.form.state.object;
+    const entityRow: EntityRow | null = props.form.state.entityRow;
     const assocObject = entityRow !== null ? entityRow[props.assocField] : null;
 
     const onClickButton = (e: any) => {

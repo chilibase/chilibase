@@ -99,13 +99,13 @@ export function FormWithLoader<T = any>(
 
             if (Form) {
                 // we use component type (idiomatic way)
-                return <Form ref={props.formBaseRef} object={data as EntityRow} id={props.id} initValues={props.initValues} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
+                return <Form ref={props.formBaseRef} entityRow={data as EntityRow} id={props.id} initValues={props.initValues} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
                 return React.cloneElement(formElement!, {
                     ref: props.formBaseRef,
-                    object: data as EntityRow,
+                    entityRow: data as EntityRow,
                     id: props.id,
                     initValues: props.initValues,
                     onSaveOrCancel: props.onSaveOrCancel,
@@ -120,13 +120,13 @@ export function FormWithLoader<T = any>(
         EnhancedComponent = (props: FormWithLoaderProps) => {
             if (Form) {
                 // we use component type (idiomatic way)
-                return <Form ref={props.formBaseRef} object={undefined} id={props.id} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
+                return <Form ref={props.formBaseRef} entityRow={undefined} id={props.id} onSaveOrCancel={props.onSaveOrCancel} isInDialog={props.isInDialog} params={props.params}/>;
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
                 return React.cloneElement(formElement!, {
                     ref: props.formBaseRef,
-                    object: undefined,
+                    entityRow: undefined,
                     id: props.id,
                     onSaveOrCancel: props.onSaveOrCancel,
                     isInDialog: props.isInDialog,

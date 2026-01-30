@@ -57,22 +57,22 @@ export class XUserForm extends FormBaseModif {
                 }
 
                 // zapiseme nove heslo do objektu
-                this.state.object.password = this.state.passwordNew;
+                this.state.entityRow.password = this.state.passwordNew;
             }
             else {
                 // nemenime heslo (atribut s hodnotou undefined sa nezapise do DB)
-                this.state.object.password = undefined;
+                this.state.entityRow.password = undefined;
             }
         }
 
-        this.preSave(this.state.object);
+        this.preSave(this.state.entityRow);
 
         const isAddRow = this.isAddRow();
 
-        // zapise this.state.object do DB - samostatny servis koli hashovaniu password-u
+        // zapise this.state.entityRow do DB - samostatny servis koli hashovaniu password-u
         let entityRow: EntityRow;
         try {
-            entityRow = await XUtils.post('userSaveRow', {entity: this.getEntity(), object: this.state.object});
+            entityRow = await XUtils.post('userSaveRow', {entity: this.getEntity(), object: this.state.entityRow});
         }
         catch (e) {
             XUtils.showErrorMessage("Save row failed.", e);

@@ -87,7 +87,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
         }
         else if (typeof this.props.readOnly === 'function') {
             // TODO - tazko povedat ci niekedy bude entityRow === null (asi ano vid metodu getFilterBase)
-            const entityRow: EntityRow = this.props.form.state.object;
+            const entityRow: EntityRow = this.props.form.state.entityRow;
             if (entityRow) {
                 readOnly = this.props.readOnly(this.props.form.getEntityRow(), this.props.rowData);
             }
@@ -185,7 +185,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
         }
         if (typeof filter === 'function') {
             //const entityRow: EntityRow = this.props.form.getEntityRow();
-            const entityRow: EntityRow = this.props.form.state.object;
+            const entityRow: EntityRow = this.props.form.state.entityRow;
             // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii entityRow
             // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre XFormBase))
             //if (entityRow) {

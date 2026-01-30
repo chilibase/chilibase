@@ -88,7 +88,7 @@ export const DropdownDT = (props: {
     }
     const options = props.dropdownOptionsMap[props.assocField] !== undefined ? props.dropdownOptionsMap[props.assocField] : []; // mozno mozme do options prasknut rovno undefined...
 
-    const readOnly: boolean = XUtils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.object, props.rowData);
+    const readOnly: boolean = XUtils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.entityRow, props.rowData);
 
     // appendTo={document.body} appenduje overlay panel na element body - eliminuje problem s overflow (pozri poznamku v DropdownDTFilter)
     return (

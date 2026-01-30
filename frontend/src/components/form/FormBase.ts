@@ -29,10 +29,10 @@ export interface FormPropsOld {
 
 export interface FormProps {
     ref?: React.Ref<FormBase>;
-    object?: EntityRow; // object(row) created/loaded using methods createObject(id undefined)/loadObject (id exists)
-                    // "?" is DEPRECATED - if object is undefined then object is loaded in componentDidMount - legacy way of loading
-    id?: number; // DEPRECATED - used only if object is undefined (legacy way of loading)
-    initValues?: object; // DEPRECATED - used to init object by insert in case of legacy object loading - could/will be replaced with params/object
+    entityRow?: EntityRow; // entityRow(row) created/loaded using methods createObject(id undefined)/loadObject (id exists)
+                    // "?" is DEPRECATED - if entityRow is undefined then entityRow is loaded in componentDidMount - legacy way of loading
+    id?: number; // DEPRECATED - used only if entityRow is undefined (legacy way of loading)
+    initValues?: object; // DEPRECATED - used to init entityRow by insert in case of legacy object loading - could/will be replaced with params/entityRow
     onSaveOrCancel?: OnSaveOrCancelProp; // pouziva sa pri zobrazeni formulara v dialogu (napr. v XAutoCompleteBase) - pri onSave odovzdava updatnuty/insertnuty objekt, pri onCancel odovzdava null,
     // pouziva sa aj pri navrate do browsu - v tejto metode sa zavola reread browsu
     isInDialog?: boolean; // flag, if form is opened in Dialog (usually true) - really needed here?
@@ -97,7 +97,7 @@ export abstract class FormBase extends Component<FormProps> {
     readOnly: boolean; // used if the lock was not acquired (other user holds the lock)
 
     fieldSet: Set<string>; // zoznam zobrazovanych fieldov (vcetne asoc. objektov) - potrebujeme koli nacitavaniu root objektu
-    state: {object: EntityRow | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
+    state: {entityRow: EntityRow | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
     formComponentList: Array<FormComponent<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
@@ -116,7 +116,7 @@ export abstract class FormBase extends Component<FormProps> {
     // param entity can be used to set this.entity (another option is decorator @Form)
     constructor(props: FormProps, entity?: string, pessimisticLocking?: boolean) {
         super(props);
-        this.legacyObjectLoading = (props.object === undefined);
+        this.legacyObjectLoading = (props.entityRow === undefined);
         // check (legacy object load)
         if (this.legacyObjectLoading) {
             if (props.id !== undefined && props.initValues !== undefined) {
@@ -147,7 +147,7 @@ export abstract class FormBase extends Component<FormProps> {
         // }
         this.fieldSet = new Set<string>();
         this.state = {
-            object: props.object ?? null, // null is used only for legacy object loading (in componentDidMount)
+            entityRow: props.entityRow ?? null, // null is used only for legacy object loading (in componentDidMount)
             errorMap: {}
         };
         this.formComponentList = [];
@@ -172,15 +172,15 @@ export abstract class FormBase extends Component<FormProps> {
         //}
 
         if (!this.legacyObjectLoading) {
-            let entityRow: EntityRow = this.state.object;
+            let entityRow: EntityRow = this.state.entityRow;
             const operationType: OperationType.Insert | OperationType.Update = this.isAddRow() ? OperationType.Insert : OperationType.Update;
             // i am not sure if preInitForm (and call in componentDidMount is needed) but unlike legacy version,
-            // developer has to call this.setState({object: entityRow}); if changes in this.object have been made and shoud be rendered in form)
+            // developer has to call this.setState({entityRow: entityRow}); if changes in this.entityRow have been made and shoud be rendered in form)
             // HINT - maybe this could be made by some other ways (methods)
             this.preInitForm(entityRow, operationType);
         }
         else {
-            // legacy version (this.state.object === null, clientLoader not used)
+            // legacy version (this.state.entityRow === null, clientLoader not used)
             let entityRow: EntityRow;
             let operationType: OperationType.Insert | OperationType.Update;
             if (this.props.id !== undefined) {
@@ -222,8 +222,8 @@ export abstract class FormBase extends Component<FormProps> {
             }
 
             this.preInitForm(entityRow, operationType);
-            //console.log("volany FormBase.componentDidMount() - ideme setnut object");
-            this.setState({object: entityRow}/*, () => console.log("************** volany FormBase.componentDidMount() - callback setState")*/);
+            //console.log("volany FormBase.componentDidMount() - ideme setnut entityRow");
+            this.setState({entityRow: entityRow}/*, () => console.log("************** volany FormBase.componentDidMount() - callback setState")*/);
         }
     }
 
@@ -235,10 +235,10 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     getEntityRow(): EntityRow {
-        if (this.state.object === null) {
-            throw "FormBase: this.state.object is null";
+        if (this.state.entityRow === null) {
+            throw "FormBase: this.state.entityRow is null";
         }
-        return this.state.object;
+        return this.state.entityRow;
     }
 
     getObject(): any {
@@ -251,8 +251,8 @@ export abstract class FormBase extends Component<FormProps> {
 
     getId(): number | undefined {
         let id: number | undefined = undefined;
-        if (this.state.object && this.xEntity) {
-            id = this.state.object[this.xEntity.idField];
+        if (this.state.entityRow && this.xEntity) {
+            id = this.state.entityRow[this.xEntity.idField];
         }
         else {
             // deprecated way of object loading
@@ -266,7 +266,7 @@ export abstract class FormBase extends Component<FormProps> {
     isAddRow(): boolean {
         // povodny kod (este legacy object load)
         //return this.props.id === undefined;
-        // aby sme mohli zmenit insert na update (napr. ak po kontrole id fieldov zistime ze zaznam existuje), tak zistujeme id-cko z this.state.object
+        // aby sme mohli zmenit insert na update (napr. ak po kontrole id fieldov zistime ze zaznam existuje), tak zistujeme id-cko z this.state.entityRow
         return this.getId() === undefined;
     }
 
@@ -301,7 +301,7 @@ export abstract class FormBase extends Component<FormProps> {
             onChange({object: entityRow, assocObjectChange: assocObjectChange});
         }
 
-        this.setState({object: entityRow, errorMap: errorMap});
+        this.setState({entityRow: entityRow, errorMap: errorMap});
 
         this.setFormDataChanged(true);
     }
@@ -320,7 +320,7 @@ export abstract class FormBase extends Component<FormProps> {
             onChange({object: entityRow, tableRow: rowData, assocObjectChange: assocObjectChange});
         }
 
-        this.setState({object: entityRow/*, errorMap: errorMap*/});
+        this.setState({entityRow: entityRow/*, errorMap: errorMap*/});
 
         this.setFormDataChanged(true);
     }
@@ -329,7 +329,7 @@ export abstract class FormBase extends Component<FormProps> {
      * @deprecated - mal by sa pouzivat onTableFieldChange
      */
     onObjectDataChange(row?: any, onChange?: TableFieldOnChange) {
-        const entityRow: EntityRow | null = this.state.object;
+        const entityRow: EntityRow | null = this.state.entityRow;
 
         // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
         if (onChange) {
@@ -337,16 +337,16 @@ export abstract class FormBase extends Component<FormProps> {
             onChange({object: entityRow, tableRow: row, assocObjectChange: undefined});
         }
 
-        this.setState({object: entityRow});
+        this.setState({entityRow: entityRow});
     }
 
     // lepsi nazov ako onObjectDataChange
-    // ak niekto zmenil this.state.object alebo this.state.errorMap, zmena sa prejavi vo formulari
+    // ak niekto zmenil this.state.entityRow alebo this.state.errorMap, zmena sa prejavi vo formulari
     // pouzivame napr. po zavolani onChange na XInputText
     // callback je zavolany, ked dobehne update formulara (mozme pouzit na dalsi update formulara, ktory potrebuje aby boli vsetky komponenty vytvorene)
     setStateForm(callback?: () => void) {
-        // TODO - je to ok ze object menime takto?
-        this.setState({object: this.state.object, errorMap: this.state.errorMap}, callback);
+        // TODO - je to ok ze entityRow menime takto?
+        this.setState({entityRow: this.state.entityRow, errorMap: this.state.errorMap}, callback);
     }
 
     /**
@@ -382,7 +382,7 @@ export abstract class FormBase extends Component<FormProps> {
         else {
             rowList.push(newRow); // na koniec
         }
-        this.setState({object: entityRow});
+        this.setState({entityRow: entityRow});
 
         this.setFormDataChanged(true);
     }
@@ -408,7 +408,7 @@ export abstract class FormBase extends Component<FormProps> {
         }
         rowList.splice(index, 1);
 
-        this.setState({object: entityRow});
+        this.setState({entityRow: entityRow});
 
         this.setFormDataChanged(true);
     }
@@ -460,8 +460,8 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     formReadOnlyBase(field: string): boolean {
-        // TODO - bude this.state.object vzdycky !== undefined?
-        return this.formReadOnly(this.state.object, field);
+        // TODO - bude this.state.entityRow vzdycky !== undefined?
+        return this.formReadOnly(this.state.entityRow, field);
     }
 
     async onClickSave() {
@@ -471,11 +471,11 @@ export abstract class FormBase extends Component<FormProps> {
         }
 
         // docasne na testovanie
-        // const object: T | null = this.state.object;
-        // if (object !== null) {
-        //     const carDate = object['carDatetime'];
+        // const entityRow: T | null = this.state.entityRow;
+        // if (entityRow !== null) {
+        //     const carDate = entityRow['carDatetime'];
         //     if (carDate !== undefined && carDate !== null) {
-        //         //(object as EntityRow)['carDate'] = dateFormat(carDate, 'yyyy-mm-dd');
+        //         //(entityRow as EntityRow)['carDate'] = dateFormat(carDate, 'yyyy-mm-dd');
         //         console.log(dateFormat(carDate, 'yyyy-mm-dd HH:MM:ss'))
         //         console.log(carDate.getHours());
         //         console.log(carDate.getMinutes());
@@ -483,11 +483,11 @@ export abstract class FormBase extends Component<FormProps> {
         //     }
         // }
 
-        this.preSave(this.state.object);
+        this.preSave(this.state.entityRow);
 
         const isAddRow = this.isAddRow();
 
-        //console.log(this.state.object);
+        //console.log(this.state.entityRow);
         let entityRow: EntityRow;
         try {
             entityRow = await this.saveRow();
@@ -590,8 +590,8 @@ export abstract class FormBase extends Component<FormProps> {
         }
 
         // TODO - optimalizacia - netreba setovat stav ak by sme sli prec z formulara (ak by zbehla validacia aj save a isli by sme naspet do browsu)
-        // setujeme aj this.state.object, lebo mohli pribudnut/odbudnut chyby na rowData v editovatelnych tabulkach
-        this.setState({object: this.state.object, errorMap: xErrorMap});
+        // setujeme aj this.state.entityRow, lebo mohli pribudnut/odbudnut chyby na rowData v editovatelnych tabulkach
+        this.setState({entityRow: this.state.entityRow, errorMap: xErrorMap});
         return xErrorMap;
     }
 
@@ -698,7 +698,7 @@ export abstract class FormBase extends Component<FormProps> {
 
     // this method can be overriden in subclass if needed (to use another service then default 'saveRow')
     async saveRow(): Promise<any> {
-        return XUtils.fetch('saveRow', {entity: this.getEntity(), object: this.state.object, reload: this.props.onSaveOrCancel !== undefined});
+        return XUtils.fetch('saveRow', {entity: this.getEntity(), object: this.state.entityRow, reload: this.props.onSaveOrCancel !== undefined});
     }
 
     // this method can be overriden in subclass if needed (custom unlock row)
@@ -706,9 +706,9 @@ export abstract class FormBase extends Component<FormProps> {
         if (this.rowLocked) {
             const xUnlockRowRequest: UnlockRowRequest = {
                 entity: this.getEntity(),
-                id: this.state.object[this.xEntity!.idField],
-                lockDate: this.state.object.lockDate,
-                lockUser: this.state.object.lockUser
+                id: this.state.entityRow[this.xEntity!.idField],
+                lockDate: this.state.entityRow.lockDate,
+                lockUser: this.state.entityRow.lockUser
             };
             await XUtils.post('x-unlock-row', xUnlockRowRequest);
             this.rowLocked = false;
