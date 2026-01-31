@@ -3,7 +3,8 @@ import {FormBase} from "./FormBase";
 import {XError} from "../XErrors";
 import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {OperationType, XUtils} from "../XUtils";
+import {OperationType} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {CustomFilter} from "../../common/FindParam";
 
 // event pre onChange metody na komponentoch formulara (XInputText, XAutoComplete, ...)
@@ -132,7 +133,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
         if (label !== undefined) {
             // test na readOnly je tu hlavne koli tomu aby sme nemali * pri ID atribute, ktory sa pri inserte generuje az pri zapise do DB
             if (this.isNotNull() && !this.isReadOnly()) {
-                label = XUtils.markNotNull(label);
+                label = Utils.markNotNull(label);
             }
         }
         return label;
@@ -142,11 +143,11 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
         let labelStyle: React.CSSProperties = this.props.labelStyle ?? {};
         const inline: boolean = this.props.inline ?? false;
         if (!inline) {
-            XUtils.addCssPropIfNotExists(labelStyle, {width: XUtils.FIELD_LABEL_WIDTH});
+            Utils.addCssPropIfNotExists(labelStyle, {width: Utils.FIELD_LABEL_WIDTH});
         }
         else {
-            XUtils.addCssPropIfNotExists(labelStyle, {width: 'auto'}); // podla dlzky labelu
-            XUtils.addCssPropIfNotExists(labelStyle, {marginLeft: '1rem'});
+            Utils.addCssPropIfNotExists(labelStyle, {width: 'auto'}); // podla dlzky labelu
+            Utils.addCssPropIfNotExists(labelStyle, {marginLeft: '1rem'});
         }
         return labelStyle;
     }
@@ -202,7 +203,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
     // vrati error message z form.state.errorMap
     getError(): string | undefined {
         const error: XError = this.props.form.state.errorMap[this.getField()];
-        return error ? XUtils.getErrorMessage(error) : undefined;
+        return error ? Utils.getErrorMessage(error) : undefined;
     }
 
     callOnChangeFromOnBlur() {

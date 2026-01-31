@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {Dropdown} from "primereact/dropdown";
 import {FormDataTable} from "../form-data-table";
 
@@ -32,7 +32,7 @@ export const DropdownFormDTFilter = (props: {dataTable: FormDataTable; assocFiel
 
     const findOptions = async (entity: string, assocField: string) => {
         // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (findRowsForAssoc)
-        const options: any[] = await XUtils.fetchMany('findRowsForAssoc', {entity: entity, assocField: assocField});
+        const options: any[] = await Utils.fetchMany('findRowsForAssoc', {entity: entity, assocField: assocField});
         options.splice(0, 0, {}); // null polozka (nepridavat pre not null atributy)
         setOptions(options);
     }

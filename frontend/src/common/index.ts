@@ -1,4 +1,5 @@
 // Re-export all files
+import {UtilsCommon} from "./UtilsCommon";
 export * from "./auth-api";
 export * from "./EntityMetadata";
 export * from "./ExportImportParam";
@@ -6,9 +7,11 @@ export * from "./FindParam";
 export * from "./FindResult";
 export * from "./lib-api";
 export * from "./types";
-export * from "./UtilsCommon";
+// change the api name to CBUtilsCommon to preserve the name UtilsCommon for app
+export {type Params, UtilsCommon as CBUtilsCommon} from "./UtilsCommon";
 export * from "./UtilsConversions";
 export * from "./UtilsMetadataCommon";
+export {UtilsMetadataCommon as CBUtilsMetadataCommon} from "./UtilsMetadataCommon"; // alternative name to enable to use prefix CB
 
 /** @deprecated */
 // X-prefixed aliases for backward compatibility

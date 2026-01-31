@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {InputTextarea} from "primereact/inputtextarea";
 
 // koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
@@ -90,7 +90,7 @@ export class InputTextareaBase extends Component<InputTextareaBaseProps> {
                            onBlur={this.onBlur} readOnly={this.props.readOnly}
                            maxLength={this.props.maxLength} style={this.props.style} rows={this.props.rows} cols={this.props.cols}
                            autoResize={this.props.autoResize}
-                           {...XUtils.addClassName(XUtils.createTooltipOrErrorProps(this.props.error, this.props.tooltip), this.props.className)}
+                           {...Utils.addClassName(Utils.createTooltipOrErrorProps(this.props.error, this.props.tooltip), this.props.className)}
                            placeholder={this.props.placeholder}/>
         );
     }

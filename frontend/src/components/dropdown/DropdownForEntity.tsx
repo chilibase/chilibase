@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import {Dropdown, DropdownChangeEvent} from "primereact/dropdown";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {CustomFilter} from "../../common/FindParam";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export interface DropdownForEntityProps {
@@ -50,7 +50,7 @@ export class DropdownForEntity extends Component<DropdownForEntityProps> {
     }
 
     async loadOptions() {
-        let options: any[] = await XUtils.fetchRows(this.props.entity, this.props.filter, this.props.sortField ?? this.props.displayField);
+        let options: any[] = await Utils.fetchRows(this.props.entity, this.props.filter, this.props.sortField ?? this.props.displayField);
         if (this.props.isNotNull === undefined || !this.props.isNotNull) {
             // pridame prazdnu polozku
             options.splice(0, 0, {[this.idField]: null, [this.props.displayField]: ""}); // null polozka
@@ -75,7 +75,7 @@ export class DropdownForEntity extends Component<DropdownForEntityProps> {
         return (
             <Dropdown id={this.props.id} options={this.state.options} optionLabel={this.props.displayField} dataKey={this.idField}
                       value={this.props.value} onChange={this.onChange}
-                      readOnly={this.props.readOnly} disabled={this.props.readOnly} {...XUtils.createTooltipOrErrorProps(this.props.error)}/>
+                      readOnly={this.props.readOnly} disabled={this.props.readOnly} {...Utils.createTooltipOrErrorProps(this.props.error)}/>
         );
     }
 }

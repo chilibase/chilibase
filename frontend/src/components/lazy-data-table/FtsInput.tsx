@@ -1,6 +1,6 @@
 import React from "react";
 import {InputTextBase} from "../input-text";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {xLocaleOption} from "../XLocale";
 
 // typ FtsInputValue reprezentuje hodnoty ktore sa daju menit touto komponentou
@@ -20,7 +20,7 @@ export const FtsInput = (props: {value: FtsInputValue; onChange: (value: FtsInpu
     // TODO - pridat input na zmenu matchMode
     // we use InputTextBase - we save onChange calls
     return (
-        <InputTextBase value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: XUtils.isMobile() ? '7rem' : '17rem'}} className="m-1"
+        <InputTextBase value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: Utils.isMobile() ? '7rem' : '17rem'}} className="m-1"
         placeholder={xLocaleOption('searchInAllFields')}/>
     );
 }

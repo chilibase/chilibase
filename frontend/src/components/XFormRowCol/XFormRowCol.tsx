@@ -1,6 +1,6 @@
 import React from "react";
 import {FormBase} from "../form";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 
 // the purpose of XFormRow/Col:
 // 1a. ak sa jedna o "row", uklada elementy pod seba do riadku (pouziva flex a jeho defaultny flex-direction: row)
@@ -47,7 +47,7 @@ export const XFormRowCol = (props: XFormRowColProps) => {
     if (props.width) {
         style = style ?? {};
         const width: string = (props.width === 'full' ? '100%' : props.width);
-        XUtils.addCssPropIfNotExists(style, {width: width}); // props.style ma vyssiu prioritu ako props.width
+        Utils.addCssPropIfNotExists(style, {width: width}); // props.style ma vyssiu prioritu ako props.width
     }
 
     return <div className={props.className} style={style}>{childElemList}</div>;

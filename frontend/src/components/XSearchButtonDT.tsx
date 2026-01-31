@@ -1,6 +1,6 @@
 import {FormBase} from "./form";
 import React, {useRef, useState} from "react";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
@@ -47,7 +47,7 @@ export const XSearchButtonDT = (props: {form: FormBase; entity: string; assocFie
             }
             else {
                 // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (findRowsForAssoc)
-                const rows: any[] = await XUtils.fetchMany('findRowsForAssoc', {entity: props.entity, assocField: props.assocField, displayField: props.displayField, filter: e.target.value});
+                const rows: any[] = await Utils.fetchMany('findRowsForAssoc', {entity: props.entity, assocField: props.assocField, displayField: props.displayField, filter: e.target.value});
                 if (rows.length === 0) {
                     setDialogOpened(true);
                 }
@@ -110,7 +110,7 @@ export const XSearchButtonDT = (props: {form: FormBase; entity: string; assocFie
     // vypocitame inputValue
     const inputValue = computeInputValue();
 
-    const readOnly: boolean = XUtils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.entityRow, props.rowData);
+    const readOnly: boolean = Utils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.entityRow, props.rowData);
 
     return (
         <div>

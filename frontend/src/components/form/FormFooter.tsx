@@ -4,7 +4,7 @@ import {XButton} from "../XButton";
 import {xLocaleOption} from "../XLocale";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
 import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 
 // constant to be used in method formReadOnly to identify save button
 export const saveButtonId: string = "x-save-button-id";
@@ -23,7 +23,7 @@ export const FormFooter = (props: {
     let rightNodeList: React.ReactNode[] = [];
 
     // template button is rendered only for update (id !== undefined; row must exist in DB), not for insert
-    if (props.docTemplates && !XUtils.isMobile() && props.form.props.id !== undefined) {
+    if (props.docTemplates && !Utils.isMobile() && props.form.props.id !== undefined) {
         rightNodeList.push(<DocTemplateButton key="docTemplates" entity={props.form.getEntity()} rowId={props.form.props.id} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/>);
     }
 

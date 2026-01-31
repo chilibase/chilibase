@@ -1,7 +1,7 @@
 import React from "react";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
-import {OperationType} from "../XUtils";
+import {OperationType} from "../../utils/types";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
 import {XError} from "../XErrors";
 import {DataTableSortMeta} from "primereact/datatable";

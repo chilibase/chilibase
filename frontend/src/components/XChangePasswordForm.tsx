@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {InputText} from "primereact/inputtext";
@@ -23,10 +23,10 @@ export const XChangePasswordForm = () => {
         }
 
         try {
-            await XUtils.post('x-local-auth-change-password', {passwordCurrent: passwordCurrent, passwordNew: passwordNew});
+            await Utils.post('x-local-auth-change-password', {passwordCurrent: passwordCurrent, passwordNew: passwordNew});
         }
         catch (e) {
-            XUtils.showErrorMessage("Change password failed.", e);
+            Utils.showErrorMessage("Change password failed.", e);
             return;
         }
 
@@ -47,7 +47,7 @@ export const XChangePasswordForm = () => {
                     </div>
                     <div className="field grid">
                         <label className="col-fixed" style={{width:'14rem'}}>User</label>
-                        <InputText value={XUtils.getXToken()?.user?.username} readOnly={true}/>
+                        <InputText value={Utils.getXToken()?.user?.username} readOnly={true}/>
                     </div>
                     <div className="field grid">
                         <label className="col-fixed" style={{width:'14rem'}}>Current password</label>

@@ -1,7 +1,7 @@
 import React from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {Dialog} from "primereact/dialog";
 import {FilterProp, FormComponent, FormComponentProps} from "./form";
 import {Assoc} from "../common/EntityMetadata";
@@ -108,7 +108,7 @@ export class XSearchButton extends FormComponent<XSearchButtonProps> {
                     setValueToModel(null); // prazdny retazec znamena null hodnotu
                 } else {
                     // deprecated code
-                    // const rows: any[] = await XUtils.fetchMany('findRowsForAssoc', {
+                    // const rows: any[] = await Utils.fetchMany('findRowsForAssoc', {
                     //     entity: props.form.entity,
                     //     assocField: props.assocField,
                     //     displayField: props.displayField,
@@ -116,7 +116,7 @@ export class XSearchButton extends FormComponent<XSearchButtonProps> {
                     // });
                     const displayFieldFilter: CustomFilter = {where: `[${props.displayField}] LIKE :xDisplayFieldValue`, params: {"xDisplayFieldValue": `${e.target.value}%`}};
                     const customFilter: CustomFilter | undefined = this.getFilterBase(this.props.filter);
-                    const rows: any[] = await XUtils.fetchRows(this.xAssoc.entityName, UtilsCommon.filterAnd(displayFieldFilter, customFilter));
+                    const rows: any[] = await Utils.fetchRows(this.xAssoc.entityName, UtilsCommon.filterAnd(displayFieldFilter, customFilter));
                     if (rows.length === 0) {
                         // POVODNY KOD
                         //overlayPanelEl.current.toggle(e);

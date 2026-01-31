@@ -1,5 +1,5 @@
 import {UtilsCommon} from "./UtilsCommon";
-import {IPostgresInterval} from "../components/XUtils";
+import {IPostgresInterval} from "../utils/types";
 import {Assoc, Entity, Field} from "./EntityMetadata";
 import {xLocaleOption} from "../components/XLocale";
 import {UtilsMetadataCommon} from "./UtilsMetadataCommon";

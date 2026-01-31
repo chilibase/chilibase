@@ -1,6 +1,6 @@
 import React from "react";
 import {XInput, XInputProps} from "../XInput";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {InputTextareaBase} from "./InputTextareaBase";
 import {Tooltip} from "primereact/tooltip";
 
@@ -30,7 +30,7 @@ export class InputTextarea extends XInput<InputTextareaProps> {
             this.labelOnTop = props.labelOnTop;
         }
         else {
-            this.labelOnTop = XUtils.isMobile();
+            this.labelOnTop = Utils.isMobile();
         }
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -79,7 +79,7 @@ export class InputTextarea extends XInput<InputTextareaProps> {
                     widthValue = '100%';
                 }
             }
-            XUtils.addCssPropIfNotExists(inputStyle, {width: widthValue});
+            Utils.addCssPropIfNotExists(inputStyle, {width: widthValue});
         }
         else {
             // TODO - nastavenie cols nefunguje ak labelOnTop=true - vtedy je input roztiahnuty na 100%

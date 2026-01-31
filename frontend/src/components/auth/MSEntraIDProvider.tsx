@@ -13,9 +13,9 @@ import {
 import {loginRequest, msalConfig} from "./msalConfig";
 import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 
 export const MSEntraIDProvider = ({children}: {children: ReactNode;}) => {
 
@@ -53,7 +53,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
             if (err instanceof UserNotFoundOrDisabledError) {
                 // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
                 // zrusime nastaveny access token
-                XUtils.setXToken(null);
+                Utils.setXToken(null);
                 // odhlasime uzivatela
                 //msalInstance.logoutRedirect();
                 logoutWithRedirect();
@@ -68,7 +68,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
     const setXTokenAndDoPostLogin = async () => {
 
         // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
-        XUtils.setXToken({accessToken: getAccessToken});
+        Utils.setXToken({accessToken: getAccessToken});
 
         //const accountInfo = msalInstance.getActiveAccount();
         //const accountInfo = msalInstance.getAllAccounts()[0];
@@ -80,7 +80,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: accountInfo?.username};
-            xPostLoginResponse = await XUtils.fetch('post-login', xPostLoginRequest);
+            xPostLoginResponse = await Utils.fetch('post-login', xPostLoginRequest);
         }
         catch (e) {
             // console.log(typeof e);
@@ -93,7 +93,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
             // @ts-ignore
             console.log(error.cause);
 
-            XUtils.showErrorMessage('post-login failed', e);
+            Utils.showErrorMessage('post-login failed', e);
             throw 'post-login failed';
         }
 
@@ -112,16 +112,16 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
         }
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
-        XUtils.setXToken({
-            accessToken: XUtils.getXToken()?.accessToken,
+        Utils.setXToken({
+            accessToken: Utils.getXToken()?.accessToken,
             user: xPostLoginResponse.user,
             logout: logoutWithRedirect
         });
     }
 
     const fetchAndSetXMetadata = async () => {
-        await XUtilsMetadata.fetchAndSetXEntityMap();
-        await XUtilsMetadata.fetchAndSetXBrowseMetaMap();
+        await UtilsMetadata.fetchAndSetXEntityMap();
+        await UtilsMetadata.fetchAndSetXBrowseMetaMap();
     }
 
     const loginWithRedirect = async () => {
@@ -145,7 +145,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
         await msalInstance.logoutRedirect(logoutRequest);
     }
 
-    // tato funkcia sa vola pred kazdym requestom na backend - vola sa v metode XUtils.fetchBasic
+    // tato funkcia sa vola pred kazdym requestom na backend - vola sa v metode Utils.fetchBasic
     // ked sa vola len pri inicializacii, tak token po 1 hodine exspiruje a user si musi restartnut aplikaciu
     // acquireTokenSilent ziskava token zo sessionStorage (pozri msalConfig), ak po hodine vyexspiruje, tak ziska novy access token
     const getAccessToken = async (): Promise<string> => {

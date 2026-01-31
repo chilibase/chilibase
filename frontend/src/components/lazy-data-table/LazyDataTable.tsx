@@ -14,9 +14,10 @@ import {
     ColumnFilterMatchModeOptions
 } from 'primereact/column';
 import {XButton} from "../XButton";
-import {OperationType, XStorageType, XUtils, XViewStatus, XViewStatusOrBoolean} from "../XUtils";
+import {OperationType, StorageType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {XFieldFilter, XSearchBrowseParams} from "../XSearchBrowseParams";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../common/UtilsConversions";
@@ -146,7 +147,7 @@ export interface LazyDataTableRef {
 
 export interface LazyDataTableProps {
     entity: string;
-    stateStorage?: XStorageType; // default is session
+    stateStorage?: StorageType; // default is session
     stateKey?: string; // key used to save the state into session (or local), default is entity, but sometimes we have more then 1 browse/LazyDataTable for 1 entity
     label?: string;
     labelStyle?: React.CSSProperties; // used to override default style or add new style
@@ -287,7 +288,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             const xLazyColumn = column as {props: LazyColumnProps}; // nevedel som to krajsie...
             // in some situations, this would be suitable, but for dynamic hide/show columns it can cause crash
             // better place for initializing filters is probably creating columns - function(child)
-            //if (XUtils.xViewStatus(xLazyColumn.props.columnViewStatus) !== XViewStatus.Hidden) {
+            //if (Utils.xViewStatus(xLazyColumn.props.columnViewStatus) !== ViewStatus.Hidden) {
                 const field: string = xLazyColumn.props.field;
                 const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
                 // TODO column.props.dropdownInFilter - pre "menu" by bolo fajn mat zoznam "enumov"
@@ -389,12 +390,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 /*
     // TODO turn off/on storage
     const saveValueIntoStorage = (stateKeySuffix: StateKeySuffix, value: any) => {
-        XUtils.saveValueIntoStorage(`${getTableStateKey()}-${stateKeySuffix}`, value);
+        Utils.saveValueIntoStorage(`${getTableStateKey()}-${stateKeySuffix}`, value);
     }
 
     // TODO turn off/on storage
     const getValueFromStorage = (stateKeySuffix: StateKeySuffix, initValue: any): any => {
-        return XUtils.getValueFromStorage(`${getTableStateKey()}-${stateKeySuffix}`, initValue);
+        return Utils.getValueFromStorage(`${getTableStateKey()}-${stateKeySuffix}`, initValue);
     }
 */
     const getStateKey = (stateKeySuffix: StateKeySuffix): string => {
@@ -402,7 +403,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const removePagingFromStorage = () => {
-        XUtils.removeValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.pagingFirst));
+        Utils.removeValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.pagingFirst));
     }
 
     // premenne platne pre cely component (obdoba member premennych v class-e)
@@ -412,7 +413,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     if (props.searchBrowseParams !== undefined) {
         // ak mame props.searchBrowseParams.customFilterFunction, pridame filter
         if (props.searchBrowseParams.customFilter) {
-            customFilterItems = UtilsCommon.filterAnd(customFilterItems, XUtils.evalFilter(props.searchBrowseParams.customFilter));
+            customFilterItems = UtilsCommon.filterAnd(customFilterItems, Utils.evalFilter(props.searchBrowseParams.customFilter));
         }
     }
     let aggregateItems: SimpleAggregateItem[] = createAggregateItems();
@@ -432,7 +433,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const [rowsLocal, setRowsLocal] = useState(props.paginator ? props.rows : undefined);
     // "filters" have special initialState function different from that used in useXStateSession
     const filtersInitialStateFunction = (): DataTableFilterMeta => {
-        let filtersInit: DataTableFilterMeta | null = XUtils.getValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.filters), null);
+        let filtersInit: DataTableFilterMeta | null = Utils.getValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.filters), null);
         if (filtersInit != null) {
             // we have filters from session - if we have props.filters, we always override the values from session (values from props.filters have higher priority)
             filtersInit = overrideFilters(filtersInit, props.filters);
@@ -684,7 +685,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         const fieldSetIds: string[] = getFieldSetIds();
         if (fieldSetIds.length > 0) {
             // in the future - take from some cache, not from DB
-            const xFieldSetMetaList: XFieldSetMeta[] = await XUtils.fetchRows('XFieldSetMeta', {where: "[fieldSetId] IN (:...fieldSetIdList)", params: {fieldSetIdList: fieldSetIds}});
+            const xFieldSetMetaList: XFieldSetMeta[] = await Utils.fetchRows('XFieldSetMeta', {where: "[fieldSetId] IN (:...fieldSetIdList)", params: {fieldSetIdList: fieldSetIds}});
             // check
             if (xFieldSetMetaList.length !== fieldSetIds.length) {
                 throw `One or more of fieldSetIds "${fieldSetIds.join(", ")}" was not found in DB in the table for Entity XFieldSetMeta`;
@@ -714,7 +715,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         setOptionalCustomFilterAfterFiltering(optionalCustomFilter);
         // async check for new version - the purpose is to get new version of app to the browser (if available) in short time (10 minutes)
         // (if there is no new version, the check will run async (as the last operation) and nothing will happen)
-        XUtils.reloadIfNewVersion();
+        Utils.reloadIfNewVersion();
     }
 
     const sortAssocsToSort = (findResult: FindResult) => {
@@ -754,7 +755,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const findByFilter = async (findParam: FindParam) : Promise<FindResult> => {
 
         // vysledok je typu FindResult
-        const findResult: FindResult = await XUtils.fetchOne('lazyDataTableFindRows', findParam);
+        const findResult: FindResult = await Utils.fetchOne('lazyDataTableFindRows', findParam);
         findResult.totalRecords = parseInt(findResult.totalRecords as any as string);
         return findResult;
     }
@@ -956,7 +957,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     reread = await props.removeRow(selectedRow);
                 }
                 catch (e) {
-                    XUtils.showErrorMessage(xLocaleOption('removeRowFailed'), e);
+                    Utils.showErrorMessage(xLocaleOption('removeRowFailed'), e);
                 }
                 if (reread) {
                     loadData();
@@ -969,10 +970,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 if (window.confirm(xLocaleOption('removeRowConfirm'))) {
                     try {
                         // poznamka: vdaka await bude loadData() bezat az po dobehnuti requestu removeRow
-                        await XUtils.removeRow(props.entity, selectedRow);
+                        await Utils.removeRow(props.entity, selectedRow);
                     }
                     catch (e) {
-                        XUtils.showErrorMessage(xLocaleOption('removeRowFailed'), e);
+                        Utils.showErrorMessage(xLocaleOption('removeRowFailed'), e);
                     }
                     loadData();
                     if (props.onRemoveRow) {
@@ -1063,13 +1064,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     // pouziva sa len pre simple filtrovanie (filterDisplay="row")
 
     const onDropdownFilterChange = (field: string, displayValue: any, fieldAutoFilter: boolean) => {
-        const filterValue: any | null = displayValue !== XUtils.dropdownEmptyOptionValue ? displayValue : null;
+        const filterValue: any | null = displayValue !== Utils.dropdownEmptyOptionValue ? displayValue : null;
         setFilterValue(field, filterValue, FilterMatchMode.EQUALS, undefined, fieldAutoFilter);
     }
 
     const getDropdownFilterValue = (field: string) : any => {
         const filterValue: any | null = getFilterValue(field);
-        return filterValue !== null ? filterValue : XUtils.dropdownEmptyOptionValue;
+        return filterValue !== null ? filterValue : Utils.dropdownEmptyOptionValue;
     }
 
     // ****** vseobecne metodky pre set/get do/z filtra ********
@@ -1249,7 +1250,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // ak mame scrollWidth/scrollHeight = viewport (default), vyratame scrollWidth/scrollHeight tak aby tabulka "sadla" do okna (viewport-u)
 
-    const isMobile: boolean = XUtils.isMobile();
+    const isMobile: boolean = Utils.isMobile();
 
     let scrollWidthLocal: string | undefined = undefined; // vypnute horizontalne scrollovanie
     let scrollHeightLocal: string | undefined = undefined; // vypnute vertikalne scrollovanie
@@ -1267,11 +1268,11 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             scrollHeightLocal = props.scrollHeight;
             if (scrollHeightLocal === "viewport") {
                 // vypocet je priblizny, robeny na mobil, desktop bude mat mozno iny
-                //const headerHeight = XUtils.toPX0('12.7rem');
-                //let footerHeight = XUtils.toPX0('3.7rem') + XUtils.toPX0('3rem'); // table footer (paging) + buttons Add row, Edit, ...
+                //const headerHeight = Utils.toPX0('12.7rem');
+                //let footerHeight = Utils.toPX0('3.7rem') + Utils.toPX0('3rem'); // table footer (paging) + buttons Add row, Edit, ...
                 // na desktope mi nechce odpocitat vysku taskbar-u od window.screen.availHeight, tak to poriesime takymto hack-om:
-                // if (!XUtils.isMobile()) {
-                //     footerHeight += XUtils.toPX0('6rem'); // priblizna vyska taskbaru (ak mam 2 rady buttonov)
+                // if (!Utils.isMobile()) {
+                //     footerHeight += Utils.toPX0('6rem'); // priblizna vyska taskbaru (ak mam 2 rady buttonov)
                 // }
                 let viewHeight: string;
                 let headerFooterHeight: number;
@@ -1281,26 +1282,26 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     // experimentalne zistena vyska header/footer
                     // da sa vyratat ako vysku body (celej stranky) - vyska div-u ktory sa scrolluje (div na ktorom je style="max-height: calc(100vh - 266.42px);)
                     // (treba odratat vysku paginatora a formFooterHeight (lebo tie sa odratavaju nizsie))
-                    headerFooterHeight = XUtils.toPX0('10.89rem');
+                    headerFooterHeight = Utils.toPX0('10.89rem');
                 }
                 else {
                     // sme v dialogu
                     if (isMobile) {
                         viewHeight = '98vh'; // .p-dialog pre mobil ma max-height: 98%
-                        headerFooterHeight = XUtils.toPX0('12.03rem'); // rucne zratane
+                        headerFooterHeight = Utils.toPX0('12.03rem'); // rucne zratane
                     }
                     else {
                         viewHeight = '90vh'; // .p-dialog pre desktop ma max-height: 90%
-                        headerFooterHeight = XUtils.toPX0('13.03rem'); // rucne zratane (desktop ma vecsi margin dole na dialogu)
+                        headerFooterHeight = Utils.toPX0('13.03rem'); // rucne zratane (desktop ma vecsi margin dole na dialogu)
                     }
                 }
                 // pridame vysku paging-u, ak treba
                 if (props.paginator) {
-                    headerFooterHeight += XUtils.toPX0('3.71rem');
+                    headerFooterHeight += Utils.toPX0('3.71rem');
                 }
                 // este pridame vysku linkov na zdrojaky, ak treba
                 if (props.formFooterHeight !== undefined) {
-                    headerFooterHeight += XUtils.toPX0(XUtils.processGridBreakpoints(props.formFooterHeight));
+                    headerFooterHeight += Utils.toPX0(Utils.processGridBreakpoints(props.formFooterHeight));
                 }
                 scrollHeightLocal = `calc(${viewHeight} - ${headerFooterHeight}px)`;
             }
@@ -1378,7 +1379,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // pre lepsiu citatelnost vytvarame stlpce uz tu
     const columnElemList: JSX.Element[] = React.Children.map(
-        props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: LazyColumnProps}).props.columnViewStatus) !== XViewStatus.Hidden),
+        props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: LazyColumnProps}).props.columnViewStatus) !== ViewStatus.Hidden),
         function(child) {
             // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
             // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
@@ -1515,7 +1516,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                                                        scale={xField.scale} datetime={xField.type === "datetime"}/>
                         }
                     } else if (xField.type === "decimal" || xField.type === "number") {
-                        const params = XUtilsMetadata.getParamsForInputNumber(xField);
+                        const params = UtilsMetadata.getParamsForInputNumber(xField);
                         betweenFilter = getBetweenFilter(childColumn.props.betweenFilter, props.betweenFilter);
                         if (betweenFilter !== undefined) {
                             // display: 'flex' umiestni input elementy pod seba (betweenFilter = "column") resp. vedla seba (betweenFilter = "row")
@@ -1592,12 +1593,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             }
 
             // *********** width/headerStyle ***********
-            let width: string | undefined = XUtils.processPropWidth(childColumn.props.width);
+            let width: string | undefined = Utils.processPropWidth(childColumn.props.width);
             if (width === undefined || width === "default") {
                 // TODO - if filter not used at all, then buttons flags should be false
                 const filterMenuInFilterRow: boolean = props.filterDisplay === "row" && showFilterMenu;
                 const filterButtonInHeader: boolean = props.filterDisplay === "menu";
-                width = XUtilsMetadata.computeColumnWidth(xField, betweenFilter, filterMenuInFilterRow, undefined, headerLabel, true, filterButtonInHeader);
+                width = UtilsMetadata.computeColumnWidth(xField, betweenFilter, filterMenuInFilterRow, undefined, headerLabel, true, filterButtonInHeader);
             }
             let headerStyle: React.CSSProperties = {};
             if (width !== undefined) {
@@ -1747,7 +1748,7 @@ export interface LazyColumnProps {
     fieldSetId?: string; // in case that we render json attribute (output from XFieldSet), here is id of XFieldSet (saved in x_field_set_meta), fieldSet metadata is needed to get labels of field set attributes
                         // note: better solution would be take fieldSetId from json attribute from model, but we would have to create decorator for this purpose...
     aggregateType?: AggregateFunction;
-    columnViewStatus: XViewStatusOrBoolean; // aby sme mohli mat Hidden stlpec (nedarilo sa mi priamo v kode "o-if-ovat" stlpec), zatial netreba funkciu, vola sa columnViewStatus lebo napr. v Edit tabulke moze byt viewStatus na row urovni
+    columnViewStatus: ViewStatusOrBoolean; // aby sme mohli mat Hidden stlpec (nedarilo sa mi priamo v kode "o-if-ovat" stlpec), zatial netreba funkciu, vola sa columnViewStatus lebo napr. v Edit tabulke moze byt viewStatus na row urovni
     filterElement?: FilterElementProp;
     className?: string; // wraps the content of the column cell with div element with this className (prop is not applied if prop body is used)
     style?: React.CSSProperties; // wraps the content of the column cell with div element with this style (prop is not applied if prop body is used)
@@ -1764,6 +1765,6 @@ export const LazyColumn = (props: LazyColumnProps) => {
 
 LazyColumn.defaultProps = {
     //autoCompleteEnabled: "forStringOnly",
-    columnViewStatus: true,  // XViewStatus.ReadWrite
+    columnViewStatus: true,  // ViewStatus.ReadWrite
     autoFilter: false
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {XInput, XInputProps} from "../XInput";
 
 export interface InputDecimalProps extends XInputProps {
@@ -42,7 +42,7 @@ export class InputDecimal extends XInput<InputDecimalProps> {
     }
 
     render() {
-        const {useGrouping, fractionDigits, min, max, size} = XUtilsMetadata.getParamsForInputNumber(this.xField);
+        const {useGrouping, fractionDigits, min, max, size} = UtilsMetadata.getParamsForInputNumber(this.xField);
         const sizeInput = this.props.size ?? size;
 
         // note: style overrides size (width of the input according to character count)

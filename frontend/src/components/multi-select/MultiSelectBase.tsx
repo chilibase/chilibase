@@ -1,5 +1,6 @@
 import React, {Component} from "react";
-import {XQuery, XUtils} from "../XUtils";
+import {Query} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelect, MultiSelectChangeEvent} from "primereact/multiselect";
@@ -10,7 +11,7 @@ export interface MultiSelectBaseProps {
     value: any[];
     onChange: (value: any[]) => void;
     //options?: any[]; // ak su priamo zadane options, nepouziva sa optionsQuery (TODO - toto neviem ci potrebujeme, da sa priamo pouzit MultiSelect v tomto pripade)
-    optionsQuery?: XQuery; // musi byt zadany ak nie su zadane options
+    optionsQuery?: Query; // musi byt zadany ak nie su zadane options
     displayField: string; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/options), moze byt aj path (napr. <assoc>.<field>)
     //idField?: string; // id field (nazov atributu) objektu z value/suggestions - pouziva sa ak mame zadane priamo options (pri optionsQuery ziskame idField podla entity)
     maxSelectedLabels?: number;
@@ -53,9 +54,9 @@ export class MultiSelectBase extends Component<MultiSelectBaseProps> {
         if (!this.props.optionsQuery) {
             throw `MultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
         }
-        const options: any[] = await XUtils.fetchRows(
+        const options: any[] = await Utils.fetchRows(
             this.props.optionsQuery.entity,
-            XUtils.evalFilter(this.props.optionsQuery.filter),
+            Utils.evalFilter(this.props.optionsQuery.filter),
             this.getSortField(),
             this.props.optionsQuery.fields
         );
@@ -77,7 +78,7 @@ export class MultiSelectBase extends Component<MultiSelectBaseProps> {
             <MultiSelect options={this.state.options} optionLabel={this.props.displayField} dataKey={this.idField}
                          maxSelectedLabels={this.props.maxSelectedLabels} display="chip"
                          value={this.props.value} onChange={(e: MultiSelectChangeEvent) => this.props.onChange(e.value)}
-                         readOnly={this.props.readOnly} disabled={this.props.readOnly} {...XUtils.createTooltipOrErrorProps(this.props.error)}/>
+                         readOnly={this.props.readOnly} disabled={this.props.readOnly} {...Utils.createTooltipOrErrorProps(this.props.error)}/>
         );
     }
 }

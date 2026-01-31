@@ -6,7 +6,8 @@ import {
     FormWithLoaderProps,
     LoadObjectFunction,
 } from "./FormBase";
-import {OperationType, XUtils} from "../XUtils";
+import {OperationType} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {Params} from "../../common/UtilsCommon";
 import {XEnvVar} from "../XEnvVars";
 import {EntityRow} from "../../common/types";
@@ -29,12 +30,12 @@ export function FormWithLoader<T = any>(
     const FormType = Form ?? formElement?.type;
     let createObject: CreateObjectFunction<T> | undefined = undefined;
     let loadObject: LoadObjectFunction<T> | undefined = undefined;
-    const legacyObjectLoading: boolean = XUtils.getEnvVarValueBoolean(XEnvVar.VITE_LEGACY_OBJECT_LOADING);
+    const legacyObjectLoading: boolean = Utils.getEnvVarValueBoolean(XEnvVar.VITE_LEGACY_OBJECT_LOADING);
     if (operationType === OperationType.Insert) {
         createObject = (FormType as any).createObject;
         if (!createObject && !legacyObjectLoading) {
             // default createObject function
-            createObject = XUtils.getDefaultCreateObject<T>(entity);
+            createObject = Utils.getDefaultCreateObject<T>(entity);
         }
     }
     else if (operationType === OperationType.Update) {
@@ -49,7 +50,7 @@ export function FormWithLoader<T = any>(
             if (assocListFunction) {
                 loadObject = (id: number, params?: Params) => {
                     const assocList: string[] = assocListFunction!(params);
-                    return XUtils.fetchById(entity, assocList, id);
+                    return Utils.fetchById(entity, assocList, id);
                 };
             }
         }

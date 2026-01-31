@@ -1,7 +1,7 @@
 import React from "react";
 import {FormComponentDT, FormComponentDTProps} from "../form-data-table";
 import {Assoc} from "../../common/EntityMetadata";
-import {OperationType} from "../XUtils";
+import {OperationType} from "../../utils/types";
 import {XError} from "../XErrors";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
 import {TableFieldFilterProp} from "../form-data-table";

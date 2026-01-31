@@ -1,6 +1,6 @@
 import React from "react";
 import {InputIntervalBase} from "./InputIntervalBase";
-import {IPostgresInterval} from "../XUtils";
+import {IPostgresInterval} from "../../utils/types";
 import {XInputDT, XInputDTProps} from "../XInputDT";
 
 export interface InputIntervalDTProps extends XInputDTProps {

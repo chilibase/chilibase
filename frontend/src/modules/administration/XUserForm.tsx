@@ -3,7 +3,8 @@ import {InputText} from "../../components/input-text";
 import React from "react";
 import {InputDecimal} from "../../components/input-decimal";
 import {Password} from "primereact/password";
-import {OperationType, XUtils} from "../../components/XUtils";
+import {OperationType} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {FormFooter} from "../../components/form";
 import {Checkbox} from "../../components/checkbox";
 import {XEnvVar, XViteAuth} from "../../components/XEnvVars";
@@ -31,7 +32,7 @@ export class XUserForm extends FormBaseModif {
     preInitForm(entityRow: EntityRow, operationType: OperationType.Insert | OperationType.Update) {
         // current user cannot change username, enabled and admin status
         const username = entityRow.username;
-        if (operationType === OperationType.Update && username === XUtils.getUsername()) {
+        if (operationType === OperationType.Update && username === Utils.getUsername()) {
             this.setState({usernameEnabledReadOnly: true});
         }
     }
@@ -43,7 +44,7 @@ export class XUserForm extends FormBaseModif {
         }
 
         // password is used only by local authorization
-        if (XUtils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.LOCAL) {
+        if (Utils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.LOCAL) {
             if (this.isAddRow() && this.state.passwordNew === '') {
                 alert("Password is required.");
                 return;
@@ -72,10 +73,10 @@ export class XUserForm extends FormBaseModif {
         // zapise this.state.entityRow do DB - samostatny servis koli hashovaniu password-u
         let entityRow: EntityRow;
         try {
-            entityRow = await XUtils.post('userSaveRow', {entity: this.getEntity(), object: this.state.entityRow});
+            entityRow = await Utils.post('userSaveRow', {entity: this.getEntity(), object: this.state.entityRow});
         }
         catch (e) {
-            XUtils.showErrorMessage("Save row failed.", e);
+            Utils.showErrorMessage("Save row failed.", e);
             return; // zostavame vo formulari
         }
 
@@ -86,7 +87,7 @@ export class XUserForm extends FormBaseModif {
     render() {
         // autoComplete="new-password" - bez tohto chrome predplna user/password, ak si user da ulozit user/password (pre danu url)
         let passwordElems: any[] = [];
-        if (XUtils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.LOCAL) {
+        if (Utils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.LOCAL) {
             passwordElems = [
                 <div className="field grid">
                     <label className="col-fixed" style={{width:'14rem'}}>New password</label>

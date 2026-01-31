@@ -1,6 +1,6 @@
 import {XToken} from "./XToken";
 import {useState} from "react";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 
 // zombie object (not used)
 export default function useXToken(): [XToken | null, (xToken: XToken | null) => void] {
@@ -15,7 +15,7 @@ export default function useXToken(): [XToken | null, (xToken: XToken | null) => 
     };
 
     const [xToken, setXToken] = useState(getXToken());
-    XUtils.setXToken(xToken);
+    Utils.setXToken(xToken);
 
     const saveXToken = (xToken: XToken | null) => {
         if (xToken !== null) {
@@ -24,7 +24,7 @@ export default function useXToken(): [XToken | null, (xToken: XToken | null) => 
         else {
             sessionStorage.removeItem('xToken');
         }
-        XUtils.setXToken(xToken);
+        Utils.setXToken(xToken);
         setXToken(xToken);
     };
 

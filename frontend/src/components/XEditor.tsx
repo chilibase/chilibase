@@ -1,6 +1,6 @@
 import React from "react";
 import {XInput, XInputProps} from "./XInput";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {XEditorBase} from "./XEditorBase";
 
 export interface XEditorProps extends XInputProps {
@@ -38,8 +38,8 @@ export class XEditor extends XInput<XEditorProps> {
         let style: React.CSSProperties = this.props.inputStyle ?? {};
         // defaultne pridame width:100%
         // ak nemame labelOnTop=true, musime odratat sirku labelu, inac sa label dostane nad input (koli flex-wrap: wrap)
-        const widthValue: string = this.props.labelOnTop ? '100%' : `calc(100% - ${XUtils.FIELD_LABEL_WIDTH})`;
-        XUtils.addCssPropIfNotExists(style, {width: widthValue});
+        const widthValue: string = this.props.labelOnTop ? '100%' : `calc(100% - ${Utils.FIELD_LABEL_WIDTH})`;
+        Utils.addCssPropIfNotExists(style, {width: widthValue});
 
         // x-editor-label-on-top - nastavuje orientation: column, aby boli label a XEditorBase pod sebou (robene podla XInputTextarea)
         // XEditorBase renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla XInputTextarea)

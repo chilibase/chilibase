@@ -1,7 +1,7 @@
 import React from "react";
 import {MenuItem} from "primereact/menuitem";
 import {Menubar as PrimeMenubar} from "primereact/menubar";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 
 // helper component
 
@@ -15,8 +15,8 @@ export const Menubar = (props: MenubarProps) => {
     const end: any = (
         <div className="flex" style={{width: '100%'}}>
             <div className="flex align-content-center" style={{marginLeft: 'auto'}}>
-                {!XUtils.isMobile() ? <div style={{padding: '0.5rem'}}>Backend: {XUtils.getXBackendUrl()}</div> : null}
-                <div style={{padding: '0.5rem'}}>User: {/*XUtils.getUsername()*/XUtils.getXToken()?.user?.name}</div>
+                {!Utils.isMobile() ? <div style={{padding: '0.5rem'}}>Backend: {Utils.getXBackendUrl()}</div> : null}
+                <div style={{padding: '0.5rem'}}>User: {/*Utils.getUsername()*/Utils.getXToken()?.user?.name}</div>
             </div>
         </div>
     );

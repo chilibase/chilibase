@@ -1,6 +1,6 @@
 {
   "name": "@chilibase/frontend",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "type": "module",
   "scripts": {
@@ -97,11 +97,11 @@
     "./XSearchButton": "./lib/components/XSearchButton.js",
     "./XToken": "./lib/components/XToken.js",
     "./XToOneAssocButton": "./lib/components/XToOneAssocButton.js",
-    "./XUtils": "./lib/components/XUtils.js",
-    "./XUtilsMetadata": "./lib/components/XUtilsMetadata.js",
 
     "./doc-templates": "./lib/modules/doc-templates/index.js",
     "./administration": "./lib/modules/administration/index.js",
+
+    "./utils": "./lib/utils/index.js",
 
     "./ExportImportParam": "./lib/common/ExportImportParam.js",
     "./FindParam": "./lib/common/FindParam.js",

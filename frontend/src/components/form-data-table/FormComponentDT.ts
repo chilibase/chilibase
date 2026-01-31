@@ -2,7 +2,8 @@ import {FormBase} from "../form";
 import React, {Component} from "react";
 import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {OperationType, XUtils} from "../XUtils";
+import {OperationType} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {XError} from "../XErrors";
 import {CustomFilter} from "../../common/FindParam";
 import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
@@ -111,7 +112,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
         if (label !== undefined) {
             // test na readOnly je tu hlavne koli tomu aby sme nemali * pri ID atribute, ktory sa pri inserte generuje az pri zapise do DB
             if (this.isNotNull() && !this.isReadOnly()) {
-                label = XUtils.markNotNull(label);
+                label = Utils.markNotNull(label);
             }
         }
         return label;
@@ -120,7 +121,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
     getLabelStyle(): React.CSSProperties {
         let labelStyle: React.CSSProperties = this.props.labelStyle ?? {};
         // this.props.inline nepouzivame, lebo je to asi zombie
-        XUtils.addCssPropIfNotExists(labelStyle, {width: XUtils.FIELD_LABEL_WIDTH});
+        Utils.addCssPropIfNotExists(labelStyle, {width: Utils.FIELD_LABEL_WIDTH});
         return labelStyle;
     }
 
@@ -163,7 +164,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
     // vrati error message z rowData.errorMap
     getError(): string | undefined {
         const error: XError = FormBase.getRowTechData(this.props.rowData).errorMap[this.getField()];
-        return error ? XUtils.getErrorMessage(error) : undefined;
+        return error ? Utils.getErrorMessage(error) : undefined;
     }
 
     callOnChangeFromOnBlur() {

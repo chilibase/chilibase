@@ -1,8 +1,8 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {XInputDT, XInputDTProps} from "../XInputDT";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 
 export interface InputDecimalDTProps extends XInputDTProps {
 }
@@ -42,12 +42,12 @@ export class InputDecimalDT extends XInputDT<InputDecimalDTProps> {
     }
 
     render() {
-        const {useGrouping, fractionDigits, min, max} = XUtilsMetadata.getParamsForInputNumber(this.xField);
+        const {useGrouping, fractionDigits, min, max} = UtilsMetadata.getParamsForInputNumber(this.xField);
 
         return (
             <InputNumber id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} mode="decimal" locale="de-DE"
                          useGrouping={useGrouping} minFractionDigits={fractionDigits} maxFractionDigits={fractionDigits} min={min} max={max}
-                         onBlur={this.onBlur} {...XUtils.addClassName(XUtils.createTooltipOrErrorProps(this.getError()), "x-input-to-resize")}/>
+                         onBlur={this.onBlur} {...Utils.addClassName(Utils.createTooltipOrErrorProps(this.getError()), "x-input-to-resize")}/>
         );
     }
 }

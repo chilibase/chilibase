@@ -1,10 +1,10 @@
 import React, {ReactNode, useState} from 'react';
 import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {XEnvVar} from "../XEnvVars";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 
 export const AuthOffProvider = ({children}: {children: ReactNode;}) => {
     return (
@@ -44,16 +44,16 @@ function AppAuthOff({children}: {children: ReactNode;}) {
     const getAndSetAccessToken = async () => {
 
         // TODO - provizorne
-        // XUtils.getAccessToken() vyhadzuje chybu ak je accessToken null
+        // Utils.getAccessToken() vyhadzuje chybu ak je accessToken null
         // post-login potrebuje accessToken, preto ho uz tu setneme
-        XUtils.setXToken({accessToken: 'dummy'});
+        Utils.setXToken({accessToken: 'dummy'});
 
         // zavolame post-login
-        const username: string = XUtils.getEnvVarValue(XEnvVar.VITE_AUTH_OFF_USERNAME);
+        const username: string = Utils.getEnvVarValue(XEnvVar.VITE_AUTH_OFF_USERNAME);
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: username};
-            xPostLoginResponse = await XUtils.fetch('post-login', xPostLoginRequest);
+            xPostLoginResponse = await Utils.fetch('post-login', xPostLoginRequest);
         }
         catch (e) {
             // console.log(typeof e);
@@ -66,7 +66,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
             // @ts-ignore
             console.log(error.cause);
 
-            XUtils.showErrorMessage('post-login failed', e);
+            Utils.showErrorMessage('post-login failed', e);
             throw 'post-login failed';
         }
 
@@ -86,17 +86,17 @@ function AppAuthOff({children}: {children: ReactNode;}) {
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         // TODO - tu provizorne accessToken: 'dummy', bolo accessToken: undefined
-        XUtils.setXToken({accessToken: 'dummy', user: xPostLoginResponse.user, logout: logout});
+        Utils.setXToken({accessToken: 'dummy', user: xPostLoginResponse.user, logout: logout});
         setLoggedIn(true);
     }
 
     const fetchAndSetXMetadata = async () => {
-        await XUtilsMetadata.fetchAndSetXEntityMap();
-        await XUtilsMetadata.fetchAndSetXBrowseMetaMap();
+        await UtilsMetadata.fetchAndSetXEntityMap();
+        await UtilsMetadata.fetchAndSetXBrowseMetaMap();
     }
 
     const logout = () => {
-        XUtils.setXToken(null);
+        Utils.setXToken(null);
         setLoggedIn(false);
         setInitialized(false);
     }

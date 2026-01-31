@@ -2,7 +2,7 @@ import {FormBase} from "./form";
 import {EntityRow} from "../common/types";
 import React from "react";
 import {Button} from "primereact/button";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
 export const XToOneAssocButton = (props: {form: FormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
@@ -27,7 +27,7 @@ export const XToOneAssocButton = (props: {form: FormBase; assocField: string; as
 
     return (
         <div className="field grid">
-            <label htmlFor={props.assocField} className="col-fixed" style={{width: XUtils.FIELD_LABEL_WIDTH}}>{label}</label>
+            <label htmlFor={props.assocField} className="col-fixed" style={{width: Utils.FIELD_LABEL_WIDTH}}>{label}</label>
             <Button label={props.buttonLabel !== undefined ? props.buttonLabel : label} onClick={onClickButton} disabled={assocObject === null}/>
         </div>
     );

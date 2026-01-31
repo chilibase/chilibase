@@ -2,7 +2,7 @@ import {InputText} from "primereact/inputtext";
 import React, {useState} from "react";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {LocalAuthLoginRequest, LocalAuthLoginResponse, PostLoginRequest} from "../../common/auth-api";
 import {XResponseError} from "../XResponseError";
 
@@ -21,7 +21,7 @@ export const LoginForm = (props: {
         try {
             // object with properties username and password is processed by LocalStrategy -> they come into method LocalStrategy.validate
             const xLocalAuthLoginRequest: LocalAuthLoginRequest = {username: username, password: password};
-            xLocalAuthLoginResponse = await XUtils.fetchOne('x-local-auth-login', xLocalAuthLoginRequest, false);
+            xLocalAuthLoginResponse = await Utils.fetchOne('x-local-auth-login', xLocalAuthLoginRequest, false);
         }
         catch (e) {
             if (e instanceof XResponseError
@@ -35,7 +35,7 @@ export const LoginForm = (props: {
                 // @ts-ignore
                 console.log(error.cause);
 
-                XUtils.showErrorMessage('User authentication failed.', e);
+                Utils.showErrorMessage('User authentication failed.', e);
             }
             return; // we stay in form
         }
@@ -47,7 +47,7 @@ export const LoginForm = (props: {
         //     //console.log(xUserAuthenticationResponse.user);
         //     let customUser = undefined;
         //     if (props.customUserService) {
-        //         customUser = await XUtils.fetchOne(props.customUserService, {username: username}, {username: username, password: password});
+        //         customUser = await Utils.fetchOne(props.customUserService, {username: username}, {username: username, password: password});
         //     }
         //     // zatial si ulozime len username/password (koli http basic autentifikacii)
         //     props.setXToken({username: username, password: password, user: customUser});

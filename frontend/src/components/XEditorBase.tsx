@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {Editor, EditorTextChangeEvent} from "primereact/editor";
 import Quill from 'quill';
 
@@ -110,6 +110,6 @@ export const XEditorBase = (props: {
     return (
         <Editor id={props.id} value={getValue()} onTextChange={onTextChange} onBlur={onBlur} readOnly={props.readOnly}
                 pt={{root: {style: props.style}}}
-                {...XUtils.createTooltipOrErrorProps(props.error)} headerTemplate={headerTemplate()}/>
+                {...Utils.createTooltipOrErrorProps(props.error)} headerTemplate={headerTemplate()}/>
     );
 }

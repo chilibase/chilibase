@@ -1,26 +1,26 @@
 import {Field} from "../common/EntityMetadata";
-import {XUtils} from "./XUtils";
+import {Utils} from "./Utils";
 import {BrowseMeta} from "../modules/administration";
-import {BetweenFilterProp} from "./lazy-data-table";
+import {BetweenFilterProp} from "../components/lazy-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import {BrowseMetaMap} from "../common/types";
 
 // idelany nazov: UtilsEntityMetadata - ale strasne dlhy
 // tato funkcionalita by mala ist bud do tried XEntity, XField alebo lepsie do nejakeho servisu
 // ekvivalentna funkcionalita sa nachadza aj na servri v servise XEntityMetadataService.ts (TODO - v buducnosti spravit spolocnu triedu/servis)
-export class XUtilsMetadata {
+export class UtilsMetadata {
     // nacachovane metadata (setuju sa v App.fetchAndSetXMetadata)
     private static xBrowseMetaMap: BrowseMetaMap;
 
     static async fetchAndSetXEntityMap(): Promise<any> {
         if (UtilsMetadataCommon.getEntityMap() === undefined) {
-            UtilsMetadataCommon.setEntityMap(await XUtils.fetch("getXEntityMap", {dummy: "dummy"}));
+            UtilsMetadataCommon.setEntityMap(await Utils.fetch("getXEntityMap", {dummy: "dummy"}));
         }
     }
 
     static async fetchAndSetXBrowseMetaMap(): Promise<any> {
-        if (XUtilsMetadata.xBrowseMetaMap === undefined) {
-            XUtilsMetadata.xBrowseMetaMap = await XUtils.fetch("getXBrowseMetaMap", {dummy: "dummy"});
+        if (UtilsMetadata.xBrowseMetaMap === undefined) {
+            UtilsMetadata.xBrowseMetaMap = await Utils.fetch("getXBrowseMetaMap", {dummy: "dummy"});
         }
     }
 
@@ -51,7 +51,7 @@ export class XUtilsMetadata {
             throw `InputDecimal: field ${xField.name} has unsupported type ${xField.type}. Supported types are decimal and number.`;
         }
 
-        return XUtilsMetadata.getParamsForInputNumberBase(useGrouping, scale, precision, size);
+        return UtilsMetadata.getParamsForInputNumberBase(useGrouping, scale, precision, size);
     }
 
     static getParamsForInputNumberBase(
@@ -79,17 +79,17 @@ export class XUtilsMetadata {
         if (formColumnType === undefined) {
             // lazy datatable (no inputs, no buttons, only text and padding)
             if (xField.type === "string") {
-                width = XUtilsMetadata.computeColumnWidthBase(xField.length, 0.5 + 0.5); // padding 7px + 7px
+                width = UtilsMetadata.computeColumnWidthBase(xField.length, 0.5 + 0.5); // padding 7px + 7px
             }
             else if (xField.type === "decimal" || xField.type === "number") {
-                const {size} = XUtilsMetadata.getParamsForInputNumber(xField);
-                width = XUtilsMetadata.computeColumnWidthBase(size, 0.5 + 0.5);
+                const {size} = UtilsMetadata.getParamsForInputNumber(xField);
+                width = UtilsMetadata.computeColumnWidthBase(size, 0.5 + 0.5);
             }
             else if (xField.type === "date") {
-                width = XUtilsMetadata.computeColumnWidthBase(11, 0.25 + 1.25 + 0.25); // napr. 31.12.2021 (poznamka: dal som 11 lebo vo filtri nebolo vidno cely datum), 1.25 rem date picker button
+                width = UtilsMetadata.computeColumnWidthBase(11, 0.25 + 1.25 + 0.25); // napr. 31.12.2021 (poznamka: dal som 11 lebo vo filtri nebolo vidno cely datum), 1.25 rem date picker button
             }
             else if (xField.type === "datetime") {
-                width = XUtilsMetadata.computeColumnWidthBase(10 + 9, 0.25 + 1.25 + 0.25); // napr. 31.12.2021 03:03:00
+                width = UtilsMetadata.computeColumnWidthBase(10 + 9, 0.25 + 1.25 + 0.25); // napr. 31.12.2021 03:03:00
             }
             else if (xField.type === "boolean") {
                 width = 1.43 + 0.5 + 0.5; // checkbox ma sirku 20px
@@ -106,11 +106,11 @@ export class XUtilsMetadata {
             if (formColumnType === "inputSimple" || formColumnType === "textarea") {
                 const padding = 0.21 + 0.07 + 0.5; // padding is 2.94px + 1px border + 7px padding in input
                 if (xField.type === "string") {
-                    width = XUtilsMetadata.computeColumnWidthBase(xField.length, padding + padding); // padding left + right
+                    width = UtilsMetadata.computeColumnWidthBase(xField.length, padding + padding); // padding left + right
                 }
                 else if (xField.type === "decimal" || xField.type === "number") {
-                    const {size} = XUtilsMetadata.getParamsForInputNumber(xField);
-                    width = XUtilsMetadata.computeColumnWidthBase(size, padding + padding);
+                    const {size} = UtilsMetadata.getParamsForInputNumber(xField);
+                    width = UtilsMetadata.computeColumnWidthBase(size, padding + padding);
                     if (betweenFilter === "row" && width) {
                         width *= 2; // not tested, only estimation
                     }
@@ -142,17 +142,17 @@ export class XUtilsMetadata {
                 // vyratame sirku inputu
                 const padding = 0.21 + 0.07 + 0.5; // padding is 2.94px + 1px border + 7px padding in input
                 if (xField.type === "string") {
-                    width = XUtilsMetadata.computeColumnWidthBase(xField.length, padding + padding); // padding left + right
+                    width = UtilsMetadata.computeColumnWidthBase(xField.length, padding + padding); // padding left + right
                 }
                 else if (xField.type === "decimal" || xField.type === "number") {
-                    const {size} = XUtilsMetadata.getParamsForInputNumber(xField);
-                    width = XUtilsMetadata.computeColumnWidthBase(size, padding + padding);
+                    const {size} = UtilsMetadata.getParamsForInputNumber(xField);
+                    width = UtilsMetadata.computeColumnWidthBase(size, padding + padding);
                 }
                 else if (xField.type === "date") {
-                    width = XUtilsMetadata.computeColumnWidthBase(10, padding + padding); // napr. 31.12.2021
+                    width = UtilsMetadata.computeColumnWidthBase(10, padding + padding); // napr. 31.12.2021
                 }
                 else if (xField.type === "datetime") {
-                    width = XUtilsMetadata.computeColumnWidthBase(10 + 9, padding + padding); // napr. 31.12.2021 03:03:00
+                    width = UtilsMetadata.computeColumnWidthBase(10 + 9, padding + padding); // napr. 31.12.2021 03:03:00
                 }
                 else {
                     throw `Field ${xField.name}: xField.type = ${xField.type} not implemented for dropdown/autoComplete/searchButton`;
@@ -180,13 +180,13 @@ export class XUtilsMetadata {
         }
         if (filterMenuInFilterRow) {
             // if the column has width of 25 characters or more, then the input field can be shorter
-            if (width !== undefined && width < 25 * XUtilsMetadata.CHAR_SIZE) {
+            if (width !== undefined && width < 25 * UtilsMetadata.CHAR_SIZE) {
                 width += 1.25; // filter menu icon
             }
         }
         // ak je label dlhsi ako sirka stlpca, tak sirka stlpca bude podla label-u
         if (header !== undefined) {
-            let widthHeader = XUtilsMetadata.computeColumnWidthBase(header.length, 0.5); // padding (7px)
+            let widthHeader = UtilsMetadata.computeColumnWidthBase(header.length, 0.5); // padding (7px)
             if (sortableButtonInHeader && widthHeader !== undefined) {
                 widthHeader += 0.5 + 1.28; // sort icon (25px = 7px (space/margin) + 18px (icon body))
             }
@@ -206,7 +206,7 @@ export class XUtilsMetadata {
     static computeColumnWidthBase(charSize?: number, paddingAndOther?: number): number | undefined {
         let width: number | undefined;
         if (charSize !== undefined) {
-            width = charSize * XUtilsMetadata.CHAR_SIZE; // character size (8px)
+            width = charSize * UtilsMetadata.CHAR_SIZE; // character size (8px)
         }
         if (width !== undefined && paddingAndOther !== undefined) {
             width += paddingAndOther;
@@ -215,14 +215,14 @@ export class XUtilsMetadata {
     }
 
     static getXBrowseMeta(entity: string, browseId?: string): BrowseMeta {
-        const key = XUtilsMetadata.getXBrowseFormMetaKey(entity, browseId);
-        const xBrowseMeta: BrowseMeta = XUtilsMetadata.xBrowseMetaMap[key];
+        const key = UtilsMetadata.getXBrowseFormMetaKey(entity, browseId);
+        const xBrowseMeta: BrowseMeta = UtilsMetadata.xBrowseMetaMap[key];
         return xBrowseMeta;
     }
 
     static setXBrowseMeta(entity: string, browseId: string | undefined, xBrowseMeta: BrowseMeta) {
-        const key = XUtilsMetadata.getXBrowseFormMetaKey(entity, browseId);
-        XUtilsMetadata.xBrowseMetaMap[key] = xBrowseMeta;
+        const key = UtilsMetadata.getXBrowseFormMetaKey(entity, browseId);
+        UtilsMetadata.xBrowseMetaMap[key] = xBrowseMeta;
     }
 
     static getXBrowseFormMetaKey(entity: string, browseId?: string): string {

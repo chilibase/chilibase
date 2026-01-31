@@ -1,5 +1,5 @@
 import { LogLevel } from "@azure/msal-browser";
-import {XUtils} from "../XUtils.js";
+import {Utils} from "../../utils/Utils.js";
 import {XEnvVar, XViteAuth} from "../XEnvVars.js";
 
 export let msalConfig;
@@ -8,8 +8,8 @@ export let graphConfig;
 
 export function initMsalConfig() {
 
-    // first XUtils.initLib must be called in order to call XUtils.getEnvVarValue
-    if (XUtils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.MS_ENTRA_ID) {
+    // first Utils.initLib must be called in order to call Utils.getEnvVarValue
+    if (Utils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.MS_ENTRA_ID) {
         /**
          * Configuration object to be passed to MSAL instance on creation.
          * For a full list of MSAL.js configuration parameters, visit:
@@ -17,8 +17,8 @@ export function initMsalConfig() {
          */
         msalConfig = {
             auth: {
-                clientId: XUtils.getEnvVarValue(XEnvVar.VITE_MS_ENTRA_ID_CLIENT_ID),
-                authority: `https://login.microsoftonline.com/${XUtils.getEnvVarValue(XEnvVar.VITE_MS_ENTRA_ID_TENANT_ID)}`,
+                clientId: Utils.getEnvVarValue(XEnvVar.VITE_MS_ENTRA_ID_CLIENT_ID),
+                authority: `https://login.microsoftonline.com/${Utils.getEnvVarValue(XEnvVar.VITE_MS_ENTRA_ID_TENANT_ID)}`,
                 //redirectUri: "http://localhost:3000"
                 // redirectUri will be url of the frontend application:
                 redirectUri: window.location.origin + window.location.pathname
@@ -62,7 +62,7 @@ export function initMsalConfig() {
          * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
          */
         loginRequest = {
-            scopes: [XUtils.getEnvVarValue(XEnvVar.VITE_MS_ENTRA_ID_BACKEND_SCOPE)]
+            scopes: [Utils.getEnvVarValue(XEnvVar.VITE_MS_ENTRA_ID_BACKEND_SCOPE)]
         };
 
         /**

@@ -1,7 +1,7 @@
 import React, {useRef} from "react";
 import {Dialog} from "primereact/dialog";
 import {FormBase, FormWithLoaderProps, OnSaveOrCancelProp} from "./FormBase";
-import {OperationType} from "../XUtils";
+import {OperationType} from "../../utils/types";
 import {FormProps} from "./FormBase";
 import {FormWithLoader} from "./FormWithLoader";
 

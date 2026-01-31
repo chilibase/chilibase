@@ -3,7 +3,7 @@ import {Component} from "react";
 import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
 import {FormBase} from "./form";
 import {Assoc, Entity} from "../common/EntityMetadata";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {EntityRow} from "../common/types";
 import {XButton} from "./XButton";
 import {XButtonIconNarrow} from "./XButtonIconNarrow";
@@ -81,14 +81,14 @@ export class XInputFileList extends Component<XInputFileListProps> {
                 filename: file.name,
                 subdir: this.props.subdir,
                 modifDate: new Date(),
-                modifUser: XUtils.getXToken()?.user?.id
+                modifUser: Utils.getXToken()?.user?.id
             }
             let xFile: XFile;
             try {
-                xFile = await XUtils.fetchFile(endpoint, jsonFieldValue, file);
+                xFile = await Utils.fetchFile(endpoint, jsonFieldValue, file);
             }
             catch (e) {
-                XUtils.showErrorMessage(xLocaleOption('fileUploadFailed', {fileName: file.name}), e);
+                Utils.showErrorMessage(xLocaleOption('fileUploadFailed', {fileName: file.name}), e);
                 this.fileUploadRef.current.clear(); // vyprazdnime hidden input, nech moze user znova zadat subory
                 return; // prerusime upload tohto a dalsich suborov
             }
@@ -108,7 +108,7 @@ export class XInputFileList extends Component<XInputFileListProps> {
     }
 
     async onDownloadFile(xFile: XFile) {
-        XUtils.downloadFile('x-download-file',{xFileId: xFile.id}, xFile.name);
+        Utils.downloadFile('x-download-file',{xFileId: xFile.id}, xFile.name);
     }
 
     async onRemoveFile(fileItem: any) {

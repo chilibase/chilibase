@@ -2,7 +2,7 @@ import React from "react";
 import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
 import {InputText as PrimeInputText} from "primereact/inputtext";
 import {XInput, XInputProps} from "../XInput";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {Tooltip} from "primereact/tooltip";
 
 export interface InputTextProps extends XInputProps {
@@ -52,7 +52,7 @@ export class InputText extends XInput<InputTextProps> {
                 {labelTooltip ? <Tooltip target={`#${labelElemId}`} content={labelTooltip}/> : null}
                 <PrimeInputText id={this.props.field} value={this.getValue()} onChange={this.onValueChange} onBlur={this.onBlur}
                            readOnly={this.isReadOnly()} maxLength={this.xField.length} size={size} style={this.props.inputStyle}
-                           {...XUtils.createTooltipOrErrorProps(this.getError(), inputTooltip)} placeholder={this.props.placeholder ?? this.props.desc}/>
+                           {...Utils.createTooltipOrErrorProps(this.getError(), inputTooltip)} placeholder={this.props.placeholder ?? this.props.desc}/>
             </div>
         );
     }

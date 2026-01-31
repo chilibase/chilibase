@@ -3,9 +3,9 @@ import {SourceCodeLinkEntity} from "./SourceCodeLinkEntity";
 import {XEditColumnDialog, XEditColumnDialogValues} from "./XEditColumnDialog";
 import * as _ from "lodash";
 import {BrowseMeta, ColumnMeta} from "../modules/administration";
-import {XUtilsMetadata} from "./XUtilsMetadata";
+import {UtilsMetadata} from "../utils/UtilsMetadata";
 import {Entity} from "../common/EntityMetadata";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {EditModeHandlers, LazyColumn, LazyDataTable} from "./lazy-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import {UtilsCommon} from "../common/UtilsCommon";
@@ -53,7 +53,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
     }
 
     getXBrowseMeta(): BrowseMeta {
-        let xBrowseMeta: BrowseMeta = XUtilsMetadata.getXBrowseMeta(this.props.entity, this.props.browseId);
+        let xBrowseMeta: BrowseMeta = UtilsMetadata.getXBrowseMeta(this.props.entity, this.props.browseId);
         if (xBrowseMeta === undefined) {
             xBrowseMeta = this.createDefaultXBrowseMeta();
         }
@@ -87,15 +87,15 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
 
         console.log(xBrowseMeta);
         try {
-            await XUtils.post('saveRow', {entity: "XBrowseMeta", object: xBrowseMeta});
+            await Utils.post('saveRow', {entity: "XBrowseMeta", object: xBrowseMeta});
         }
         catch (e) {
-            XUtils.showErrorMessage("Save row XBrowseMeta failed.", e);
+            Utils.showErrorMessage("Save row XBrowseMeta failed.", e);
             return; // zostavame v edit mode
         }
 
         // zmeny ulozime aj do cache formularov
-        XUtilsMetadata.setXBrowseMeta(this.props.entity, this.props.browseId, xBrowseMeta);
+        UtilsMetadata.setXBrowseMeta(this.props.entity, this.props.browseId, xBrowseMeta);
         this.setState({editMode: false});
     }
 
@@ -194,7 +194,7 @@ export class XEditBrowse extends Component<XEditBrowseProps> {
 
     onEdit(selectedRow: any) {
 
-        const formElement = XUtils.getAppForm(this.props.entity);
+        const formElement = Utils.getAppForm(this.props.entity);
         if (formElement !== undefined) {
             const xEntity: Entity = UtilsMetadataCommon.getEntity(this.props.entity);
             const id = selectedRow[xEntity.idField];

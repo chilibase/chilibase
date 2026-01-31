@@ -6,18 +6,18 @@ import {
 import React from "react";
 import {User} from "./user.entity";
 import {XUserForm} from "./XUserForm";
-import {XUtils} from "../../components/XUtils";
+import {Utils} from "../../utils/Utils";
 
 export const XUserBrowse = (props: SearchBrowseProps) => {
 
     const onRemoveRow = async (selectedRow: User): Promise<boolean> => {
-        if (selectedRow.username === XUtils.getUsername()) {
+        if (selectedRow.username === Utils.getUsername()) {
             alert("Can not remove current user.");
             return false;
         }
 
         if (window.confirm('Are you sure to remove the selected row?')) {
-            await XUtils.removeRow("User", selectedRow);
+            await Utils.removeRow("User", selectedRow);
             return true;
         }
         return false;

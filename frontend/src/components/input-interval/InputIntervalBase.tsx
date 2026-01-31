@@ -1,7 +1,8 @@
 import {InputText} from "primereact/inputtext";
 import React, {CSSProperties, useState} from "react";
 import {intervalAsUI, intervalFromUI} from "../../common/UtilsConversions";
-import {IPostgresInterval, XUtils} from "../XUtils";
+import {IPostgresInterval} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 
 // zatial podporuje len hours a minutes - TODO - pridat aj seconds, ale cez nejaky prepinac
 export const InputIntervalBase = (props: {
@@ -54,7 +55,7 @@ export const InputIntervalBase = (props: {
     // remark - width:'3.5rem' is default, can be overriden by value from props.style, if needed
     return (
         <InputText id={props.id} value={getInputValue()} onChange={onChange} onBlur={onBlur}
-                   readOnly={props.readOnly} {...XUtils.createTooltipOrErrorProps(props.error)} style={{width:'3.5rem', ...props.style}}/>
+                   readOnly={props.readOnly} {...Utils.createTooltipOrErrorProps(props.error)} style={{width:'3.5rem', ...props.style}}/>
     );
 }
 

@@ -6,9 +6,11 @@ export * from "./FindParam.js";
 export * from "./FindResult.js";
 export * from "./lib-api.js";
 export * from "./types.js";
-export * from "./UtilsCommon.js";
+// change the api name to CBUtilsCommon to preserve the name UtilsCommon for app
+export {type Params, UtilsCommon as CBUtilsCommon} from "./UtilsCommon.js";
 export * from "./UtilsConversions.js";
 export * from "./UtilsMetadataCommon.js";
+export {UtilsMetadataCommon as CBUtilsMetadataCommon} from "./UtilsMetadataCommon.js"; // alternative name to enable to use prefix CB
 export * from "./PrimeFilterSortMeta.js";
 
 /** @deprecated */

@@ -1,7 +1,7 @@
 import React, {ReactChild, useEffect, useRef, useState} from "react";
 import {FindResult} from "../common/FindResult";
 import {FindParam} from "../common/FindParam";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {Button} from "primereact/button";
 import {DataTable} from "primereact/datatable";
 import {Column} from "primereact/column";
@@ -41,7 +41,7 @@ export const XDataTable = (props: {entity: string; dataKey: string; onSelect: (s
     const findByFilter = async (findParam: FindParam) : Promise<FindResult> => {
 
         // vysledok je typu FindResult
-        const {rowList, totalRecords} : {rowList: any[], totalRecords: string} = await XUtils.fetchOne('lazyDataTableFindRows', findParam);
+        const {rowList, totalRecords} : {rowList: any[], totalRecords: string} = await Utils.fetchOne('lazyDataTableFindRows', findParam);
         return {rowList: rowList, totalRecords: parseInt(totalRecords)};
     }
 

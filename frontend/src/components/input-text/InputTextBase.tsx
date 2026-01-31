@@ -3,7 +3,7 @@ import {
     stringAsUI,
     stringFromUI
 } from "../../common/UtilsConversions";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {InputText} from "primereact/inputtext";
 
 // koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
@@ -65,7 +65,7 @@ export const InputTextBase = (props: {
     return (
         <InputText id={props.id} value={getInputValue()} onChange={onChange} onBlur={onBlur}
                    readOnly={props.readOnly} maxLength={props.maxLength} size={props.size} className={props.className} style={props.style}
-                   {...XUtils.createTooltipOrErrorProps(props.error)} placeholder={props.placeholder}/>
+                   {...Utils.createTooltipOrErrorProps(props.error)} placeholder={props.placeholder}/>
     );
 }
 

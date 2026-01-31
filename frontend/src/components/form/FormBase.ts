@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {EntityRow} from "../../common/types";
-import {OperationType, XUtils} from "../XUtils";
+import {OperationType} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {FieldOnChange, FormComponent} from "./FormComponent";
 import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
 import {XErrorMap, XErrors} from "../XErrors";
@@ -186,7 +187,7 @@ export abstract class FormBase extends Component<FormProps> {
             if (this.props.id !== undefined) {
                 //console.log('FormBase.componentDidMount ide nacitat objekt');
                 //console.log(this.fields);
-                //entityRow = await XUtils.fetchByIdFieldList(this.entity, Array.from(this.fieldSet), this.props.id);
+                //entityRow = await Utils.fetchByIdFieldList(this.entity, Array.from(this.fieldSet), this.props.id);
                 entityRow = await this.loadObjectLegacy(this.props.id);
                 operationType = OperationType.Update;
 
@@ -493,7 +494,7 @@ export abstract class FormBase extends Component<FormProps> {
             entityRow = await this.saveRow();
         }
         catch (e) {
-            XUtils.showErrorMessage("Save row failed.", e);
+            Utils.showErrorMessage("Save row failed.", e);
             return; // zostavame vo formulari
         }
 
@@ -552,7 +553,7 @@ export abstract class FormBase extends Component<FormProps> {
         const xErrorMap: XErrorMap = await this.validateForm();
 
         // zatial takto jednoducho
-        let msg: string = XUtils.getErrorMessages(xErrorMap);
+        let msg: string = Utils.getErrorMessages(xErrorMap);
 
         // este spracujeme editovatelne tabulky
         for (const formDataTable of this.formDataTableList) {
@@ -619,7 +620,7 @@ export abstract class FormBase extends Component<FormProps> {
         }
         for (const row of rowList) {
             const rowTechData: RowTechData = FormBase.getRowTechData(row);
-            msg += XUtils.getErrorMessages(rowTechData.errorMap);
+            msg += Utils.getErrorMessages(rowTechData.errorMap);
         }
         return msg;
     }
@@ -661,13 +662,13 @@ export abstract class FormBase extends Component<FormProps> {
         if (this.pessimisticLocking) {
             this.addField("lockUser.name");
         }
-        const xFindRowByIdResponse: FindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking!);
+        const xFindRowByIdResponse: FindRowByIdResponse = await Utils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking!);
         let object: any = xFindRowByIdResponse.row;
         if (this.pessimisticLocking) {
             if (!xFindRowByIdResponse.lockAcquired) {
                 if (window.confirm(xLocaleOption('pessimisticLockNotAcquired', {lockUser: object.lockUser?.name, lockDate: datetimeAsUI(dateFromModel(object.lockDate))}))) {
                     // overwrite the lock in DB
-                    const xFindRowByIdResponse: FindRowByIdResponse = await XUtils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking, true);
+                    const xFindRowByIdResponse: FindRowByIdResponse = await Utils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking, true);
                     object = xFindRowByIdResponse.row;
                     this.rowLocked = true;
                 }
@@ -698,7 +699,7 @@ export abstract class FormBase extends Component<FormProps> {
 
     // this method can be overriden in subclass if needed (to use another service then default 'saveRow')
     async saveRow(): Promise<any> {
-        return XUtils.fetch('saveRow', {entity: this.getEntity(), object: this.state.entityRow, reload: this.props.onSaveOrCancel !== undefined});
+        return Utils.fetch('saveRow', {entity: this.getEntity(), object: this.state.entityRow, reload: this.props.onSaveOrCancel !== undefined});
     }
 
     // this method can be overriden in subclass if needed (custom unlock row)
@@ -710,7 +711,7 @@ export abstract class FormBase extends Component<FormProps> {
                 lockDate: this.state.entityRow.lockDate,
                 lockUser: this.state.entityRow.lockUser
             };
-            await XUtils.post('x-unlock-row', xUnlockRowRequest);
+            await Utils.post('x-unlock-row', xUnlockRowRequest);
             this.rowLocked = false;
         }
     }

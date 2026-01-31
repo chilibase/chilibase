@@ -3,7 +3,7 @@ import {EntityRow} from "../common/types";
 import React, {useRef, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
-import {XUtils} from "./XUtils";
+import {Utils} from "../utils/Utils";
 import {Dialog} from "primereact/dialog";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 
@@ -48,7 +48,7 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
     const size = props.size ?? xDisplayField.length;
 
     if (!xAssoc.isNullable && !readOnly) {
-        label = XUtils.markNotNull(label);
+        label = Utils.markNotNull(label);
     }
 
     const onInputValueChange = (e: any) => {
@@ -65,7 +65,7 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
                 setValueToModel(null); // prazdny retazec znamena null hodnotu
             }
             else {
-                const rows: any[] = await XUtils.fetchMany('findRowsForAssoc', {
+                const rows: any[] = await Utils.fetchMany('findRowsForAssoc', {
                     entity: props.form.entity,
                     assocField: props.assocField,
                     displayField: props.displayField,
@@ -141,7 +141,7 @@ export const XSearchButtonOld = (props: {form: FormBase; assocField: string; dis
 
     return (
         <div className="field grid">
-            <label htmlFor={props.assocField} className="col-fixed" style={{width: XUtils.FIELD_LABEL_WIDTH}}>{label}</label>
+            <label htmlFor={props.assocField} className="col-fixed" style={{width: Utils.FIELD_LABEL_WIDTH}}>{label}</label>
             <InputText id={props.assocField} value={inputValue} onChange={onInputValueChange} onBlur={onInputBlur} readOnly={readOnly} ref={inputTextEl} maxLength={xDisplayField.length} size={size} style={props.inputStyle}/>
             <Button label="..." onClick={onClickSearch} />
             <Dialog visible={dialogOpened} /*style={{ width: '50vw' }}*/ onHide={onHide}>

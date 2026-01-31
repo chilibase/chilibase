@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {TreeTable} from "primereact/treetable";
 import {Column} from "primereact/column";
 import {Assoc, Entity} from "../common/EntityMetadata";
-import {XUtilsMetadata} from "./XUtilsMetadata";
+import {UtilsMetadata} from "../utils/UtilsMetadata";
 import {TreeNode} from "primereact/treenode";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 

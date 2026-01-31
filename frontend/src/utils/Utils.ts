@@ -1,6 +1,6 @@
-import {XToken} from "./XToken";
+import {XToken} from "../components/XToken";
 import {Entity, Field} from "../common/EntityMetadata";
-import {XUtilsMetadata} from "./XUtilsMetadata";
+import {UtilsMetadata} from "./UtilsMetadata";
 import {Params, UtilsCommon} from "../common/UtilsCommon";
 import {
     CsvDecimalFormat,
@@ -9,74 +9,27 @@ import {
     ExportType,
     MultilineExportType
 } from "../common/ExportImportParam";
-import {XResponseError} from "./XResponseError";
+import {XResponseError} from "../components/XResponseError";
 import React from "react";
-import {XEnvVar} from "./XEnvVars";
-import {XError, XErrorMap} from "./XErrors";
+import {XEnvVar} from "../components/XEnvVars";
+import {XError, XErrorMap} from "../components/XErrors";
 import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 import {EntityRow} from "../common/types";
-import {TableFieldReadOnlyProp} from "./form-data-table";
+import {TableFieldReadOnlyProp} from "../components/form-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
-import {xLocaleOption} from "./XLocale";
-import {LazyDataTableRef} from "./lazy-data-table";
-import {CreateObjectFunction, OnSaveOrCancelProp} from "./form";
-import {initMsalConfig} from "./auth";
+import {xLocaleOption} from "../components/XLocale";
+import {LazyDataTableRef} from "../components/lazy-data-table";
+import {CreateObjectFunction, OnSaveOrCancelProp} from "../components/form";
+import {initMsalConfig} from "../components/auth";
 import {FindRowByIdRequest, FindRowByIdResponse} from "../common/lib-api";
+import {OperationType, ViewStatus, ViewStatusOrBoolean, StorageType, GetEnvVarValue, FilterOrFunction} from "./types";
 
-export enum OperationType {
-    None,
-    Insert,
-    Update,
-    Remove
-}
-
-export enum XViewStatus {
-    ReadWrite = "readWrite",
-    ReadOnly = "readOnly",
-    Hidden = "hidden"
-}
-
-// special type - purpose is to simply use true/false (instead of XViewStatus.ReadWrite/XViewStatus.Hidden)
-export type XViewStatusOrBoolean = XViewStatus | boolean;
-
-export type XStorageType = "none" | "session" | "local";
-
-// copy of IPostgresInterval at the backend
-// (this type is used only at the frontend)
-export interface IPostgresInterval {
-    years?: number;
-    months?: number;
-    days?: number;
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-    milliseconds?: number;
-}
-
-export type XGetEnvVarValue = (envVarEnum: string) => string;
-
-// XQuery zatial docasne sem - ale je to globalny objekt - parametre pre XUtils.fetchRows, taky jednoduchsi FindParam (este sem mozme pridat fullTextSearch ak bude treba)
-
-export type XFilterOrFunction = CustomFilter | (() => CustomFilter | undefined);
-
-export interface XQuery {
-    entity: string;
-    filter?: XFilterOrFunction;
-    sortField?: string | DataTableSortMeta[];
-    fields?: string[];
-}
-
-// general type used for params (note: the same like EntityRow (in types.ts))
-// may be moved to XUtilsCommon if needed
-// there is already XParams
-//export type XParams = Record<string, any>;
-
-export class XUtils {
+export class Utils {
 
     // from technical reasons (using vite), we need to use function from app to read env vars
-    static xGetEnvVarValue: XGetEnvVarValue | undefined = undefined;
+    static xGetEnvVarValue: GetEnvVarValue | undefined = undefined;
 
     static dropdownEmptyOptionValue: string = " ";
 
@@ -110,12 +63,12 @@ export class XUtils {
 
     static VERSION_CHECK_PERIOD: number = 10 * 60 * 1000; // 10 minutes in milliseconds
 
-    static initLib(xGetEnvVarValue: XGetEnvVarValue) {
+    static initLib(xGetEnvVarValue: GetEnvVarValue) {
         // place here all initialization stuff
 
-        XUtils.xGetEnvVarValue = xGetEnvVarValue;
+        Utils.xGetEnvVarValue = xGetEnvVarValue;
 
-        XUtils.setXBackendUrl(XUtils.getEnvVarValue(XEnvVar.VITE_BACKEND_URL));
+        Utils.setXBackendUrl(Utils.getEnvVarValue(XEnvVar.VITE_BACKEND_URL));
 
         initMsalConfig();
     }
@@ -126,11 +79,11 @@ export class XUtils {
         // bolo 600 ($sm = 576 (primeflex)) - len ak bol mobil na vysku, 768 ma byt aj pre mobil na sirku
         //return typeof window !== 'undefined' && window.screen.availWidth < 768; // $sm = 576 (primeflex)
         // blblo mi window.screen.availWidth (vracalo 1920 v mobile mode v browseri)
-        return XUtils.getViewWidth() < 768;
+        return Utils.getViewWidth() < 768;
     }
 
     static mobileCssSuffix(): string {
-        return XUtils.isMobile() ? '-mobile' : '';
+        return Utils.isMobile() ? '-mobile' : '';
     }
 
     static toPX(size: string | undefined): number | undefined {
@@ -140,7 +93,7 @@ export class XUtils {
                 sizeInPx = parseFloat(size);
             }
             else if (size.endsWith('rem')) {
-                sizeInPx = parseFloat(size) * XUtils.getRemSize();
+                sizeInPx = parseFloat(size) * Utils.getRemSize();
             }
             if (Number.isNaN(sizeInPx)) {
                 sizeInPx = undefined;
@@ -150,15 +103,15 @@ export class XUtils {
     }
 
     static toPX0(size: string | undefined): number {
-        return XUtils.toPX(size) ?? 0;
+        return Utils.toPX(size) ?? 0;
     }
 
     static getRemSize(): number {
-        if (XUtils.remSize === null) {
+        if (Utils.remSize === null) {
             // font-size of root element (HTML element), e.g. "14px"
-            XUtils.remSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+            Utils.remSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
         }
-        return XUtils.remSize;
+        return Utils.remSize;
     }
 
     // alternative to 100vw, if 100vw can not be used because of technical reasons
@@ -200,7 +153,7 @@ export class XUtils {
         if (typeof window !== 'undefined') {
             //availWidth = window.screen.availWidth; // pouzivame availWidth, nie width, availWidth odratava napr. taskbar
             // blblo mi window.screen.availWidth (vracalo 1920 v mobile mode v browseri) - mozno by tu malo byt window.outerWidth
-            availWidth = XUtils.getViewWidth();
+            availWidth = Utils.getViewWidth();
             if (availWidth < 576) {
                 breakpointsToFind = ['xs:'];
             }
@@ -229,14 +182,14 @@ export class XUtils {
             }
         }
         // should not happen
-        console.log(`XUtils.processGridBreakpoints: unexpected error: no breakpoint value found, breakpointExp = ${breakpointExp}, availWidth = ${availWidth}`);
+        console.log(`Utils.processGridBreakpoints: unexpected error: no breakpoint value found, breakpointExp = ${breakpointExp}, availWidth = ${availWidth}`);
         return undefined;
     }
 
     static processPropWidth(widthProp: string | undefined) : string | undefined {
         let width: string | undefined;
         if (widthProp !== undefined && widthProp !== null) {
-            width = XUtils.processGridBreakpoints(widthProp);
+            width = Utils.processGridBreakpoints(widthProp);
             if (width !== undefined) {
                 if (!isNaN(Number(width))) { // if width is number
                     width = width + 'rem';
@@ -262,53 +215,53 @@ export class XUtils {
     }
 
     static registerAppForm(elem: any, entity: string, formId?: string): void {
-        const formKey = XUtilsMetadata.getXBrowseFormMetaKey(entity, formId);
-        XUtils.appFormMap[formKey] = elem;
+        const formKey = UtilsMetadata.getXBrowseFormMetaKey(entity, formId);
+        Utils.appFormMap[formKey] = elem;
     }
 
     static getAppForm(entity: string, formId?: string): any {
-        const formKey = XUtilsMetadata.getXBrowseFormMetaKey(entity, formId);
-        return XUtils.appFormMap[formKey];
+        const formKey = UtilsMetadata.getXBrowseFormMetaKey(entity, formId);
+        return Utils.appFormMap[formKey];
     }
 
     static fetchMany(path: string, value: any): Promise<any[]> {
-        return XUtils.fetch(path, value);
+        return Utils.fetch(path, value);
     }
 
     // pomocna metodka pouzivajuca lazyDataTable service
     static async fetchRows(entity: string, customFilter?: CustomFilter | undefined, sortField?: string | DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
         const findParam: FindParam = {resultType: ResultType.AllRows, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter), multiSortMeta: UtilsCommon.createMultiSortMeta(sortField), fields: fields};
-        const {rowList}: {rowList: any[];} = await XUtils.fetchOne('lazyDataTableFindRows', findParam);
+        const {rowList}: {rowList: any[];} = await Utils.fetchOne('lazyDataTableFindRows', findParam);
         return rowList;
     }
 
     // pomocna metodka pouzivajuca lazyDataTable service
     static async fetchRowCount(entity: string, customFilter?: CustomFilter | undefined): Promise<number> {
         const findParam: FindParam = {resultType: ResultType.OnlyRowCount, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter)};
-        const {totalRecords}: {totalRecords: number;} = await XUtils.fetchOne('lazyDataTableFindRows', findParam);
+        const {totalRecords}: {totalRecords: number;} = await Utils.fetchOne('lazyDataTableFindRows', findParam);
         return totalRecords;
     }
 
     static fetchOne(path: string, value: any, useToken: boolean = true): Promise<any> {
-        return XUtils.fetch(path, value, useToken);
+        return Utils.fetch(path, value, useToken);
     }
 
     static async fetchString(path: string, value: any): Promise<string> {
-        const valueObj = await XUtils.fetch(path, value);
+        const valueObj = await Utils.fetch(path, value);
         return valueObj.value;
     }
 
     static async fetch(path: string, value: any, useToken: boolean = true): Promise<any> {
-        const response = await XUtils.fetchBasicJson(path, value, useToken);
+        const response = await Utils.fetchBasicJson(path, value, useToken);
         return await response.json();
     }
 
     static post(path: string, value: any): Promise<Response> {
-        return XUtils.fetchBasicJson(path, value);
+        return Utils.fetchBasicJson(path, value);
     }
 
     static async openExcelReport(apiPath: string, requestPayload: any, fileName?: string): Promise<boolean> {
-        return XUtils.downloadFile(apiPath, requestPayload, `${fileName ?? apiPath}.xlsx`);
+        return Utils.downloadFile(apiPath, requestPayload, `${fileName ?? apiPath}.xlsx`);
     }
 
     // general method for file download
@@ -317,10 +270,10 @@ export class XUtils {
     static async downloadFile(apiPath: string, requestPayload: any, fileName: string): Promise<boolean> {
         let response;
         try {
-            response = await XUtils.fetchBasicJson(apiPath, requestPayload);
+            response = await Utils.fetchBasicJson(apiPath, requestPayload);
         }
         catch (e) {
-            XUtils.showErrorMessage(xLocaleOption('fileDownloadFailed'), e);  // next info (apiPath, payload) should be in "e"
+            Utils.showErrorMessage(xLocaleOption('fileDownloadFailed'), e);  // next info (apiPath, payload) should be in "e"
             return false;
         }
         // let respJson = await response.json(); - konvertuje do json objektu
@@ -337,7 +290,7 @@ export class XUtils {
     }
 
     static fetchBasicJson(path: string, value: any, useToken: boolean = true): Promise<Response> {
-        return XUtils.fetchBasic(path, {'Content-Type': 'application/json'}, UtilsCommon.objectAsJSON(value), useToken);
+        return Utils.fetchBasic(path, {'Content-Type': 'application/json'}, UtilsCommon.objectAsJSON(value), useToken);
     }
 
     static async fetchFile(path: string, jsonFieldValue: any, fileToPost: any): Promise<any> {
@@ -352,7 +305,7 @@ export class XUtils {
             fileToPost.name
         );
         // poznamka: metoda fetch automaticky prida do headers 'Content-Type': 'multipart/form-data' aj s boundery
-        const response = await XUtils.fetchBasic(path, {}, formData);
+        const response = await Utils.fetchBasic(path, {}, formData);
         return await response.json();
     }
 
@@ -364,18 +317,18 @@ export class XUtils {
             xToken = usePublicToken;
         }
         else if (usePublicToken) {
-            xToken = XUtils.xTokenPublic; // public token vzdy
+            xToken = Utils.xTokenPublic; // public token vzdy
         }
         else {
-            xToken = XUtils.getXToken();
+            xToken = Utils.getXToken();
             if (xToken === null) {
-                xToken = XUtils.xTokenPublic; // ak nikto nie je prihlaseny, posleme public token
+                xToken = Utils.xTokenPublic; // ak nikto nie je prihlaseny, posleme public token
             }
         }
         headers = {...headers,
             'Authorization': `Basic ${Buffer.from(xToken.username + ':' + xToken.password).toString('base64')}`
         };
-        const response = await fetch(XUtils.getXBackendUrl() + path, {
+        const response = await fetch(Utils.getXBackendUrl() + path, {
             method: 'POST',
             headers: headers,
             body: body
@@ -390,12 +343,12 @@ export class XUtils {
 
     static async fetchBasic(path: string, headers: any, body: any, useToken: boolean = true): Promise<Response> {
         if (useToken) {
-            const accessToken: string = await XUtils.getAccessToken();
+            const accessToken: string = await Utils.getAccessToken();
             headers = {...headers,
                 'Authorization': `Bearer ${accessToken}`
             };
         }
-        const response = await fetch(XUtils.getXBackendUrl() + path, {
+        const response = await fetch(Utils.getXBackendUrl() + path, {
                                     method: 'POST',
                                     headers: headers,
                                     body: body
@@ -410,41 +363,41 @@ export class XUtils {
     static async fetchById(entity: string, assocList: string[], id: number): Promise<any> {
         // little quick fix - we create fieldList (adding id), better would be to have param assocList in api
         const fieldList: string[] = assocList.map<string>(assoc => assoc + ".id");
-        const response: FindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
+        const response: FindRowByIdResponse = await Utils.fetchByIdWithLock(entity, fieldList, id, false);
         return response.row;
     }
 
     // version with fieldList (used by old projects), preferred is fetchById, maybe in the future will be used to avoid overfetching
     static async fetchByIdFieldList(entity: string, fieldList: string[], id: number): Promise<any> {
-        const response: FindRowByIdResponse = await XUtils.fetchByIdWithLock(entity, fieldList, id, false);
+        const response: FindRowByIdResponse = await Utils.fetchByIdWithLock(entity, fieldList, id, false);
         return response.row;
     }
 
     // more general function - can also lock the row
     static fetchByIdWithLock(entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<FindRowByIdResponse> {
-        return XUtils.fetchByIdWithLockBase('x-find-row-by-id', entity, fields, id, lockRow, overwriteLock);
+        return Utils.fetchByIdWithLockBase('x-find-row-by-id', entity, fields, id, lockRow, overwriteLock);
     }
 
     static fetchByIdWithLockBase(path: string, entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<FindRowByIdResponse> {
         let request: FindRowByIdRequest = {entity: entity, fields: fields, id: id};
         if (lockRow) {
-            request = {...request, lockDate: new Date(), lockUser: XUtils.getXToken()?.user, overwriteLock: overwriteLock ?? false};
+            request = {...request, lockDate: new Date(), lockUser: Utils.getXToken()?.user, overwriteLock: overwriteLock ?? false};
         }
-        return XUtils.fetchOne(path, request);
+        return Utils.fetchOne(path, request);
     }
 
     static setXToken(xToken: XToken | null) {
-        XUtils.xToken = xToken;
+        Utils.xToken = xToken;
     }
 
     static getXToken(): XToken | null {
-        return XUtils.xToken;
+        return Utils.xToken;
     }
 
     static async getAccessToken(): Promise<string> {
-        const xToken: XToken | null = XUtils.getXToken();
+        const xToken: XToken | null = Utils.getXToken();
         if (xToken === null) {
-            throw "Unexpected error - XUtils.xToken is null (no user signed in)";
+            throw "Unexpected error - Utils.xToken is null (no user signed in)";
         }
         let accessToken: string;
         if (typeof xToken.accessToken === 'function') {
@@ -454,27 +407,27 @@ export class XUtils {
             accessToken = xToken.accessToken; // mame rovno access token
         }
         else {
-            throw "Unexpected error - XUtils.xToken.accessToken is undefined";
+            throw "Unexpected error - Utils.xToken.accessToken is undefined";
         }
         return accessToken;
     }
 
     static getUsername(): string | undefined {
-        return XUtils.getXToken()?.user?.username;
+        return Utils.getXToken()?.user?.username;
     }
 
     static getXBackendUrl(): string {
-        if (XUtils.xBackendUrl === undefined) {
-            throw "XUtils.xBackendUrl is undefined";
+        if (Utils.xBackendUrl === undefined) {
+            throw "Utils.xBackendUrl is undefined";
         }
-        return XUtils.xBackendUrl;
+        return Utils.xBackendUrl;
     }
 
     static setXBackendUrl(xBackendUrl: string) {
         if (!xBackendUrl.endsWith('/')) {
             xBackendUrl += '/';
         }
-        XUtils.xBackendUrl = xBackendUrl;
+        Utils.xBackendUrl = xBackendUrl;
     }
 
     /**
@@ -482,7 +435,7 @@ export class XUtils {
      * @param envVar
      */
     static getEnvVarValue(envVarEnum: XEnvVar): string {
-        return XUtils.getEnvVarValueBase(envVarEnum);
+        return Utils.getEnvVarValueBase(envVarEnum);
     }
 
     static getEnvVarValueBase(envVarEnum: string): string {
@@ -493,16 +446,16 @@ export class XUtils {
         //     throw `Environment variable ${envVarEnum} - value not found. Check configuration file .env*`;
         // }
 
-        if (!XUtils.xGetEnvVarValue) {
+        if (!Utils.xGetEnvVarValue) {
             //const err = new Error();
             //console.log(err.stack);
-            throw `Unexpected error - XUtils.xGetEnvVarValue is undefined, call XUtils.initLib first`;
+            throw `Unexpected error - Utils.xGetEnvVarValue is undefined, call Utils.initLib first`;
         }
-        return XUtils.xGetEnvVarValue(envVarEnum);
+        return Utils.xGetEnvVarValue(envVarEnum);
     }
 
     static getEnvVarValueBoolean(envVarEnum: XEnvVar): boolean {
-        const value: string = XUtils.getEnvVarValue(envVarEnum);
+        const value: string = Utils.getEnvVarValue(envVarEnum);
         return value === "true";
     }
 
@@ -511,7 +464,7 @@ export class XUtils {
     static async removeRow(entity: string, row: any) {
         const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
         const id = row[xEntity.idField];
-        await XUtils.post('removeRow', {entity: entity, id: id});
+        await Utils.post('removeRow', {entity: entity, id: id});
     }
 
     // helper
@@ -600,7 +553,7 @@ export class XUtils {
     }
 
     // pomocna metodka - prida className do props, ak uz className v props existuje tak len pripoji dalsiu hodnotu
-    // pouzivame ju, lebo XUtils.createErrorProps nam prebijal className
+    // pouzivame ju, lebo Utils.createErrorProps nam prebijal className
     static addClassName(props: {[key: string]: any;}, className: string | undefined): {[key: string]: any;} {
         let propsClassName: string = props.className;
         if (className !== undefined) {
@@ -621,7 +574,7 @@ export class XUtils {
         let msg: string = "";
         for (const [field, xError] of Object.entries(xErrorMap)) {
             if (xError) {
-                const errorMessage: string | undefined = XUtils.getErrorMessage(xError);
+                const errorMessage: string | undefined = Utils.getErrorMessage(xError);
                 if (errorMessage) {
                     msg += `${xError.fieldLabel ?? field}: ${errorMessage}${UtilsCommon.newLine}`;
                 }
@@ -663,7 +616,7 @@ export class XUtils {
     }
 
     // pomocna metodka
-    static evalFilter(filter: XFilterOrFunction | undefined): CustomFilter | undefined {
+    static evalFilter(filter: FilterOrFunction | undefined): CustomFilter | undefined {
         let customFilter: CustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
             customFilter = filter;
@@ -680,10 +633,10 @@ export class XUtils {
     }
 
     // pomocna metodka
-    static xViewStatus(xViewStatusOrBoolean: XViewStatusOrBoolean): XViewStatus {
-        let xViewStatus: XViewStatus;
+    static xViewStatus(xViewStatusOrBoolean: ViewStatusOrBoolean): ViewStatus {
+        let xViewStatus: ViewStatus;
         if (typeof xViewStatusOrBoolean === "boolean") {
-            xViewStatus = xViewStatusOrBoolean ? XViewStatus.ReadWrite : XViewStatus.Hidden;
+            xViewStatus = xViewStatusOrBoolean ? ViewStatus.ReadWrite : ViewStatus.Hidden;
         }
         else {
             xViewStatus = xViewStatusOrBoolean;
@@ -696,7 +649,7 @@ export class XUtils {
         return valueStringList.map<SelectItem>((valueString: string) => {return {value: valueString, label: valueString};});
     }
 
-    static saveValueIntoStorage(xStorageType: XStorageType, key: string, value: any) {
+    static saveValueIntoStorage(xStorageType: StorageType, key: string, value: any) {
         // value can be also string or null or undefined
         // if we don't have object that can be serialised to json, we create special object
         let valueObject: object;
@@ -718,7 +671,7 @@ export class XUtils {
         }
     }
 
-    static getValueFromStorage(xStorageType: XStorageType, key: string, initValue: any): any {
+    static getValueFromStorage(xStorageType: StorageType, key: string, initValue: any): any {
         // if the value is not found in storage, initValue is returned
         let value: any;
         let item: string | null = null;
@@ -745,7 +698,7 @@ export class XUtils {
             }
             catch (e) {
                 // exception should not happen
-                console.log(`XUtils.getValueFromStorage: Could not parse/process item from storage "${xStorageType}". key = ${key}, item = ${item}. Error: ${e}`);
+                console.log(`Utils.getValueFromStorage: Could not parse/process item from storage "${xStorageType}". key = ${key}, item = ${item}. Error: ${e}`);
                 value = initValue;
             }
         }
@@ -755,7 +708,7 @@ export class XUtils {
         return value;
     }
 
-    static removeValueFromStorage(xStorageType: XStorageType, key: string) {
+    static removeValueFromStorage(xStorageType: StorageType, key: string) {
         if (xStorageType === "session") {
             sessionStorage.removeItem(key);
         }
@@ -764,7 +717,7 @@ export class XUtils {
         }
     }
 
-    static clearStorage(xStorageType: XStorageType) {
+    static clearStorage(xStorageType: StorageType) {
         if (xStorageType === "session") {
             sessionStorage.clear();
         }
@@ -775,7 +728,7 @@ export class XUtils {
 
     // hleper method used for items of XLazyDataTable (shortcut ldt)
     // static getValueFromStorageLdt(entity: string, stateKeySuffix: XStateKeySuffix, initValue: any): any {
-    //     return XUtils.getValueFromStorage(`xldt-state-${entity}-${stateKeySuffix}`, initValue);
+    //     return Utils.getValueFromStorage(`xldt-state-${entity}-${stateKeySuffix}`, initValue);
     // }
 
     static reloadIfNewVersion() {
@@ -783,16 +736,16 @@ export class XUtils {
         // we could use method setInterval (timer) and run check exactly 10 minutes but the disadvantage is that then there will be
         // some processing during idle time and that can exhaust battery on mobile phone (mobile phone will not go to sleeping mode) - is it true?
         const currentTimestamp: number = Date.now(); // Current time
-        if (XUtils.lastVersionCheckTimestamp === null || currentTimestamp - XUtils.lastVersionCheckTimestamp > XUtils.VERSION_CHECK_PERIOD) {
-            XUtils.reloadIfNewVersionNow();
-            XUtils.lastVersionCheckTimestamp = currentTimestamp;
+        if (Utils.lastVersionCheckTimestamp === null || currentTimestamp - Utils.lastVersionCheckTimestamp > Utils.VERSION_CHECK_PERIOD) {
+            Utils.reloadIfNewVersionNow();
+            Utils.lastVersionCheckTimestamp = currentTimestamp;
         }
     }
 
     static async reloadIfNewVersionNow() {
-        if (await XUtils.isNewVersion()) {
+        if (await Utils.isNewVersion()) {
             alert("New version was released. Application will be restarted.");
-            XUtils.reload();
+            Utils.reload();
         }
     }
 
@@ -805,7 +758,7 @@ export class XUtils {
         // hash is created during react build and is different for every new version
         // <script defer="defer" src="/static/js/main.a7e03e2e.js">
         try {
-            // we don't use XUtils.fetchBasic because it creates request to nodejs backend and index.html is provided/located in nginx
+            // we don't use Utils.fetchBasic because it creates request to nodejs backend and index.html is provided/located in nginx
             //let response = await fetch("index.html", { method: 'get', mode: 'cors' });
             let response = await fetch("index.html", {method: 'GET', cache: "no-store"});
 
@@ -816,8 +769,8 @@ export class XUtils {
                 remoteMainScript = r[1];
             }
             if (remoteMainScript === null) {
-                if (!XUtils.isLocalhost()) {
-                    console.log(`XUtils.isNewVersion(): Unexpected error - remoteMainScript (e.g. main.9d782ae7.js) not found in index.html from server. Content of index.html:`);
+                if (!Utils.isLocalhost()) {
+                    console.log(`Utils.isNewVersion(): Unexpected error - remoteMainScript (e.g. main.9d782ae7.js) not found in index.html from server. Content of index.html:`);
                     console.log(text);
                 }
                 return false;
@@ -834,8 +787,8 @@ export class XUtils {
                 }
             }
             if (localMainScript === null) {
-                if (!XUtils.isLocalhost()) {
-                    console.log(`XUtils.isNewVersion(): Unexpected error - localMainScript (e.g. main.9d782ae7.js) not found in element <head>...<script src="->here<-"/>...</head>`);
+                if (!Utils.isLocalhost()) {
+                    console.log(`Utils.isNewVersion(): Unexpected error - localMainScript (e.g. main.9d782ae7.js) not found in element <head>...<script src="->here<-"/>...</head>`);
                     console.log(document.head);
                 }
                 return false;
@@ -852,8 +805,8 @@ export class XUtils {
         // data in session may not correspond with new structures in new version
         // e.g. if we add new column to XLazyDataTable, filter operator/value for this column new column is missing in data from session and application will crash
         // simple solution is to clear session
-        XUtils.clearStorage("session");
-        XUtils.clearStorage("local");
+        Utils.clearStorage("session");
+        Utils.clearStorage("local");
         // page reload (like pressing F5 or Enter on url bar)
         // warning - if user has typed some data in form, the data will be lost
         window.location.reload();

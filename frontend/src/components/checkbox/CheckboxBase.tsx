@@ -1,7 +1,7 @@
 import React, {CSSProperties} from "react";
 import {TriStateCheckbox, TriStateCheckboxChangeEvent} from "primereact/tristatecheckbox";
 import {Checkbox, CheckboxChangeEvent} from "primereact/checkbox";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 
 export const CheckboxBase = (props: {
     id?: string;
@@ -40,9 +40,9 @@ export const CheckboxBase = (props: {
         // TODO - pomenit ikonky na TriStateCheckbox aby to pekne sedelo, potom mozme zrusit Checkbox
         props.isNotNull ?
             <Checkbox id={props.id} checked={props.value ?? false} onChange={checkboxOnChange}
-                      disabled={props.readOnly} style={props.style} {...XUtils.createTooltipOrErrorProps(props.error, props.tooltip)}/>
+                      disabled={props.readOnly} style={props.style} {...Utils.createTooltipOrErrorProps(props.error, props.tooltip)}/>
             : <TriStateCheckbox id={props.id} value={props.value} onChange={triStateCheckboxChange}
-                                disabled={props.readOnly} style={props.style} {...XUtils.createTooltipOrErrorProps(props.error, props.tooltip)}/>
+                                disabled={props.readOnly} style={props.style} {...Utils.createTooltipOrErrorProps(props.error, props.tooltip)}/>
     );
 }
 

@@ -13,8 +13,9 @@ import {XButton} from "../XButton";
 import {InputTextDT} from "../input-text";
 import {XSearchButtonDT} from "../XSearchButtonDT";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
-import {XUtilsMetadata} from "../XUtilsMetadata";
-import {OperationType, XUtils, XViewStatus, XViewStatusOrBoolean} from "../XUtils";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
+import {OperationType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
 import {InputDecimalDT} from "../input-decimal";
 import {InputDateDT} from "../input-date";
@@ -218,7 +219,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
         let header = columnProps.header ?? field;
         if (!isNullable && !readOnly) {
-            header = XUtils.markNotNull(header);
+            header = Utils.markNotNull(header);
         }
         return header;
     }
@@ -362,7 +363,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     onDropdownFilterChange(field: string, displayValue: any) {
         // TODO - treba vyklonovat?
         const filtersCloned: DataTableFilterMeta = {...this.state.filters};
-        if (displayValue !== XUtils.dropdownEmptyOptionValue) {
+        if (displayValue !== Utils.dropdownEmptyOptionValue) {
             filtersCloned[field] = {value: displayValue, matchMode: FilterMatchMode.EQUALS};
         }
         else {
@@ -374,7 +375,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     }
 
     getDropdownFilterValue(field: string) : any {
-        let dropdownValue: any = XUtils.dropdownEmptyOptionValue;
+        let dropdownValue: any = Utils.dropdownEmptyOptionValue;
         const filterValue: DataTableFilterMetaData = this.state.filters[field] as DataTableFilterMetaData;
         if (filterValue !== undefined && filterValue !== null) {
             if (filterValue.value !== null) {
@@ -401,7 +402,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         // tableReadOnly has higher prio then property readOnly
         // (viewStatus "Hidden" - column is not rendered (bodyTemplate not called), viewStatus "ReadWrite" (default) - tableReadOnly/columnProps.readOnly is applied)
         let readOnly: TableFieldReadOnlyProp | undefined;
-        if (XUtils.xViewStatus(columnProps.columnViewStatus) === XViewStatus.ReadOnly) {
+        if (Utils.xViewStatus(columnProps.columnViewStatus) === ViewStatus.ReadOnly) {
             readOnly = true;
         }
         else if (tableReadOnly) {
@@ -517,7 +518,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     //     const rowList: any[] = entityRow[this.props.assocField];
     //     for (const row of rowList) {
     //         const rowTechData: RowTechData = XFormBase.getRowTechData(row);
-    //         msg += XUtils.getErrorMessages(rowTechData.errorMap);
+    //         msg += Utils.getErrorMessages(rowTechData.errorMap);
     //     }
     //     return msg;
     // }
@@ -590,7 +591,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             if (this.props.scrollWidth !== "none") {
                 scrollWidth = this.props.scrollWidth;
                 if (scrollWidth === "viewport") {
-                    let marginsWidth: number = XUtils.isMobile() ? 1.2 : 2.2; // desktop - povodne bolo 1.4rem (20px okraje) namiesto 2.2 ale pri vela stlpcoch vznikal horizontalny scrollbar
+                    let marginsWidth: number = Utils.isMobile() ? 1.2 : 2.2; // desktop - povodne bolo 1.4rem (20px okraje) namiesto 2.2 ale pri vela stlpcoch vznikal horizontalny scrollbar
                                                                             // mobil - padding 0.5rem body element, ale este bola tabulka moc siroka, tak sme dali 1.2
                     if (this.props.form.isTabViewUsed()) {
                         marginsWidth += 1; // TabPanel has padding 0.5rem (in css file) -> 1rem both margins
@@ -624,7 +625,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
         // pre lepsiu citatelnost vytvarame stlpce uz tu
         const columnElemList: JSX.Element[] = React.Children.map(
-            this.props.children.filter((child: React.ReactChild) => XUtils.xViewStatus((child as {props: FormColumnBaseProps}).props.columnViewStatus) !== XViewStatus.Hidden),
+            this.props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: FormColumnBaseProps}).props.columnViewStatus) !== ViewStatus.Hidden),
             function (child) {
                 // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
                 // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
@@ -647,7 +648,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                     header = columnPropsCustom.header;
                     filterElement = undefined;
                     showFilterMenu = false;
-                    width = XUtils.processPropWidth(columnPropsCustom.width);
+                    width = Utils.processPropWidth(columnPropsCustom.width);
                     align = undefined;
                     body = columnPropsCustom.body;
                 }
@@ -658,7 +659,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                     // (aj ked, da sa to prebit na stlpcoch (na elemente Column), su na to atributy)
                     const field: string = thisLocal.getPathForColumn(childColumnProps);
 
-                    // TODO - toto by sa mohlo vytiahnut vyssie, aj v bodyTemplate sa vola metoda XUtilsMetadata.getXFieldByPath
+                    // TODO - toto by sa mohlo vytiahnut vyssie, aj v bodyTemplate sa vola metoda UtilsMetadata.getXFieldByPath
                     const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
 
                     // *********** header ***********
@@ -692,12 +693,12 @@ export class FormDataTable extends Component<FormDataTableProps> {
                     }
 
                     // *********** width/headerStyle ***********
-                    width = XUtils.processPropWidth(childColumn.props.width);
+                    width = Utils.processPropWidth(childColumn.props.width);
                     if (width === undefined || width === "default") {
                         const filterMenuInFilterRow: boolean = thisLocal.props.filterDisplay === "row" && showFilterMenu;
                         const sortableButtonInHeader: boolean = thisLocal.props.sortable;
                         const filterButtonInHeader: boolean = thisLocal.props.filterDisplay === "menu";
-                        width = XUtilsMetadata.computeColumnWidth(xField, undefined, filterMenuInFilterRow, childColumnProps.type, header, sortableButtonInHeader, filterButtonInHeader);
+                        width = UtilsMetadata.computeColumnWidth(xField, undefined, filterMenuInFilterRow, childColumnProps.type, header, sortableButtonInHeader, filterButtonInHeader);
                     }
 
                     // *********** align ***********
@@ -794,7 +795,7 @@ export type TableFieldOnChange = (e: TableFieldChangeEvent<any, any>) => void;
 export type TableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => boolean);
 
 // do buducna (kedze object mame vo formulari pristupny cez this.state.object, tak nepotrebujeme nutne pouzivat funkciu, vystacime si priamo s hodnotou)
-//export type FormColumnViewStatusProp = XViewStatusOrBoolean | ((object: any) => XViewStatusOrBoolean);
+//export type FormColumnViewStatusProp = ViewStatusOrBoolean | ((object: any) => ViewStatusOrBoolean);
 
 // typ property pre vytvorenie filtra na assoc fieldoch (XAutoComplete, Dropdown, ...)
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo EntityRow)
@@ -808,7 +809,7 @@ export interface FormColumnBaseProps {
     showFilterMenu?: boolean;
     width?: string; // for example 150px or 10rem or 10% (value 10 means 10rem)
     onChange?: TableFieldOnChange;
-    columnViewStatus: XViewStatusOrBoolean;
+    columnViewStatus: ViewStatusOrBoolean;
 }
 
 // default props for FormColumnBaseProps

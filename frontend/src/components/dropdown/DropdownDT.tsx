@@ -1,9 +1,9 @@
 import {FormBase} from "../form";
 import React, {useEffect} from "react";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {Dropdown} from "primereact/dropdown";
 import {DropdownOptionsMap, TableFieldReadOnlyProp} from "../form-data-table";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {Assoc} from "../../common/EntityMetadata";
 import {CustomFilter} from "../../common/FindParam";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
@@ -49,8 +49,8 @@ export const DropdownDT = (props: {
 
             const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.entity), props.assocField);
 
-            //options = await XUtils.fetchMany('findRowsForAssoc', {entity: props.entity, assocField: props.assocField});
-            options = await XUtils.fetchRows(xAssoc.entityName, props.filter, props.sortField ?? props.displayField);
+            //options = await Utils.fetchMany('findRowsForAssoc', {entity: props.entity, assocField: props.assocField});
+            options = await Utils.fetchRows(xAssoc.entityName, props.filter, props.sortField ?? props.displayField);
 
             options.splice(0, 0, {[idField]: null, [props.displayField]: ""}); // null polozka (nepridavat pre not null atributy)
             props.dropdownOptionsMap[props.assocField] = options;
@@ -88,7 +88,7 @@ export const DropdownDT = (props: {
     }
     const options = props.dropdownOptionsMap[props.assocField] !== undefined ? props.dropdownOptionsMap[props.assocField] : []; // mozno mozme do options prasknut rovno undefined...
 
-    const readOnly: boolean = XUtils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.entityRow, props.rowData);
+    const readOnly: boolean = Utils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.entityRow, props.rowData);
 
     // appendTo={document.body} appenduje overlay panel na element body - eliminuje problem s overflow (pozri poznamku v DropdownDTFilter)
     return (

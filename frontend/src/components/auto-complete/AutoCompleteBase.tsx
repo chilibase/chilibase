@@ -1,7 +1,8 @@
 import React, {Component} from "react";
 import {AutoComplete, AutoCompleteChangeEvent} from "primereact/autocomplete";
 import {SplitButton} from "primereact/splitbutton";
-import {OperationType, XQuery, XUtils} from "../XUtils";
+import {OperationType, Query} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 import {Button} from "primereact/button";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 import {XSearchBrowseParams} from "../XSearchBrowseParams";
@@ -38,7 +39,7 @@ export interface AutoCompleteBaseProps {
     suggestions?: any[]; // ak su priamo zadane suggestions, nepouziva sa suggestionsLoad a suggestionsQuery (vynimka je ak mame aj searchBrowse, vtedy do searchBrowse posleme filter (aj sortField?))
     suggestionsEntity?: string; // ak su priamo zadane suggestions, nepouziva sa suggestionsLoad a suggestionsQuery a entity mozme zadat tu - entity je potrebna na vyhladanie XField-ov (tie su potrebne na konverziu hodnoty atributu "field" do string-u); ak entitu nezadame, tak sa napr. zle skonvertuju datumy (iba cez toString)
     suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default) a suggestionsQuery (ten musi byt zadany)
-    suggestionsQuery?: XQuery; // musi byt zadany ak nie su zadane suggestions (poznamka: filter (a sortField?) sa posielaju do searchBrowse)
+    suggestionsQuery?: Query; // musi byt zadany ak nie su zadane suggestions (poznamka: filter (a sortField?) sa posielaju do searchBrowse)
     lazyLoadMaxRows: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     field: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -198,9 +199,9 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
         if (!this.props.suggestionsQuery) {
             throw `AutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
         }
-        return XUtils.fetchRows(
+        return Utils.fetchRows(
             this.props.suggestionsQuery.entity,
-            XUtils.evalFilter(this.props.suggestionsQuery.filter),
+            Utils.evalFilter(this.props.suggestionsQuery.filter),
             this.getSortField(),
             this.props.suggestionsQuery.fields
         );
@@ -250,7 +251,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                 filteredSuggestions = [...suggestions];
             }
             else {
-                const queryNormalized = XUtils.normalizeString(event.query);
+                const queryNormalized = Utils.normalizeString(event.query);
                 // ak mame viac hodnot oddelenych space-om, tak kazda hodnota sa musi vyskytovat zvlast
                 // (podobny princip ako pri lazy, resp. full text search - pozri backend lazyAutoCompleteSuggestions resp. XMainQueryData.createFtsWhereItem)
                 let queryNormalizedList: string[];
@@ -266,7 +267,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                     if (fieldValue === undefined && Object.keys(suggestion).length === 0) {
                         return false;
                     }
-                    const fieldValueNormalized: string = XUtils.normalizeString(fieldValue);
+                    const fieldValueNormalized: string = Utils.normalizeString(fieldValue);
                     // all partial query values must match
                     let match: boolean = true;
                     for (const queryItemNormalized of queryNormalizedList) {
@@ -298,7 +299,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             if (!this.props.suggestionsQuery) {
                 throw `AutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
             }
-            let filter: CustomFilter | undefined = XUtils.evalFilter(this.props.suggestionsQuery.filter);
+            let filter: CustomFilter | undefined = Utils.evalFilter(this.props.suggestionsQuery.filter);
             const suggestionsRequest: LazyAutoCompleteSuggestionsRequest = {
                 maxRows: this.props.lazyLoadMaxRows + 1,
                 fullTextSearch: {fields: this.getFields(), value: event.query.trim(), splitValue: this.props.splitQueryValue, matchMode: "contains"},
@@ -307,7 +308,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                 multiSortMeta: UtilsCommon.createMultiSortMeta(this.getSortField()),
                 fields: this.props.suggestionsQuery.fields
             };
-            const findResult: FindResult = await XUtils.fetchOne('x-lazy-auto-complete-suggestions', suggestionsRequest);
+            const findResult: FindResult = await Utils.fetchOne('x-lazy-auto-complete-suggestions', suggestionsRequest);
             filteredSuggestions = findResult.rowList!;
             // ak sme nesortovali v DB (co je draha operacia) tak zosortujeme teraz
             // (itemTemplateString sa vola duplicitne ale pre tych cca 20 zaznamov je to ok)
@@ -339,7 +340,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                 this.setObjectValue(e.value, OperationType.None);
                 // ak sme na mobile, nechceme aby sa otvorila klavesnica mobilu, preto zavolame removeFocus
                 // pouzivame setTimeout, priame volanie nefungovalo
-                if (XUtils.isMobile()) {
+                if (Utils.isMobile()) {
                     setTimeout(() => {
                         this.removeFocusFromInput();
                     }, 0); // Delaying blur to allow PrimeReact to finish its focus logic
@@ -713,18 +714,18 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
 
                 if (this.props.buttonsLayout === "buttons") {
                     buttons = buttonItems.map((value: ButtonItem, index: number) => <Button key={`button${index}`} icon={value.icon} tooltip={value.tooltip} tooltipOptions={{position: 'top'}}
-                                                                              onClick={(e: any) => value.command!(e)} className={'x-dropdownbutton' + XUtils.mobileCssSuffix()}/>);
+                                                                              onClick={(e: any) => value.command!(e)} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>);
                 }
                 else {
                     // buttonsLayout === "splitButton"
                     // tooltip-y by trebalo pridat...
                     const splitButtonItems: MenuItem[] = buttonItems.map<MenuItem>((value: ButtonItem) => {return {icon: value.icon, command: value.command}});
-                    buttons = [<SplitButton model={splitButtonItems} className={'x-splitbutton-only-dropdown' + XUtils.mobileCssSuffix()} menuClassName={'x-splitbutton-only-dropdown-menu' + XUtils.mobileCssSuffix()} disabled={readOnly}/>];
+                    buttons = [<SplitButton model={splitButtonItems} className={'x-splitbutton-only-dropdown' + Utils.mobileCssSuffix()} menuClassName={'x-splitbutton-only-dropdown-menu' + Utils.mobileCssSuffix()} disabled={readOnly}/>];
                 }
             }
             else {
                 // mame len 1 operaciu - dame jednoduchy button
-                buttons = [<Button icon="pi pi-chevron-down" onClick={(e: any) => this.onOpenDropdown(e)} className={'x-dropdownbutton' + XUtils.mobileCssSuffix()} disabled={!this.props.dropdownButtonEnabled}/>];
+                buttons = [<Button icon="pi pi-chevron-down" onClick={(e: any) => this.onOpenDropdown(e)} className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={!this.props.dropdownButtonEnabled}/>];
             }
         }
         else {
@@ -732,11 +733,11 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             // ak mame valueForm a mame asociovany objekt, umoznime editovat asociovany objekt
             if (this.hasValueForm() && this.props.value !== null) {
                 buttons = [<Button icon="pi pi-pencil" tooltip={this.props.updateButtonTooltip} tooltipOptions={{position: 'top'}}
-                                   onClick={(e: any) => this.onEditAssocValue()} className={'x-dropdownbutton' + XUtils.mobileCssSuffix()}/>];
+                                   onClick={(e: any) => this.onEditAssocValue()} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>];
             }
             else {
                 // dame disablovany button (z estetickych dovodov, zachovame sirku)
-                buttons = [<Button icon="pi pi-chevron-down" className={'x-dropdownbutton' + XUtils.mobileCssSuffix()} disabled={true}/>];
+                buttons = [<Button icon="pi pi-chevron-down" className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={true}/>];
             }
         }
 
@@ -757,7 +758,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             <div className="x-auto-complete-base" style={{width: this.props.width, maxWidth: this.props.maxWidth}}>
                 <AutoComplete value={inputValue} suggestions={this.state.filteredSuggestions} completeMethod={this.completeMethod} itemTemplate={this.itemTemplate}
                               onChange={this.onChange} onSelect={this.onSelect} onBlur={this.onBlur} minLength={this.props.minLength} scrollHeight={this.props.scrollHeight}
-                              ref={this.autoCompleteRef} inputRef={this.autoCompleteInputRef} readOnly={readOnly} disabled={readOnly} {...XUtils.createTooltipOrErrorProps(error)} inputClassName={this.props.inputClassName}
+                              ref={this.autoCompleteRef} inputRef={this.autoCompleteInputRef} readOnly={readOnly} disabled={readOnly} {...Utils.createTooltipOrErrorProps(error)} inputClassName={this.props.inputClassName}
                               showEmptyMessage={true}/>
                 {...buttons}{/* ked tu bolo len {buttons} bez ..., tak vypisoval hlasku Warning: Each child in a list should have a unique "key" prop. */}
                 {this.hasValueForm() ?

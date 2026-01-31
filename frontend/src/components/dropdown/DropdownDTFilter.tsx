@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {Dropdown} from "primereact/dropdown";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {Assoc, Field} from "../../common/EntityMetadata";
-import {XUtilsMetadata} from "../XUtilsMetadata";
+import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {CustomFilter} from "../../common/FindParam";
 
@@ -29,9 +29,9 @@ export const DropdownDTFilter = (props: {entity: string; path: string; value: an
 
     const findOptions = async (entity: string, path: string, displayField: string) => {
         const xAssoc: Assoc = UtilsMetadataCommon.getLastAssocByPath(UtilsMetadataCommon.getEntity(entity), path);
-        const options: any[] = await XUtils.fetchRows(xAssoc.entityName, props.filter, props.sortField ?? displayField);
+        const options: any[] = await Utils.fetchRows(xAssoc.entityName, props.filter, props.sortField ?? displayField);
         const emptyOption: {[field: string]: any;} = {};
-        emptyOption[displayField] = XUtils.dropdownEmptyOptionValue;
+        emptyOption[displayField] = Utils.dropdownEmptyOptionValue;
         options.splice(0, 0, emptyOption); // null polozka (nepridavat pre not null atributy)
         setOptions(options);
     }

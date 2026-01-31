@@ -15,7 +15,7 @@ import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from "primereact/checkbox";
 import {XButton} from "../XButton";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {numberAsUI} from "../../common/UtilsConversions";
 import {xLocaleOption} from "../XLocale";
 
@@ -105,7 +105,7 @@ export const ExportRowsDialog = (props: {
 
         const fileExt: string = exportType === ExportType.Excel ? "xlsx" : exportType;
         const fileName = `${exportParams.fileName}.${fileExt}`;
-        XUtils.downloadFile(apiPath, requestPayload, fileName);
+        Utils.downloadFile(apiPath, requestPayload, fileName);
     }
 
     const createExcelCsvParam = (exportParams: ExportParams): ExcelCsvParam => {
@@ -130,7 +130,7 @@ export const ExportRowsDialog = (props: {
                 elem.push(
                     <div key="expDetailRowsExport" className="field grid">
                         <label className="col-fixed" style={{width: '12rem'}}>{xLocaleOption('expDetailRowsExport')}</label>
-                        <Dropdown value={detailRowsExport} options={XUtils.options(XUtils.multilineExportTypeOptions)} onChange={(e: any) => setDetailRowsExport(e.value)}/>
+                        <Dropdown value={detailRowsExport} options={Utils.options(Utils.multilineExportTypeOptions)} onChange={(e: any) => setDetailRowsExport(e.value)}/>
                     </div>
                 );
             }
@@ -139,15 +139,15 @@ export const ExportRowsDialog = (props: {
             elem.push([
                 <div key="expCsvSeparator" className="field grid">
                     <label className="col-fixed" style={{width:'12rem'}}>{xLocaleOption('expCsvSeparator')}</label>
-                    <Dropdown value={csvSeparator} options={XUtils.options(XUtils.csvSeparatorOptions)} onChange={(e: any) => setCsvSeparator(e.value)}/>
+                    <Dropdown value={csvSeparator} options={Utils.options(Utils.csvSeparatorOptions)} onChange={(e: any) => setCsvSeparator(e.value)}/>
                 </div>,
                 <div key="expDecimalFormat" className="field grid">
                     <label className="col-fixed" style={{width:'12rem'}}>{xLocaleOption('expDecimalFormat')}</label>
-                    <Dropdown value={decimalFormat} options={XUtils.options(XUtils.decimalFormatOptions)} onChange={(e: any) => setDecimalFormat(e.value)}/>
+                    <Dropdown value={decimalFormat} options={Utils.options(Utils.decimalFormatOptions)} onChange={(e: any) => setDecimalFormat(e.value)}/>
                 </div>,
                 <div key="expEncoding" className="field grid">
                     <label className="col-fixed" style={{width:'12rem'}}>{xLocaleOption('expEncoding')}</label>
-                    <Dropdown value={csvEncoding} options={XUtils.options(XUtils.csvEncodingOptions)} onChange={(e: any) => setCsvEncoding(e.value)}/>
+                    <Dropdown value={csvEncoding} options={Utils.options(Utils.csvEncodingOptions)} onChange={(e: any) => setCsvEncoding(e.value)}/>
                 </div>
             ]);
         }
@@ -165,7 +165,7 @@ export const ExportRowsDialog = (props: {
             }
             <div key="expExportType" className="field grid">
                 <label className="col-fixed" style={{width:'12rem'}}>{xLocaleOption('expExportType')}</label>
-                <Dropdown value={exportType} options={XUtils.options(props.exportTypeOptions ?? XUtils.exportTypeOptions)} onChange={(e: any) => setExportType(e.value)}/>
+                <Dropdown value={exportType} options={Utils.options(props.exportTypeOptions ?? Utils.exportTypeOptions)} onChange={(e: any) => setExportType(e.value)}/>
             </div>
             {elem}
             <div key="exportRows" className="flex justify-content-center">

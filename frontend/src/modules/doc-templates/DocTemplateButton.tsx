@@ -3,7 +3,7 @@ import {Button} from "primereact/button";
 import {SplitButton} from "primereact/splitbutton";
 import {MenuItem} from "primereact/menuitem";
 import {XtDocTemplate} from "./xt-doc-template";
-import {XUtils} from "../../components/XUtils";
+import {Utils} from "../../utils/Utils";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {RunDocTemplateRequest} from "../../common/lib-api";
 import {xLocaleOption} from "../../components/XLocale";
@@ -29,7 +29,7 @@ export const DocTemplateButton = (props: {
         }
         else {
             // default
-            docTemplateListLocal = await XUtils.fetchRows('XtDocTemplate', UtilsCommon.createCustomFilter(`[entity] = '${props.entity}' AND [availableInForms] = TRUE`), "label", ["templateXFile.name"]);
+            docTemplateListLocal = await Utils.fetchRows('XtDocTemplate', UtilsCommon.createCustomFilter(`[entity] = '${props.entity}' AND [availableInForms] = TRUE`), "label", ["templateXFile.name"]);
         }
         setDocTemplateList(docTemplateListLocal);
     }
@@ -42,12 +42,12 @@ export const DocTemplateButton = (props: {
             return;
         }
 
-        const xtRunDocTemplateRequest: RunDocTemplateRequest = {docTemplateId: xtDocTemplate.id, rowId: props.rowId!, user: XUtils.getXToken()?.user};
+        const xtRunDocTemplateRequest: RunDocTemplateRequest = {docTemplateId: xtDocTemplate.id, rowId: props.rowId!, user: Utils.getXToken()?.user};
 
         // TODO - pridat id-cko do nazvu? alebo na XtDocTemplate vytvorit nejaky atribut pre nazov suboru vo forme Klient-{klient.meno}-{klient.priezvisko}.xlsx
         // ale to by chcelo vytvorit ten nazov v service (po tom co bude nacitany row) a nejako ho dostat sem
         // TODO - endpoint 'xt-run-doc-template' was still not moved to backend lib (from project)
-        XUtils.downloadFile('xt-run-doc-template', xtRunDocTemplateRequest, xtDocTemplate.templateXFile.name);
+        Utils.downloadFile('xt-run-doc-template', xtRunDocTemplateRequest, xtDocTemplate.templateXFile.name);
     }
 
     if (docTemplateList.length === 0) {

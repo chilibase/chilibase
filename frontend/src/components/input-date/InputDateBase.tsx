@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Calendar, CalendarSelectEvent} from "primereact/calendar";
 import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, DateScale} from "../../common/UtilsConversions";
-import {XUtils} from "../XUtils";
+import {Utils} from "../../utils/Utils";
 import {FormEvent} from "primereact/ts-helpers";
 
 // wrapper for Calendar component
@@ -95,7 +95,7 @@ export const InputDateBase = (props: {
         <Calendar id={props.id} value={getInputValue()} onChange={onChange} disabled={props.readOnly} showIcon={true} showOnFocus={false}
                   view={getView(props.scale)} dateFormat={dateFormatCalendar(props.scale)} keepInvalid={true} parseDateTime={(text: string) => text as any}
                   showTime={datetime} showSeconds={datetime} inputClassName={datetime ? 'x-input-datetime' : 'x-input-date'}
-                  onSelect={onSelect} onBlur={onBlur} {...XUtils.createTooltipOrErrorProps(props.error)}/>
+                  onSelect={onSelect} onBlur={onBlur} {...Utils.createTooltipOrErrorProps(props.error)}/>
     );
 }
 
