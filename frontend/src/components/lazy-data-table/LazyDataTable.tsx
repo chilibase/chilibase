@@ -81,11 +81,16 @@ export type OpenFormForUpdate = (
     formElement?: React.ReactElement
 ) => void;
 
+export type AppButtonForRowOnClick = (
+    selectedRow: any,
+    findParam: FindParam // query info for current filtered rows (can be used to run function over filtered rows)
+) => void;
+
 export interface AppButtonForRow {
     key?: string;
     icon?: IconType<ButtonProps>;
     label: string;
-    onClick: (selectedRow: any) => void;
+    onClick: AppButtonForRowOnClick;
     style?: React.CSSProperties;
 }
 
@@ -708,11 +713,11 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         setupExpandedRows(findResult, multilineSwitchValue);
         setLoading(false);
         // save table state into session/local
-        //saveTableState(findParam); <- old solution, state is saved immediatelly after change of some filter field, sorting, etc.
-        // odlozime si filter hodnoty pre pripadny export - deep cloning vyzera ze netreba
-        setFiltersAfterFiltering(filters);
+        //saveTableState(findParam); <- old solution, state is saved immediately after change of some filter field, sorting, etc.
+        // odlozime si filter hodnoty pre pripadny export (maybe simple cloning is enough, but to be sure we use deep)
+        setFiltersAfterFiltering(_.cloneDeep(filters));
         setFtsInputValueAfterFiltering(ftsInputValue ? {...ftsInputValue} : undefined);
-        setOptionalCustomFilterAfterFiltering(optionalCustomFilter);
+        setOptionalCustomFilterAfterFiltering(optionalCustomFilter ? _.cloneDeep(optionalCustomFilter) : undefined);
         // async check for new version - the purpose is to get new version of app to the browser (if available) in short time (10 minutes)
         // (if there is no new version, the check will run async (as the last operation) and nothing will happen)
         Utils.reloadIfNewVersion();
@@ -987,10 +992,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
     }
 
-    const onClickAppButtonForRow = (onClick: (selectedRow: any) => void) => {
+    const onClickAppButtonForRow = (onClick: AppButtonForRowOnClick) => {
 
         if (selectedRow !== null) {
-            onClick(selectedRow);
+            onClick(selectedRow, createFindParamUsingAfterFiltering());
         }
         else {
             alert(xLocaleOption('pleaseSelectRow'));
@@ -1001,8 +1006,17 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
         // exportujeme zaznamy zodpovedajuce filtru
         // najprv zistime pocet zaznamov
-        const fields: string[] = getFields(false);
-        const findParam: FindParam = {
+        const findParam: FindParam = createFindParamUsingAfterFiltering();
+        //setLoading(true); - iba co preblikuje, netreba nam
+        const findResult = await findByFilter(findParam);
+        //setLoading(false);
+
+        const exportParams: ExportParams = createExportParams(getFields(false), findResult.totalRecords!);
+        setExportRowsDialogState({dialogOpened: true, exportParams: exportParams});
+    }
+
+    const createFindParamUsingAfterFiltering = (): FindParam => {
+        return {
             resultType: ResultType.OnlyRowCount,
             first: first,
             rows: rowsLocal,
@@ -1011,15 +1025,9 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             customFilterItems: createXCustomFilterItems(customFilterItems, optionalCustomFilterAfterFiltering),
             multiSortMeta: multiSortMeta,
             entity: props.entity,
-            fields: fields,
+            fields: getFields(false),
             aggregateItems: aggregateItems
         };
-        //setLoading(true); - iba co preblikuje, netreba nam
-        const findResult = await findByFilter(findParam);
-        //setLoading(false);
-
-        const exportParams: ExportParams = createExportParams(fields, findResult.totalRecords!);
-        setExportRowsDialogState({dialogOpened: true, exportParams: exportParams});
     }
 
     const createExportParams = (fields: string[], rowCount: number): ExportParams => {
