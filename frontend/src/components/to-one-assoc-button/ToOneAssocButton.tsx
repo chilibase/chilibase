@@ -1,11 +1,11 @@
-import {FormBase} from "./form";
-import {EntityRow} from "../common/types";
+import {FormBase} from "../form";
+import {EntityRow} from "../../common/types";
 import React from "react";
 import {Button} from "primereact/button";
-import {Utils} from "../utils/Utils";
-import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {Utils} from "../../utils/Utils";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export const XToOneAssocButton = (props: {form: FormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
+export const ToOneAssocButton = (props: {form: FormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
 
     // mozno lepsie by bolo sem dat xEntityAssoc.idField ale postaci aj *FAKE*
     props.form.addField(props.assocField + '.*FAKE*');

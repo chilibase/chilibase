@@ -117,7 +117,7 @@ export interface EditModeHandlers {
 
 // specialne propertiesy ktore su k dispozicii v komponentach <entity>Browse
 // displayed a openForm pridava XFormNavigator3
-// searchBrowseParams pridava XSearchButton
+// searchBrowseParams pridava choose button
 // propertiesy displayed a searchBrowseParams sa (manualne) prenasaju do LazyDataTable (cisto technicke zalezitosti)
 // property openForm sa pouziva na otvorenie dalsieho "podformulara", velmi casto <entity>Form (odtial sa potom zavolanim openForm(null) vraciame naspet do <entity>Browse)
 // ak chceme pouzit ten isty <entity>Browse ako klasicky Browse aj ako SearchBrowse, treba pouzit typ (props: BrowseProps & SearchBrowseProps) - zjednotenie propertiesov

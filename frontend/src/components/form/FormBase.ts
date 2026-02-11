@@ -14,7 +14,7 @@ import {xLocaleOption} from "../XLocale";
 
 export type OnSaveOrCancelProp = (entityRow: EntityRow | null, objectChange: OperationType) => void;
 
-// poznamka - v assoc button-e (XSearchButton, XToOneAssocButton, FormSearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
+// poznamka - v assoc button-e (SearchButton, ToOneAssocButton, FormSearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
 // pri tomto zapise sa nezadava property id (id sa doplni automaticky pri otvoreni assoc formularu cez klonovanie elementu)
 // preto umoznujeme aby id mohlo byt undefined
 // zombie
@@ -101,7 +101,7 @@ export abstract class FormBase extends Component<FormProps> {
     state: {entityRow: EntityRow | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
-    formComponentList: Array<FormComponent<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, XSearchButton, ...)
+    formComponentList: Array<FormComponent<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, SearchButton, ...)
     formDataTableList: Array<FormDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
     assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v rowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)

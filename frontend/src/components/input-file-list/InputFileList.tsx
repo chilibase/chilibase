@@ -1,25 +1,19 @@
 import React from "react";
 import {Component} from "react";
 import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
-import {FormBase} from "./form";
-import {Assoc, Entity} from "../common/EntityMetadata";
-import {Utils} from "../utils/Utils";
-import {EntityRow} from "../common/types";
-import {XButton} from "./XButton";
-import {XButtonIconNarrow} from "./XButtonIconNarrow";
-import {numberAsUI} from "../common/UtilsConversions";
-import {xLocaleOption} from "./XLocale";
-import {FileJsonField} from "../common/lib-api";
-import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {FormBase} from "../form";
+import {Assoc, Entity} from "../../common/EntityMetadata";
+import {Utils} from "../../utils/Utils";
+import {EntityRow} from "../../common/types";
+import {XButton} from "../XButton";
+import {XButtonIconNarrow} from "../XButtonIconNarrow";
+import {numberAsUI} from "../../common/UtilsConversions";
+import {xLocaleOption} from "../XLocale";
+import {FileJsonField} from "../../common/lib-api";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
+import {XFile} from "../../modules/files/x-file";
 
-interface XFile {
-    id: number;
-    name: string;
-    size: number;
-    pathName?: string;
-}
-
-export interface XInputFileListProps {
+export interface InputFileListProps {
     form: FormBase;
     assocField: string;
     label?: string;
@@ -31,7 +25,7 @@ export interface XInputFileListProps {
 }
 
 // notice: in skch there is new version XInputFileList2 and that version don´t use fetch api because fetch api does not support progress bar
-export class XInputFileList extends Component<XInputFileListProps> {
+export class InputFileList extends Component<InputFileListProps> {
 
     public static defaultProps = {
         saveDest: "fileSystem"
@@ -39,12 +33,12 @@ export class XInputFileList extends Component<XInputFileListProps> {
 
     fileUploadRef: any;
 
-    props: XInputFileListProps;
+    props: InputFileListProps;
     entity: string;
     idField: string;
     xFileField: string;
 
-    constructor(props: XInputFileListProps) {
+    constructor(props: InputFileListProps) {
         super(props);
 
         this.fileUploadRef = React.createRef();
@@ -73,7 +67,7 @@ export class XInputFileList extends Component<XInputFileListProps> {
         for (const file of event.files) {
             // skontrolujeme velkost - robime to tuto, lebo ked nastavime maxFileSize na komponente FileUpload, tak prilis velky subor sem do handlera ani neposle
             if (this.props.maxFileSize !== undefined && file.size > this.props.maxFileSize) {
-                alert(xLocaleOption('fileUploadSizeToBig', {fileName: file.name, fileSize: XInputFileList.sizeInMB(file.size), maxFileSize: XInputFileList.sizeInMB(this.props.maxFileSize)}))
+                alert(xLocaleOption('fileUploadSizeToBig', {fileName: file.name, fileSize: InputFileList.sizeInMB(file.size), maxFileSize: InputFileList.sizeInMB(this.props.maxFileSize)}))
                 continue; // ideme na dalsi subor
             }
             // uploadneme subor na server, insertne sa tam zaznam XFile a tento insertnuty zaznam pride sem a zapiseme ho do zoznamu form.object.<assocField>

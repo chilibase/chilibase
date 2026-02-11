@@ -1,4 +1,4 @@
-// parametre ktore odovzdavame z XSearchButton do search table a dalej do XLazyDataTable/XDataTable
+// parametre ktore odovzdavame zo SearchButton do search table a dalej do LazyDataTable
 import {DataTableFilterMetaData} from "primereact/datatable";
 import {FilterOrFunction} from "../utils/types";
 

@@ -39,7 +39,7 @@ import {SuggestionsLoadProp} from "../auto-complete";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
 export interface RowTechData {
-    // zoznam komponentov na riadku tabulky (vcetne DropdownDT, XSearchButtonDT, ...)
+    // zoznam komponentov na riadku tabulky (vcetne DropdownDT, SearchButtonDT, ...)
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
     // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
     // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
