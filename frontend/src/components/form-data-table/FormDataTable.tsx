@@ -11,7 +11,7 @@ import {
 import {Column, ColumnBodyOptions} from "primereact/column";
 import {XButton} from "../XButton";
 import {InputTextDT} from "../input-text";
-import {XSearchButtonDT} from "../XSearchButtonDT";
+import {SearchButtonDT} from "../search-button";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {OperationType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
@@ -450,7 +450,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
         else if (columnProps.type === "searchButton") {
             const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
-            body = <XSearchButtonDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsSearchButton.assocField} displayField={columnPropsSearchButton.displayField} searchBrowse={columnPropsSearchButton.searchBrowse} rowData={rowData} readOnly={readOnly}/>;
+            body = <SearchButtonDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsSearchButton.assocField} displayField={columnPropsSearchButton.displayField} searchBrowse={columnPropsSearchButton.searchBrowse} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "textarea") {
             const columnPropsTextarea = (columnProps as FormTextareaColumnProps);

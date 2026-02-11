@@ -1,20 +1,20 @@
 import React from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
-import {Utils} from "../utils/Utils";
+import {Utils} from "../../utils/Utils";
 import {Dialog} from "primereact/dialog";
-import {FilterProp, FormComponent, FormComponentProps} from "./form";
-import {Assoc} from "../common/EntityMetadata";
-import {CustomFilter} from "../common/FindParam";
-import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
-import {UtilsCommon} from "../common/UtilsCommon";
+import {FilterProp, FormComponent, FormComponentProps} from "../form";
+import {Assoc} from "../../common/EntityMetadata";
+import {CustomFilter} from "../../common/FindParam";
+import {XSearchBrowseParams} from "../XSearchBrowseParams";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
+import {UtilsCommon} from "../../common/UtilsCommon";
 
 // faast-ovsky zoombutton - ked user zapise nieco do inputu a odide - ak sa najde presne 1 zaznam tak nastavi, ak sa najde viac zaznamov tak otvori searchBrowse
 // nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci XAutoComplete
 // TODO - ak sa to ma pouzivat, tak zmenit searchBrowse a assocForm (pouzivane pri readOnly) na SearchBrowse/searchBrowseElement a AssocForm/assocFormElement a nepouzivat FormNavigator
 
-export interface XSearchButtonProps extends FormComponentProps {
+export interface SearchButtonProps extends FormComponentProps {
     assocField: string;
     displayField: string;
     searchBrowse: JSX.Element;
@@ -24,7 +24,7 @@ export interface XSearchButtonProps extends FormComponentProps {
     inputStyle?: React.CSSProperties;
 }
 
-export class XSearchButton extends FormComponent<XSearchButtonProps> {
+export class SearchButton extends FormComponent<SearchButtonProps> {
 
     protected xAssoc: Assoc;
 
@@ -36,7 +36,7 @@ export class XSearchButton extends FormComponent<XSearchButtonProps> {
         dialogOpened: boolean;
     };
 
-    constructor(props: XSearchButtonProps) {
+    constructor(props: SearchButtonProps) {
         super(props);
 
         this.xAssoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);

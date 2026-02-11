@@ -1,14 +1,14 @@
-import {FormBase} from "./form";
+import {FormBase} from "../form";
 import React, {useRef, useState} from "react";
-import {Utils} from "../utils/Utils";
+import {Utils} from "../../utils/Utils";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
-import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {TableFieldReadOnlyProp} from "./form-data-table";
-import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {XSearchBrowseParams} from "../XSearchBrowseParams";
+import {TableFieldReadOnlyProp} from "../form-data-table";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export const XSearchButtonDT = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
+export const SearchButtonDT = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
     const inputTextRef = useRef<any>(null);
 
