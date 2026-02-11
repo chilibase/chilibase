@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Utils} from "../utils/Utils";
+import {Utils} from "../../utils/Utils";
 import {Editor, EditorTextChangeEvent} from "primereact/editor";
 import Quill from 'quill';
 
@@ -65,14 +65,16 @@ const headerTemplate = () => {
 
 // koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
 // pri velkych formularoch je totiz volanie zmeny stavu this.setState({object: this.state.object, errorMap: this.state.errorMap}); pomale
-export const XEditorBase = (props: {
+export interface EditorBaseProps {
     id?: string;
     value: string | null;
     onChange: (value: string | null) => void;
     readOnly?: boolean;
     error?: string;
     style?: React.CSSProperties;
-}) => {
+}
+
+export const EditorBase = (props: EditorBaseProps) => {
 
     // true, ak uzivatel typuje hodnotu
     // false, ak bol zavolany onBlur

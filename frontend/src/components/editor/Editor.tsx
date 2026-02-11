@@ -1,19 +1,19 @@
 import React from "react";
-import {XInput, XInputProps} from "./XInput";
-import {Utils} from "../utils/Utils";
-import {XEditorBase} from "./XEditorBase";
+import {XInput, XInputProps} from "../XInput";
+import {Utils} from "../../utils/Utils";
+import {EditorBase} from "./EditorBase";
 
-export interface XEditorProps extends XInputProps {
+export interface EditorProps extends XInputProps {
     labelOnTop: boolean;
 }
 
-export class XEditor extends XInput<XEditorProps> {
+export class Editor extends XInput<EditorProps> {
 
     public static defaultProps = {
         labelOnTop: false
     };
 
-    constructor(props: XEditorProps) {
+    constructor(props: EditorProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -41,13 +41,13 @@ export class XEditor extends XInput<XEditorProps> {
         const widthValue: string = this.props.labelOnTop ? '100%' : `calc(100% - ${Utils.FIELD_LABEL_WIDTH})`;
         Utils.addCssPropIfNotExists(style, {width: widthValue});
 
-        // x-editor-label-on-top - nastavuje orientation: column, aby boli label a XEditorBase pod sebou (robene podla XInputTextarea)
-        // XEditorBase renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla XInputTextarea)
+        // x-editor-label-on-top - nastavuje orientation: column, aby boli label a EditorBase pod sebou (robene podla XInputTextarea)
+        // EditorBase renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla XInputTextarea)
         return (
             <div className={!this.props.labelOnTop ? 'field grid' : 'field grid x-editor-label-on-top'}>
                 <label htmlFor={this.props.field} className={!this.props.labelOnTop ? 'col-fixed' : undefined} style={this.getLabelStyle()}>{this.getLabel()}</label>
                 {this.props.form.state.entityRow ?
-                    <XEditorBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()}
+                    <EditorBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()}
                                  style={style} error={this.getError()}/>
                     : null
                 }
