@@ -1,6 +1,6 @@
 import React from "react";
 import {FormBase} from "./FormBase";
-import {XButton} from "../XButton";
+import {Button} from "../button";
 import {xLocaleOption} from "../XLocale";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
 import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
@@ -43,8 +43,8 @@ export const FormFooter = (props: {
     return (
         <div className="flex justify-content-center">
             {leftCompensationElem}
-            <XButton icon="pi pi-save" label={xLocaleOption('save')} onClick={props.form.onClickSave} disabled={readOnly}/>
-            <XButton icon="pi pi-times" label={xLocaleOption('cancel')} onClick={props.form.onClickCancel}/>
+            <Button icon="pi pi-save" label={xLocaleOption('save')} onClick={props.form.onClickSave} disabled={readOnly}/>
+            <Button icon="pi pi-times" label={xLocaleOption('cancel')} onClick={props.form.onClickCancel}/>
             {rightNodeList}
         </div>
     );

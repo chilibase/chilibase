@@ -3,7 +3,7 @@ import {AutoComplete, AutoCompleteChangeEvent} from "primereact/autocomplete";
 import {SplitButton} from "primereact/splitbutton";
 import {OperationType, Query} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {Button} from "primereact/button";
+import {Button as PrimeButton} from "primereact/button";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
 import {XSearchBrowseParams} from "../XSearchBrowseParams";
 import {CustomFilter, LazyAutoCompleteSuggestionsRequest} from "../../common/FindParam";
@@ -713,7 +713,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                 }
 
                 if (this.props.buttonsLayout === "buttons") {
-                    buttons = buttonItems.map((value: ButtonItem, index: number) => <Button key={`button${index}`} icon={value.icon} tooltip={value.tooltip} tooltipOptions={{position: 'top'}}
+                    buttons = buttonItems.map((value: ButtonItem, index: number) => <PrimeButton key={`button${index}`} icon={value.icon} tooltip={value.tooltip} tooltipOptions={{position: 'top'}}
                                                                               onClick={(e: any) => value.command!(e)} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>);
                 }
                 else {
@@ -725,19 +725,19 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             }
             else {
                 // mame len 1 operaciu - dame jednoduchy button
-                buttons = [<Button icon="pi pi-chevron-down" onClick={(e: any) => this.onOpenDropdown(e)} className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={!this.props.dropdownButtonEnabled}/>];
+                buttons = [<PrimeButton icon="pi pi-chevron-down" onClick={(e: any) => this.onOpenDropdown(e)} className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={!this.props.dropdownButtonEnabled}/>];
             }
         }
         else {
             // readOnly
             // ak mame valueForm a mame asociovany objekt, umoznime editovat asociovany objekt
             if (this.hasValueForm() && this.props.value !== null) {
-                buttons = [<Button icon="pi pi-pencil" tooltip={this.props.updateButtonTooltip} tooltipOptions={{position: 'top'}}
+                buttons = [<PrimeButton icon="pi pi-pencil" tooltip={this.props.updateButtonTooltip} tooltipOptions={{position: 'top'}}
                                    onClick={(e: any) => this.onEditAssocValue()} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>];
             }
             else {
                 // dame disablovany button (z estetickych dovodov, zachovame sirku)
-                buttons = [<Button icon="pi pi-chevron-down" className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={true}/>];
+                buttons = [<PrimeButton icon="pi pi-chevron-down" className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={true}/>];
             }
         }
 

@@ -3,7 +3,7 @@ import {Dialog} from "primereact/dialog";
 import {XFieldSelector} from "./XFieldSelector";
 import {InputText} from "primereact/inputtext";
 import {Checkbox} from "primereact/checkbox";
-import {XButton} from "./XButton";
+import {Button} from "./button";
 import {UtilsCommon} from "../common/UtilsCommon";
 
 export interface XEditColumnDialogValues {
@@ -91,7 +91,7 @@ export const XEditColumnDialog = (props: {dialogOpened: boolean; addColumn: bool
                 <label htmlFor="dropdownInFilter" className="col-fixed" style={{width:'9.3rem'}}>Dropdown in filter</label>
                 <Checkbox id="dropdownInFilter" checked={dropdownInFilter} onChange={(e: any) => setDropdownInFilter(e.checked)} readOnly={dropdownInFilterReadOnly}/>
             </div>
-            <XButton label={buttonLabel} onClick={onSave}/>
+            <Button label={buttonLabel} onClick={onSave}/>
         </Dialog>
     );
 }

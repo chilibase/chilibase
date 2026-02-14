@@ -5,8 +5,7 @@ import {FormBase} from "../form";
 import {Assoc, Entity} from "../../common/EntityMetadata";
 import {Utils} from "../../utils/Utils";
 import {EntityRow} from "../../common/types";
-import {XButton} from "../XButton";
-import {XButtonIconNarrow} from "../XButtonIconNarrow";
+import {Button, ButtonIconNarrow} from "../button";
 import {numberAsUI} from "../../common/UtilsConversions";
 import {xLocaleOption} from "../XLocale";
 import {FileJsonField} from "../../common/lib-api";
@@ -125,8 +124,8 @@ export class InputFileList extends Component<InputFileListProps> {
             // TODO - pouzit XButtonIconSmall pre button na mazanie - problem je ze tam nevieme (narychlo) dat class m-1
             elemList.push(
                 <div key={fileItem[this.idField].toString()} className="p-inputgroup p-mb-1">
-                    <XButton label={xFile.name} onClick={() => this.onDownloadFile(xFile)}/>
-                    <XButtonIconNarrow icon="pi pi-times" onClick={() => this.onRemoveFile(fileItem)} disabled={readOnly}/>
+                    <Button label={xFile.name} onClick={() => this.onDownloadFile(xFile)}/>
+                    <ButtonIconNarrow icon="pi pi-times" onClick={() => this.onRemoveFile(fileItem)} disabled={readOnly}/>
                 </div>
             );
         }

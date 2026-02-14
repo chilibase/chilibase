@@ -62,6 +62,7 @@
     "./common": "./lib/common/index.js",
 
     "./auto-complete": "./lib/components/auto-complete/index.js",
+    "./button": "./lib/components/button/index.js",
     "./checkbox": "./lib/components/checkbox/index.js",
     "./dropdown": "./lib/components/dropdown/index.js",
     "./editor": "./lib/components/editor/index.js",
@@ -82,10 +83,6 @@
     "./useXStateSession": "./lib/components/useXStateSession.js",
     "./useXStateStorage": "./lib/components/useXStateStorage.js",
     "./useXToken": "./lib/components/useXToken.js",
-    "./XButton": "./lib/components/XButton.js",
-    "./XButtonIconMedium": "./lib/components/XButtonIconMedium.js",
-    "./XButtonIconNarrow": "./lib/components/XButtonIconNarrow.js",
-    "./XButtonIconSmall": "./lib/components/XButtonIconSmall.js",
     "./XChangePasswordForm": "./lib/components/XChangePasswordForm.js",
     "./XEditBrowse": "./lib/components/XEditBrowse.js",
     "./XEnvVars": "./lib/components/XEnvVars.js",

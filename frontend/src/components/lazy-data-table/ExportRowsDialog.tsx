@@ -14,7 +14,7 @@ import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from "primereact/checkbox";
-import {XButton} from "../XButton";
+import {Button} from "../button";
 import {Utils} from "../../utils/Utils";
 import {numberAsUI} from "../../common/UtilsConversions";
 import {xLocaleOption} from "../XLocale";
@@ -169,7 +169,7 @@ export const ExportRowsDialog = (props: {
             </div>
             {elem}
             <div key="exportRows" className="flex justify-content-center">
-                <XButton label={xLocaleOption('exportRows')} onClick={onExport}/>
+                <Button label={xLocaleOption('exportRows')} onClick={onExport}/>
             </div>
         </Dialog>
     );

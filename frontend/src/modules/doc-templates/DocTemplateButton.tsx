@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button} from "primereact/button";
+import {Button as PrimeButton} from "primereact/button";
 import {SplitButton} from "primereact/splitbutton";
 import {MenuItem} from "primereact/menuitem";
 import {XtDocTemplate} from "./xt-doc-template";
@@ -57,7 +57,7 @@ export const DocTemplateButton = (props: {
         // simple button
         const docTemplate: XtDocTemplate = docTemplateList[0];
         return (
-            <Button icon="pi pi-file-export" label={docTemplate.label} onClick={() => onClickButton(docTemplate)} className="m-1"/>
+            <PrimeButton icon="pi pi-file-export" label={docTemplate.label} onClick={() => onClickButton(docTemplate)} className="m-1"/>
         );
     }
     else {

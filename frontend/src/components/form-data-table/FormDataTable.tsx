@@ -9,7 +9,7 @@ import {
     DataTableOperatorFilterMetaData, DataTableSortMeta
 } from "primereact/datatable";
 import {Column, ColumnBodyOptions} from "primereact/column";
-import {XButton} from "../XButton";
+import {Button} from "../button";
 import {InputTextDT} from "../input-text";
 import {SearchButtonDT} from "../search-button";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
@@ -26,7 +26,7 @@ import {CustomFilter} from "../../common/FindParam";
 import {AutoCompleteDT} from "../auto-complete";
 import {FormComponentDT} from "./FormComponentDT";
 import {XErrorMap} from "../XErrors";
-import {XButtonIconNarrow} from "../XButtonIconNarrow";
+import {ButtonIconNarrow} from "../button";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
 import {UtilsCommon} from "../../common/UtilsCommon";
@@ -740,7 +740,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
         if (this.props.showAddRemoveButtons && this.props.removeButtonInRow) {
             // je dolezite nastavit sirku header-a, lebo inac ma stlpec sirku 0 a nevidno ho
-            columnElemList.push(<Column key="removeButton" headerStyle={{width: '2rem'}} body={(rowData: any) => <XButtonIconNarrow icon="pi pi-times" onClick={() => this.removeRow(rowData)} disabled={readOnly} addMargin={false}/>}/>);
+            columnElemList.push(<Column key="removeButton" headerStyle={{width: '2rem'}} body={(rowData: any) => <ButtonIconNarrow icon="pi pi-times" onClick={() => this.removeRow(rowData)} disabled={readOnly} addMargin={false}/>}/>);
         }
 
         let addRowLabel: string | undefined = undefined;
@@ -756,7 +756,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                 {this.props.label !== undefined ?
                     <div className="flex justify-content-center">
                         <label>{this.props.label}</label>
-                        {/*<XButton label="Filter" onClick={onClickFilter} />*/}
+                        {/*<Button label="Filter" onClick={onClickFilter} />*/}
                     </div>
                     : undefined
                 }
@@ -773,8 +773,8 @@ export class FormDataTable extends Component<FormDataTableProps> {
                 </div>
                 {this.props.showAddRemoveButtons ?
                     <div className="flex justify-content-center">
-                        <XButton icon={this.props.addRowIcon} label={addRowLabel} onClick={this.onClickAddRow} disabled={readOnly}/>
-                        {this.props.removeButtonInRow ? undefined : <XButton icon={this.props.removeRowIcon} label={removeRowLabel} onClick={this.onClickRemoveRowBySelection} disabled={readOnly}/>}
+                        <Button icon={this.props.addRowIcon} label={addRowLabel} onClick={this.onClickAddRow} disabled={readOnly}/>
+                        {this.props.removeButtonInRow ? undefined : <Button icon={this.props.removeRowIcon} label={removeRowLabel} onClick={this.onClickRemoveRowBySelection} disabled={readOnly}/>}
                     </div>
                     : undefined
                 }

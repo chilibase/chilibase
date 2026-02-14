@@ -1,8 +1,8 @@
 import React from "react";
-import {Button, ButtonProps} from "primereact/button";
+import {Button as PrimeButton, ButtonProps} from "primereact/button";
 import {IconType} from "primereact/utils";
 
-export const XButton = (props: {
+export const Button = (props: {
     label?: string;
     icon?: IconType<ButtonProps>;
     onClick: ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void);
@@ -12,6 +12,6 @@ export const XButton = (props: {
 
     // zatial iba pridany class x-button, aby sme vedeli nastavit margin "m-1" (0.25rem)
     return (
-        <Button label={props.label} icon={props.icon} onClick={props.onClick} disabled={props.disabled} className="m-1" style={props.style}/>
+        <PrimeButton label={props.label} icon={props.icon} onClick={props.onClick} disabled={props.disabled} className="m-1" style={props.style}/>
     );
 }

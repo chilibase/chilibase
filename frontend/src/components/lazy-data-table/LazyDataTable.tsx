@@ -13,7 +13,7 @@ import {
     ColumnFilterMatchModeChangeEvent,
     ColumnFilterMatchModeOptions
 } from 'primereact/column';
-import {XButton} from "../XButton";
+import {Button} from "../button";
 import {OperationType, StorageType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {XFieldFilter, XSearchBrowseParams} from "../XSearchBrowseParams";
@@ -31,7 +31,7 @@ import {
     CustomFilterItem,
     FullTextSearch, ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode, ExtendedDataTableFilterMeta
 } from "../../common/FindParam";
-import {XButtonIconSmall} from "../XButtonIconSmall";
+import {ButtonIconSmall} from "../button";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {LazyDataTableQueryParam} from "../../common/ExportImportParam";
@@ -1351,13 +1351,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         pageLinkSize = 5; // default
         if (props.editMode === true) {
             paginatorRight = <div>
-                <XButtonIconSmall icon="pi pi-save" onClick={() => props.editModeHandlers?.onSave()} tooltip="Save form"/>
-                <XButtonIconSmall icon="pi pi-times" onClick={() => props.editModeHandlers?.onCancel()} tooltip="Cancel editing"/>
+                <ButtonIconSmall icon="pi pi-save" onClick={() => props.editModeHandlers?.onSave()} tooltip="Save form"/>
+                <ButtonIconSmall icon="pi pi-times" onClick={() => props.editModeHandlers?.onCancel()} tooltip="Cancel editing"/>
             </div>;
         }
         else if (props.editMode === false) {
             paginatorRight = <div>
-                <XButtonIconSmall icon="pi pi-pencil" onClick={() => props.editModeHandlers?.onStart()} tooltip="Edit form"/>
+                <ButtonIconSmall icon="pi pi-pencil" onClick={() => props.editModeHandlers?.onStart()} tooltip="Edit form"/>
             </div>;
         }
         // else - editMode is undefined - browse is not editable
@@ -1401,13 +1401,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             if (props.editMode === true) {
                 header = <div>
                     <div>
-                        <XButtonIconSmall icon="pi pi-plus" onClick={() => props.editModeHandlers?.onAddColumn(childColumn.props.field)} tooltip="Add column"/>
-                        <XButtonIconSmall icon="pi pi-pencil" onClick={() => props.editModeHandlers?.onEditColumn(childColumn.props.field)} tooltip="Edit column"/>
-                        <XButtonIconSmall icon="pi pi-trash" onClick={() => props.editModeHandlers?.onRemoveColumn(childColumn.props.field)} tooltip="Remove column"/>
+                        <ButtonIconSmall icon="pi pi-plus" onClick={() => props.editModeHandlers?.onAddColumn(childColumn.props.field)} tooltip="Add column"/>
+                        <ButtonIconSmall icon="pi pi-pencil" onClick={() => props.editModeHandlers?.onEditColumn(childColumn.props.field)} tooltip="Edit column"/>
+                        <ButtonIconSmall icon="pi pi-trash" onClick={() => props.editModeHandlers?.onRemoveColumn(childColumn.props.field)} tooltip="Remove column"/>
                     </div>
                     <div>
-                        <XButtonIconSmall icon="pi pi-chevron-left" onClick={() => props.editModeHandlers?.onMoveColumnLeft(childColumn.props.field)} tooltip="Move column left"/>
-                        <XButtonIconSmall icon="pi pi-chevron-right" onClick={() => props.editModeHandlers?.onMoveColumnRight(childColumn.props.field)} tooltip="Move column right"/>
+                        <ButtonIconSmall icon="pi pi-chevron-left" onClick={() => props.editModeHandlers?.onMoveColumnLeft(childColumn.props.field)} tooltip="Move column left"/>
+                        <ButtonIconSmall icon="pi pi-chevron-right" onClick={() => props.editModeHandlers?.onMoveColumnRight(childColumn.props.field)} tooltip="Move column right"/>
                     </div>
                     <div>{headerLabel}</div>
                 </div>;
@@ -1663,8 +1663,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 {props.label ? <div className="x-lazy-datatable-label" style={props.labelStyle}>{props.label}</div> : null}
                 {props.headerBodyLeft}
                 {ftsInputValue ? <FtsInput value={ftsInputValue} onChange={(value: FtsInputValue) => setFtsInputValue(value)}/> : null}
-                {props.showFilterButtons ? <XButton key="filter" icon={isMobile ? "pi pi-search" : undefined} label={!isMobile ? xLocaleOption('filter') : undefined} onClick={onClickFilter} /> : null}
-                {props.showFilterButtons ? <XButton key="resetTable" icon={isMobile ? "pi pi-ban" : undefined} label={!isMobile ? xLocaleOption('resetTable') : undefined} onClick={onClickResetTable} /> : null}
+                {props.showFilterButtons ? <Button key="filter" icon={isMobile ? "pi pi-search" : undefined} label={!isMobile ? xLocaleOption('filter') : undefined} onClick={onClickFilter} /> : null}
+                {props.showFilterButtons ? <Button key="resetTable" icon={isMobile ? "pi pi-ban" : undefined} label={!isMobile ? xLocaleOption('resetTable') : undefined} onClick={onClickResetTable} /> : null}
                 {props.optionalCustomFilters ? <OcfDropdown optionalCustomFilters={props.optionalCustomFilters} value={optionalCustomFilter} onChange={(value: OptionalCustomFilter | undefined) => setOptionalCustomFilter(value)} className="m-1"/> : null}
                 {props.multilineSwitch ? <MultilineSwitch value={multilineSwitchValue} onChange={(switchValue: MultilineRenderType) => {
                         setMultilineSwitchValue(switchValue);
@@ -1690,14 +1690,14 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 </DataTable>
             </div>
             <div className="flex justify-content-center">
-                {(props.onAddRow !== false && (editFormExists || props.onAddRow !== undefined)) && props.searchBrowseParams === undefined ? <XButton key="addRow" icon="pi pi-plus" label={xLocaleOption('addRow')} onClick={onClickAddRow}/> : null}
-                {(props.onEdit !== false && (editFormExists || props.onEdit !== undefined)) && props.searchBrowseParams === undefined ? <XButton key="editRow" icon="pi pi-pencil" label={xLocaleOption('editRow')} onClick={onClickEditRow}/> : null}
-                {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <XButton key="removeRow" icon="pi pi-times" label={xLocaleOption('removeRow')} onClick={onClickRemoveRow}/> : null}
-                {exportRows ? <XButton key="exportRows" icon="pi pi-file-export" label={xLocaleOption('exportRows')} onClick={onClickExport} /> : null}
+                {(props.onAddRow !== false && (editFormExists || props.onAddRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="addRow" icon="pi pi-plus" label={xLocaleOption('addRow')} onClick={onClickAddRow}/> : null}
+                {(props.onEdit !== false && (editFormExists || props.onEdit !== undefined)) && props.searchBrowseParams === undefined ? <Button key="editRow" icon="pi pi-pencil" label={xLocaleOption('editRow')} onClick={onClickEditRow}/> : null}
+                {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="removeRow" icon="pi pi-times" label={xLocaleOption('removeRow')} onClick={onClickRemoveRow}/> : null}
+                {exportRows ? <Button key="exportRows" icon="pi pi-file-export" label={xLocaleOption('exportRows')} onClick={onClickExport} /> : null}
                 {props.docTemplates && !isMobile && props.searchBrowseParams === undefined ? <DocTemplateButton key="docTemplates" entity={props.entity} rowId={selectedRow ? selectedRow[dataKey] : undefined} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/> : null}
-                {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: AppButtonForRow) => <XButton key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}
+                {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: AppButtonForRow) => <Button key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}
                 {props.searchBrowseParams === undefined ? props.appButtons : null}
-                {props.searchBrowseParams !== undefined ? <XButton key="choose" label={xLocaleOption('chooseRow')} onClick={onClickChoose}/> : null}
+                {props.searchBrowseParams !== undefined ? <Button key="choose" label={xLocaleOption('chooseRow')} onClick={onClickChoose}/> : null}
                 {editFormExists ? <FormDialog key="formDialog" dialogState={formDialogState} entity={props.entity}/> : null}
                 {exportRows ? <ExportRowsDialog key="exportRowsDialog" dialogState={exportRowsDialogState} hideDialog={() => setExportRowsDialogState({dialogOpened: false})}/> : null}
             </div>
