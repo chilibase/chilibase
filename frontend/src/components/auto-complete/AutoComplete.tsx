@@ -3,7 +3,7 @@ import {FilterProp, FormComponent, FormComponentProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
-import {XError} from "../XErrors";
+import {FieldError} from "../form/FormErrors";
 import {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FormProps} from "../form";
@@ -82,10 +82,10 @@ export class AutoComplete extends FormComponent<AutoCompleteProps> {
     }
 
     // overrides method in XFormComponent
-    validate(): {field: string; xError: XError} | undefined {
+    validate(): {field: string; fieldError: FieldError} | undefined {
         if (this.errorInBase) {
             // error message dame na onChange, mohli by sme aj na onSet (predtym onBlur), je to jedno viac-menej
-            return {field: this.getField(), xError: {onChange: this.errorInBase, fieldLabel: this.getLabel()}};
+            return {field: this.getField(), fieldError: {onChange: this.errorInBase, fieldLabel: this.getLabel()}};
         }
         // zavolame povodnu metodu
         return super.validate();

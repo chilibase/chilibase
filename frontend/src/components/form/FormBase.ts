@@ -4,7 +4,7 @@ import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {FieldOnChange, FormComponent} from "./FormComponent";
 import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
-import {XErrorMap, XErrors} from "../XErrors";
+import {FieldErrorMap, FormErrorMap} from "./FormErrors";
 import {Params, UtilsCommon} from "../../common/UtilsCommon";
 import {Entity} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
@@ -98,7 +98,7 @@ export abstract class FormBase extends Component<FormProps> {
     readOnly: boolean; // used if the lock was not acquired (other user holds the lock)
 
     fieldSet: Set<string>; // zoznam zobrazovanych fieldov (vcetne asoc. objektov) - potrebujeme koli nacitavaniu root objektu
-    state: {entityRow: EntityRow | null; errorMap: XErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
+    state: {entityRow: EntityRow | null; errorMap: FieldErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
     formComponentList: Array<FormComponent<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, SearchButton, ...)
@@ -294,7 +294,7 @@ export abstract class FormBase extends Component<FormProps> {
         const entityRow: EntityRow = this.getEntityRow();
         UtilsCommon.setValueByPath(entityRow, field, value);
 
-        const errorMap: XErrorMap = this.state.errorMap;
+        const errorMap: FieldErrorMap = this.state.errorMap;
         errorMap[field] = {...errorMap[field], onChange: error};
 
         // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
@@ -313,7 +313,7 @@ export abstract class FormBase extends Component<FormProps> {
         rowData[field] = value;
 
         // nastavime error do rowData do tech fieldu
-        const errorMap: XErrorMap = FormBase.getRowTechData(rowData).errorMap;
+        const errorMap: FieldErrorMap = FormBase.getRowTechData(rowData).errorMap;
         errorMap[field] = {...errorMap[field], onChange: error};
 
         // tu zavolame onChange komponentu - entityRow uz ma zapisanu zmenenu hodnotu, onChange nasledne zmeni dalsie hodnoty a nasledne sa zavola setState
@@ -550,10 +550,10 @@ export abstract class FormBase extends Component<FormProps> {
 
     async validateSave(): Promise<boolean> {
 
-        const xErrorMap: XErrorMap = await this.validateForm();
+        const fieldErrorMap: FieldErrorMap = await this.validateForm();
 
         // zatial takto jednoducho
-        let msg: string = Utils.getErrorMessages(xErrorMap);
+        let msg: string = Utils.getErrorMessages(fieldErrorMap);
 
         // este spracujeme editovatelne tabulky
         for (const formDataTable of this.formDataTableList) {
@@ -576,39 +576,39 @@ export abstract class FormBase extends Component<FormProps> {
         return ok;
     }
 
-    async validateForm(): Promise<XErrorMap> {
-        const xErrorMap: XErrorMap = this.fieldValidation();
+    async validateForm(): Promise<FieldErrorMap> {
+        const fieldErrorMap: FieldErrorMap = this.fieldValidation();
 
         // form validation
-        const xErrors: XErrors = await this.validate(this.getEntityRow());
-        for (const [field, error] of Object.entries(xErrors)) {
+        const formErrorMap: FormErrorMap = await this.validate(this.getEntityRow());
+        for (const [field, error] of Object.entries(formErrorMap)) {
             if (error) {
                 // skusime zistit label
                 const formComponent: FormComponent<any> | undefined = this.findFormComponent(field);
                 const fieldLabel: string | undefined = formComponent ? formComponent.getLabel() : undefined;
-                xErrorMap[field] = {...xErrorMap[field], form: error, fieldLabel: fieldLabel};
+                fieldErrorMap[field] = {...fieldErrorMap[field], form: error, fieldLabel: fieldLabel};
             }
         }
 
         // TODO - optimalizacia - netreba setovat stav ak by sme sli prec z formulara (ak by zbehla validacia aj save a isli by sme naspet do browsu)
         // setujeme aj this.state.entityRow, lebo mohli pribudnut/odbudnut chyby na rowData v editovatelnych tabulkach
-        this.setState({entityRow: this.state.entityRow, errorMap: xErrorMap});
-        return xErrorMap;
+        this.setState({entityRow: this.state.entityRow, errorMap: fieldErrorMap});
+        return fieldErrorMap;
     }
 
-    fieldValidation(): XErrorMap {
-        const xErrorMap: XErrorMap = {};
+    fieldValidation(): FieldErrorMap {
+        const fieldErrorMap: FieldErrorMap = {};
         for (const formComponent of this.formComponentList) {
             const errorItem = formComponent.validate();
             if (errorItem) {
                 //console.log("Mame field = " + errorItem.field);
-                xErrorMap[errorItem.field] = errorItem.xError;
+                fieldErrorMap[errorItem.field] = errorItem.fieldError;
             }
         }
         for (const formDataTable of this.formDataTableList) {
             formDataTable.validate();
         }
-        return xErrorMap;
+        return fieldErrorMap;
     }
 
     getErrorMessagesForAssoc(oneToManyAssoc: string): string {
@@ -626,15 +626,15 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     // can be called from AppForm in case of custom validation on oneToMany assoc
-    static saveErrorsIntoRowTechData(row: any, xErrors: XErrors) {
-        const xErrorMap: XErrorMap = {};
-        for (const [field, error] of Object.entries(xErrors)) {
+    static saveErrorsIntoRowTechData(row: any, formErrorMap: FormErrorMap) {
+        const fieldErrorMap: FieldErrorMap = {};
+        for (const [field, error] of Object.entries(formErrorMap)) {
             if (error) {
-                xErrorMap[field] = {form: error};
+                fieldErrorMap[field] = {form: error};
             }
         }
         const rowTechData: RowTechData = FormBase.getRowTechData(row);
-        rowTechData.errorMap = xErrorMap;
+        rowTechData.errorMap = fieldErrorMap;
     }
 
     // this method can be overriden in subclass if needed
@@ -689,7 +689,7 @@ export abstract class FormBase extends Component<FormProps> {
     }
 
     // this method can be overriden in subclass if needed (custom validation)
-    async validate(entityRow: EntityRow): Promise<XErrors> {
+    async validate(entityRow: EntityRow): Promise<FormErrorMap> {
         return {};
     }
 

@@ -25,7 +25,7 @@ import {FilterMatchMode, FilterOperator} from "primereact/api";
 import {CustomFilter} from "../../common/FindParam";
 import {AutoCompleteDT} from "../auto-complete";
 import {FormComponentDT} from "./FormComponentDT";
-import {XErrorMap} from "../XErrors";
+import {FieldErrorMap} from "../form/FormErrors";
 import {ButtonIconNarrow} from "../button";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
@@ -48,7 +48,7 @@ export interface RowTechData {
     // chyby sem zapisuje automaticka validacia a pripadna custom validacia
     // chyby sa zobrazia (vycervenenie + tooltip) vo formulari zavolanim this.setState({object: this.state.object});
     // chyby sa renderuju (vycervenenie + tooltip) v komponentoch tak ze komponent cita chyby z tohto errorMap
-    errorMap: XErrorMap;
+    errorMap: FieldErrorMap;
 }
 
 export interface DropdownOptionsMap {
@@ -500,15 +500,15 @@ export class FormDataTable extends Component<FormDataTableProps> {
         const rowList: any[] = entityRow[this.props.assocField];
         for (const row of rowList) {
             const rowTechData: RowTechData = FormBase.getRowTechData(row);
-            const xErrorMap: XErrorMap = {};
+            const fieldErrorMap: FieldErrorMap = {};
             for (const formComponentDT of rowTechData.formComponentDTList) {
                 const errorItem = formComponentDT.validate();
                 if (errorItem) {
                     //console.log("Mame field = " + errorItem.field);
-                    xErrorMap[errorItem.field] = errorItem.xError;
+                    fieldErrorMap[errorItem.field] = errorItem.fieldError;
                 }
             }
-            rowTechData.errorMap = xErrorMap;
+            rowTechData.errorMap = fieldErrorMap;
         }
     }
 

@@ -4,7 +4,7 @@ import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {XError} from "../XErrors";
+import {FieldError} from "../form/FormErrors";
 import {CustomFilter} from "../../common/FindParam";
 import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
 
@@ -128,8 +128,8 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
     // *********** validation support ************
 
     // volane po kliknuti na Save
-    // vrati (field, XError) ak nezbehne "field validacia", ak zbehne, vrati undefined
-    validate(): { field: string; xError: XError } | undefined {
+    // vrati (field, FieldError) ak nezbehne "field validacia", ak zbehne, vrati undefined
+    validate(): { field: string; fieldError: FieldError } | undefined {
         // TODO - FILOZOFICKA OTAZKA - volat validaciu aj ked je field readOnly (this.isReadOnly() === true)? zatial dame ze hej...
         const value: any = this.getValueFromRowData();
         // not null validacia + custom field validacia volana na onChange
@@ -137,7 +137,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
         // custom field validacia volana na onBlur (focus lost)
         // TODO - fieldLabel
         if (errorOnChange) {
-            return {field: this.getField(), xError: {onChange: errorOnChange, fieldLabel: undefined}};
+            return {field: this.getField(), fieldError: {onChange: errorOnChange, fieldLabel: undefined}};
         }
         return undefined;
     }
@@ -163,7 +163,7 @@ export abstract class FormComponentDT<P extends FormComponentDTProps> extends Co
 
     // vrati error message z rowData.errorMap
     getError(): string | undefined {
-        const error: XError = FormBase.getRowTechData(this.props.rowData).errorMap[this.getField()];
+        const error: FieldError = FormBase.getRowTechData(this.props.rowData).errorMap[this.getField()];
         return error ? Utils.getErrorMessage(error) : undefined;
     }
 

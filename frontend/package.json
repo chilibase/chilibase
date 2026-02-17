@@ -86,7 +86,6 @@
     "./XChangePasswordForm": "./lib/components/XChangePasswordForm.js",
     "./XEditBrowse": "./lib/components/XEditBrowse.js",
     "./XEnvVars": "./lib/components/XEnvVars.js",
-    "./XErrors": "./lib/components/XErrors.js",
     "./XFormNavigator3": "./lib/components/XFormNavigator3.js",
     "./XHolders": "./lib/components/XHolders.js",
     "./XLocale": "./lib/components/XLocale.js",

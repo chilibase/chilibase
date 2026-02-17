@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {FormBase} from "./FormBase";
-import {XError} from "../XErrors";
+import {FieldError} from "./FormErrors";
 import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType} from "../../utils/types";
@@ -155,8 +155,8 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
     // *********** validation support ************
 
     // volane po kliknuti na Save
-    // vrati (field, XError) ak nezbehne "field validacia", ak zbehne, vrati undefined
-    validate(): {field: string; xError: XError} | undefined {
+    // vrati (field, FieldError) ak nezbehne "field validacia", ak zbehne, vrati undefined
+    validate(): {field: string; fieldError: FieldError} | undefined {
         // TODO - FILOZOFICKA OTAZKA - volat validaciu aj ked je field readOnly (this.isReadOnly() === true)? zatial dame ze hej...
         const value: any = this.getValueFromObject();
         // not null validacia + custom field validacia volana na onChange
@@ -164,7 +164,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
         // custom field validacia volana na onBlur (focus lost)
         // TODO
         if (errorOnChange) {
-            return {field: this.getField(), xError: {onChange: errorOnChange, fieldLabel: this.getLabel()}};
+            return {field: this.getField(), fieldError: {onChange: errorOnChange, fieldLabel: this.getLabel()}};
         }
         return undefined;
     }
@@ -202,7 +202,7 @@ export abstract class FormComponent<P extends FormComponentProps> extends Compon
 
     // vrati error message z form.state.errorMap
     getError(): string | undefined {
-        const error: XError = this.props.form.state.errorMap[this.getField()];
+        const error: FieldError = this.props.form.state.errorMap[this.getField()];
         return error ? Utils.getErrorMessage(error) : undefined;
     }
 

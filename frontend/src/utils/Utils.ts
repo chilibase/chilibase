@@ -12,7 +12,7 @@ import {
 import {XResponseError} from "../components/XResponseError";
 import React from "react";
 import {XEnvVar} from "../components/XEnvVars";
-import {XError, XErrorMap} from "../components/XErrors";
+import {FieldError, FieldErrorMap} from "../components/form/FormErrors";
 import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 import {EntityRow} from "../common/types";
@@ -569,37 +569,37 @@ export class Utils {
     }
 
     // pomocna metodka
-    // ak nie su v xErrorMap ziadne chyby, vrati ""
-    static getErrorMessages(xErrorMap: XErrorMap): string {
+    // ak nie su v fieldErrorMap ziadne chyby, vrati ""
+    static getErrorMessages(fieldErrorMap: FieldErrorMap): string {
         let msg: string = "";
-        for (const [field, xError] of Object.entries(xErrorMap)) {
-            if (xError) {
-                const errorMessage: string | undefined = Utils.getErrorMessage(xError);
+        for (const [field, fieldError] of Object.entries(fieldErrorMap)) {
+            if (fieldError) {
+                const errorMessage: string | undefined = Utils.getErrorMessage(fieldError);
                 if (errorMessage) {
-                    msg += `${xError.fieldLabel ?? field}: ${errorMessage}${UtilsCommon.newLine}`;
+                    msg += `${fieldError.fieldLabel ?? field}: ${errorMessage}${UtilsCommon.newLine}`;
                 }
             }
         }
         return msg;
     }
 
-    static getErrorMessage(xError: XError): string | undefined {
-        if (xError.onChange || xError.onBlur || xError.form) {
+    static getErrorMessage(fieldError: FieldError): string | undefined {
+        if (fieldError.onChange || fieldError.onBlur || fieldError.form) {
             let message: string = '';
-            if (xError.onChange) {
-                message += xError.onChange;
+            if (fieldError.onChange) {
+                message += fieldError.onChange;
             }
-            if (xError.onBlur) {
+            if (fieldError.onBlur) {
                 if (message !== '') {
                     message += ' ';
                 }
-                message += xError.onBlur;
+                message += fieldError.onBlur;
             }
-            if (xError.form) {
+            if (fieldError.form) {
                 if (message !== '') {
                     message += ' ';
                 }
-                message += xError.form;
+                message += fieldError.form;
             }
             return message;
         }
