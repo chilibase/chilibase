@@ -494,7 +494,7 @@ export abstract class FormBase extends Component<FormProps> {
             entityRow = await this.saveRow();
         }
         catch (e) {
-            Utils.showErrorMessage("Save row failed.", e);
+            Utils.showErrorMessage("Save row failed.", e, this.entity);
             return; // zostavame vo formulari
         }
 

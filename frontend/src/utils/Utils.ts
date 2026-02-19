@@ -519,7 +519,7 @@ export class Utils {
         return label + ' *';
     }
 
-    static showErrorMessage(message: string, e: unknown) {
+    static showErrorMessage(message: string, e: unknown, entity?: string) {
         let msg = message + UtilsCommon.newLine;
         if (e instanceof XResponseError) {
             if (e.xResponseErrorBody.exceptionName === 'XAppError') {
@@ -527,8 +527,17 @@ export class Utils {
                 msg += e.xResponseErrorBody.message;
             }
             else if (e.xResponseErrorBody.exceptionName === 'OptimisticLockVersionMismatchError') {
-                // better error message for optimistic locking
-                msg += xLocaleOption('optimisticLockFailed');
+                // TODO - better error message for optimistic locking (modifDate + modifUser)
+                // for now, we add entity to the message if the entity from the OptimisticLockVersionMismatchError is different from the entity beeing saved
+                // (it is rare but it can be very confusing)
+                let entityParam: string = ""; // default
+                if (entity && e.xResponseErrorBody.message) {
+                    const entityFromError: string = Utils.extractEntity(e.xResponseErrorBody.message);
+                    if (entityFromError !== entity) {
+                        entityParam = " " + entityFromError;
+                    }
+                }
+                msg += xLocaleOption('optimisticLockFailed', {entity: entityParam});
             }
             else {
                 msg += e.message + UtilsCommon.newLine;
@@ -543,6 +552,11 @@ export class Utils {
             msg += e;
         }
         alert(msg);
+    }
+
+    private static extractEntity(msg: string): string {
+        const match = msg.match(/The optimistic lock on entity ([A-Za-z0-9_]+) failed/);
+        return match ? match[1] : "unknown";
     }
 
     // pouziva sa hlavne na inputy
