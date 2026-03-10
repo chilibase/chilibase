@@ -83,7 +83,6 @@
     "./useXStateSession": "./lib/components/useXStateSession.js",
     "./useXStateStorage": "./lib/components/useXStateStorage.js",
     "./useXToken": "./lib/components/useXToken.js",
-    "./XChangePasswordForm": "./lib/components/XChangePasswordForm.js",
     "./XEditBrowse": "./lib/components/XEditBrowse.js",
     "./XEnvVars": "./lib/components/XEnvVars.js",
     "./XFormNavigator3": "./lib/components/XFormNavigator3.js",

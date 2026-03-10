@@ -1,6 +1,7 @@
 export * from "./BrowseMetaForm";
 export * from "./x-enum-enum";
 export * from "./BrowseMetaBrowse";
+export * from "./ChangePasswordForm";
 export * from "./XUserBrowse";
 export * from "./XParamBrowse";
 export * from "./XParamForm";

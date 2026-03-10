@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import {Utils} from "../utils/Utils";
+import {Utils} from "../../utils/Utils";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {InputText} from "primereact/inputtext";
 
-export const XChangePasswordForm = () => {
+export const ChangePasswordForm = () => {
 
     const [passwordCurrent, setPasswordCurrent] = useState("");
     const [passwordNew, setPasswordNew] = useState("");
