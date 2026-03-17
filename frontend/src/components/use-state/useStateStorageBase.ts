@@ -1,10 +1,10 @@
 import {Dispatch, SetStateAction, useState} from "react";
-import {StorageType} from "../utils/types";
-import {Utils} from "../utils/Utils";
+import {StorageType} from "../../utils/types";
+import {Utils} from "../../utils/Utils";
 
 // this base version enables to use custom version of function that computes initialState
-// (in usual case useXStateStorage shoud be used)
-export function useXStateStorageBase<T>(xStorageType: StorageType, key: string, initialStateFunction: () => T): [T, Dispatch<SetStateAction<T>>] {
+// (in usual case useStateStorage should be used)
+export function useStateStorageBase<T>(xStorageType: StorageType, key: string, initialStateFunction: () => T): [T, Dispatch<SetStateAction<T>>] {
 
     const [value, setValue] = useState<T>(initialStateFunction);
 

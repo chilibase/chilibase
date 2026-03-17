@@ -53,8 +53,8 @@ import {OcfDropdown} from "./OcfDropdown";
 import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../XFieldSet/XFieldSetBase";
 import {AutoCompleteBase} from "../auto-complete";
 import {InputTextBase} from "../input-text";
-import {useXStateStorage} from "../useXStateStorage";
-import {useXStateStorageBase} from "../useXStateStorageBase";
+import {useStateStorage} from "../use-state/useStateStorage";
+import {useStateStorageBase} from "../use-state/useStateStorageBase";
 import * as _ from "lodash";
 import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
@@ -423,9 +423,6 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
     let aggregateItems: SimpleAggregateItem[] = createAggregateItems();
 
-    // poznamka k useXStateSession - v buducnosti nahradit useXStateStorage, ktory bude mat parameter session/local/none a parameter bude riadit aky storage sa pouzije
-    // zatial vzdy ukladame do session
-
     // ak mame fieldSet stlpce (stlpce ktore maju zadany fieldSetId a zobrazuju hodnoty podla fieldSet-u),
     // tak sem nacitame mapy umoznujuce ziskanie labelov zakliknutych field-ov
     // poznamka: uz by sa zislo mat vytvorene objekty (instancie) pre stlpce a do nich zapisovat pripadny XFieldSetMap, filter (teraz je vo "filters")
@@ -434,9 +431,9 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const [value, setValue] = useState<FindResult>({rowList: [], totalRecords: 0, aggregateValues: []});
     const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | DataTableValueArray | undefined>(undefined);
     const [loading, setLoading] = useState(false);
-    const [first, setFirst] = useXStateStorage(props.stateStorage!, getStateKey(StateKeySuffix.pagingFirst), 0);
+    const [first, setFirst] = useStateStorage(props.stateStorage!, getStateKey(StateKeySuffix.pagingFirst), 0);
     const [rowsLocal, setRowsLocal] = useState(props.paginator ? props.rows : undefined);
-    // "filters" have special initialState function different from that used in useXStateSession
+    // "filters" have special initialState function different from that used in useStateStorage
     const filtersInitialStateFunction = (): DataTableFilterMeta => {
         let filtersInit: DataTableFilterMeta | null = Utils.getValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.filters), null);
         if (filtersInit != null) {
@@ -449,14 +446,14 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
         return filtersInit;
     }
-    const [filters, setFilters] = useXStateStorageBase<DataTableFilterMeta>(props.stateStorage!, getStateKey(StateKeySuffix.filters), filtersInitialStateFunction); // filtrovanie na "controlled manner" (moze sa sem nainicializovat nejaka hodnota)
+    const [filters, setFilters] = useStateStorageBase<DataTableFilterMeta>(props.stateStorage!, getStateKey(StateKeySuffix.filters), filtersInitialStateFunction); // filtrovanie na "controlled manner" (moze sa sem nainicializovat nejaka hodnota)
     const matchModeChangeFieldRef = useRef<string | null>(null);
     const initFtsInputValue: FtsInputValue | undefined = props.fullTextSearch ? createInitFtsInputValue() : undefined;
-    const [ftsInputValue, setFtsInputValue] = useXStateStorage<FtsInputValue | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.ftsInputValue), initFtsInputValue);
-    const [optionalCustomFilter, setOptionalCustomFilter] = useXStateStorage<OptionalCustomFilter | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.optionalCustomFilter), undefined);
-    const [multilineSwitchValue, setMultilineSwitchValue] = props.multilineSwitchValue ?? useXStateStorage<MultilineRenderType>(props.stateStorage!, getStateKey(StateKeySuffix.multilineSwitchValue), props.multilineSwitchInitValue!);
-    const [multiSortMeta, setMultiSortMeta] = useXStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.multiSortMeta), UtilsCommon.createMultiSortMeta(props.sortField));
-    const [selectedRow, setSelectedRow] = useXStateStorage<any>(props.stateStorage!, getStateKey(StateKeySuffix.selectedRow), null);
+    const [ftsInputValue, setFtsInputValue] = useStateStorage<FtsInputValue | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.ftsInputValue), initFtsInputValue);
+    const [optionalCustomFilter, setOptionalCustomFilter] = useStateStorage<OptionalCustomFilter | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.optionalCustomFilter), undefined);
+    const [multilineSwitchValue, setMultilineSwitchValue] = props.multilineSwitchValue ?? useStateStorage<MultilineRenderType>(props.stateStorage!, getStateKey(StateKeySuffix.multilineSwitchValue), props.multilineSwitchInitValue!);
+    const [multiSortMeta, setMultiSortMeta] = useStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.multiSortMeta), UtilsCommon.createMultiSortMeta(props.sortField));
+    const [selectedRow, setSelectedRow] = useStateStorage<any>(props.stateStorage!, getStateKey(StateKeySuffix.selectedRow), null);
     /**
      * @deprecated was used to reread data after save/cancel of the form when using XFormNavigator (deprecated)
      */
@@ -623,7 +620,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const onClickResetTable = () => {
         // every session state variable set to init value from "props" or default value
-        // (this code corresponds to init values in useXStateSession hooks)
+        // (this code corresponds to init values in useStateSession hooks)
 
         const firstLocal: number = 0;
         setFirst(firstLocal);

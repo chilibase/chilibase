@@ -78,10 +78,8 @@
     "./multi-select": "./lib/components/multi-select/index.js",
     "./search-button": "./lib/components/search-button/index.js",
     "./to-one-assoc-button": "./lib/components/to-one-assoc-button/index.js",
+    "./use-state": "./lib/components/use-state/index.js",
 
-    "./useXStateLocal": "./lib/components/useXStateLocal.js",
-    "./useXStateSession": "./lib/components/useXStateSession.js",
-    "./useXStateStorage": "./lib/components/useXStateStorage.js",
     "./useXToken": "./lib/components/useXToken.js",
     "./XEditBrowse": "./lib/components/XEditBrowse.js",
     "./XEnvVars": "./lib/components/XEnvVars.js",
