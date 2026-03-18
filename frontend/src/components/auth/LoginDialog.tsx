@@ -1,12 +1,12 @@
 import React from 'react';
 import {Dialog} from "primereact/dialog";
-import {XToken} from "../XToken";
+import {AuthSession} from "./AuthSession";
 import {LoginForm} from "./LoginForm";
 
 // is used by local auth
 // maybe is used in project kvm
-// TODO - replace setXToken with onLogin(username: string, accessToken: string) and call this props.onLogin form onLogin
-export const LoginDialog = (props: {dialogOpened: boolean; setXToken: (xToken: XToken | null) => void; onHideDialog: (ok: boolean) => void; customUserService?: string;}) => {
+// TODO - replace setAuthSession with onLogin(username: string, accessToken: string) and call this props.onLogin form onLogin
+export const LoginDialog = (props: {dialogOpened: boolean; setAuthSession: (authSession: AuthSession | null) => void; onHideDialog: (ok: boolean) => void; customUserService?: string;}) => {
 
     // bez tejto metody by pri opetovnom otvoreni dialogu ponechal povodne hodnoty
     const onShow = () => {

@@ -80,7 +80,6 @@
     "./to-one-assoc-button": "./lib/components/to-one-assoc-button/index.js",
     "./use-state": "./lib/components/use-state/index.js",
 
-    "./useXToken": "./lib/components/useXToken.js",
     "./XEditBrowse": "./lib/components/XEditBrowse.js",
     "./XEnvVars": "./lib/components/XEnvVars.js",
     "./XFormNavigator3": "./lib/components/XFormNavigator3.js",
@@ -88,7 +87,6 @@
     "./XLocale": "./lib/components/XLocale.js",
     "./XLoginDialog": "./lib/components/XLoginDialog.js",
     "./XLoginForm": "./lib/components/XLoginForm.js",
-    "./XToken": "./lib/components/XToken.js",
 
     "./doc-templates": "./lib/modules/doc-templates/index.js",
     "./administration": "./lib/modules/administration/index.js",

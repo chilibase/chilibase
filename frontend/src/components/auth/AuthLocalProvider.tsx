@@ -4,6 +4,7 @@ import {LoginForm} from "./LoginForm";
 import {Utils} from "../../utils/Utils";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
+import {useAuthSession} from "./useAuthSession";
 
 export const AuthLocalProvider = ({children}: {children: ReactNode;}) => {
     return (
@@ -15,28 +16,29 @@ export const AuthLocalProvider = ({children}: {children: ReactNode;}) => {
 
 function AppAuthLocal({children}: {children: ReactNode;}) {
 
-    //const [xToken, setXToken] = useXToken(); - TODO - create hook that processes auth?
+    const {setSession} = useAuthSession();
+
     const [isAuthenticated, setAuthenticated] = useState(false);
 
     const [initialized, setInitialized] = useState(false);
 
     const onLogin = async (username: string, accessToken: string) => {
-        await setXTokenAndDoPostLogin(username, accessToken);
+        await setAuthSessionAndDoPostLogin(username, accessToken);
         setAuthenticated(true);
     }
 
     const logout = () => {
-        Utils.setXToken(null);
+        setSession(null);
         setAuthenticated(false);
         setInitialized(false);
     }
 
     // method is here to be similar to other auth methods (Auth0Provider, MSEntraIDProvider)
     // 'post-login' request can be united with 'x-local-auth-login' request in the LoginForm
-    const setXTokenAndDoPostLogin = async (username: string, accessToken: string) => {
+    const setAuthSessionAndDoPostLogin = async (username: string, accessToken: string) => {
 
         // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
-        Utils.setXToken({accessToken: accessToken});
+        setSession({accessToken: accessToken});
 
         // zavolame post-login
         // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
@@ -75,9 +77,9 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
             throw new UserNotFoundOrDisabledError();
         }
 
-        // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
-        Utils.setXToken({
-            accessToken: Utils.getXToken()?.accessToken,
+        // save the user to authSession (is used e.g. in preSave to set field modifUser)
+        setSession({
+            accessToken: accessToken,
             user: xPostLoginResponse.user,
             logout: logout
         });

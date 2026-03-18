@@ -1,4 +1,4 @@
-import {XToken} from "../components/XToken";
+import {AuthSession} from "../components/auth/AuthSession";
 import {Entity, Field} from "../common/EntityMetadata";
 import {UtilsMetadata} from "./UtilsMetadata";
 import {Params, UtilsCommon} from "../common/UtilsCommon";
@@ -35,10 +35,8 @@ export class Utils {
 
     static xBackendUrl: string | undefined = undefined;
 
-    // nacachovany XToken - na rozlicnych miestach potrebujeme vediet uzivatela
-    static xToken: XToken | null = null;
-    // token pouzivany pre public stranky (napr. XLoginForm), meno/heslo natvrdo (lepsie ako nic)
-    //static xTokenPublic: XToken = {username: "xPublicUser", password: "xPublicUserPassword123"};
+    // nacachovana AuthSession - na rozlicnych miestach potrebujeme vediet uzivatela
+    static authSession: AuthSession | null = null;
 
     // nacachovane metadata (setuju sa v App.fetchAndSetXMetadata)
     private static appFormMap: {[name: string]: any;} = {};
@@ -381,39 +379,39 @@ export class Utils {
     static fetchByIdWithLockBase(path: string, entity: string, fields: string[], id: number, lockRow: boolean, overwriteLock?: boolean): Promise<FindRowByIdResponse> {
         let request: FindRowByIdRequest = {entity: entity, fields: fields, id: id};
         if (lockRow) {
-            request = {...request, lockDate: new Date(), lockUser: Utils.getXToken()?.user, overwriteLock: overwriteLock ?? false};
+            request = {...request, lockDate: new Date(), lockUser: Utils.getAuthSession()?.user, overwriteLock: overwriteLock ?? false};
         }
         return Utils.fetchOne(path, request);
     }
 
-    static setXToken(xToken: XToken | null) {
-        Utils.xToken = xToken;
+    static setAuthSession(authSession: AuthSession | null) {
+        Utils.authSession = authSession;
     }
 
-    static getXToken(): XToken | null {
-        return Utils.xToken;
+    static getAuthSession(): AuthSession | null {
+        return Utils.authSession;
     }
 
     static async getAccessToken(): Promise<string> {
-        const xToken: XToken | null = Utils.getXToken();
-        if (xToken === null) {
-            throw "Unexpected error - Utils.xToken is null (no user signed in)";
+        const authSession: AuthSession | null = Utils.getAuthSession();
+        if (authSession === null) {
+            throw "Unexpected error - Utils.authSession is null (no user signed in)";
         }
         let accessToken: string;
-        if (typeof xToken.accessToken === 'function') {
-            accessToken = await xToken.accessToken(); // ziskame access token volanim getAccessTokenSilently (pripadne podobnym)
+        if (typeof authSession.accessToken === 'function') {
+            accessToken = await authSession.accessToken(); // ziskame access token volanim getAccessTokenSilently (pripadne podobnym)
         }
-        else if (xToken.accessToken !== undefined) {
-            accessToken = xToken.accessToken; // mame rovno access token
+        else if (authSession.accessToken !== undefined) {
+            accessToken = authSession.accessToken; // mame rovno access token
         }
         else {
-            throw "Unexpected error - Utils.xToken.accessToken is undefined";
+            throw "Unexpected error - Utils.authSession.accessToken is undefined";
         }
         return accessToken;
     }
 
     static getUsername(): string | undefined {
-        return Utils.getXToken()?.user?.username;
+        return Utils.getAuthSession()?.user?.username;
     }
 
     static getXBackendUrl(): string {

@@ -5,6 +5,7 @@ import {Utils} from "../../utils/Utils";
 import {XEnvVar} from "../XEnvVars";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
+import {useAuthSession} from "./useAuthSession";
 
 export const AuthOffProvider = ({children}: {children: ReactNode;}) => {
     return (
@@ -15,6 +16,8 @@ export const AuthOffProvider = ({children}: {children: ReactNode;}) => {
 }
 
 function AppAuthOff({children}: {children: ReactNode;}) {
+
+    const {setSession} = useAuthSession();
 
     const [loggedIn, setLoggedIn] = useState(false);
     const [initialized, setInitialized] = useState(false);
@@ -46,7 +49,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
         // TODO - provizorne
         // Utils.getAccessToken() vyhadzuje chybu ak je accessToken null
         // post-login potrebuje accessToken, preto ho uz tu setneme
-        Utils.setXToken({accessToken: 'dummy'});
+        setSession({accessToken: 'dummy'});
 
         // zavolame post-login
         const username: string = Utils.getEnvVarValue(XEnvVar.VITE_AUTH_OFF_USERNAME);
@@ -86,7 +89,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
 
         // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
         // TODO - tu provizorne accessToken: 'dummy', bolo accessToken: undefined
-        Utils.setXToken({accessToken: 'dummy', user: xPostLoginResponse.user, logout: logout});
+        setSession({accessToken: 'dummy', user: xPostLoginResponse.user, logout: logout});
         setLoggedIn(true);
     }
 
@@ -96,7 +99,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
     }
 
     const logout = () => {
-        Utils.setXToken(null);
+        setSession(null);
         setLoggedIn(false);
         setInitialized(false);
     }

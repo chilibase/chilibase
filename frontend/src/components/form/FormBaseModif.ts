@@ -6,7 +6,7 @@ export class FormBaseModif extends FormBase {
 
     preSave(entityRow: EntityRow) {
         entityRow.modifDate = new Date();
-        entityRow.modifUser = Utils.getXToken()?.user;
+        entityRow.modifUser = Utils.getAuthSession()?.user;
     }
 }
 

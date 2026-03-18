@@ -16,6 +16,7 @@ import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {Utils} from "../../utils/Utils";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
+import {useAuthSession} from "./useAuthSession";
 
 export const MSEntraIDProvider = ({children}: {children: ReactNode;}) => {
 
@@ -35,6 +36,8 @@ export const MSEntraIDProvider = ({children}: {children: ReactNode;}) => {
 
 function AppMSEntraID({children}: {children: ReactNode;}) {
 
+    const {setSession} = useAuthSession();
+
     const isAuthenticated = useIsAuthenticated();
     const msalContext: IMsalContext = useMsal();
     const msalInstance: IPublicClientApplication = msalContext.instance;
@@ -44,7 +47,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
 
     const initializeApp = async () => {
         try {
-            await setXTokenAndDoPostLogin();
+            await setAuthSessionAndDoPostLogin();
             await fetchAndSetXMetadata();
             // vsetko zbehlo, app-ka je inicializovana
             setInitialized(true);
@@ -53,7 +56,7 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
             if (err instanceof UserNotFoundOrDisabledError) {
                 // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
                 // zrusime nastaveny access token
-                Utils.setXToken(null);
+                setSession(null);
                 // odhlasime uzivatela
                 //msalInstance.logoutRedirect();
                 logoutWithRedirect();
@@ -65,10 +68,11 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
         }
     }
 
-    const setXTokenAndDoPostLogin = async () => {
+    const setAuthSessionAndDoPostLogin = async () => {
 
         // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
-        Utils.setXToken({accessToken: getAccessToken});
+        const accessToken: () => Promise<string> = getAccessToken;
+        setSession({accessToken: accessToken});
 
         //const accountInfo = msalInstance.getActiveAccount();
         //const accountInfo = msalInstance.getAllAccounts()[0];
@@ -111,9 +115,9 @@ function AppMSEntraID({children}: {children: ReactNode;}) {
             throw new UserNotFoundOrDisabledError();
         }
 
-        // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
-        Utils.setXToken({
-            accessToken: Utils.getXToken()?.accessToken,
+        // save the user to authSession (is used e.g. in preSave to set field modifUser)
+        setSession({
+            accessToken: accessToken,
             user: xPostLoginResponse.user,
             logout: logoutWithRedirect
         });

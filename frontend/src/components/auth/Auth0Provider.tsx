@@ -5,6 +5,7 @@ import { XEnvVar } from '../XEnvVars';
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
+import {useAuthSession} from "./useAuthSession";
 
 export const Auth0Provider = ({children}: {children: ReactNode;}) => {
     // na fungovanie klienta stacili domain, clientId, redirectUri - tak som nechal len tie
@@ -31,6 +32,8 @@ export const Auth0Provider = ({children}: {children: ReactNode;}) => {
 
 function AppAuth0({children}: {children: ReactNode;}) {
 
+    const {setSession} = useAuthSession();
+
     const {user, isAuthenticated, isLoading, loginWithRedirect, logout, getAccessTokenSilently} = useAuth0();
 
     const [initialized, setInitialized] = useState(false);
@@ -41,7 +44,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
 
     const initializeApp = async () => {
         try {
-            await setXTokenAndDoPostLogin();
+            await setAuthSessionAndDoPostLogin();
             await fetchAndSetXMetadata();
             // vsetko zbehlo, app-ka je inicializovana
             setInitialized(true);
@@ -50,7 +53,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
             if (err instanceof UserNotFoundOrDisabledError) {
                 // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
                 // zrusime nastaveny access token
-                Utils.setXToken(null);
+                setSession(null);
                 // odhlasime uzivatela
                 logout({logoutParams: {returnTo: window.location.origin}});
             }
@@ -61,7 +64,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
         }
     }
 
-    const setXTokenAndDoPostLogin = async () => {
+    const setAuthSessionAndDoPostLogin = async () => {
 
         // const accessToken: string = await getAccessTokenSilently(/*{
         //     audience: Utils.getEnvVarValue(XEnvVar.VITE_AUTH0_AUDIENCE)
@@ -69,7 +72,8 @@ function AppAuth0({children}: {children: ReactNode;}) {
         // }*/);
 
         // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
-        Utils.setXToken({accessToken: getAccessToken});
+        const accessToken: () => Promise<string> = getAccessToken;
+        setSession({accessToken: accessToken});
 
         // zavolame post-login
         // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
@@ -108,9 +112,9 @@ function AppAuth0({children}: {children: ReactNode;}) {
             throw new UserNotFoundOrDisabledError();
         }
 
-        // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
-        Utils.setXToken({
-            accessToken: Utils.getXToken()?.accessToken,
+        // save the user to authSession (is used e.g. in preSave to set field modifUser)
+        setSession({
+            accessToken: accessToken,
             user: xPostLoginResponse.user,
             logout: () => logout({logoutParams: {returnTo: window.location.origin}})
         });

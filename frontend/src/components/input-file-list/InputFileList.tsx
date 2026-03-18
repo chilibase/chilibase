@@ -74,7 +74,7 @@ export class InputFileList extends Component<InputFileListProps> {
                 filename: file.name,
                 subdir: this.props.subdir,
                 modifDate: new Date(),
-                modifUser: Utils.getXToken()?.user?.id
+                modifUser: Utils.getAuthSession()?.user?.id
             }
             let xFile: XFile;
             try {

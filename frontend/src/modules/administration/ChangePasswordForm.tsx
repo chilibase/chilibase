@@ -47,7 +47,7 @@ export const ChangePasswordForm = () => {
                     </div>
                     <div className="field grid">
                         <label className="col-fixed" style={{width:'14rem'}}>User</label>
-                        <InputText value={Utils.getXToken()?.user?.username} readOnly={true}/>
+                        <InputText value={Utils.getAuthSession()?.user?.username} readOnly={true}/>
                     </div>
                     <div className="field grid">
                         <label className="col-fixed" style={{width:'14rem'}}>Current password</label>
