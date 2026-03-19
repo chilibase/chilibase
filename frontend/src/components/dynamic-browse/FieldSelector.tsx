@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {TreeTable} from "primereact/treetable";
 import {Column} from "primereact/column";
-import {Assoc, Entity} from "../common/EntityMetadata";
-import {UtilsMetadata} from "../utils/UtilsMetadata";
+import {Assoc, Entity} from "../../common/EntityMetadata";
 import {TreeNode} from "primereact/treenode";
-import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export const XFieldSelector = (props: {entity: string; assocSelectable: boolean; selectionField?: string; onSelectionChange: (selectedField: string) => void;}) => {
+export const FieldSelector = (props: {entity: string; assocSelectable: boolean; selectionField?: string; onSelectionChange: (selectedField: string) => void;}) => {
 
     // poznamka: treeNodeList by sme mohli vypocitavat priamo, ale ked pouzijeme useState/useEffect tak sa createTreeNodeList zavola len raz pri vytvoreni komponentu
     const [treeNodeList, setTreeNodeList] = useState<TreeNode[]>([]);
@@ -18,22 +17,22 @@ export const XFieldSelector = (props: {entity: string; assocSelectable: boolean;
 
     const createTreeNodeList = (entity: string, keyPrefix: string): TreeNode[] => {
         const treeNodeList: TreeNode[] = [];
-        const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
-        const xFieldList = UtilsMetadataCommon.getFieldList(xEntity);
-        for (const xField of xFieldList) {
+        const entityMeta: Entity = UtilsMetadataCommon.getEntity(entity);
+        const fieldList = UtilsMetadataCommon.getFieldList(entityMeta);
+        for (const entityField of fieldList) {
             treeNodeList.push({
-                key: keyPrefix + xField.name,
-                data: {name: xField.name, type: xField.type},
+                key: keyPrefix + entityField.name,
+                data: {name: entityField.name, type: entityField.type},
                 children: []
             });
         }
-        const assocToOneList: Assoc[] = UtilsMetadataCommon.getAssocList(xEntity, ["many-to-one", "one-to-one"]);
-        for (const xAssoc of assocToOneList) {
-            const itemKey = keyPrefix + xAssoc.name;
+        const assocToOneList: Assoc[] = UtilsMetadataCommon.getAssocList(entityMeta, ["many-to-one", "one-to-one"]);
+        for (const assoc of assocToOneList) {
+            const itemKey = keyPrefix + assoc.name;
             treeNodeList.push({
                 key: itemKey,
-                data: {name: xAssoc.name, type: "AssocToOne"},
-                children: createTreeNodeList(xAssoc.entityName, itemKey + "."),
+                data: {name: assoc.name, type: "AssocToOne"},
+                children: createTreeNodeList(assoc.entityName, itemKey + "."),
                 selectable: props.assocSelectable
             });
         }

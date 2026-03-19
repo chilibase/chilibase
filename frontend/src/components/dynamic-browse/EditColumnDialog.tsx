@@ -1,27 +1,27 @@
 import React, {useState} from "react";
 import {Dialog} from "primereact/dialog";
-import {XFieldSelector} from "./XFieldSelector";
+import {FieldSelector} from "./FieldSelector";
 import {InputText} from "primereact/inputtext";
 import {Checkbox} from "primereact/checkbox";
-import {Button} from "./button";
-import {UtilsCommon} from "../common/UtilsCommon";
+import {Button} from "../button";
+import {UtilsCommon} from "../../common/UtilsCommon";
 
-export interface XEditColumnDialogValues {
+export interface EditColumnDialogValues {
     field: string;
     header: string;
     dropdownInFilter: boolean;
 }
 
-export const XEditColumnDialog = (props: {dialogOpened: boolean; addColumn: boolean; entity: string; xEditColumnDialogValues?: XEditColumnDialogValues; onHideDialog: (xEditColumnDialogValues: XEditColumnDialogValues | null) => void;}) => {
+export const EditColumnDialog = (props: {dialogOpened: boolean; addColumn: boolean; entity: string; editColumnDialogValues?: EditColumnDialogValues; onHideDialog: (editColumnDialogValues: EditColumnDialogValues | null) => void;}) => {
 
-    const notNullValues = props.xEditColumnDialogValues ?? {field: "", header: "", dropdownInFilter: false};
+    const notNullValues = props.editColumnDialogValues ?? {field: "", header: "", dropdownInFilter: false};
 
     const [field, setField] = useState<string>(notNullValues.field);
     const [header, setHeader] = useState(notNullValues.header);
     const [dropdownInFilter, setDropdownInFilter] = useState(notNullValues.dropdownInFilter);
     const [dropdownInFilterReadOnly, setDropdownInFilterReadOnly] = useState(true);
 
-    // bez tejto metody by nefungovala inicializacia stavu podla "props.xEditColumnDialogValues" pri opetovnom otvarani dialogu
+    // bez tejto metody by nefungovala inicializacia stavu podla "props.editColumnDialogValues" pri opetovnom otvarani dialogu
     // asi to neni moc pekny sposob ale nechce sa mi posuvat stav do vyssej komponenty, zatial nechame takto
     const onShow = () => {
 
@@ -65,7 +65,7 @@ export const XEditColumnDialog = (props: {dialogOpened: boolean; addColumn: bool
     if (props.addColumn) {
         fieldElement =
             <div className="mb-3">
-                <XFieldSelector entity={props.entity} assocSelectable={false}
+                <FieldSelector entity={props.entity} assocSelectable={false}
                                            selectionField={field} onSelectionChange={onFieldChange}/>
             </div>;
         buttonLabel = "Add column";

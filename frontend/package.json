@@ -65,6 +65,7 @@
     "./button": "./lib/components/button/index.js",
     "./checkbox": "./lib/components/checkbox/index.js",
     "./dropdown": "./lib/components/dropdown/index.js",
+    "./dynamic-browse": "./lib/components/dynamic-browse/index.js",
     "./editor": "./lib/components/editor/index.js",
     "./form": "./lib/components/form/index.js",
     "./form-data-table": "./lib/components/form-data-table/index.js",
@@ -80,7 +81,6 @@
     "./to-one-assoc-button": "./lib/components/to-one-assoc-button/index.js",
     "./use-state": "./lib/components/use-state/index.js",
 
-    "./XEditBrowse": "./lib/components/XEditBrowse.js",
     "./XEnvVars": "./lib/components/XEnvVars.js",
     "./XFormNavigator3": "./lib/components/XFormNavigator3.js",
     "./XHolders": "./lib/components/XHolders.js",
