@@ -1,28 +1,28 @@
 import React, {Component, ReactElement, RefObject} from "react";
-import {FormBase} from "./form";
+import {FormBase} from "../form";
 
 // helper
-interface XFormElement {
+interface FormElement {
     elem: ReactElement;
     xElemRef: RefObject<unknown>;
 }
 
-export interface XFormNavigator3Props {
+export interface FormNavigatorProps {
     rootFormElement?: ReactElement;
 }
 
 /**
  * @deprecated use opening form in dialogs instead
  */
-export class XFormNavigator3 extends Component<XFormNavigator3Props> {
+export class FormNavigator extends Component<FormNavigatorProps> {
 
     // formElements after rootFormElement
-    state: {formElements: XFormElement[];};
+    state: {formElements: FormElement[];};
 
     // not nice but but I want to avoid deep refactoring...
     xRootElemRef: RefObject<unknown>;
 
-    constructor(props: XFormNavigator3Props) {
+    constructor(props: FormNavigatorProps) {
         super(props);
         this.state = {
             formElements: []
@@ -34,12 +34,12 @@ export class XFormNavigator3 extends Component<XFormNavigator3Props> {
     }
 
     openForm(newFormElement: ReactElement | null): void {
-        //console.log("zavolany XFormNavigator3.openForm");
+        //console.log("zavolany FormNavigator.openForm");
         //console.log(newFormElement);
 
         // vzdy treba vytvorit novy objekt a ten set-nut do stavu, ak len pridame prvok do pola, tak react nevyvola render!
         // shallow copy klonovanie (vytvara sa kopia referencii)
-        const formElementsCloned: XFormElement[] = this.state.formElements.slice();
+        const formElementsCloned: FormElement[] = this.state.formElements.slice();
 
         if (newFormElement !== null) {
             formElementsCloned.push({elem: newFormElement, xElemRef: React.createRef()});
@@ -74,7 +74,7 @@ export class XFormNavigator3 extends Component<XFormNavigator3Props> {
 
     // API function - returns false if cancel was stopped (not confirmed) by user
     cancelFormEdit(): boolean {
-        const formElements: XFormElement[] = this.getAllFormElements();
+        const formElements: FormElement[] = this.getAllFormElements();
         // slice makes a copy
         for (const formElement of formElements.slice().reverse()) {
             if (this.isFormBase(formElement.elem)) {
@@ -98,13 +98,13 @@ export class XFormNavigator3 extends Component<XFormNavigator3Props> {
     }
 
     // helper returning all elems including root elem
-    getAllFormElements(): XFormElement[] {
+    getAllFormElements(): FormElement[] {
         // rootFormElement can be undefined at the start of app (no form displayed)
         return this.props.rootFormElement ? [{elem: this.props.rootFormElement, xElemRef: this.xRootElemRef}, ...this.state.formElements] : this.state.formElements;
     }
 
     render() {
-        const formElements: XFormElement[] = this.getAllFormElements();
+        const formElements: FormElement[] = this.getAllFormElements();
         const forms = formElements.map((formElement, index) => {
                 const displayed: boolean = (index === formElements.length - 1);
                 // klonovanim elementu pridame atribut openForm={this.openForm} (nemusime tento atribut pridavat pri vytvarani elementu)
