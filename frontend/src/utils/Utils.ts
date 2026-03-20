@@ -11,7 +11,7 @@ import {
 } from "../common/ExportImportParam";
 import {XResponseError} from "../components/XResponseError";
 import React from "react";
-import {XEnvVar} from "../components/XEnvVars";
+import {EnvVar} from "../components/env-vars/EnvVars";
 import {FieldError, FieldErrorMap} from "../components/form/FormErrors";
 import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
@@ -66,7 +66,7 @@ export class Utils {
 
         Utils.xGetEnvVarValue = xGetEnvVarValue;
 
-        Utils.setXBackendUrl(Utils.getEnvVarValue(XEnvVar.VITE_BACKEND_URL));
+        Utils.setXBackendUrl(Utils.getEnvVarValue(EnvVar.VITE_BACKEND_URL));
 
         initMsalConfig();
     }
@@ -432,7 +432,7 @@ export class Utils {
      * returns value of environment variable from configuration file .env
      * @param envVar
      */
-    static getEnvVarValue(envVarEnum: XEnvVar): string {
+    static getEnvVarValue(envVarEnum: EnvVar): string {
         return Utils.getEnvVarValueBase(envVarEnum);
     }
 
@@ -452,7 +452,7 @@ export class Utils {
         return Utils.xGetEnvVarValue(envVarEnum);
     }
 
-    static getEnvVarValueBoolean(envVarEnum: XEnvVar): boolean {
+    static getEnvVarValueBoolean(envVarEnum: EnvVar): boolean {
         const value: string = Utils.getEnvVarValue(envVarEnum);
         return value === "true";
     }

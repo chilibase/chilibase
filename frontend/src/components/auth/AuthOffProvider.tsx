@@ -2,7 +2,7 @@ import React, {ReactNode, useState} from 'react';
 import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {Utils} from "../../utils/Utils";
-import {XEnvVar} from "../XEnvVars";
+import {EnvVar} from "../env-vars/EnvVars";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {useAuthSession} from "./useAuthSession";
@@ -52,7 +52,7 @@ function AppAuthOff({children}: {children: ReactNode;}) {
         setSession({accessToken: 'dummy'});
 
         // zavolame post-login
-        const username: string = Utils.getEnvVarValue(XEnvVar.VITE_AUTH_OFF_USERNAME);
+        const username: string = Utils.getEnvVarValue(EnvVar.VITE_AUTH_OFF_USERNAME);
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: username};

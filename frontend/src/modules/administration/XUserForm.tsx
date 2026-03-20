@@ -7,7 +7,7 @@ import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {FormFooter} from "../../components/form";
 import {Checkbox} from "../../components/checkbox";
-import {XEnvVar, XViteAuth} from "../../components/XEnvVars";
+import {EnvVar, ViteAuth} from "../../components/env-vars/EnvVars";
 import {FormBaseModif} from "../../components/form";
 import {InputDate} from "../../components/input-date";
 import {EntityRow} from "../../common/types";
@@ -44,7 +44,7 @@ export class XUserForm extends FormBaseModif {
         }
 
         // password is used only by local authorization
-        if (Utils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.LOCAL) {
+        if (Utils.getEnvVarValue(EnvVar.VITE_AUTH) === ViteAuth.LOCAL) {
             if (this.isAddRow() && this.state.passwordNew === '') {
                 alert("Password is required.");
                 return;
@@ -87,7 +87,7 @@ export class XUserForm extends FormBaseModif {
     render() {
         // autoComplete="new-password" - bez tohto chrome predplna user/password, ak si user da ulozit user/password (pre danu url)
         let passwordElems: any[] = [];
-        if (Utils.getEnvVarValue(XEnvVar.VITE_AUTH) === XViteAuth.LOCAL) {
+        if (Utils.getEnvVarValue(EnvVar.VITE_AUTH) === ViteAuth.LOCAL) {
             passwordElems = [
                 <div className="field grid">
                     <label className="col-fixed" style={{width:'14rem'}}>New password</label>

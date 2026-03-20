@@ -67,6 +67,7 @@
     "./dropdown": "./lib/components/dropdown/index.js",
     "./dynamic-browse": "./lib/components/dynamic-browse/index.js",
     "./editor": "./lib/components/editor/index.js",
+    "./env-vars": "./lib/components/env-vars/index.js",
     "./form": "./lib/components/form/index.js",
     "./form-data-table": "./lib/components/form-data-table/index.js",
     "./form-navigator": "./lib/components/form-navigator/index.js",
@@ -82,7 +83,6 @@
     "./to-one-assoc-button": "./lib/components/to-one-assoc-button/index.js",
     "./use-state": "./lib/components/use-state/index.js",
 
-    "./XEnvVars": "./lib/components/XEnvVars.js",
     "./XLocale": "./lib/components/XLocale.js",
     "./XLoginDialog": "./lib/components/XLoginDialog.js",
     "./XLoginForm": "./lib/components/XLoginForm.js",

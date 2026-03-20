@@ -9,7 +9,7 @@ import {
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {Params} from "../../common/UtilsCommon";
-import {XEnvVar} from "../XEnvVars";
+import {EnvVar} from "../env-vars/EnvVars";
 import {EntityRow} from "../../common/types";
 
 // HOC component - wraps form component (e.g. CarForm - either as component type or as JSX element (with custom props))
@@ -30,7 +30,7 @@ export function FormWithLoader<T = any>(
     const FormType = Form ?? formElement?.type;
     let createObject: CreateObjectFunction<T> | undefined = undefined;
     let loadObject: LoadObjectFunction<T> | undefined = undefined;
-    const legacyObjectLoading: boolean = Utils.getEnvVarValueBoolean(XEnvVar.VITE_LEGACY_OBJECT_LOADING);
+    const legacyObjectLoading: boolean = Utils.getEnvVarValueBoolean(EnvVar.VITE_LEGACY_OBJECT_LOADING);
     if (operationType === OperationType.Insert) {
         createObject = (FormType as any).createObject;
         if (!createObject && !legacyObjectLoading) {

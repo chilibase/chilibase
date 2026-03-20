@@ -1,7 +1,7 @@
 import React, {ReactNode, useState} from 'react';
 import {Auth0Provider as Auth0Auth0Provider, useAuth0} from "@auth0/auth0-react";
 import { Utils } from '../../utils/Utils';
-import { XEnvVar } from '../XEnvVars';
+import { EnvVar } from '../env-vars/EnvVars';
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
@@ -20,9 +20,9 @@ export const Auth0Provider = ({children}: {children: ReactNode;}) => {
     //console.log('redirect_uri = ' + window.location.origin + window.location.pathname);
     return (
         <Auth0Auth0Provider
-            domain={Utils.getEnvVarValue(XEnvVar.VITE_AUTH0_DOMAIN)}
-            clientId={Utils.getEnvVarValue(XEnvVar.VITE_AUTH0_CLIENT_ID)}
-            authorizationParams={{redirect_uri: window.location.origin, audience: Utils.getEnvVarValue(XEnvVar.VITE_AUTH0_AUDIENCE)}}>
+            domain={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_DOMAIN)}
+            clientId={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_CLIENT_ID)}
+            authorizationParams={{redirect_uri: window.location.origin, audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)}}>
             <AppAuth0>
                 {children}
             </AppAuth0>
@@ -67,7 +67,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
     const setAuthSessionAndDoPostLogin = async () => {
 
         // const accessToken: string = await getAccessTokenSilently(/*{
-        //     audience: Utils.getEnvVarValue(XEnvVar.VITE_AUTH0_AUDIENCE)
+        //     audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)
         //     //scope: "openid profile admin:demo try:demo" - treba nam na nieco?
         // }*/);
 
@@ -130,7 +130,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
     const getAccessToken = async (): Promise<string> => {
 
         return await getAccessTokenSilently(/*{
-            audience: Utils.getEnvVarValue(XEnvVar.VITE_AUTH0_AUDIENCE)
+            audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)
             //scope: "openid profile admin:demo try:demo" - treba nam na nieco?
         }*/);
     }
