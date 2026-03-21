@@ -62,6 +62,7 @@
     "./common": "./lib/common/index.js",
 
     "./auto-complete": "./lib/components/auto-complete/index.js",
+    "./browse": "./lib/components/browse/index.js",
     "./button": "./lib/components/button/index.js",
     "./checkbox": "./lib/components/checkbox/index.js",
     "./dropdown": "./lib/components/dropdown/index.js",

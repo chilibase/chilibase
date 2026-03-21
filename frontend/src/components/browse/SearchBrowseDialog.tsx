@@ -1,15 +1,15 @@
 import React from "react";
 import {Dialog} from "primereact/dialog";
-import {XSearchBrowseParams} from "./XSearchBrowseParams";
-import {SearchBrowseProps} from "./lazy-data-table";
+import {SearchBrowseParams} from "./SearchBrowseParams";
+import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface XSearchBrowseDialogState {
+export interface SearchBrowseDialogState {
     opened: boolean;
-    searchBrowseParams?: XSearchBrowseParams; // must be part of XSearchBrowseDialogState?
+    searchBrowseParams?: SearchBrowseParams; // must be part of SearchBrowseDialogState?
 }
 
-export const XSearchBrowseDialog = (props: {
-    dialogState: XSearchBrowseDialogState;
+export const SearchBrowseDialog = (props: {
+    dialogState: SearchBrowseDialogState;
     SearchBrowse?: React.ComponentType<SearchBrowseProps>;
     searchBrowseElement?: React.ReactElement;
     onHide: () => void;

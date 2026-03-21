@@ -5,7 +5,7 @@ import {OperationType, Query} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {Button as PrimeButton} from "primereact/button";
 import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
-import {XSearchBrowseParams} from "../XSearchBrowseParams";
+import {SearchBrowseParams, SearchBrowseDialog, SearchBrowseDialogState} from "../browse";
 import {CustomFilter, LazyAutoCompleteSuggestionsRequest} from "../../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 import {FindResult} from "../../common/FindResult";
@@ -14,7 +14,6 @@ import {Entity} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FormDialog, FormDialogState} from "../form";
 import {FormProps} from "../form";
-import {XSearchBrowseDialog, XSearchBrowseDialogState} from "../XSearchBrowseDialog";
 import {SearchBrowseProps} from "../lazy-data-table";
 
 // helper
@@ -94,7 +93,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
         suggestions: any[] | undefined; // pouzivane ak suggestionsLoad = eager alebo onSearchStart, nepouzivane ak mame this.props.suggestions alebo suggestionsLoad = lazy
         filteredSuggestions: any[] | undefined;
         formDialogState: FormDialogState;
-        searchBrowseDialogState: XSearchBrowseDialogState;
+        searchBrowseDialogState: SearchBrowseDialogState;
     };
 
     suggestionsLoadedForOSS: boolean; // pomocny priznak - zapisujeme si sem, ci sme uz zavolali loadSuggestions ak pouzivame suggestionsLoad = onSearchStart
@@ -475,14 +474,14 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
     }
 
     searchDialogOnChoose(chosenRow: any) {
-        const searchBrowseDialogState: XSearchBrowseDialogState = {opened: false};
+        const searchBrowseDialogState: SearchBrowseDialogState = {opened: false};
         this.setState({searchBrowseDialogState: searchBrowseDialogState});
         // zapiseme vybraty row do objektu
         this.setObjectValue(chosenRow, OperationType.None);
     }
 
     searchDialogOnHide() {
-        const searchBrowseDialogState: XSearchBrowseDialogState = {opened: false};
+        const searchBrowseDialogState: SearchBrowseDialogState = {opened: false};
         this.setState({searchBrowseDialogState: searchBrowseDialogState});
         // ak mame v inpute neplatnu hodnotu, vratime kurzor na input
         if (this.state.inputChanged) {
@@ -559,7 +558,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                 icon: 'pi pi-search',
                 tooltip: this.props.searchButtonTooltip,
                 command: (e: any) => {
-                    const searchBrowseDialogState: XSearchBrowseDialogState = {
+                    const searchBrowseDialogState: SearchBrowseDialogState = {
                         opened: true,
                         searchBrowseParams: this.createSearchBrowseParams()
                     };
@@ -676,7 +675,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
     }
 
     // takto cez metodku, mozno sa metodka vola len ked sa otvori dialog a usetrime nieco...
-    createSearchBrowseParams(): XSearchBrowseParams {
+    createSearchBrowseParams(): SearchBrowseParams {
         return {
             onChoose: this.searchDialogOnChoose,
             displayFieldFilter: (this.state.inputChanged ? {field: this.getFirstField(), constraint: {value: this.state.inputValueState, matchMode: "contains"}} : undefined),
@@ -765,7 +764,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
                     <FormDialog key="dialog-form" dialogState={this.state.formDialogState} Form={this.props.ValueForm} formElement={this.props.valueFormElement} entity={this.xEntity!.name}/>
                     : undefined}
                 {this.hasSearchBrowse() && !readOnly ?
-                    <XSearchBrowseDialog key="dialog-browse" dialogState={this.state.searchBrowseDialogState} SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement} onHide={this.searchDialogOnHide}/>
+                    <SearchBrowseDialog key="dialog-browse" dialogState={this.state.searchBrowseDialogState} SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement} onHide={this.searchDialogOnHide}/>
                     : undefined}
             </div>
         );

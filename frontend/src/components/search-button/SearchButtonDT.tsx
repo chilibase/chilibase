@@ -4,7 +4,7 @@ import {Utils} from "../../utils/Utils";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
-import {XSearchBrowseParams} from "../XSearchBrowseParams";
+import {SearchBrowseParams} from "../browse";
 import {TableFieldReadOnlyProp} from "../form-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
@@ -126,7 +126,7 @@ export const SearchButtonDT = (props: {form: FormBase; entity: string; assocFiel
                                 onChoose: onChoose,
                                 displayFieldFilter: (inputChanged ? {field: props.displayField, constraint: {value: inputValueState, matchMode: "contains"}} : undefined),
                                 customFilter: undefined // TODO - dorobit
-                            } satisfies XSearchBrowseParams
+                            } satisfies SearchBrowseParams
                         }/*, props.searchBrowse.children*/)}
             </Dialog>
         </div>

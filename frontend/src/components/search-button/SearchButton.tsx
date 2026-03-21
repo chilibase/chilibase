@@ -6,7 +6,7 @@ import {Dialog} from "primereact/dialog";
 import {FilterProp, FormComponent, FormComponentProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {CustomFilter} from "../../common/FindParam";
-import {XSearchBrowseParams} from "../XSearchBrowseParams";
+import {SearchBrowseParams} from "../browse";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {UtilsCommon} from "../../common/UtilsCommon";
 
@@ -176,7 +176,7 @@ export class SearchButton extends FormComponent<SearchButtonProps> {
         }
 
         // takto cez metodku, mozno sa metodka vola len ked sa otvori dialog a usetrime nieco...
-        const createSearchBrowseParams = (): XSearchBrowseParams => {
+        const createSearchBrowseParams = (): SearchBrowseParams => {
             return {
                 onChoose: onChoose,
                 displayFieldFilter: (inputChanged ? {field: props.displayField, constraint: {value: inputValueState, matchMode: "contains"}} : undefined),

@@ -16,7 +16,7 @@ import {
 import {Button} from "../button";
 import {OperationType, StorageType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {XFieldFilter, XSearchBrowseParams} from "../XSearchBrowseParams";
+import {FieldFilter, SearchBrowseParams} from "../browse";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
@@ -131,7 +131,7 @@ export interface BrowseProps {
 }
 
 export interface SearchBrowseProps {
-    searchBrowseParams?: XSearchBrowseParams;
+    searchBrowseParams?: SearchBrowseParams;
 }
 
 export enum StateKeySuffix {
@@ -201,7 +201,7 @@ export interface LazyDataTableProps {
     headerBodyTop?: React.ReactNode; // adds stuff above input for full text search and search buttons (used for mobile if there is not enaugh space in headerBodyLeft or headerBodyRight)
     headerBodyLeft?: React.ReactNode; // adds stuff before input for full text search
     headerBodyRight?: React.ReactNode; // prida sa hned za multilineSwitch, moze sa tu pridat napr. custom switch
-    searchBrowseParams?: XSearchBrowseParams;
+    searchBrowseParams?: SearchBrowseParams;
     width?: string; // neviem ako funguje (najme pri pouziti scrollWidth/scrollHeight), ani sa zatial nikde nepouziva
     rowClassName?: (data: any) => object | string | undefined;
     exportFieldsToDuplicateValues?: string[]; // zoznam fieldov (stlpcov), hodnoty v tychto stlpcoch sa budu duplikovat v pripade ak je row viacriadkovy koli toMany asociaciam
@@ -305,7 +305,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         filtersInit = overrideFilters(filtersInit, props.filters);
 
         if (props.searchBrowseParams !== undefined) {
-            const displayFieldFilter: XFieldFilter | undefined = props.searchBrowseParams.displayFieldFilter;
+            const displayFieldFilter: FieldFilter | undefined = props.searchBrowseParams.displayFieldFilter;
             if (displayFieldFilter !== undefined) {
                 filtersInit[displayFieldFilter.field] = createFilterItem(props.filterDisplay!, displayFieldFilter.constraint);
             }
