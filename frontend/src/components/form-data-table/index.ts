@@ -1,9 +1,10 @@
-export * from "./FormComponentDT";
+export * from "./TableFormField";
 export * from "./FormDataTable";
+export * from "./TableValueField";
 
 /** @deprecated */
-export {FormComponentDT as XFormComponentDT} from "./FormComponentDT";
-export type {FormComponentDTProps as XFormComponentDTProps} from "./FormComponentDT";
+export {TableFormField as XFormComponentDT} from "./TableFormField";
+export type {TableFormFieldProps as XFormComponentDTProps} from "./TableFormField";
 export {FormDataTable as XFormDataTable} from "./FormDataTable";
 export type {FormDataTableProps as XFormDataTableProps} from "./FormDataTable";
 export type {RowTechData as XRowTechData} from "./FormDataTable";

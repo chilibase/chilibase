@@ -1,13 +1,13 @@
 import React from "react";
-import {XInput, XInputProps} from "../XInput";
+import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {EditorBase} from "./EditorBase";
 
-export interface EditorProps extends XInputProps {
+export interface EditorProps extends ValueFieldProps {
     labelOnTop: boolean;
 }
 
-export class Editor extends XInput<EditorProps> {
+export class Editor extends ValueField<EditorProps> {
 
     public static defaultProps = {
         labelOnTop: false

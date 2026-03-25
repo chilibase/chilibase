@@ -27,7 +27,7 @@ export type ReadOnlyProp = boolean | ((object: any) => boolean);
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo EntityRow)
 export type FilterProp = CustomFilter | ((object: any) => CustomFilter | undefined);
 
-export interface FormComponentProps {
+export interface FormFieldProps {
     form: FormBase;
     label?: string;
     labelTooltip?: string; // tooltip for label (not implemented for every form component)
@@ -43,7 +43,7 @@ export interface FormComponentProps {
     onlyInput?: boolean; // ak true, tak vyrenderuje len input element (nerenderuje <div className="field grid"> ani label)
 }
 
-export abstract class FormComponent<P extends FormComponentProps> extends Component<P> {
+export abstract class FormField<P extends FormFieldProps> extends Component<P> {
 
     private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (ci bol volany onChange); ak nebola zmena, tak nevolame aplikacny onChange z onBlur
                                     // mali sme problem ze aplikacny onChange sa volal aj ked uzivatel iba klikol do inputu a odisiel z neho

@@ -1,11 +1,11 @@
 import React from "react";
-import {XInputDT, XInputDTProps} from "../XInputDT";
+import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
 import {CheckboxBase} from "./CheckboxBase";
 
-export interface CheckboxDTProps extends XInputDTProps {
+export interface CheckboxDTProps extends TableValueFieldProps {
 }
 
-export class CheckboxDT extends XInputDT<CheckboxDTProps> {
+export class CheckboxDT extends TableValueField<CheckboxDTProps> {
 
     constructor(props: CheckboxDTProps) {
         super(props);

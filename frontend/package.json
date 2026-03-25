@@ -85,19 +85,10 @@
     "./use-state": "./lib/components/use-state/index.js",
 
     "./XLocale": "./lib/components/XLocale.js",
-    "./XLoginDialog": "./lib/components/XLoginDialog.js",
-    "./XLoginForm": "./lib/components/XLoginForm.js",
 
     "./doc-templates": "./lib/modules/doc-templates/index.js",
     "./administration": "./lib/modules/administration/index.js",
 
-    "./utils": "./lib/utils/index.js",
-
-    "./ExportImportParam": "./lib/common/ExportImportParam.js",
-    "./FindParam": "./lib/common/FindParam.js",
-    "./XUser": "./lib/common/XUser.js",
-    "./XUtilsCommon": "./lib/common/XUtilsCommon.js",
-    "./XUtilsConversions": "./lib/common/XUtilsConversions.js",
-    "./XUtilsMetadataCommon": "./lib/common/XUtilsMetadataCommon.js"
+    "./utils": "./lib/utils/index.js"
   }
 }

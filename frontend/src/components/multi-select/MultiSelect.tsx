@@ -1,5 +1,5 @@
 import React from "react";
-import {FilterProp, FormComponent, FormComponentProps} from "../form";
+import {FilterProp, FormField, FormFieldProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelectBase} from "./MultiSelectBase";
@@ -12,7 +12,7 @@ import {UtilsCommon} from "../../common/UtilsCommon";
 // 2. entity of form uses OneToMany assoc to link rows (entity for link table must be created)
 //      in this case prop "assocToMany" is OneToMany assoc to link rows and prop "assocManyToOne" is ManyToOne assoc from link row to option row
 
-export interface MultiSelectProps extends FormComponentProps {
+export interface MultiSelectProps extends FormFieldProps {
     assocToMany: string; // assoc ManyToMany to option rows or assoc OneToMany to link rows; can be also path (e.g. <assoc1>.<assoc2> - multiselect will run on <assoc2>)
     assocManyToOne?: string; // assoc from link row to option row - used only if prop "assocToMany" is OneToMany assoc to link rows
     displayField: string; // field of option row
@@ -23,7 +23,7 @@ export interface MultiSelectProps extends FormComponentProps {
     scrollHeight?: string; // Maximum height of the suggestions panel.
 }
 
-export class MultiSelect extends FormComponent<MultiSelectProps> {
+export class MultiSelect extends FormField<MultiSelectProps> {
 
     protected xAssocToMany: Assoc;
     protected xAssocManyToOne?: Assoc;

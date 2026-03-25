@@ -1,13 +1,13 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
-import {XInput, XInputProps} from "../XInput";
+import {ValueField, ValueFieldProps} from "../form/ValueField";
 
-export interface InputDecimalProps extends XInputProps {
+export interface InputDecimalProps extends ValueFieldProps {
     size?: number;
 }
 
-export class InputDecimal extends XInput<InputDecimalProps> {
+export class InputDecimal extends ValueField<InputDecimalProps> {
 
     constructor(props: InputDecimalProps) {
         super(props);

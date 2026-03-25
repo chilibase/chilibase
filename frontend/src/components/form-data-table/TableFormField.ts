@@ -8,7 +8,7 @@ import {FieldError} from "../form/FormErrors";
 import {CustomFilter} from "../../common/FindParam";
 import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
 
-export interface FormComponentDTProps {
+export interface TableFormFieldProps {
     form: FormBase;
     entity: string;
     rowData: any;
@@ -23,7 +23,7 @@ export interface FormComponentDTProps {
     labelStyle?: React.CSSProperties;
 }
 
-export abstract class FormComponentDT<P extends FormComponentDTProps> extends Component<P> {
+export abstract class TableFormField<P extends TableFormFieldProps> extends Component<P> {
 
     private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (pozri poznamku v XFormComponent)
 

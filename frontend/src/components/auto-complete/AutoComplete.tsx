@@ -1,5 +1,5 @@
 import React from "react";
-import {FilterProp, FormComponent, FormComponentProps} from "../form";
+import {FilterProp, FormField, FormFieldProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
 import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
@@ -9,7 +9,7 @@ import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface AutoCompleteProps extends FormComponentProps {
+export interface AutoCompleteProps extends FormFieldProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - autocomplete will run on <assoc2>)
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -36,7 +36,7 @@ export interface AutoCompleteProps extends FormComponentProps {
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 
-export class AutoComplete extends FormComponent<AutoCompleteProps> {
+export class AutoComplete extends FormField<AutoCompleteProps> {
 
     protected xAssoc: Assoc;
     protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)

@@ -1,13 +1,13 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
-import {XInputDT, XInputDTProps} from "../XInputDT";
+import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
 import {Utils} from "../../utils/Utils";
 
-export interface InputDecimalDTProps extends XInputDTProps {
+export interface InputDecimalDTProps extends TableValueFieldProps {
 }
 
-export class InputDecimalDT extends XInputDT<InputDecimalDTProps> {
+export class InputDecimalDT extends TableValueField<InputDecimalDTProps> {
 
     constructor(props: InputDecimalDTProps) {
         super(props);

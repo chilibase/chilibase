@@ -1,12 +1,12 @@
 import React from "react";
 import {InputIntervalBase} from "./InputIntervalBase";
 import {IPostgresInterval} from "../../utils/types";
-import {XInputDT, XInputDTProps} from "../XInputDT";
+import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
 
-export interface InputIntervalDTProps extends XInputDTProps {
+export interface InputIntervalDTProps extends TableValueFieldProps {
 }
 
-export class InputIntervalDT extends XInputDT<InputIntervalDTProps> {
+export class InputIntervalDT extends TableValueField<InputIntervalDTProps> {
 
     constructor(props: InputIntervalDTProps) {
         super(props);

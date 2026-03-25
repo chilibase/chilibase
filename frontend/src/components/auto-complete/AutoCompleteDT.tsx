@@ -1,5 +1,5 @@
 import React from "react";
-import {FormComponentDT, FormComponentDTProps} from "../form-data-table";
+import {TableFormField, TableFormFieldProps} from "../form-data-table";
 import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
 import {FieldError} from "../form/FormErrors";
@@ -10,7 +10,7 @@ import {DataTableSortMeta} from "primereact/datatable";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface AutoCompleteDTProps extends FormComponentDTProps {
+export interface AutoCompleteDTProps extends TableFormFieldProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -36,7 +36,7 @@ export interface AutoCompleteDTProps extends FormComponentDTProps {
     inputClassName?: string;
 }
 
-export class AutoCompleteDT extends FormComponentDT<AutoCompleteDTProps> {
+export class AutoCompleteDT extends TableFormField<AutoCompleteDTProps> {
 
     protected xAssoc: Assoc;
     protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)

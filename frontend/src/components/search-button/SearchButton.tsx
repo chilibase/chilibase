@@ -3,7 +3,7 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";
 import {Dialog} from "primereact/dialog";
-import {FilterProp, FormComponent, FormComponentProps} from "../form";
+import {FilterProp, FormField, FormFieldProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {CustomFilter} from "../../common/FindParam";
 import {SearchBrowseParams} from "../browse";
@@ -14,7 +14,7 @@ import {UtilsCommon} from "../../common/UtilsCommon";
 // nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci XAutoComplete
 // TODO - ak sa to ma pouzivat, tak zmenit searchBrowse a assocForm (pouzivane pri readOnly) na SearchBrowse/searchBrowseElement a AssocForm/assocFormElement a nepouzivat FormNavigator
 
-export interface SearchButtonProps extends FormComponentProps {
+export interface SearchButtonProps extends FormFieldProps {
     assocField: string;
     displayField: string;
     searchBrowse: JSX.Element;
@@ -24,7 +24,7 @@ export interface SearchButtonProps extends FormComponentProps {
     inputStyle?: React.CSSProperties;
 }
 
-export class SearchButton extends FormComponent<SearchButtonProps> {
+export class SearchButton extends FormField<SearchButtonProps> {
 
     protected xAssoc: Assoc;
 

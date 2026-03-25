@@ -1,13 +1,13 @@
 import React from "react";
-import {XInputDT, XInputDTProps} from "../XInputDT";
+import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
 import {InputTextareaBase} from "./InputTextareaBase";
 
-export interface InputTextareaDTProps extends XInputDTProps {
+export interface InputTextareaDTProps extends TableValueFieldProps {
     rows: number;
     autoResize?: boolean;
 }
 
-export class InputTextareaDT extends XInputDT<InputTextareaDTProps> {
+export class InputTextareaDT extends TableValueField<InputTextareaDTProps> {
 
     constructor(props: InputTextareaDTProps) {
         super(props);

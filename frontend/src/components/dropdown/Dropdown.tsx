@@ -1,17 +1,17 @@
 import React from "react";
-import {FilterProp, FormComponent, FormComponentProps} from "../form";
+import {FilterProp, FormField, FormFieldProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {DropdownForEntity} from "./DropdownForEntity";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export interface DropdownProps extends FormComponentProps {
+export interface DropdownProps extends FormFieldProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - dropdown will run on <assoc2>)
     displayField: string;
     sortField?: string;
     filter?: FilterProp;
 }
 
-export class Dropdown extends FormComponent<DropdownProps> {
+export class Dropdown extends FormField<DropdownProps> {
 
     protected xAssoc: Assoc;
 

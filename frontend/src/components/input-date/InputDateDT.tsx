@@ -1,12 +1,12 @@
 import React from "react";
-import {XInputDT, XInputDTProps} from "../XInputDT";
+import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
 import {InputDateBase} from "./InputDateBase";
 import {dateFromModel} from "../../common/UtilsConversions";
 
-export interface InputDateDTProps extends XInputDTProps {
+export interface InputDateDTProps extends TableValueFieldProps {
 }
 
-export class InputDateDT extends XInputDT<InputDateDTProps> {
+export class InputDateDT extends TableValueField<InputDateDTProps> {
 
     constructor(props: InputDateDTProps) {
         super(props);

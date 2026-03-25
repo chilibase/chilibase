@@ -24,7 +24,7 @@ import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
 import {CustomFilter} from "../../common/FindParam";
 import {AutoCompleteDT} from "../auto-complete";
-import {FormComponentDT} from "./FormComponentDT";
+import {TableFormField} from "./TableFormField";
 import {FieldErrorMap} from "../form/FormErrors";
 import {ButtonIconNarrow} from "../button";
 import {IconType} from "primereact/utils";
@@ -43,7 +43,7 @@ export interface RowTechData {
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
     // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
     // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
-    formComponentDTList: Array<FormComponentDT<any>>;
+    formComponentDTList: Array<TableFormField<any>>;
     // zoznam validacnych chyb (to iste co form.state.errorMap na XFormBase.ts pre hlavny objekt formularu)
     // chyby sem zapisuje automaticka validacia a pripadna custom validacia
     // chyby sa zobrazia (vycervenenie + tooltip) vo formulari zavolanim this.setState({object: this.state.object});

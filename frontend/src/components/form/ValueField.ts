@@ -1,16 +1,16 @@
 import React from "react";
-import {FormComponent, FormComponentProps} from "./form";
-import {Field} from "../common/EntityMetadata";
-import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {FormField, FormFieldProps} from "./FormField";
+import {Field} from "../../common/EntityMetadata";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export interface XInputProps extends FormComponentProps {
+export interface ValueFieldProps extends FormFieldProps {
     field: string;
     inputStyle?: React.CSSProperties;
     inputClassName?: string;
 }
 
-// spolocna nadtrieda pre jednoduche inputy (nie asociacne)
-export abstract class XInput<P extends XInputProps> extends FormComponent<P> {
+// common superclass for simple fields (not assoc fields)
+export abstract class ValueField<P extends ValueFieldProps> extends FormField<P> {
 
     protected xField: Field;
 
@@ -54,3 +54,4 @@ export abstract class XInput<P extends XInputProps> extends FormComponent<P> {
         return {labelTooltip, labelElemId, inputTooltip};
     }
 }
+

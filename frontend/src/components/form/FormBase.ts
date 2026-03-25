@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {EntityRow} from "../../common/types";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {FieldOnChange, FormComponent} from "./FormComponent";
+import {FieldOnChange, FormField} from "./FormField";
 import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
 import {FieldErrorMap, FormErrorMap} from "./FormErrors";
 import {Params, UtilsCommon} from "../../common/UtilsCommon";
@@ -101,7 +101,7 @@ export abstract class FormBase extends Component<FormProps> {
     state: {entityRow: EntityRow | null; errorMap: FieldErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
-    formComponentList: Array<FormComponent<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, SearchButton, ...)
+    formComponentList: Array<FormField<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, SearchButton, ...)
     formDataTableList: Array<FormDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
     assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v rowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)
@@ -433,11 +433,11 @@ export abstract class FormBase extends Component<FormProps> {
         this.fieldSet.add(field);
     }
 
-    addFormComponent(formComponent: FormComponent<any>) {
+    addFormComponent(formComponent: FormField<any>) {
         this.formComponentList.push(formComponent);
     }
 
-    findFormComponent(field: string): FormComponent<any> | undefined {
+    findFormComponent(field: string): FormField<any> | undefined {
         // TODO - vytvorit mapu (field, ref(formComponent)), bude to rychlejsie
         // vytvorit len mapu (a list zrusit) je problem - mozme mat pre jeden field viacero (napr. asociacnych) componentov
         for (const formComponent of this.formComponentList) {
@@ -584,7 +584,7 @@ export abstract class FormBase extends Component<FormProps> {
         for (const [field, error] of Object.entries(formErrorMap)) {
             if (error) {
                 // skusime zistit label
-                const formComponent: FormComponent<any> | undefined = this.findFormComponent(field);
+                const formComponent: FormField<any> | undefined = this.findFormComponent(field);
                 const fieldLabel: string | undefined = formComponent ? formComponent.getLabel() : undefined;
                 fieldErrorMap[field] = {...fieldErrorMap[field], form: error, fieldLabel: fieldLabel};
             }

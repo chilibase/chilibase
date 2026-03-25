@@ -1,15 +1,15 @@
 import React from "react";
 import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
 import {InputText as PrimeInputText} from "primereact/inputtext";
-import {XInput, XInputProps} from "../XInput";
+import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {Tooltip} from "primereact/tooltip";
 
-export interface InputTextProps extends XInputProps {
+export interface InputTextProps extends ValueFieldProps {
     size?: number;
 }
 
-export class InputText extends XInput<InputTextProps> {
+export class InputText extends ValueField<InputTextProps> {
 
     constructor(props: InputTextProps) {
         super(props);

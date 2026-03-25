@@ -1,13 +1,13 @@
 import React from "react";
-import {XInput, XInputProps} from "../XInput";
+import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {IPostgresInterval} from "../../utils/types";
 import {InputIntervalBase} from "./InputIntervalBase";
 
-export interface InputIntervalProps extends XInputProps {
+export interface InputIntervalProps extends ValueFieldProps {
     inputStyle?: React.CSSProperties;
 }
 
-export class InputInterval extends XInput<InputIntervalProps> {
+export class InputInterval extends ValueField<InputIntervalProps> {
 
     constructor(props: InputIntervalProps) {
         super(props);

@@ -1,13 +1,13 @@
 import React from "react";
 import {InputDateBase} from "./InputDateBase";
-import {XInput, XInputProps} from "../XInput";
+import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {dateFromModel, DateScale} from "../../common/UtilsConversions";
 
-export interface InputDateProps extends XInputProps {
+export interface InputDateProps extends ValueFieldProps {
     scale?: DateScale;
 }
 
-export class InputDate extends XInput<InputDateProps> {
+export class InputDate extends ValueField<InputDateProps> {
 
     constructor(props: InputDateProps) {
         super(props);

@@ -1,18 +1,18 @@
-import {Field} from "../common/EntityMetadata";
-// WARNING - if you use import from index.ts (not from file FormComponentDT), app gives error during start:
+import {Field} from "../../common/EntityMetadata";
+// WARNING - if you use import from index.ts (not from file TableFormField), app gives error during start:
 // Uncaught TypeError: Class extends value undefined is not a constructor or null
 // (probably XInputDT cannot be instantiated)
-import {FormComponentDT, FormComponentDTProps} from "./form-data-table/FormComponentDT";
-import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
+import {TableFormField, TableFormFieldProps} from "./TableFormField";
+import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import React from "react";
 
-export interface XInputDTProps extends FormComponentDTProps {
+export interface TableValueFieldProps extends TableFormFieldProps {
     field: string;
     inputStyle?: React.CSSProperties; // pridane koli label/desc funkcionalite ale mozno sa zide aj pri DT sposobe (pouziva sa v subclasses, napr. XInputTextareaRow)
 }
 
-// spolocna nadtrieda pre jednoduche inputy (nie asociacne)
-export abstract class XInputDT<P extends XInputDTProps> extends FormComponentDT<P> {
+// common superclass for simple fields (not assoc fields)
+export abstract class TableValueField<P extends TableValueFieldProps> extends TableFormField<P> {
 
     protected xField: Field;
 
@@ -30,3 +30,4 @@ export abstract class XInputDT<P extends XInputDTProps> extends FormComponentDT<
         return !this.xField.isNullable;
     }
 }
+
