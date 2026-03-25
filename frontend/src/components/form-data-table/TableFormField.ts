@@ -25,14 +25,14 @@ export interface TableFormFieldProps {
 
 export abstract class TableFormField<P extends TableFormFieldProps> extends Component<P> {
 
-    private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (pozri poznamku v XFormComponent)
+    private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (pozri poznamku v FormField)
 
     protected constructor(props: P) {
         super(props);
 
         this.valueChanged = false;
 
-        FormBase.getRowTechData(props.rowData).formComponentDTList.push(this);
+        FormBase.getRowTechData(props.rowData).tableFormFieldList.push(this);
     }
 
     // nazov fieldu, pod ktorym sa hodnota uklada do objektu this.props.rowData

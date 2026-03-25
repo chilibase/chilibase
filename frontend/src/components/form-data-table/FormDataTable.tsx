@@ -43,7 +43,7 @@ export interface RowTechData {
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
     // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
     // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
-    formComponentDTList: Array<TableFormField<any>>;
+    tableFormFieldList: Array<TableFormField<any>>;
     // zoznam validacnych chyb (to iste co form.state.errorMap na XFormBase.ts pre hlavny objekt formularu)
     // chyby sem zapisuje automaticka validacia a pripadna custom validacia
     // chyby sa zobrazia (vycervenenie + tooltip) vo formulari zavolanim this.setState({object: this.state.object});
@@ -501,8 +501,8 @@ export class FormDataTable extends Component<FormDataTableProps> {
         for (const row of rowList) {
             const rowTechData: RowTechData = FormBase.getRowTechData(row);
             const fieldErrorMap: FieldErrorMap = {};
-            for (const formComponentDT of rowTechData.formComponentDTList) {
-                const errorItem = formComponentDT.validate();
+            for (const tableFormField of rowTechData.tableFormFieldList) {
+                const errorItem = tableFormField.validate();
                 if (errorItem) {
                     //console.log("Mame field = " + errorItem.field);
                     fieldErrorMap[errorItem.field] = errorItem.fieldError;
@@ -523,7 +523,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     //     return msg;
     // }
 
-    // TODO - velmi podobna funkcia ako XFormComponent.isReadOnly() - zjednotit ak sa da
+    // TODO - velmi podobna funkcia ako FormField.isReadOnly() - zjednotit ak sa da
     isReadOnly(): boolean {
 
         let readOnly: boolean;

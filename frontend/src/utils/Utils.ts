@@ -478,7 +478,7 @@ export class Utils {
         return readOnly;
     }
 
-    // docasna funkcia, kym sa vsade nebude pouzivat FormComponentDT a jej isReadOnly()
+    // docasna funkcia, kym sa vsade nebude pouzivat TableFormField a jej isReadOnly()
     static isReadOnlyTableField(path: string | undefined, readOnly: TableFieldReadOnlyProp | undefined, entityRow: EntityRow | null, tableRow: any): boolean {
 
         let isReadOnly: boolean;

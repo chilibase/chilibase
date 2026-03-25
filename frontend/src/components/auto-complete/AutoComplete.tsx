@@ -81,7 +81,7 @@ export class AutoComplete extends FormField<AutoCompleteProps> {
         this.errorInBase = error; // odlozime si error
     }
 
-    // overrides method in XFormComponent
+    // overrides method in FormField
     validate(): {field: string; fieldError: FieldError} | undefined {
         if (this.errorInBase) {
             // error message dame na onChange, mohli by sme aj na onSet (predtym onBlur), je to jedno viac-menej

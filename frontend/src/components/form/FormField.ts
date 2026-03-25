@@ -53,7 +53,7 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
 
         this.valueChanged = false;
 
-        props.form.addFormComponent(this);
+        props.form.addFormField(this);
     }
 
     // nazov fieldu, pod ktorym sa hodnota uklada do objektu form.state.object

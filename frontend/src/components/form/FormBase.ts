@@ -101,7 +101,7 @@ export abstract class FormBase extends Component<FormProps> {
     state: {entityRow: EntityRow | null; errorMap: FieldErrorMap} | any; // poznamka: mohli by sme sem dat aj typ any...
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
-    formComponentList: Array<FormField<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, SearchButton, ...)
+    formFieldList: Array<FormField<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, SearchButton, ...)
     formDataTableList: Array<FormDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
     assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v rowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)
@@ -151,7 +151,7 @@ export abstract class FormBase extends Component<FormProps> {
             entityRow: props.entityRow ?? null, // null is used only for legacy object loading (in componentDidMount)
             errorMap: {}
         };
-        this.formComponentList = [];
+        this.formFieldList = [];
         this.formDataTableList = [];
         this.assocToValidateList = [];
         this.assocToSortList = [];
@@ -419,7 +419,7 @@ export abstract class FormBase extends Component<FormProps> {
         if (row.__x_rowTechData === undefined) {
             // field '__x_rowTechData' vytvorime takymto specialnym sposobom, aby mal "enumerable: false", tympadom ho JSON.stringify nezaserializuje
             // pri posielani objektu formulara na backend (pozor, zaroven sa neda tento field iterovat cez in operator a pod.)
-            const rowTechData: RowTechData = {formComponentDTList: [], errorMap: {}};
+            const rowTechData: RowTechData = {tableFormFieldList: [], errorMap: {}};
             Object.defineProperty(row, '__x_rowTechData', {
                 value: rowTechData,
                 writable: false,
@@ -433,16 +433,16 @@ export abstract class FormBase extends Component<FormProps> {
         this.fieldSet.add(field);
     }
 
-    addFormComponent(formComponent: FormField<any>) {
-        this.formComponentList.push(formComponent);
+    addFormField(formField: FormField<any>) {
+        this.formFieldList.push(formField);
     }
 
-    findFormComponent(field: string): FormField<any> | undefined {
-        // TODO - vytvorit mapu (field, ref(formComponent)), bude to rychlejsie
+    findFormField(field: string): FormField<any> | undefined {
+        // TODO - vytvorit mapu (field, ref(formField)), bude to rychlejsie
         // vytvorit len mapu (a list zrusit) je problem - mozme mat pre jeden field viacero (napr. asociacnych) componentov
-        for (const formComponent of this.formComponentList) {
-            if (formComponent.getField() === field) {
-                return formComponent;
+        for (const formField of this.formFieldList) {
+            if (formField.getField() === field) {
+                return formField;
             }
         }
         return undefined;
@@ -584,8 +584,8 @@ export abstract class FormBase extends Component<FormProps> {
         for (const [field, error] of Object.entries(formErrorMap)) {
             if (error) {
                 // skusime zistit label
-                const formComponent: FormField<any> | undefined = this.findFormComponent(field);
-                const fieldLabel: string | undefined = formComponent ? formComponent.getLabel() : undefined;
+                const formField: FormField<any> | undefined = this.findFormField(field);
+                const fieldLabel: string | undefined = formField ? formField.getLabel() : undefined;
                 fieldErrorMap[field] = {...fieldErrorMap[field], form: error, fieldLabel: fieldLabel};
             }
         }
@@ -598,8 +598,8 @@ export abstract class FormBase extends Component<FormProps> {
 
     fieldValidation(): FieldErrorMap {
         const fieldErrorMap: FieldErrorMap = {};
-        for (const formComponent of this.formComponentList) {
-            const errorItem = formComponent.validate();
+        for (const formField of this.formFieldList) {
+            const errorItem = formField.validate();
             if (errorItem) {
                 //console.log("Mame field = " + errorItem.field);
                 fieldErrorMap[errorItem.field] = errorItem.fieldError;
