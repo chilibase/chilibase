@@ -30,7 +30,7 @@ import {ButtonIconNarrow} from "../button";
 import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {xLocaleOption} from "../XLocale";
+import {localeOption} from "../locale/Locale";
 import {InputIntervalDT} from "../input-interval/InputIntervalDT";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {SearchBrowseProps} from "../lazy-data-table";
@@ -746,9 +746,9 @@ export class FormDataTable extends Component<FormDataTableProps> {
         let addRowLabel: string | undefined = undefined;
         let removeRowLabel: string | undefined = undefined;
         if (this.props.showAddRemoveButtons) {
-            // calling xLocaleOption does not work in standard default values initialisation place (public static defaultProps)
-            addRowLabel = this.props.addRowLabel ?? xLocaleOption('addRow');
-            removeRowLabel = this.props.removeRowLabel ?? xLocaleOption('removeRow');
+            // calling localeOption does not work in standard default values initialisation place (public static defaultProps)
+            addRowLabel = this.props.addRowLabel ?? localeOption('addRow');
+            removeRowLabel = this.props.removeRowLabel ?? localeOption('removeRow');
         }
 
         return (

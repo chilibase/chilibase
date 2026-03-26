@@ -7,7 +7,7 @@ import {Utils} from "../../utils/Utils";
 import {EntityRow} from "../../common/types";
 import {Button, ButtonIconNarrow} from "../button";
 import {numberAsUI} from "../../common/UtilsConversions";
-import {xLocaleOption} from "../XLocale";
+import {localeOption} from "../locale/Locale";
 import {FileJsonField} from "../../common/lib-api";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {XFile} from "../../modules/files/x-file";
@@ -66,7 +66,7 @@ export class InputFileList extends Component<InputFileListProps> {
         for (const file of event.files) {
             // skontrolujeme velkost - robime to tuto, lebo ked nastavime maxFileSize na komponente FileUpload, tak prilis velky subor sem do handlera ani neposle
             if (this.props.maxFileSize !== undefined && file.size > this.props.maxFileSize) {
-                alert(xLocaleOption('fileUploadSizeToBig', {fileName: file.name, fileSize: InputFileList.sizeInMB(file.size), maxFileSize: InputFileList.sizeInMB(this.props.maxFileSize)}))
+                alert(localeOption('fileUploadSizeToBig', {fileName: file.name, fileSize: InputFileList.sizeInMB(file.size), maxFileSize: InputFileList.sizeInMB(this.props.maxFileSize)}))
                 continue; // ideme na dalsi subor
             }
             // uploadneme subor na server, insertne sa tam zaznam XFile a tento insertnuty zaznam pride sem a zapiseme ho do zoznamu form.object.<assocField>
@@ -81,7 +81,7 @@ export class InputFileList extends Component<InputFileListProps> {
                 xFile = await Utils.fetchFile(endpoint, jsonFieldValue, file);
             }
             catch (e) {
-                Utils.showErrorMessage(xLocaleOption('fileUploadFailed', {fileName: file.name}), e);
+                Utils.showErrorMessage(localeOption('fileUploadFailed', {fileName: file.name}), e);
                 this.fileUploadRef.current.clear(); // vyprazdnime hidden input, nech moze user znova zadat subory
                 return; // prerusime upload tohto a dalsich suborov
             }
@@ -136,7 +136,7 @@ export class InputFileList extends Component<InputFileListProps> {
                 <label>{label}</label>
                 {elemList}
                 <FileUpload ref={this.fileUploadRef} mode="basic" multiple auto customUpload uploadHandler={this.uploadHandler}
-                            chooseLabel={this.props.chooseLabel ?? xLocaleOption('addRow')} className="m-1" disabled={readOnly}/>
+                            chooseLabel={this.props.chooseLabel ?? localeOption('addRow')} className="m-1" disabled={readOnly}/>
             </div>
         );
     }

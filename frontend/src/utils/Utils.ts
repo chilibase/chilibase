@@ -9,7 +9,7 @@ import {
     ExportType,
     MultilineExportType
 } from "../common/ExportImportParam";
-import {XResponseError} from "../components/XResponseError";
+import {ResponseError} from "./ResponseError";
 import React from "react";
 import {EnvVar} from "../components/env-vars/EnvVars";
 import {FieldError, FieldErrorMap} from "../components/form/FormErrors";
@@ -19,7 +19,7 @@ import {EntityRow} from "../common/types";
 import {TableFieldReadOnlyProp} from "../components/form-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import {SelectItem} from "primereact/selectitem";
-import {xLocaleOption} from "../components/XLocale";
+import {localeOption} from "../components/locale/Locale";
 import {LazyDataTableRef} from "../components/lazy-data-table";
 import {CreateObjectFunction, OnSaveOrCancelProp} from "../components/form";
 import {initMsalConfig} from "../components/auth";
@@ -271,7 +271,7 @@ export class Utils {
             response = await Utils.fetchBasicJson(apiPath, requestPayload);
         }
         catch (e) {
-            Utils.showErrorMessage(xLocaleOption('fileDownloadFailed'), e);  // next info (apiPath, payload) should be in "e"
+            Utils.showErrorMessage(localeOption('fileDownloadFailed'), e);  // next info (apiPath, payload) should be in "e"
             return false;
         }
         // let respJson = await response.json(); - konvertuje do json objektu
@@ -333,7 +333,7 @@ export class Utils {
         });
         if (!response.ok) {
             const responseBody = await response.json();
-            throw new XResponseError(path, response.status, response.statusText, responseBody);
+            throw new ResponseError(path, response.status, response.statusText, responseBody);
         }
         return response;
     }
@@ -353,7 +353,7 @@ export class Utils {
                                 });
         if (!response.ok) {
             const responseBody = await response.json();
-            throw new XResponseError(path, response.status, response.statusText, responseBody);
+            throw new ResponseError(path, response.status, response.statusText, responseBody);
         }
         return response;
     }
@@ -519,27 +519,27 @@ export class Utils {
 
     static showErrorMessage(message: string, e: unknown, entity?: string) {
         let msg = message + UtilsCommon.newLine;
-        if (e instanceof XResponseError) {
-            if (e.xResponseErrorBody.exceptionName === 'XAppError') {
+        if (e instanceof ResponseError) {
+            if (e.responseErrorBody.exceptionName === 'XAppError') {
                 // app error from backend, we show only the error message
-                msg += e.xResponseErrorBody.message;
+                msg += e.responseErrorBody.message;
             }
-            else if (e.xResponseErrorBody.exceptionName === 'OptimisticLockVersionMismatchError') {
+            else if (e.responseErrorBody.exceptionName === 'OptimisticLockVersionMismatchError') {
                 // TODO - better error message for optimistic locking (modifDate + modifUser)
                 // for now, we add entity to the message if the entity from the OptimisticLockVersionMismatchError is different from the entity beeing saved
                 // (it is rare but it can be very confusing)
                 let entityParam: string = ""; // default
-                if (entity && e.xResponseErrorBody.message) {
-                    const entityFromError: string = Utils.extractEntity(e.xResponseErrorBody.message);
+                if (entity && e.responseErrorBody.message) {
+                    const entityFromError: string = Utils.extractEntity(e.responseErrorBody.message);
                     if (entityFromError !== entity) {
                         entityParam = " " + entityFromError;
                     }
                 }
-                msg += xLocaleOption('optimisticLockFailed', {entity: entityParam});
+                msg += localeOption('optimisticLockFailed', {entity: entityParam});
             }
             else {
                 msg += e.message + UtilsCommon.newLine;
-                msg += JSON.stringify(e.xResponseErrorBody, null, 4);
+                msg += JSON.stringify(e.responseErrorBody, null, 4);
             }
         }
         else if (e instanceof Error) {

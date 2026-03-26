@@ -1,5 +1,5 @@
 // tento error pouzivame ak http request vrati http kod <> 2xx
-export interface XResponseErrorBody {
+export interface ResponseErrorBody {
     statusCode: number;
     message: string;
     exceptionName: string;
@@ -7,16 +7,16 @@ export interface XResponseErrorBody {
     sql?: string;
 }
 
-export class XResponseError extends Error {
+export class ResponseError extends Error {
 
-    xResponseErrorBody: XResponseErrorBody;
+    responseErrorBody: ResponseErrorBody;
 
-    constructor(path: string, status: number, statusText: string, body: XResponseErrorBody) {
+    constructor(path: string, status: number, statusText: string, body: ResponseErrorBody) {
         super(`Http request "${path}" failed. Status: ${status}, status text: ${statusText}`);
         // see: typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html
         Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
-        this.name = XResponseError.name; // stack traces display correctly now
+        this.name = ResponseError.name; // stack traces display correctly now
 
-        this.xResponseErrorBody = body;
+        this.responseErrorBody = body;
     }
 }

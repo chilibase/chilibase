@@ -1,10 +1,10 @@
-import PrimeReact, {localeOption, localeOptions, updateLocaleOption} from "primereact/api";
-// using json-loader module we import x-en.json file into variable xEnJsonObject
-import xEnJsonObject from "./locale/x-en.json";
+import PrimeReact, {localeOption as primeLocaleOptionBase, localeOptions, updateLocaleOption} from "primereact/api";
+// using json-loader module we import cb-en.json file into variable cbEnJsonObject
+import cbEnJsonObject from "./cb-en.json";
 
-// type for x-locale
-export interface XLocaleOptions {
-    // XLazyDataTable
+// type for cb-locale
+export interface LocaleOptions {
+    // LazyDataTable
     searchInAllFields?: string;
     filter?: string;
     resetTable?: string;
@@ -52,18 +52,18 @@ export interface XLocaleOptions {
 }
 
 // under this key are x-locale saved inside of PrimeReact locale
-const xOptionsKey: string = "xOptions";
+const cbOptionsKey: string = "cbOptions";
 
-export function xAddLocale(locale: string, xOptions: XLocaleOptions) {
-    updateLocaleOption(xOptionsKey, xOptions, locale);
+export function addLocale(locale: string, options: LocaleOptions) {
+    updateLocaleOption(cbOptionsKey, options, locale);
 }
 
-// using this method are x-locale read
-export function xLocaleOption(xOptionKey: string, options?: any[string]) {
+// using this method are cb-locale read
+export function localeOption(xOptionKey: string, options?: any[string]) {
     const _locale: string = PrimeReact.locale || 'en';
 
     try {
-        let optionValue = (localeOptions(_locale) as any)[xOptionsKey][xOptionKey];
+        let optionValue = (localeOptions(_locale) as any)[cbOptionsKey][xOptionKey];
 
         if (optionValue && options) {
             for (const key in options) {
@@ -80,10 +80,10 @@ export function xLocaleOption(xOptionKey: string, options?: any[string]) {
 }
 
 // localeOption of primereact without locale param (helper)
-export function prLocaleOption(key: string) {
+export function primeLocaleOption(key: string) {
     const _locale: string = PrimeReact.locale || 'en';
-    return localeOption(key, _locale);
+    return primeLocaleOptionBase(key, _locale);
 }
 
 // add en locale into PrimeReact locale (global variable "locales" declared in file Locale.js)
-xAddLocale('en', xEnJsonObject.en);
+addLocale('en', cbEnJsonObject.en);

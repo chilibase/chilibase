@@ -1,7 +1,7 @@
 import React from "react";
 import {InputTextBase} from "../input-text";
 import {Utils} from "../../utils/Utils";
-import {xLocaleOption} from "../XLocale";
+import {localeOption} from "../locale/Locale";
 
 // typ FtsInputValue reprezentuje hodnoty ktore sa daju menit touto komponentou
 // tento typ ciastocne zodpoveda typu XFullTextSearch pouzivanom v api
@@ -21,7 +21,7 @@ export const FtsInput = (props: {value: FtsInputValue; onChange: (value: FtsInpu
     // we use InputTextBase - we save onChange calls
     return (
         <InputTextBase value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: Utils.isMobile() ? '7rem' : '17rem'}} className="m-1"
-        placeholder={xLocaleOption('searchInAllFields')}/>
+        placeholder={localeOption('searchInAllFields')}/>
     );
 }
 

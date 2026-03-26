@@ -40,7 +40,7 @@ import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactConte
 import {FormProps, OnSaveOrCancelProp} from "../form";
 import {InputDateBase} from "../input-date";
 import {InputDecimalBase} from "../input-decimal";
-import {prLocaleOption, xLocaleOption} from "../XLocale";
+import {primeLocaleOption, localeOption} from "../locale/Locale";
 import {FtsInput, FtsInputValue} from "./FtsInput";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {IconType} from "primereact/utils";
@@ -530,8 +530,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 const xFilterValueOld: ExtendedDataTableFilterMetaData = filterValueOld as ExtendedDataTableFilterMetaData; // works only for filterDisplay="row"
                 const xFilterValue: ExtendedDataTableFilterMetaData = filterValue as ExtendedDataTableFilterMetaData; // works only for filterDisplay="row"
                 if (xFilterValue.matchMode !== xFilterValueOld.matchMode) {
-                    const isNotNullValueAlias: string = `<${xLocaleOption('xIsNotNull')}>`;
-                    const isNullValueAlias: string = `<${xLocaleOption('xIsNull')}>`;
+                    const isNotNullValueAlias: string = `<${localeOption('xIsNotNull')}>`;
+                    const isNullValueAlias: string = `<${localeOption('xIsNull')}>`;
                     const xFilterMatchMode: ExtendedFilterMatchMode = xFilterValue.matchMode as unknown as ExtendedFilterMatchMode;
                     if (xFilterMatchMode === ExtendedFilterMatchMode.IS_NOT_NULL || xFilterMatchMode === ExtendedFilterMatchMode.IS_NULL) {
                         let newValue: any = null;
@@ -908,7 +908,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             editRow(selectedRow);
         }
         else {
-            alert(xLocaleOption('pleaseSelectRow'));
+            alert(localeOption('pleaseSelectRow'));
         }
     }
 
@@ -959,7 +959,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     reread = await props.removeRow(selectedRow);
                 }
                 catch (e) {
-                    Utils.showErrorMessage(xLocaleOption('removeRowFailed'), e);
+                    Utils.showErrorMessage(localeOption('removeRowFailed'), e);
                 }
                 if (reread) {
                     loadData();
@@ -969,13 +969,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 }
             }
             else {
-                if (window.confirm(xLocaleOption('removeRowConfirm'))) {
+                if (window.confirm(localeOption('removeRowConfirm'))) {
                     try {
                         // poznamka: vdaka await bude loadData() bezat az po dobehnuti requestu removeRow
                         await Utils.removeRow(props.entity, selectedRow);
                     }
                     catch (e) {
-                        Utils.showErrorMessage(xLocaleOption('removeRowFailed'), e);
+                        Utils.showErrorMessage(localeOption('removeRowFailed'), e);
                     }
                     loadData();
                     if (props.onRemoveRow) {
@@ -985,7 +985,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             }
         }
         else {
-            alert(xLocaleOption('pleaseSelectRow'));
+            alert(localeOption('pleaseSelectRow'));
         }
     }
 
@@ -995,7 +995,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             onClick(selectedRow, createFindParamUsingAfterFiltering());
         }
         else {
-            alert(xLocaleOption('pleaseSelectRow'));
+            alert(localeOption('pleaseSelectRow'));
         }
     }
 
@@ -1343,7 +1343,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     let paginatorRight: JSX.Element | undefined;
     let pageLinkSize: number;
     if (!isMobile) {
-        paginatorLeft = <div>{xLocaleOption('totalRecords')}: {value.totalRecords}</div>;
+        paginatorLeft = <div>{localeOption('totalRecords')}: {value.totalRecords}</div>;
         paginatorRight = <div/>;
         pageLinkSize = 5; // default
         if (props.editMode === true) {
@@ -1570,14 +1570,14 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             let filterMatchModeOptions: ColumnFilterMatchModeOptions[] | undefined = undefined;
             if (showFilterMenu) {
                 // copy of primereact code (ColumnFilter.js)
-                //filterMatchModeOptions = primeReactContext.filterMatchModeOptions![dataType].map((key) => ({ label: prLocaleOption(key), value: key }));
-                filterMatchModeOptions = (primeReactContext && primeReactContext.filterMatchModeOptions![dataType].map((key) => ({ label: prLocaleOption(key), value: key }))) ||
-                                            PrimeReact.filterMatchModeOptions![dataType].map((key) => ({ label: prLocaleOption(key), value: key }));
+                //filterMatchModeOptions = primeReactContext.filterMatchModeOptions![dataType].map((key) => ({ label: primeLocaleOption(key), value: key }));
+                filterMatchModeOptions = (primeReactContext && primeReactContext.filterMatchModeOptions![dataType].map((key) => ({ label: primeLocaleOption(key), value: key }))) ||
+                                            PrimeReact.filterMatchModeOptions![dataType].map((key) => ({ label: primeLocaleOption(key), value: key }));
 
-                filterMatchModeOptions.push({label: xLocaleOption('xIsNotNull'), value: ExtendedFilterMatchMode.IS_NOT_NULL});
-                filterMatchModeOptions.push({label: xLocaleOption('xIsNull'), value: ExtendedFilterMatchMode.IS_NULL});
+                filterMatchModeOptions.push({label: localeOption('xIsNotNull'), value: ExtendedFilterMatchMode.IS_NOT_NULL});
+                filterMatchModeOptions.push({label: localeOption('xIsNull'), value: ExtendedFilterMatchMode.IS_NULL});
                 if (isAutoCompleteInFilterEnabled(childColumn.props)) {
-                    filterMatchModeOptions.push({label: xLocaleOption('xAutoComplete'), value: ExtendedFilterMatchMode.AUTO_COMPLETE});
+                    filterMatchModeOptions.push({label: localeOption('xAutoComplete'), value: ExtendedFilterMatchMode.AUTO_COMPLETE});
                 }
                 if (childColumn.props.filterElement?.matchModeLabel) {
                     filterMatchModeOptions.push({label: childColumn.props.filterElement?.matchModeLabel, value: ExtendedFilterMatchMode.FILTER_ELEMENT});
@@ -1660,8 +1660,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 {props.label ? <div className="x-lazy-datatable-label" style={props.labelStyle}>{props.label}</div> : null}
                 {props.headerBodyLeft}
                 {ftsInputValue ? <FtsInput value={ftsInputValue} onChange={(value: FtsInputValue) => setFtsInputValue(value)}/> : null}
-                {props.showFilterButtons ? <Button key="filter" icon={isMobile ? "pi pi-search" : undefined} label={!isMobile ? xLocaleOption('filter') : undefined} onClick={onClickFilter} /> : null}
-                {props.showFilterButtons ? <Button key="resetTable" icon={isMobile ? "pi pi-ban" : undefined} label={!isMobile ? xLocaleOption('resetTable') : undefined} onClick={onClickResetTable} /> : null}
+                {props.showFilterButtons ? <Button key="filter" icon={isMobile ? "pi pi-search" : undefined} label={!isMobile ? localeOption('filter') : undefined} onClick={onClickFilter} /> : null}
+                {props.showFilterButtons ? <Button key="resetTable" icon={isMobile ? "pi pi-ban" : undefined} label={!isMobile ? localeOption('resetTable') : undefined} onClick={onClickResetTable} /> : null}
                 {props.optionalCustomFilters ? <OcfDropdown optionalCustomFilters={props.optionalCustomFilters} value={optionalCustomFilter} onChange={(value: OptionalCustomFilter | undefined) => setOptionalCustomFilter(value)} className="m-1"/> : null}
                 {props.multilineSwitch ? <MultilineSwitch value={multilineSwitchValue} onChange={(switchValue: MultilineRenderType) => {
                         setMultilineSwitchValue(switchValue);
@@ -1687,14 +1687,14 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 </DataTable>
             </div>
             <div className="flex justify-content-center">
-                {(props.onAddRow !== false && (editFormExists || props.onAddRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="addRow" icon="pi pi-plus" label={xLocaleOption('addRow')} onClick={onClickAddRow}/> : null}
-                {(props.onEdit !== false && (editFormExists || props.onEdit !== undefined)) && props.searchBrowseParams === undefined ? <Button key="editRow" icon="pi pi-pencil" label={xLocaleOption('editRow')} onClick={onClickEditRow}/> : null}
-                {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="removeRow" icon="pi pi-times" label={xLocaleOption('removeRow')} onClick={onClickRemoveRow}/> : null}
-                {exportRows ? <Button key="exportRows" icon="pi pi-file-export" label={xLocaleOption('exportRows')} onClick={onClickExport} /> : null}
+                {(props.onAddRow !== false && (editFormExists || props.onAddRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="addRow" icon="pi pi-plus" label={localeOption('addRow')} onClick={onClickAddRow}/> : null}
+                {(props.onEdit !== false && (editFormExists || props.onEdit !== undefined)) && props.searchBrowseParams === undefined ? <Button key="editRow" icon="pi pi-pencil" label={localeOption('editRow')} onClick={onClickEditRow}/> : null}
+                {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="removeRow" icon="pi pi-times" label={localeOption('removeRow')} onClick={onClickRemoveRow}/> : null}
+                {exportRows ? <Button key="exportRows" icon="pi pi-file-export" label={localeOption('exportRows')} onClick={onClickExport} /> : null}
                 {props.docTemplates && !isMobile && props.searchBrowseParams === undefined ? <DocTemplateButton key="docTemplates" entity={props.entity} rowId={selectedRow ? selectedRow[dataKey] : undefined} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/> : null}
                 {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: AppButtonForRow) => <Button key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}
                 {props.searchBrowseParams === undefined ? props.appButtons : null}
-                {props.searchBrowseParams !== undefined ? <Button key="choose" label={xLocaleOption('chooseRow')} onClick={onClickChoose}/> : null}
+                {props.searchBrowseParams !== undefined ? <Button key="choose" label={localeOption('chooseRow')} onClick={onClickChoose}/> : null}
                 {editFormExists ? <FormDialog key="formDialog" dialogState={formDialogState} entity={props.entity}/> : null}
                 {exportRows ? <ExportRowsDialog key="exportRowsDialog" dialogState={exportRowsDialogState} hideDialog={() => setExportRowsDialogState({dialogOpened: false})}/> : null}
             </div>

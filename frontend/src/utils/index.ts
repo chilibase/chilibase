@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./ResponseError";
 // change the api name to CBUtils to preserve the name Utils for app
 export {Utils as CBUtils} from "./Utils";
 export * from "./UtilsMetadata";

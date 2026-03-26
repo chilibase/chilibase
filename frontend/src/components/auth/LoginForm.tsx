@@ -4,7 +4,7 @@ import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";
 import {LocalAuthLoginRequest, LocalAuthLoginResponse, PostLoginRequest} from "../../common/auth-api";
-import {XResponseError} from "../XResponseError";
+import {ResponseError} from "../../utils/ResponseError";
 
 // is used by local auth
 export const LoginForm = (props: {
@@ -24,8 +24,8 @@ export const LoginForm = (props: {
             xLocalAuthLoginResponse = await Utils.fetchOne('x-local-auth-login', xLocalAuthLoginRequest, false);
         }
         catch (e) {
-            if (e instanceof XResponseError
-                && (e as XResponseError).xResponseErrorBody.exceptionName === "UnauthorizedException") {
+            if (e instanceof ResponseError
+                && (e as ResponseError).responseErrorBody.exceptionName === "UnauthorizedException") {
                 alert("User authentication failed. Invalid username or password.");
             }
             else {

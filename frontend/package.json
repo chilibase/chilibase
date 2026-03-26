@@ -79,12 +79,11 @@
     "./input-text": "./lib/components/input-text/index.js",
     "./input-textarea": "./lib/components/input-textarea/index.js",
     "./lazy-data-table": "./lib/components/lazy-data-table/index.js",
+    "./locale": "./lib/components/locale/index.js",
     "./multi-select": "./lib/components/multi-select/index.js",
     "./search-button": "./lib/components/search-button/index.js",
     "./to-one-assoc-button": "./lib/components/to-one-assoc-button/index.js",
     "./use-state": "./lib/components/use-state/index.js",
-
-    "./XLocale": "./lib/components/XLocale.js",
 
     "./doc-templates": "./lib/modules/doc-templates/index.js",
     "./administration": "./lib/modules/administration/index.js",

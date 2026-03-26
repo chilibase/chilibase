@@ -6,7 +6,7 @@ import {XtDocTemplate} from "./xt-doc-template";
 import {Utils} from "../../utils/Utils";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {RunDocTemplateRequest} from "../../common/lib-api";
-import {xLocaleOption} from "../../components/XLocale";
+import {localeOption} from "../../components/locale/Locale";
 
 // TODO - DocTemplateButton is missing endpoint 'xt-run-doc-template' for this moment (endpoint was not moved to backend lib)
 export const DocTemplateButton = (props: {
@@ -38,7 +38,7 @@ export const DocTemplateButton = (props: {
 
         // in XLazyDataTable if no row is selected
         if (!props.rowId) {
-            alert(xLocaleOption('pleaseSelectRow'));
+            alert(localeOption('pleaseSelectRow'));
             return;
         }
 

@@ -1,7 +1,7 @@
 import {UtilsCommon} from "./UtilsCommon";
 import {IPostgresInterval} from "../utils/types";
 import {Assoc, Entity, Field} from "./EntityMetadata";
-import {xLocaleOption} from "../components/XLocale";
+import {localeOption} from "../components/locale/Locale";
 import {UtilsMetadataCommon} from "./UtilsMetadataCommon";
 
 export function stringFromUI(stringValue: string): string | null {
@@ -371,7 +371,7 @@ export function intervalAsUI(valueInterval: IPostgresInterval | null): string {
 
 export function booleanAsUIText(value: boolean | null): string {
     if (value !== null) {
-        return value ? xLocaleOption('yes') : xLocaleOption('no');
+        return value ? localeOption('yes') : localeOption('no');
     }
     else {
         return "";

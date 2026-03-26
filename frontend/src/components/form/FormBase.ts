@@ -10,7 +10,7 @@ import {Entity} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FindRowByIdResponse, UnlockRowRequest} from "../../common/lib-api";
 import {dateFromModel, datetimeAsUI} from "../../common/UtilsConversions";
-import {xLocaleOption} from "../XLocale";
+import {localeOption} from "../locale/Locale";
 
 export type OnSaveOrCancelProp = (entityRow: EntityRow | null, objectChange: OperationType) => void;
 
@@ -531,7 +531,7 @@ export abstract class FormBase extends Component<FormProps> {
     cancelEdit(): boolean {
         // confirm cancel if data was changed
         if (this.formDataChanged) {
-            if (!window.confirm(xLocaleOption('cancelEditConfirm'))) {
+            if (!window.confirm(localeOption('cancelEditConfirm'))) {
                 return false; // stops canceling editing, the form stays open (because this.props.onSaveOrCancel is not called)
             }
         }
@@ -666,7 +666,7 @@ export abstract class FormBase extends Component<FormProps> {
         let object: any = xFindRowByIdResponse.row;
         if (this.pessimisticLocking) {
             if (!xFindRowByIdResponse.lockAcquired) {
-                if (window.confirm(xLocaleOption('pessimisticLockNotAcquired', {lockUser: object.lockUser?.name, lockDate: datetimeAsUI(dateFromModel(object.lockDate))}))) {
+                if (window.confirm(localeOption('pessimisticLockNotAcquired', {lockUser: object.lockUser?.name, lockDate: datetimeAsUI(dateFromModel(object.lockDate))}))) {
                     // overwrite the lock in DB
                     const xFindRowByIdResponse: FindRowByIdResponse = await Utils.fetchByIdWithLock(this.entity!, Array.from(this.fieldSet), id, this.pessimisticLocking, true);
                     object = xFindRowByIdResponse.row;

@@ -370,8 +370,8 @@ export function intervalAsUI(valueInterval: IPostgresInterval | null): string {
 
 export function booleanAsUIText(value: boolean | null): string {
     if (value !== null) {
-        // TODO - xLocaleOption for backend
-        //return value ? xLocaleOption('yes') : xLocaleOption('no');
+        // TODO - localeOption for backend
+        //return value ? localeOption('yes') : localeOption('no');
         return value ? 'yes' : 'no';
     }
     else {
