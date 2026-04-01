@@ -3,7 +3,7 @@ import {FormBaseModif} from "../../components/form";
 import {Form} from "../../components/form";
 import {EntityRow} from "../../common/types";
 import {InputDecimal} from "../../components/input-decimal";
-import {InputDate} from "../../components/input-date";
+import {DateField} from "../../components/date-field";
 import {InputText} from "../../components/input-text";
 import {FormFooter} from "../../components/form";
 import {FormHeader} from "../../components/form";
@@ -22,7 +22,7 @@ export class XParamForm extends FormBaseModif {
                 <div className="x-form-row">
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
-                        <InputDate form={this} field="modifDate" label="Modified at" readOnly={true}/>
+                        <DateField form={this} field="modifDate" label="Modified at" readOnly={true}/>
                         <InputText form={this} field="modifUser.name" label="Modified by" inputStyle={{width:'12.5rem'}}/>
                         <InputText form={this} field="code" label="Code" inputStyle={{width:'16rem'}}/>
                         <InputText form={this} field="name" label="Name" inputStyle={{width:'45rem'}}/>

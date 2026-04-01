@@ -1,15 +1,15 @@
 import React from "react";
-import {InputDateBase} from "./InputDateBase";
+import {DateInput} from "./DateInput";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {dateFromModel, DateScale} from "../../common/UtilsConversions";
 
-export interface InputDateProps extends ValueFieldProps {
+export interface DateFieldProps extends ValueFieldProps {
     scale?: DateScale;
 }
 
-export class InputDate extends ValueField<InputDateProps> {
+export class DateField extends ValueField<DateFieldProps> {
 
-    constructor(props: InputDateProps) {
+    constructor(props: DateFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -29,10 +29,9 @@ export class InputDate extends ValueField<InputDateProps> {
         return (
             <div className="field grid">
                 <label htmlFor={this.props.field} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <InputDateBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}
+                <DateInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}
                            scale={this.props.scale ?? this.xField.scale} datetime={this.xField.type === 'datetime'}/>
             </div>
         );
     }
 }
-

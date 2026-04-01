@@ -18,7 +18,7 @@ import {OperationType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types"
 import {Utils} from "../../utils/Utils";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
 import {InputDecimalDT} from "../input-decimal";
-import {InputDateDT} from "../input-date";
+import {TableDateField} from "../date-field";
 import {TableCheckboxField} from "../checkbox-field";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
@@ -418,7 +418,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                 body = <InputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "date" || xField.type === "datetime") {
-                body = <InputDateDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
+                body = <TableDateField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "interval") {
                 body = <InputIntervalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;

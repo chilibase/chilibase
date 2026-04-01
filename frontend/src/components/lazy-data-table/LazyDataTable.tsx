@@ -38,7 +38,7 @@ import {LazyDataTableQueryParam} from "../../common/ExportImportParam";
 import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRowsDialog";
 import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
 import {FormProps, OnSaveOrCancelProp} from "../form";
-import {InputDateBase} from "../input-date";
+import {DateInput} from "../date-field";
 import {InputDecimalBase} from "../input-decimal";
 import {primeLocaleOption, localeOption} from "../locale/Locale";
 import {FtsInput, FtsInputValue} from "./FtsInput";
@@ -1504,19 +1504,19 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     } else if (xField.type === "date" || xField.type === "datetime") {
                         betweenFilter = getBetweenFilter(childColumn.props.betweenFilter, props.betweenFilter);
                         if (betweenFilter !== undefined) {
-                            // display: 'flex' umiestni InputDateBase elementy vedla seba
+                            // display: 'flex' umiestni DateInput elementy vedla seba
                             filterElement =
                                 <div style={betweenFilter === "row" ? {display: 'flex'} : undefined}>
-                                    <InputDateBase value={getFilterValue1(childColumn.props.field)}
+                                    <DateInput value={getFilterValue1(childColumn.props.field)}
                                                onChange={(value: Date | null) => setFilterValue1(childColumn.props.field, value, childColumn.props.autoFilter)}
                                                scale={xField.scale} datetime={xField.type === "datetime"}/>
-                                    <InputDateBase value={getFilterValue2(childColumn.props.field)}
+                                    <DateInput value={getFilterValue2(childColumn.props.field)}
                                                onChange={(value: Date | null) => setFilterValue2(childColumn.props.field, value, childColumn.props.autoFilter)}
                                                scale={xField.scale} datetime={xField.type === "datetime"}/>
                                 </div>;
                         } else {
                             const dateValue: Date | null = getFilterValue(childColumn.props.field);
-                            filterElement = <InputDateBase value={dateValue}
+                            filterElement = <DateInput value={dateValue}
                                                        onChange={(value: Date | null) => setFilterValue(childColumn.props.field, value, undefined, undefined, childColumn.props.autoFilter)}
                                                        scale={xField.scale} datetime={xField.type === "datetime"}/>
                         }

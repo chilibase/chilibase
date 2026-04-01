@@ -1,14 +1,14 @@
 import React from "react";
 import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
-import {InputDateBase} from "./InputDateBase";
+import {DateInput} from "./DateInput";
 import {dateFromModel} from "../../common/UtilsConversions";
 
-export interface InputDateDTProps extends TableValueFieldProps {
+export interface TableDateFieldProps extends TableValueFieldProps {
 }
 
-export class InputDateDT extends TableValueField<InputDateDTProps> {
+export class TableDateField extends TableValueField<TableDateFieldProps> {
 
-    constructor(props: InputDateDTProps) {
+    constructor(props: TableDateFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -24,9 +24,8 @@ export class InputDateDT extends TableValueField<InputDateDTProps> {
 
     render() {
         return (
-            <InputDateBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}
+            <DateInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}
                        scale={this.xField.scale} datetime={this.xField.type === 'datetime'}/>
         );
     }
 }
-

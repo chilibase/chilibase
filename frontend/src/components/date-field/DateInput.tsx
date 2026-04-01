@@ -6,7 +6,7 @@ import {FormEvent} from "primereact/ts-helpers";
 
 // wrapper for Calendar component
 // TODO - nefunguje rezim datetime pre zapis - dorobit konverziu!
-export const InputDateBase = (props: {
+export const DateInput = (props: {
     id?: string;
     value: Date | null;
     onChange: (value: Date | null) => void;
@@ -99,7 +99,6 @@ export const InputDateBase = (props: {
     );
 }
 
-InputDateBase.defaultProps = {
+DateInput.defaultProps = {
     scale: DateScale.Date
 };
-

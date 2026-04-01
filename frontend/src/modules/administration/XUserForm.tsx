@@ -9,7 +9,7 @@ import {FormFooter} from "../../components/form";
 import {CheckboxField} from "../../components/checkbox-field";
 import {EnvVar, ViteAuth} from "../../components/env-vars/EnvVars";
 import {FormBaseModif} from "../../components/form";
-import {InputDate} from "../../components/input-date";
+import {DateField} from "../../components/date-field";
 import {EntityRow} from "../../common/types";
 import {FormHeader} from "../../components/form";
 
@@ -111,7 +111,7 @@ export class XUserForm extends FormBaseModif {
                         <CheckboxField form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         <CheckboxField form={this} field="admin" label="Admin" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         {passwordElems}
-                        <InputDate form={this} field="modifDate" label="Modified at" readOnly={true} labelStyle={{width:'14rem'}}/>
+                        <DateField form={this} field="modifDate" label="Modified at" readOnly={true} labelStyle={{width:'14rem'}}/>
                         <InputText form={this} field="modifUser.name" label="Modified by" size={20} labelStyle={{width:'14rem'}}/>
                     </div>
                 </div>
