@@ -51,7 +51,7 @@ import {MultilineRenderer} from "./MultilineRenderer";
 import {HtmlRenderer} from "./HtmlRenderer";
 import {OcfDropdown} from "./OcfDropdown";
 import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../field-set/XFieldSetBase";
-import {AutoCompleteBase} from "../auto-complete";
+import {AutocompleteInput} from "../autocomplete-field";
 import {InputTextBase} from "../input-text";
 import {useStateStorage} from "../use-state/useStateStorage";
 import {useStateStorageBase} from "../use-state/useStateStorageBase";
@@ -1463,7 +1463,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     }
                     const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOneByPath(xEntity, assocField);
                     const object: any | null = getFilterValue(childColumn.props.field);
-                    filterElement = <AutoCompleteBase value={object}
+                    filterElement = <AutocompleteInput value={object}
                                                        onChange={(object: any, objectChange: OperationType) => setFilterValue(childColumn.props.field, object, undefined, object !== null ? [{
                                                            where: `[${assocField}] = ${object['id']}`,
                                                            params: {}
@@ -1721,7 +1721,7 @@ export type AutoCompleteInFilterProps = {
     filter?: CustomFilter;
     sortField?: string | DataTableSortMeta[];
     fields?: string[];
-    // copy of some props in AutoCompleteBase (?)
+    // copy of some props in AutocompleteInput (?)
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     field?: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)

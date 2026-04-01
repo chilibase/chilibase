@@ -65,7 +65,7 @@ const headerTemplate = () => {
 
 // koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
 // pri velkych formularoch je totiz volanie zmeny stavu this.setState({object: this.state.object, errorMap: this.state.errorMap}); pomale
-export interface EditorBaseProps {
+export interface RichTextInputProps {
     id?: string;
     value: string | null;
     onChange: (value: string | null) => void;
@@ -74,7 +74,7 @@ export interface EditorBaseProps {
     style?: React.CSSProperties;
 }
 
-export const EditorBase = (props: EditorBaseProps) => {
+export const RichTextInput = (props: RichTextInputProps) => {
 
     // true, ak uzivatel typuje hodnotu
     // false, ak bol zavolany onBlur
@@ -106,7 +106,7 @@ export const EditorBase = (props: EditorBaseProps) => {
         else {
             htmlValue = props.value;
         }
-        return htmlValue !== null ? htmlValue : undefined; // value v Editor nechce null, chce undefined
+        return htmlValue !== null ? htmlValue : undefined; // value v primereact Editor nechce null, chce undefined
     }
 
     return (

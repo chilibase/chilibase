@@ -6,7 +6,7 @@ import {Password} from "primereact/password";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {FormFooter} from "../../components/form";
-import {Checkbox} from "../../components/checkbox";
+import {CheckboxField} from "../../components/checkbox-field";
 import {EnvVar, ViteAuth} from "../../components/env-vars/EnvVars";
 import {FormBaseModif} from "../../components/form";
 import {InputDate} from "../../components/input-date";
@@ -108,8 +108,8 @@ export class XUserForm extends FormBaseModif {
                         <InputDecimal form={this} field="id" label="ID" readOnly={true} labelStyle={{width:'14rem'}}/>
                         <InputText form={this} field="username" label="Username" size={30} labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         <InputText form={this} field="name" label="Name" size={30} labelStyle={{width:'14rem'}}/>
-                        <Checkbox form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
-                        <Checkbox form={this} field="admin" label="Admin" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
+                        <CheckboxField form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
+                        <CheckboxField form={this} field="admin" label="Admin" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         {passwordElems}
                         <InputDate form={this} field="modifDate" label="Modified at" readOnly={true} labelStyle={{width:'14rem'}}/>
                         <InputText form={this} field="modifUser.name" label="Modified by" size={20} labelStyle={{width:'14rem'}}/>

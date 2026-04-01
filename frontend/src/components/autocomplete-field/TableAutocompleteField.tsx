@@ -3,14 +3,14 @@ import {TableFormField, TableFormFieldProps} from "../form-data-table";
 import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
 import {FieldError} from "../form/FormErrors";
-import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
+import {AutocompleteInput, SuggestionsLoadProp} from "./AutocompleteInput";
 import {TableFieldFilterProp} from "../form-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {DataTableSortMeta} from "primereact/datatable";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface AutoCompleteDTProps extends TableFormFieldProps {
+export interface TableAutocompleteFieldProps extends TableFormFieldProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -23,7 +23,7 @@ export interface AutoCompleteDTProps extends TableFormFieldProps {
                         // poznamka: treba zabezpecit volanie setState, ak overridneme suggestions
                         // poznamka2: ak sa zmeni asociovany objekt cez "assocForm",
                         // tak treba nejako zabezpecit aby sa zmenili data aj v tychto overridnutych suggestions
-                        // (pozri AutoCompleteBase.formDialogOnSaveOrCancel)
+                        // (pozri AutocompleteInput.formDialogOnSaveOrCancel)
     suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     splitQueryValue?: boolean;
@@ -36,19 +36,19 @@ export interface AutoCompleteDTProps extends TableFormFieldProps {
     inputClassName?: string;
 }
 
-export class AutoCompleteDT extends TableFormField<AutoCompleteDTProps> {
+export class TableAutocompleteField extends TableFormField<TableAutocompleteFieldProps> {
 
     protected xAssoc: Assoc;
-    protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
+    protected errorInInput: string | undefined; // sem si odkladame info o nevalidnosti AutocompleteInput (nevalidnost treba kontrolovat na stlacenie Save)
 
-    constructor(props: AutoCompleteDTProps) {
+    constructor(props: TableAutocompleteFieldProps) {
         super(props);
 
         this.xAssoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.entity), props.assocField);
-        this.errorInBase = undefined;
+        this.errorInInput = undefined;
 
-        this.onChangeAutoCompleteBase = this.onChangeAutoCompleteBase.bind(this);
-        this.onErrorChangeAutoCompleteBase = this.onErrorChangeAutoCompleteBase.bind(this);
+        this.onChangeAutocompleteInput = this.onChangeAutocompleteInput.bind(this);
+        this.onErrorChangeAutocompleteInput = this.onErrorChangeAutocompleteInput.bind(this);
     }
 
     // componentDidMount() {
@@ -67,20 +67,20 @@ export class AutoCompleteDT extends TableFormField<AutoCompleteDTProps> {
         return assocObject;
     }
 
-    onChangeAutoCompleteBase(object: any, objectChange: OperationType) {
+    onChangeAutocompleteInput(object: any, objectChange: OperationType) {
         this.onValueChangeBase(object, this.props.onChange, objectChange);
     }
 
-    onErrorChangeAutoCompleteBase(error: string | undefined) {
-        this.errorInBase = error; // odlozime si error
+    onErrorChangeAutocompleteInput(error: string | undefined) {
+        this.errorInInput = error; // odlozime si error
     }
 
     // overrides method in FormField
     validate(): {field: string; fieldError: FieldError} | undefined {
-        if (this.errorInBase) {
+        if (this.errorInInput) {
             // error message dame na onChange, mohli by sme aj na onSet (predtym onBlur), je to jedno viac-menej
             // TODO - fieldLabel
-            return {field: this.getField(), fieldError: {onChange: this.errorInBase, fieldLabel: undefined}};
+            return {field: this.getField(), fieldError: {onChange: this.errorInInput, fieldLabel: undefined}};
         }
         // zavolame povodnu metodu
         return super.validate();
@@ -93,15 +93,15 @@ export class AutoCompleteDT extends TableFormField<AutoCompleteDTProps> {
         // TODO - size
         //const size = this.props.size ?? xDisplayField.length;
 
-        // div className="col" nam zabezpeci aby AutoCompleteBase nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
+        // div className="col" nam zabezpeci aby AutocompleteInput nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
         return (
-            <AutoCompleteBase value={this.getValue()} onChange={this.onChangeAutoCompleteBase}
+            <AutocompleteInput value={this.getValue()} onChange={this.onChangeAutocompleteInput}
                                field={this.props.displayField} itemTemplate={this.props.itemTemplate}
                                SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement}
                                ValueForm={this.props.AssocForm} valueFormElement={this.props.assocFormElement}
                                dropdownButtonEnabled={this.props.dropdownButtonEnabled}
                                idField={xEntityAssoc.idField} readOnly={this.isReadOnly()}
-                               error={this.getError()} onErrorChange={this.onErrorChangeAutoCompleteBase}
+                               error={this.getError()} onErrorChange={this.onErrorChangeAutocompleteInput}
                                suggestions={this.props.suggestions} suggestionsLoad={this.props.suggestionsLoad} lazyLoadMaxRows={this.props.lazyLoadMaxRows} splitQueryValue={this.props.splitQueryValue}
                                addRowEnabled={this.props.addRowEnabled} minLength={this.props.minLength} scrollHeight={this.props.scrollHeight}
                                suggestionsQuery={{entity: this.xAssoc.entityName, filter: () => this.getFilterBase(this.props.filter), sortField: this.props.sortField, fields: this.props.fields}}

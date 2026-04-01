@@ -1,13 +1,13 @@
 import React from "react";
 import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
-import {CheckboxBase} from "./CheckboxBase";
+import {CheckboxInput} from "./CheckboxInput";
 
-export interface CheckboxDTProps extends TableValueFieldProps {
+export interface TableCheckboxFieldProps extends TableValueFieldProps {
 }
 
-export class CheckboxDT extends TableValueField<CheckboxDTProps> {
+export class TableCheckboxField extends TableValueField<TableCheckboxFieldProps> {
 
-    constructor(props: CheckboxDTProps) {
+    constructor(props: TableCheckboxFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -23,10 +23,9 @@ export class CheckboxDT extends TableValueField<CheckboxDTProps> {
 
     render() {
         return (
-            <CheckboxBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
+            <CheckboxInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
                            readOnly={this.isReadOnly()} isNotNull={this.isNotNull()}
                            error={this.getError()} style={this.props.inputStyle}/>
         );
     }
 }
-

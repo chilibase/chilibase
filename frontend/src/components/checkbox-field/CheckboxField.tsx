@@ -1,16 +1,16 @@
 import React from "react";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
-import {CheckboxBase} from "./CheckboxBase";
+import {CheckboxInput} from "./CheckboxInput";
 
-export interface CheckboxProps extends ValueFieldProps {
+export interface CheckboxFieldProps extends ValueFieldProps {
     // aby sme vedeli zobrazit dvojstavovy checkbox aj ked v DB mame null stlpec
     // zatial len sem mozno v buducnosti dame na vsetky komponenty
     isNotNull?: boolean;
 }
 
-export class Checkbox extends ValueField<CheckboxProps> {
+export class CheckboxField extends ValueField<CheckboxFieldProps> {
 
-    constructor(props: CheckboxProps) {
+    constructor(props: CheckboxFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -29,7 +29,7 @@ export class Checkbox extends ValueField<CheckboxProps> {
     }
 
     render() {
-        let element: JSX.Element = <CheckboxBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
+        let element: JSX.Element = <CheckboxInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
                                                   readOnly={this.isReadOnly()} isNotNull={this.isNotNull()}
                                                   tooltip={this.props.tooltip} error={this.getError()} style={this.props.inputStyle}/>;
 
@@ -43,4 +43,3 @@ export class Checkbox extends ValueField<CheckboxProps> {
         return element;
     }
 }
-

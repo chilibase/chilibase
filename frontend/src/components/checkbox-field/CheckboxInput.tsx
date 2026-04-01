@@ -3,7 +3,7 @@ import {TriStateCheckbox, TriStateCheckboxChangeEvent} from "primereact/tristate
 import {Checkbox, CheckboxChangeEvent} from "primereact/checkbox";
 import {Utils} from "../../utils/Utils";
 
-export const CheckboxBase = (props: {
+export const CheckboxInput = (props: {
     id?: string;
     value: boolean | null;
     onChange: (value: boolean | null) => void;
@@ -45,4 +45,3 @@ export const CheckboxBase = (props: {
                                 disabled={props.readOnly} style={props.style} {...Utils.createTooltipOrErrorProps(props.error, props.tooltip)}/>
     );
 }
-

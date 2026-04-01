@@ -32,7 +32,7 @@ interface ButtonItem {
 export type SuggestionsLoadProp = "eager" | "onSearchStart" | "lazy";
 export type SuggestionsLoadType = "suggestions" | SuggestionsLoadProp;
 
-export interface AutoCompleteBaseProps {
+export interface AutocompleteInputProps {
     value: any;
     onChange: (object: any, objectChange: OperationType) => void; // odovzda vybraty objekt, ak bol vybraty objekt zmeneny cez dialog (aj v DB), tak vrati objectChange !== OperationType.None
     suggestions?: any[]; // ak su priamo zadane suggestions, nepouziva sa suggestionsLoad a suggestionsQuery (vynimka je ak mame aj searchBrowse, vtedy do searchBrowse posleme filter (aj sortField?))
@@ -61,12 +61,12 @@ export interface AutoCompleteBaseProps {
     scrollHeight?: string; // Maximum height of the suggestions panel.
     inputClassName?: string;
     readOnly?: boolean;
-    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny (pozor! netreba sem davat error z onErrorCahnge, ten si riesi AutoCompleteBase sam)
-    onErrorChange: (error: string | undefined) => void; // "vystup" pre validacnu chybu ktoru "ohlasi" AutoComplete; chyba by mala byt ohlasena vzdy ked this.state.inputChanged = true (a nemame focus na inpute)
+    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny (pozor! netreba sem davat error z onErrorCahnge, ten si riesi AutocompleteInput sam)
+    onErrorChange: (error: string | undefined) => void; // "vystup" pre validacnu chybu ktoru "ohlasi" AutocompleteInput; chyba by mala byt ohlasena vzdy ked this.state.inputChanged = true (a nemame focus na inpute)
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 
-export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
+export class AutocompleteInput extends Component<AutocompleteInputProps> {
 
     private static valueMoreSuggestions: string = "...";
 
@@ -103,7 +103,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
 
     xEntity: Entity | undefined;
 
-    constructor(props: AutoCompleteBaseProps) {
+    constructor(props: AutocompleteInputProps) {
         super(props);
 
         this.autoCompleteRef = React.createRef();
@@ -196,7 +196,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
 
     async fetchSuggestions(): Promise<any[]> {
         if (!this.props.suggestionsQuery) {
-            throw `AutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
+            throw `AutocompleteInput.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
         }
         return Utils.fetchRows(
             this.props.suggestionsQuery.entity,
@@ -211,7 +211,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
         if (!sortField) {
             // len pri ne-lazy pouzivame ako default sort prvy displayField
             // pri lazy to spomaluje selecty v pripade ze klauzula LIMIT vyrazne obmedzi vysledny zoznam suggestions
-            // pri lazy zosortujeme na frontende v AutoCompleteBase
+            // pri lazy zosortujeme na frontende v AutocompleteInput
             if (this.getSuggestionsLoadType() !== "lazy") {
                 sortField = this.getFirstField();
             }
@@ -296,7 +296,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             // tento specialny select mozme v buducnosti dorobit (na backende) ak chceme podporovat (rychle) sortovanie v DB pre autocomplete
 
             if (!this.props.suggestionsQuery) {
-                throw `AutoCompleteBase.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
+                throw `AutocompleteInput.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
             }
             let filter: CustomFilter | undefined = Utils.evalFilter(this.props.suggestionsQuery.filter);
             const suggestionsRequest: LazyAutoCompleteSuggestionsRequest = {
@@ -317,7 +317,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
             // ak mame o 1 zaznam viac ako je lazyLoadMaxRows, zmenime posledny zaznam na ...
             // TODO - lepsie by bolo posledny zaznam vyhodit a popisok ... zobrazit do footer-a (odpadnu problemy z pripadnou selekciou pseudozaznamu ...)
             if (filteredSuggestions.length > this.props.lazyLoadMaxRows) {
-                filteredSuggestions[filteredSuggestions.length - 1] = AutoCompleteBase.valueMoreSuggestions; // zatial priamo string
+                filteredSuggestions[filteredSuggestions.length - 1] = AutocompleteInput.valueMoreSuggestions; // zatial priamo string
             }
         }
 
@@ -325,7 +325,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
     }
 
     onChange(e: AutoCompleteChangeEvent) {
-        if (typeof e.value === 'string' && !AutoCompleteBase.isMoreSuggestions(e.value)) {
+        if (typeof e.value === 'string' && !AutocompleteInput.isMoreSuggestions(e.value)) {
             this.setState({inputChanged: true, inputValueState: e.value});
             this.wasOnChangeCalled = false; // reset na default hodnotu
         }
@@ -335,7 +335,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
         // nevolame this.setObjectValue ak uz bol zavolany z onBlur
         if (!this.wasOnChangeCalled) {
             // nedovolime vybrat specialny zaznam ...
-            if (!AutoCompleteBase.isMoreSuggestions(e.value)) {
+            if (!AutocompleteInput.isMoreSuggestions(e.value)) {
                 this.setObjectValue(e.value, OperationType.None);
                 // ak sme na mobile, nechceme aby sa otvorila klavesnica mobilu, preto zavolame removeFocus
                 // pouzivame setTimeout, priame volanie nefungovalo
@@ -604,7 +604,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
     onEditAssocValue() {
         // otvorime dialog na update
         if (this.props.idField === undefined) {
-            throw "AutoCompleteBase: property valueForm is defined but property idField is also needed for form editation.";
+            throw "AutocompleteInput: property valueForm is defined but property idField is also needed for form editation.";
         }
         const formDialogState: FormDialogState = {
             opened: true,
@@ -637,7 +637,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
     itemTemplateString(suggestion: any): string {
         const itemValue: React.ReactNode = this.computeItemTemplate(suggestion, -1, true);
         if (typeof itemValue !== "string") {
-            throw `AutoCompleteBase: function of the property itemTemplate created non-string value for suggestion. Please create string value if parameter createStringValue = true.`;
+            throw `AutocompleteInput: function of the property itemTemplate created non-string value for suggestion. Please create string value if parameter createStringValue = true.`;
         }
         return itemValue;
     }
@@ -645,7 +645,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
     computeItemTemplate(suggestion: any, index: number, createStringValue: boolean): React.ReactNode {
         let itemTemplate: React.ReactNode;
         // osetrenie specialnej polozky ... dame sem, nech sa to nemusi inde riesit
-        if (AutoCompleteBase.isMoreSuggestions(suggestion)) {
+        if (AutocompleteInput.isMoreSuggestions(suggestion)) {
             itemTemplate = suggestion;
         }
         else {
@@ -660,7 +660,7 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
 
     computeDefaultDisplayValue(suggestion: any): string {
         let displayValue: string;
-        if (AutoCompleteBase.isMoreSuggestions(suggestion)) {
+        if (AutocompleteInput.isMoreSuggestions(suggestion)) {
             displayValue = suggestion;
         }
         else {
@@ -669,9 +669,9 @@ export class AutoCompleteBase extends Component<AutoCompleteBaseProps> {
         return displayValue;
     }
 
-    // vrati true ak sa jedna o specialny typ AutoCompleteBase.valueMoreSuggestions
+    // vrati true ak sa jedna o specialny typ AutocompleteInput.valueMoreSuggestions
     static isMoreSuggestions(suggestion: any): boolean {
-        return typeof suggestion === "string" && suggestion === AutoCompleteBase.valueMoreSuggestions;
+        return typeof suggestion === "string" && suggestion === AutocompleteInput.valueMoreSuggestions;
     }
 
     // takto cez metodku, mozno sa metodka vola len ked sa otvori dialog a usetrime nieco...

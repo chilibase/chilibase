@@ -1,19 +1,19 @@
 import React from "react";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
-import {EditorBase} from "./EditorBase";
+import {RichTextInput} from "./RichTextInput";
 
-export interface EditorProps extends ValueFieldProps {
+export interface RichTextFieldProps extends ValueFieldProps {
     labelOnTop: boolean;
 }
 
-export class Editor extends ValueField<EditorProps> {
+export class RichTextField extends ValueField<RichTextFieldProps> {
 
     public static defaultProps = {
         labelOnTop: false
     };
 
-    constructor(props: EditorProps) {
+    constructor(props: RichTextFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -41,13 +41,13 @@ export class Editor extends ValueField<EditorProps> {
         const widthValue: string = this.props.labelOnTop ? '100%' : `calc(100% - ${Utils.FIELD_LABEL_WIDTH})`;
         Utils.addCssPropIfNotExists(style, {width: widthValue});
 
-        // x-editor-label-on-top - nastavuje orientation: column, aby boli label a EditorBase pod sebou (robene podla XInputTextarea)
-        // EditorBase renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla XInputTextarea)
+        // x-editor-label-on-top - nastavuje orientation: column, aby boli label a RichTextInput pod sebou (robene podla XInputTextarea)
+        // RichTextInput renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla XInputTextarea)
         return (
             <div className={!this.props.labelOnTop ? 'field grid' : 'field grid x-editor-label-on-top'}>
                 <label htmlFor={this.props.field} className={!this.props.labelOnTop ? 'col-fixed' : undefined} style={this.getLabelStyle()}>{this.getLabel()}</label>
                 {this.props.form.state.entityRow ?
-                    <EditorBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()}
+                    <RichTextInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()}
                                  style={style} error={this.getError()}/>
                     : null
                 }

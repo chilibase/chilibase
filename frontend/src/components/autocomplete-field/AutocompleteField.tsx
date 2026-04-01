@@ -2,14 +2,14 @@ import React from "react";
 import {FilterProp, FormField, FormFieldProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
-import {AutoCompleteBase, SuggestionsLoadProp} from "./AutoCompleteBase";
+import {AutocompleteInput, SuggestionsLoadProp} from "./AutocompleteInput";
 import {FieldError} from "../form/FormErrors";
 import {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {FormProps} from "../form";
 import {SearchBrowseProps} from "../lazy-data-table";
 
-export interface AutoCompleteProps extends FormFieldProps {
+export interface AutocompleteFieldProps extends FormFieldProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - autocomplete will run on <assoc2>)
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -21,7 +21,7 @@ export interface AutoCompleteProps extends FormFieldProps {
     insertButtonTooltip?: string;
     updateButtonTooltip?: string;
     searchButtonTooltip?: string;
-    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v AutoCompleteDT) (suggestionsLoad sa nepouziva)
+    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v TableAutocompleteField) (suggestionsLoad sa nepouziva)
     suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     splitQueryValue?: boolean;
@@ -36,19 +36,19 @@ export interface AutoCompleteProps extends FormFieldProps {
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 
-export class AutoComplete extends FormField<AutoCompleteProps> {
+export class AutocompleteField extends FormField<AutocompleteFieldProps> {
 
     protected xAssoc: Assoc;
-    protected errorInBase: string | undefined; // sem si odkladame info o nevalidnosti AutoCompleteBase (nevalidnost treba kontrolovat na stlacenie Save)
+    protected errorInInput: string | undefined; // sem si odkladame info o nevalidnosti AutocompleteInput (nevalidnost treba kontrolovat na stlacenie Save)
 
-    constructor(props: AutoCompleteProps) {
+    constructor(props: AutocompleteFieldProps) {
         super(props);
 
         this.xAssoc = UtilsMetadataCommon.getAssocToOneByPath(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
-        this.errorInBase = undefined;
+        this.errorInInput = undefined;
 
-        this.onChangeAutoCompleteBase = this.onChangeAutoCompleteBase.bind(this);
-        this.onErrorChangeAutoCompleteBase = this.onErrorChangeAutoCompleteBase.bind(this);
+        this.onChangeAutocompleteInput = this.onChangeAutocompleteInput.bind(this);
+        this.onErrorChangeAutocompleteInput = this.onErrorChangeAutocompleteInput.bind(this);
 
         props.form.addField(props.assocField + '.' + this.getFirstDisplayField());
     }
@@ -73,19 +73,19 @@ export class AutoComplete extends FormField<AutoCompleteProps> {
         return assocObject;
     }
 
-    onChangeAutoCompleteBase(object: any, objectChange: OperationType) {
+    onChangeAutocompleteInput(object: any, objectChange: OperationType) {
         this.onValueChangeBase(object, this.props.onChange, objectChange);
     }
 
-    onErrorChangeAutoCompleteBase(error: string | undefined) {
-        this.errorInBase = error; // odlozime si error
+    onErrorChangeAutocompleteInput(error: string | undefined) {
+        this.errorInInput = error; // odlozime si error
     }
 
     // overrides method in FormField
     validate(): {field: string; fieldError: FieldError} | undefined {
-        if (this.errorInBase) {
+        if (this.errorInInput) {
             // error message dame na onChange, mohli by sme aj na onSet (predtym onBlur), je to jedno viac-menej
-            return {field: this.getField(), fieldError: {onChange: this.errorInBase, fieldLabel: this.getLabel()}};
+            return {field: this.getField(), fieldError: {onChange: this.errorInInput, fieldLabel: this.getLabel()}};
         }
         // zavolame povodnu metodu
         return super.validate();
@@ -95,11 +95,11 @@ export class AutoComplete extends FormField<AutoCompleteProps> {
 
         const xEntityAssoc = UtilsMetadataCommon.getEntity(this.xAssoc.entityName);
 
-        // div className="col" nam zabezpeci aby AutoCompleteBase nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
+        // div className="col" nam zabezpeci aby AutocompleteInput nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
         return (
             <div className="field grid">
                 <label htmlFor={this.props.assocField} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <AutoCompleteBase value={this.getValue()} onChange={this.onChangeAutoCompleteBase}
+                <AutocompleteInput value={this.getValue()} onChange={this.onChangeAutocompleteInput}
                                    field={this.props.displayField} itemTemplate={this.props.itemTemplate}
                                    SearchBrowse={this.props.SearchBrowse} searchBrowseElement={this.props.searchBrowseElement}
                                    ValueForm={this.props.AssocForm} valueFormElement={this.props.assocFormElement}
@@ -108,7 +108,7 @@ export class AutoComplete extends FormField<AutoCompleteProps> {
                                    updateButtonTooltip={this.props.updateButtonTooltip}
                                    searchButtonTooltip={this.props.searchButtonTooltip}
                                    idField={xEntityAssoc.idField} readOnly={this.isReadOnly()}
-                                   error={this.getError()} onErrorChange={this.onErrorChangeAutoCompleteBase}
+                                   error={this.getError()} onErrorChange={this.onErrorChangeAutocompleteInput}
                                    width={this.props.width} scrollHeight={this.props.scrollHeight}
                                    suggestions={this.props.suggestions} suggestionsLoad={this.props.suggestionsLoad} lazyLoadMaxRows={this.props.lazyLoadMaxRows} splitQueryValue={this.props.splitQueryValue} minLength={this.props.minLength}
                                    suggestionsQuery={{entity: this.xAssoc.entityName, filter: () => this.getFilterBase(this.props.filter), sortField: this.props.sortField, fields: this.props.fields}}

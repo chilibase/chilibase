@@ -19,11 +19,11 @@ import {Utils} from "../../utils/Utils";
 import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
 import {InputDecimalDT} from "../input-decimal";
 import {InputDateDT} from "../input-date";
-import {CheckboxDT} from "../checkbox";
+import {TableCheckboxField} from "../checkbox-field";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
 import {CustomFilter} from "../../common/FindParam";
-import {AutoCompleteDT} from "../auto-complete";
+import {TableAutocompleteField} from "../autocomplete-field";
 import {TableFormField} from "./TableFormField";
 import {FieldErrorMap} from "../form/FormErrors";
 import {ButtonIconNarrow} from "../button";
@@ -35,7 +35,7 @@ import {InputIntervalDT} from "../input-interval/InputIntervalDT";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {SearchBrowseProps} from "../lazy-data-table";
 import {InputTextareaDT} from "../input-textarea";
-import {SuggestionsLoadProp} from "../auto-complete";
+import {SuggestionsLoadProp} from "../autocomplete-field";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
 export interface RowTechData {
@@ -424,7 +424,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                 body = <InputIntervalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "boolean") {
-                body = <CheckboxDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
+                body = <TableCheckboxField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else {
                 // xField.type === "string", pripadne ine jednoduche typy
@@ -437,7 +437,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
         else if (columnProps.type === "autoComplete") {
             const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
-            body = <AutoCompleteDT form={this.props.form} entity={this.getEntity()}
+            body = <TableAutocompleteField form={this.props.form} entity={this.getEntity()}
                                     assocField={columnPropsAutoComplete.assocField} displayField={columnPropsAutoComplete.displayField} itemTemplate={columnPropsAutoComplete.itemTemplate}
                                     SearchBrowse={columnPropsAutoComplete.SearchBrowse} searchBrowseElement={columnPropsAutoComplete.searchBrowseElement}
                                     AssocForm={columnPropsAutoComplete.AssocForm} assocFormElement={columnPropsAutoComplete.assocFormElement}
@@ -842,7 +842,7 @@ export interface FormAutoCompleteColumnProps extends FormColumnBaseProps {
     sortField?: string | DataTableSortMeta[];
     fields?: string[]; // ak chceme pri citani suggestions nacitat aj asociovane objekty
     scrollHeight?: string; // Maximum height of the suggestions panel.
-    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v AutoCompleteDT)
+    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v TableAutocompleteField)
     suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default)
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
 }
