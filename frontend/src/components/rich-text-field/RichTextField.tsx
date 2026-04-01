@@ -41,8 +41,8 @@ export class RichTextField extends ValueField<RichTextFieldProps> {
         const widthValue: string = this.props.labelOnTop ? '100%' : `calc(100% - ${Utils.FIELD_LABEL_WIDTH})`;
         Utils.addCssPropIfNotExists(style, {width: widthValue});
 
-        // x-editor-label-on-top - nastavuje orientation: column, aby boli label a RichTextInput pod sebou (robene podla XInputTextarea)
-        // RichTextInput renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla XInputTextarea)
+        // x-editor-label-on-top - nastavuje orientation: column, aby boli label a RichTextInput pod sebou (robene podla MultilineTextField)
+        // RichTextInput renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla MultilineTextField)
         return (
             <div className={!this.props.labelOnTop ? 'field grid' : 'field grid x-editor-label-on-top'}>
                 <label htmlFor={this.props.field} className={!this.props.labelOnTop ? 'col-fixed' : undefined} style={this.getLabelStyle()}>{this.getLabel()}</label>

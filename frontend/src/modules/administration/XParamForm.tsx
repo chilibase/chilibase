@@ -4,7 +4,7 @@ import {Form} from "../../components/form";
 import {EntityRow} from "../../common/types";
 import {InputDecimal} from "../../components/input-decimal";
 import {DateField} from "../../components/date-field";
-import {InputText} from "../../components/input-text";
+import {TextField} from "../../components/text-field";
 import {FormFooter} from "../../components/form";
 import {FormHeader} from "../../components/form";
 
@@ -23,10 +23,10 @@ export class XParamForm extends FormBaseModif {
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
                         <DateField form={this} field="modifDate" label="Modified at" readOnly={true}/>
-                        <InputText form={this} field="modifUser.name" label="Modified by" inputStyle={{width:'12.5rem'}}/>
-                        <InputText form={this} field="code" label="Code" inputStyle={{width:'16rem'}}/>
-                        <InputText form={this} field="name" label="Name" inputStyle={{width:'45rem'}}/>
-                        <InputText form={this} field="value" label="Value" inputStyle={{width:'45rem'}}/>
+                        <TextField form={this} field="modifUser.name" label="Modified by" inputStyle={{width:'12.5rem'}}/>
+                        <TextField form={this} field="code" label="Code" inputStyle={{width:'16rem'}}/>
+                        <TextField form={this} field="name" label="Name" inputStyle={{width:'45rem'}}/>
+                        <TextField form={this} field="value" label="Value" inputStyle={{width:'45rem'}}/>
                     </div>
                 </div>
                 <FormFooter form={this}/>

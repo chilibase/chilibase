@@ -1,10 +1,10 @@
 import React from "react";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
-import {InputTextareaBase} from "./InputTextareaBase";
+import {MultilineTextInput} from "./MultilineTextInput";
 import {Tooltip} from "primereact/tooltip";
 
-export interface InputTextareaProps extends ValueFieldProps {
+export interface MultilineTextFieldProps extends ValueFieldProps {
     rows?: number;
     cols?: number | "full"; // full - maximalna sirka (width:100%)
     labelOnTop?: boolean;
@@ -12,19 +12,19 @@ export interface InputTextareaProps extends ValueFieldProps {
     fieldStyle?: React.CSSProperties; // zatial sem, mozno v buducnosti posunieme do superclass
 }
 
-export class InputTextarea extends ValueField<InputTextareaProps> {
+export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
 
     public static defaultProps = {
         cols: "full"
     };
 
-    inputTextareaBaseRef: any;
+    multilineTextInputRef: any;
     labelOnTop: boolean;
 
-    constructor(props: InputTextareaProps) {
+    constructor(props: MultilineTextFieldProps) {
         super(props);
 
-        this.inputTextareaBaseRef = React.createRef();
+        this.multilineTextInputRef = React.createRef();
 
         if (props.labelOnTop !== undefined) {
             this.labelOnTop = props.labelOnTop;
@@ -50,8 +50,8 @@ export class InputTextarea extends ValueField<InputTextareaProps> {
 
     // api method - can be called through "ref" from parent if needed to adjust the height of the input textarea according to the (changed) content
     autoResize() {
-        if (this.inputTextareaBaseRef.current) {
-            this.inputTextareaBaseRef.current.autoResize();
+        if (this.multilineTextInputRef.current) {
+            this.multilineTextInputRef.current.autoResize();
         }
     }
 
@@ -94,13 +94,13 @@ export class InputTextarea extends ValueField<InputTextareaProps> {
         const {labelTooltip, labelElemId, inputTooltip} = this.getTooltipsAndLabelElemId(
             this.props.field, label, value, this.props.labelTooltip, this.props.tooltip, this.props.desc);
 
-        // InputTextarea renderujeme az ked mame nacitany object, lebo inac pri autoResize sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu)
+        // MultilineTextField renderujeme az ked mame nacitany object, lebo inac pri autoResize sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu)
         return (
             <div className={!this.labelOnTop ? 'field grid' : 'field grid x-inputtextarea-label-on-top'} style={fieldStyle}>
                 {label !== undefined ? <label id={labelElemId} htmlFor={this.props.field} className={!this.labelOnTop ? 'col-fixed' : undefined} style={labelStyle}>{label}</label> : null}
                 {labelTooltip ? <Tooltip target={`#${labelElemId}`} content={labelTooltip}/> : null}
                 {this.props.form.state.entityRow ?
-                    <InputTextareaBase ref={this.inputTextareaBaseRef} id={this.props.field} value={value} onChange={this.onValueChange} readOnly={this.isReadOnly()}
+                    <MultilineTextInput ref={this.multilineTextInputRef} id={this.props.field} value={value} onChange={this.onValueChange} readOnly={this.isReadOnly()}
                                maxLength={this.xField.length} style={inputStyle} className={this.props.inputClassName} rows={this.props.rows} cols={cols}
                                autoResize={this.props.autoResize} error={this.getError()} tooltip={inputTooltip} placeholder={this.props.placeholder ?? this.props.desc}/>
                     : null
@@ -109,4 +109,3 @@ export class InputTextarea extends ValueField<InputTextareaProps> {
         );
     }
 }
-

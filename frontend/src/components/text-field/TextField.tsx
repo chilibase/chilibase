@@ -5,13 +5,13 @@ import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {Tooltip} from "primereact/tooltip";
 
-export interface InputTextProps extends ValueFieldProps {
+export interface TextFieldProps extends ValueFieldProps {
     size?: number;
 }
 
-export class InputText extends ValueField<InputTextProps> {
+export class TextField extends ValueField<TextFieldProps> {
 
-    constructor(props: InputTextProps) {
+    constructor(props: TextFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -57,4 +57,3 @@ export class InputText extends ValueField<InputTextProps> {
         );
     }
 }
-

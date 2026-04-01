@@ -1,5 +1,5 @@
 import type {FormProps} from "../../components/form";
-import {InputText} from "../../components/input-text";
+import {TextField} from "../../components/text-field";
 import React from "react";
 import {InputDecimal} from "../../components/input-decimal";
 import {Password} from "primereact/password";
@@ -106,13 +106,13 @@ export class XUserForm extends FormBaseModif {
                 <div className="x-form-row">
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true} labelStyle={{width:'14rem'}}/>
-                        <InputText form={this} field="username" label="Username" size={30} labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
-                        <InputText form={this} field="name" label="Name" size={30} labelStyle={{width:'14rem'}}/>
+                        <TextField form={this} field="username" label="Username" size={30} labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
+                        <TextField form={this} field="name" label="Name" size={30} labelStyle={{width:'14rem'}}/>
                         <CheckboxField form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         <CheckboxField form={this} field="admin" label="Admin" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         {passwordElems}
                         <DateField form={this} field="modifDate" label="Modified at" readOnly={true} labelStyle={{width:'14rem'}}/>
-                        <InputText form={this} field="modifUser.name" label="Modified by" size={20} labelStyle={{width:'14rem'}}/>
+                        <TextField form={this} field="modifUser.name" label="Modified by" size={20} labelStyle={{width:'14rem'}}/>
                     </div>
                 </div>
                 <FormFooter form={this}/>

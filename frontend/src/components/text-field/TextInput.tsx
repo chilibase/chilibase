@@ -7,9 +7,9 @@ import {Utils} from "../../utils/Utils";
 import {InputText} from "primereact/inputtext";
 
 // koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
-// used for filter element in XLazyDataTable - if there was many rows/columns in datatable, typing in filter was slow (if setState was called after every character change)
+// used for filter element in LazyDataTable - if there was many rows/columns in datatable, typing in filter was slow (if setState was called after every character change)
 
-export const InputTextBase = (props: {
+export const TextInput = (props: {
     id?: string;
     value: string | null;
     onChange: (value: string | null) => void;
@@ -69,6 +69,5 @@ export const InputTextBase = (props: {
     );
 }
 
-InputTextBase.defaultProps = {
+TextInput.defaultProps = {
 };
-

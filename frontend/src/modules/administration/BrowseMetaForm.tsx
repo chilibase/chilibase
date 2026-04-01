@@ -1,6 +1,6 @@
 import {Form, FormBase} from "../../components/form";
 import {InputDecimal} from "../../components/input-decimal";
-import {InputText} from "../../components/input-text";
+import {TextField} from "../../components/text-field";
 import React from "react";
 import {FormColumn, FormDataTable} from "../../components/form-data-table";
 import {FormFooter} from "../../components/form";
@@ -14,8 +14,8 @@ export class BrowseMetaForm extends FormBase {
                 <div className="x-form-row">
                     <div className="x-form-col">
                         <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
-                        <InputText form={this} field="entity" label="Entity" size={20}/>
-                        <InputText form={this} field="browseId" label="Browse ID" size={20}/>
+                        <TextField form={this} field="entity" label="Entity" size={20}/>
+                        <TextField form={this} field="browseId" label="Browse ID" size={20}/>
                         <InputDecimal form={this} field="rows" label="Rows"/>
                     </div>
                 </div>

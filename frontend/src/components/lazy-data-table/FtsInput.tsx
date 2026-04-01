@@ -1,5 +1,5 @@
 import React from "react";
-import {InputTextBase} from "../input-text";
+import {TextInput} from "../text-field";
 import {Utils} from "../../utils/Utils";
 import {localeOption} from "../locale/Locale";
 
@@ -18,9 +18,9 @@ export const FtsInput = (props: {value: FtsInputValue; onChange: (value: FtsInpu
     }
 
     // TODO - pridat input na zmenu matchMode
-    // we use InputTextBase - we save onChange calls
+    // we use TextInput - we save onChange calls
     return (
-        <InputTextBase value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: Utils.isMobile() ? '7rem' : '17rem'}} className="m-1"
+        <TextInput value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: Utils.isMobile() ? '7rem' : '17rem'}} className="m-1"
         placeholder={localeOption('searchInAllFields')}/>
     );
 }

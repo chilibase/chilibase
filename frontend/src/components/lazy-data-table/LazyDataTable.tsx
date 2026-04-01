@@ -52,7 +52,7 @@ import {HtmlRenderer} from "./HtmlRenderer";
 import {OcfDropdown} from "./OcfDropdown";
 import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../field-set/XFieldSetBase";
 import {AutocompleteInput} from "../autocomplete-field";
-import {InputTextBase} from "../input-text";
+import {TextInput} from "../text-field";
 import {useStateStorage} from "../use-state/useStateStorage";
 import {useStateStorageBase} from "../use-state/useStateStorageBase";
 import * as _ from "lodash";
@@ -1498,7 +1498,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     } else if (xField.type === "string") {
                         const stringValue: string | null = getFilterValue(childColumn.props.field);
                         const xFilterMatchMode: ExtendedFilterMatchMode = getFilterMatchMode(childColumn.props.field);
-                        filterElement = <InputTextBase value={stringValue}
+                        filterElement = <TextInput value={stringValue}
                                                         onChange={(value: string | null) => setFilterValue(childColumn.props.field, value, undefined, undefined, childColumn.props.autoFilter)}
                                                         readOnly={xFilterMatchMode === ExtendedFilterMatchMode.IS_NOT_NULL || xFilterMatchMode === ExtendedFilterMatchMode.IS_NULL}/>
                     } else if (xField.type === "date" || xField.type === "datetime") {
@@ -1749,7 +1749,7 @@ export interface LazyColumnProps {
     betweenFilter?: BetweenFilterProp | "noBetween"; // creates 2 inputs from to, only for type date/datetime/decimal/number implemented, "row"/"column" - position of inputs from to
     autoFilter: boolean; // if true, filtering starts immediately after setting filter value (user does not have to click the button Filter) (default false)
     width?: string; // for example 150px or 10rem or 10% (value 10 means 10rem)
-    contentType?: ContentType; // multiline (output from InputTextarea) - wraps the content; html (output from Editor) - for rendering raw html
+    contentType?: ContentType; // multiline (output from MultilineTextField) - wraps the content; html (output from Editor) - for rendering raw html
     fieldSetId?: string; // in case that we render json attribute (output from XFieldSet), here is id of XFieldSet (saved in x_field_set_meta), fieldSet metadata is needed to get labels of field set attributes
                         // note: better solution would be take fieldSetId from json attribute from model, but we would have to create decorator for this purpose...
     aggregateType?: AggregateFunction;

@@ -7,7 +7,7 @@ import {TableFieldReadOnlyProp} from "../form-data-table";
 import {Utils} from "../../utils/Utils";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export const InputTextDT = (props: {form: FormBase; entity: string; field: string; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
+export const TableTextField = (props: {form: FormBase; entity: string; field: string; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
     const xField = UtilsMetadataCommon.getFieldByPathStr(props.entity, props.field);
 
@@ -39,4 +39,3 @@ export const InputTextDT = (props: {form: FormBase; entity: string; field: strin
     );
 
 }
-

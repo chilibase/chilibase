@@ -10,7 +10,7 @@ import {
 } from "primereact/datatable";
 import {Column, ColumnBodyOptions} from "primereact/column";
 import {Button} from "../button";
-import {InputTextDT} from "../input-text";
+import {TableTextField} from "../text-field";
 import {SearchButtonDT} from "../search-button";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
@@ -34,7 +34,7 @@ import {localeOption} from "../locale/Locale";
 import {InputIntervalDT} from "../input-interval/InputIntervalDT";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {SearchBrowseProps} from "../lazy-data-table";
-import {InputTextareaDT} from "../input-textarea";
+import {TableMultilineTextField} from "../multiline-text-field";
 import {SuggestionsLoadProp} from "../autocomplete-field";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
@@ -428,7 +428,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             }
             else {
                 // xField.type === "string", pripadne ine jednoduche typy
-                body = <InputTextDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly}/>;
+                body = <TableTextField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly}/>;
             }
         }
         else if (columnProps.type === "dropdown") {
@@ -454,7 +454,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
         else if (columnProps.type === "textarea") {
             const columnPropsTextarea = (columnProps as FormTextareaColumnProps);
-            body = <InputTextareaDT form={this.props.form} entity={this.getEntity()} field={columnPropsTextarea.field} rows={columnPropsTextarea.rows} autoResize={columnPropsTextarea.autoResize} rowData={rowData} readOnly={readOnly}/>;
+            body = <TableMultilineTextField form={this.props.form} entity={this.getEntity()} field={columnPropsTextarea.field} rows={columnPropsTextarea.rows} autoResize={columnPropsTextarea.autoResize} rowData={rowData} readOnly={readOnly}/>;
         }
         else {
             throw "Unknown prop type = " + columnProps.type;
