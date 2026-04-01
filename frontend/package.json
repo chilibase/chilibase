@@ -50,17 +50,10 @@
     "lib/**/*"
   ],
   "exports": {
-
-    "./auth": "./lib/components/auth/index.js",
-    "./app-layout": "./lib/components/app-layout/index.js",
-
-    "./XFormCol": "./lib/components/XFormRowCol/XFormCol.js",
-    "./XFormInlineRow": "./lib/components/XFormRowCol/XFormInlineRow.js",
-    "./XFormRow": "./lib/components/XFormRowCol/XFormRow.js",
-    "./XFormRowCol": "./lib/components/XFormRowCol/XFormRowCol.js",
-
     "./common": "./lib/common/index.js",
 
+    "./app-layout": "./lib/components/app-layout/index.js",
+    "./auth": "./lib/components/auth/index.js",
     "./auto-complete": "./lib/components/auto-complete/index.js",
     "./browse": "./lib/components/browse/index.js",
     "./button": "./lib/components/button/index.js",
@@ -71,6 +64,7 @@
     "./env-vars": "./lib/components/env-vars/index.js",
     "./form": "./lib/components/form/index.js",
     "./form-data-table": "./lib/components/form-data-table/index.js",
+    "./form-layout": "./lib/components/form-layout/index.js",
     "./form-navigator": "./lib/components/form-navigator/index.js",
     "./input-date": "./lib/components/input-date/index.js",
     "./input-decimal": "./lib/components/input-decimal/index.js",

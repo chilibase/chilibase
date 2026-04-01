@@ -2,12 +2,12 @@ import React from "react";
 import {FormBase} from "../form";
 import {Utils} from "../../utils/Utils";
 
-// the purpose of XFormRow/Col:
+// the purpose of FormRow/Col:
 // 1a. ak sa jedna o "row", uklada elementy pod seba do riadku (pouziva flex a jeho defaultny flex-direction: row)
 // 1b. ak sa jedna o "col", uklada elementy pod seba do stlpca (default spravanie HTML elementov)
 // 2. pridava properties-y do svojich child elementov (nemusime rozpisovat property do vsetkych child elementov)
-// ak je property definovany na XFormCol aj na child-e, tak vyssiu prio ma property na child-e
-export interface XFormRowColProps {
+// ak je property definovany na FormCol aj na child-e, tak vyssiu prio ma property na child-e
+export interface FormRowColProps {
     className: "x-form-row" | "x-form-inline-row" | "x-form-col";
     form?: FormBase; // toto sa zatial neda pouzit, lebo form je povinny atribut na komponentoch a pouziva sa uz v konstruktore, ktovie ci by to vobec zafungovalo
     width?: string | "full"; // nastavi css property {width: <props.width>} na div (full nastavuje 100%)
@@ -16,7 +16,7 @@ export interface XFormRowColProps {
     children: JSX.Element | JSX.Element[];
 }
 
-export const XFormRowCol = (props: XFormRowColProps) => {
+export const FormRowCol = (props: FormRowColProps) => {
 
     let childElemList: JSX.Element | JSX.Element[];
     if (props.form || props.labelStyle) {

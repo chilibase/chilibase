@@ -50,7 +50,7 @@ import {MultilineSwitch} from "./MultilineSwitch";
 import {MultilineRenderer} from "./MultilineRenderer";
 import {HtmlRenderer} from "./HtmlRenderer";
 import {OcfDropdown} from "./OcfDropdown";
-import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../XFieldSet/XFieldSetBase";
+import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../field-set/XFieldSetBase";
 import {AutoCompleteBase} from "../auto-complete";
 import {InputTextBase} from "../input-text";
 import {useStateStorage} from "../use-state/useStateStorage";

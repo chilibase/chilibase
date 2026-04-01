@@ -36,9 +36,6 @@ export interface FormFieldProps {
     desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat label a tooltip) - vytvoreny pre depaul
     readOnly?: ReadOnlyProp;
     labelStyle?: React.CSSProperties;
-    inline?: boolean; // poznamka: nenasiel som pouzitie v skch-finance a depaul (pouziva sa <div className="x-form-inline-row">), asi je to zombie
-                        // je to metuci nazov, da sa pouzit ked mame komponent v riadku (napr. cez uvedeny <div className="x-form-inline-row">)
-                        // a chceme aby mal element pre label dlzku labelu (je to vlastne labelStyle={{width: 'auto', marginLeft: '1rem'}}, ten marginLeft uz asi neni potrebny, mame to cez css poriesene)
     onChange?: FieldOnChange;
     onlyInput?: boolean; // ak true, tak vyrenderuje len input element (nerenderuje <div className="field grid"> ani label)
 }
@@ -141,14 +138,7 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
 
     getLabelStyle(): React.CSSProperties {
         let labelStyle: React.CSSProperties = this.props.labelStyle ?? {};
-        const inline: boolean = this.props.inline ?? false;
-        if (!inline) {
-            Utils.addCssPropIfNotExists(labelStyle, {width: Utils.FIELD_LABEL_WIDTH});
-        }
-        else {
-            Utils.addCssPropIfNotExists(labelStyle, {width: 'auto'}); // podla dlzky labelu
-            Utils.addCssPropIfNotExists(labelStyle, {marginLeft: '1rem'});
-        }
+        Utils.addCssPropIfNotExists(labelStyle, {width: Utils.FIELD_LABEL_WIDTH});
         return labelStyle;
     }
 
