@@ -59,7 +59,7 @@
     "./button": "./lib/components/button/index.js",
     "./checkbox-field": "./lib/components/checkbox-field/index.js",
     "./date-field": "./lib/components/date-field/index.js",
-    "./dropdown": "./lib/components/dropdown/index.js",
+    "./select-field": "./lib/components/select-field/index.js",
     "./dynamic-browse": "./lib/components/dynamic-browse/index.js",
     "./env-vars": "./lib/components/env-vars/index.js",
     "./form": "./lib/components/form/index.js",

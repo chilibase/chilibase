@@ -1,7 +1,7 @@
 import {FormBase, FormProps} from "../form";
 import {EntityRow} from "../../common/types";
 import React, {Component, ReactChild} from "react";
-import {DropdownDT} from "../dropdown/DropdownDT";
+import {TableSelectField} from "../select-field/TableSelectField";
 import {
     DataTable,
     DataTableFilterMeta,
@@ -16,7 +16,7 @@ import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {OperationType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
+import {TableFilterSelectInput} from "../select-field/TableFilterSelectInput";
 import {InputDecimalDT} from "../input-decimal";
 import {TableDateField} from "../date-field";
 import {TableCheckboxField} from "../checkbox-field";
@@ -39,7 +39,7 @@ import {SuggestionsLoadProp} from "../autocomplete-field";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
 export interface RowTechData {
-    // zoznam komponentov na riadku tabulky (vcetne DropdownDT, SearchButtonDT, ...)
+    // zoznam komponentov na riadku tabulky (vcetne TableSelectField, SearchButtonDT, ...)
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
     // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
     // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
@@ -433,7 +433,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
         else if (columnProps.type === "dropdown") {
             const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
-                body = <DropdownDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsDropdown.assocField} displayField={columnPropsDropdown.displayField} sortField={columnPropsDropdown.sortField} filter={columnPropsDropdown.filter} dropdownOptionsMap={this.state.dropdownOptionsMap} onDropdownOptionsMapChange={this.onDropdownOptionsMapChange} rowData={rowData} readOnly={readOnly}/>;
+                body = <TableSelectField form={this.props.form} entity={this.getEntity()} assocField={columnPropsDropdown.assocField} displayField={columnPropsDropdown.displayField} sortField={columnPropsDropdown.sortField} filter={columnPropsDropdown.filter} dropdownOptionsMap={this.state.dropdownOptionsMap} onDropdownOptionsMapChange={this.onDropdownOptionsMapChange} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "autoComplete") {
             const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
@@ -673,7 +673,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                         }
                         else if (childColumnProps.dropdownInFilter) {
                             const dropdownValue = thisLocal.getDropdownFilterValue(field);
-                            filterElement = <DropdownDTFilter entity={thisLocal.getEntity()} path={field} value={dropdownValue} onValueChange={thisLocal.onDropdownFilterChange}/>
+                            filterElement = <TableFilterSelectInput entity={thisLocal.getEntity()} path={field} value={dropdownValue} onValueChange={thisLocal.onDropdownFilterChange}/>
                         }
                     }
 

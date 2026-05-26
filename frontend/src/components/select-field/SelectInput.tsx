@@ -5,7 +5,7 @@ import {CustomFilter} from "../../common/FindParam";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export interface DropdownForEntityProps {
+export interface SelectInputProps {
     id?: string;
     entity: string;
     displayField: string;
@@ -18,14 +18,14 @@ export interface DropdownForEntityProps {
     filter?: CustomFilter;
 }
 
-// vseobecny Dropdown ktoreho parametrom je entity, zobrazuje zaznamy danej entity, po selectnuti vracia zaznam danej entity
+// vseobecny SelectInput ktoreho parametrom je entity, zobrazuje zaznamy danej entity, po selectnuti vracia zaznam danej entity
 // ambicia je pouzivat ho vsade - vo formulari, vo filtroch, vo form tabulke, priamo aplikacnym programmerom
-// dalo by sa vyclenit este DropdownBase, ktory by dostaval ako parameter options (bol by nezavisly od DB), zatial ho nerobime,
-// pravdepodobnost potreby DropdownBase je nizka
+// dalo by sa vyclenit este SelectInputBase, ktory by dostaval ako parameter options (bol by nezavisly od DB), zatial ho nerobime,
+// pravdepodobnost potreby SelectInputBase je nizka
 // do buducna sa planuje pouzit cache pre options (plnila by sa pri otvoreni XFormBase*) - dolezite je to hlavne pre dropdowny vo form tabulke (a tiez pre dynamicky filter vo formulari - objekt sa nacita neskor ako options)
 // tiez by bolo fajn podporovat dynamicky filter (vo formulari) - to by ale trebalo vytiahnut options do state formulara
 // otazka je ci nepouzivat vsade len XAutoComplete a upustit od Dropdown
-export class DropdownForEntity extends Component<DropdownForEntityProps> {
+export class SelectInput extends Component<SelectInputProps> {
 
     protected idField: string;
 
@@ -33,7 +33,7 @@ export class DropdownForEntity extends Component<DropdownForEntityProps> {
         options: any[];
     };
 
-    constructor(props: DropdownForEntityProps) {
+    constructor(props: SelectInputProps) {
         super(props);
 
         this.idField = UtilsMetadataCommon.getEntity(this.props.entity).idField;
@@ -79,4 +79,3 @@ export class DropdownForEntity extends Component<DropdownForEntityProps> {
         );
     }
 }
-

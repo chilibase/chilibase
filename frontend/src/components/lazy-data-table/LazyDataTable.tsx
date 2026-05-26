@@ -18,7 +18,7 @@ import {OperationType, StorageType, ViewStatus, ViewStatusOrBoolean} from "../..
 import {Utils} from "../../utils/Utils";
 import {FieldFilter, SearchBrowseParams} from "../browse";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
-import {DropdownDTFilter} from "../dropdown/DropdownDTFilter";
+import {TableFilterSelectInput} from "../select-field/TableFilterSelectInput";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../common/UtilsConversions";
 import {FindResult} from "../../common/FindResult";
@@ -1490,7 +1490,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                                                           onChange={(e: any) => setFilterValue(childColumn.props.field, e.value, FilterMatchMode.EQUALS, undefined, childColumn.props.autoFilter)}/>;
                     } else if (childColumn.props.dropdownInFilter) {
                         const dropdownValue = getDropdownFilterValue(childColumn.props.field);
-                        filterElement = <DropdownDTFilter entity={props.entity} path={childColumn.props.field}
+                        filterElement = <TableFilterSelectInput entity={props.entity} path={childColumn.props.field}
                                                            value={dropdownValue}
                                                            onValueChange={(field: string, displayValue: any) => onDropdownFilterChange(field, displayValue, childColumn.props.autoFilter)}
                                                            filter={childColumn.props.dropdownFilter}

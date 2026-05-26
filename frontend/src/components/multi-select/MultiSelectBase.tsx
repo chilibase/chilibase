@@ -5,7 +5,7 @@ import {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelect, MultiSelectChangeEvent} from "primereact/multiselect";
 
-// Base komponent pre MultiSelect - podobna uroven ako XAutoCompleteBase, resp. DropdownForEntity
+// Base komponent pre MultiSelect - podobna uroven ako XAutoCompleteBase, resp. SelectInput
 
 export interface MultiSelectBaseProps {
     value: any[];
