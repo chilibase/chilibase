@@ -11,10 +11,10 @@ import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {UtilsCommon} from "../../common/UtilsCommon";
 
 // faast-ovsky zoombutton - ked user zapise nieco do inputu a odide - ak sa najde presne 1 zaznam tak nastavi, ak sa najde viac zaznamov tak otvori searchBrowse
-// nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci XAutoComplete
+// nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci AutocompleteField
 // TODO - ak sa to ma pouzivat, tak zmenit searchBrowse a assocForm (pouzivane pri readOnly) na SearchBrowse/searchBrowseElement a AssocForm/assocFormElement a nepouzivat FormNavigator
 
-export interface SearchButtonProps extends FormFieldProps {
+export interface SearchFieldProps extends FormFieldProps {
     assocField: string;
     displayField: string;
     searchBrowse: JSX.Element;
@@ -24,7 +24,7 @@ export interface SearchButtonProps extends FormFieldProps {
     inputStyle?: React.CSSProperties;
 }
 
-export class SearchButton extends FormField<SearchButtonProps> {
+export class SearchField extends FormField<SearchFieldProps> {
 
     protected xAssoc: Assoc;
 
@@ -36,7 +36,7 @@ export class SearchButton extends FormField<SearchButtonProps> {
         dialogOpened: boolean;
     };
 
-    constructor(props: SearchButtonProps) {
+    constructor(props: SearchFieldProps) {
         super(props);
 
         this.xAssoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
@@ -190,7 +190,7 @@ export class SearchButton extends FormField<SearchButtonProps> {
         return (
             <div className="field grid">
                 <label htmlFor={props.assocField} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <div className="x-search-button-base">
+                <div className="x-search-field">
                     <InputText id={props.assocField} value={inputValue} onChange={onInputValueChange} onBlur={onInputBlur}
                                readOnly={this.isReadOnly()} ref={this.inputTextRef} maxLength={xDisplayField.length} size={size} style={props.inputStyle}
                                {...this.getClassNameTooltip()}/>

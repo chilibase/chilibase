@@ -11,7 +11,7 @@ import {
 import {Column as PrimeColumn, ColumnBodyOptions} from "primereact/column";
 import {Button} from "../button";
 import {TableTextField} from "../text-field";
-import {SearchButtonDT} from "../search-button";
+import {TableSearchField} from "../search-field";
 import {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {OperationType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
@@ -39,7 +39,7 @@ import {SuggestionsLoadProp} from "../autocomplete-field";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
 export interface RowTechData {
-    // zoznam komponentov na riadku tabulky (vcetne TableSelectField, SearchButtonDT, ...)
+    // zoznam komponentov na riadku tabulky (vcetne TableSelectField, TableSearchField, ...)
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
     // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
     // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
@@ -450,7 +450,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
         else if (columnProps.type === "searchButton") {
             const columnPropsSearchButton = (columnProps as SearchButtonColumnProps);
-            body = <SearchButtonDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsSearchButton.assocField} displayField={columnPropsSearchButton.displayField} searchBrowse={columnPropsSearchButton.searchBrowse} rowData={rowData} readOnly={readOnly}/>;
+            body = <TableSearchField form={this.props.form} entity={this.getEntity()} assocField={columnPropsSearchButton.assocField} displayField={columnPropsSearchButton.displayField} searchBrowse={columnPropsSearchButton.searchBrowse} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "textarea") {
             const columnPropsMultilineText = (columnProps as MultilineTextColumnProps);

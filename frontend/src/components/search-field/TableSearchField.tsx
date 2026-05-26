@@ -8,7 +8,7 @@ import {SearchBrowseParams} from "../browse";
 import {TableFieldReadOnlyProp} from "../form-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export const SearchButtonDT = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
+export const TableSearchField = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
     const inputTextRef = useRef<any>(null);
 
@@ -114,7 +114,7 @@ export const SearchButtonDT = (props: {form: FormBase; entity: string; assocFiel
 
     return (
         <div>
-            <div className="x-search-button-base">
+            <div className="x-search-field">
                 <InputText id={props.assocField} value={inputValue} onChange={onInputValueChange} onBlur={onInputBlur} readOnly={readOnly} ref={inputTextRef}/>
                 <Button icon="pi pi-search" onClick={onClickSearch} />
             </div>

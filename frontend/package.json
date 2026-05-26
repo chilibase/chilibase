@@ -74,7 +74,7 @@
     "./multi-select": "./lib/components/multi-select/index.js",
     "./multiline-text-field": "./lib/components/multiline-text-field/index.js",
     "./rich-text-field": "./lib/components/rich-text-field/index.js",
-    "./search-button": "./lib/components/search-button/index.js",
+    "./search-field": "./lib/components/search-field/index.js",
     "./text-field": "./lib/components/text-field/index.js",
     "./to-one-assoc-button": "./lib/components/to-one-assoc-button/index.js",
     "./use-state": "./lib/components/use-state/index.js",
