@@ -24,7 +24,7 @@ export class UtilsMetadata {
         }
     }
 
-    // docasne sem, kym nemame jednotny InputDecimal/InputDecimalDT
+    // docasne sem, kym nemame jednotny NumberField/TableNumberField
     static getParamsForInputNumber(xField: Field): {useGrouping: boolean; fractionDigits?: number; min?: number; max?: number; size?: number} {
         let useGrouping: boolean = true;
         let scale: number | undefined = undefined;
@@ -48,7 +48,7 @@ export class UtilsMetadata {
             size = precision;
         }
         else {
-            throw `InputDecimal: field ${xField.name} has unsupported type ${xField.type}. Supported types are decimal and number.`;
+            throw `NumberField: field ${xField.name} has unsupported type ${xField.type}. Supported types are decimal and number.`;
         }
 
         return UtilsMetadata.getParamsForInputNumberBase(useGrouping, scale, precision, size);

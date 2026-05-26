@@ -17,7 +17,7 @@ import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {OperationType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {TableFilterSelectInput} from "../select-field/TableFilterSelectInput";
-import {InputDecimalDT} from "../input-decimal";
+import {TableNumberField} from "../number-field";
 import {TableDateField} from "../date-field";
 import {TableCheckboxField} from "../checkbox-field";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
@@ -415,7 +415,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             const columnPropsInputSimple = (columnProps as ColumnProps);
             const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, columnPropsInputSimple.field);
             if (xField.type === "decimal" || xField.type === "number") {
-                body = <InputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
+                body = <TableNumberField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "date" || xField.type === "datetime") {
                 body = <TableDateField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;

@@ -4,12 +4,12 @@ import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
 import {Utils} from "../../utils/Utils";
 
-export interface InputDecimalDTProps extends TableValueFieldProps {
+export interface TableNumberFieldProps extends TableValueFieldProps {
 }
 
-export class InputDecimalDT extends TableValueField<InputDecimalDTProps> {
+export class TableNumberField extends TableValueField<TableNumberFieldProps> {
 
-    constructor(props: InputDecimalDTProps) {
+    constructor(props: TableNumberFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);

@@ -2,7 +2,7 @@ import React from "react";
 import {InputNumber, InputNumberChangeEvent} from "primereact/inputnumber";
 
 // wrapper for InputNumber component - zatial taky zjednoduseny, len na filter polozky pouzivame
-export const InputDecimalBase = (props: {id?: string; value: number | null; onChange: (value: number | null) => void; readOnly?: boolean;
+export const NumberInput = (props: {id?: string; value: number | null; onChange: (value: number | null) => void; readOnly?: boolean;
                                             useGrouping?: boolean; fractionDigits?: number; min?: number; max?: number; size?: number;
                                             className?: string; inputStyle?: React.CSSProperties;}) => {
 
@@ -18,4 +18,3 @@ export const InputDecimalBase = (props: {id?: string; value: number | null; onCh
                      className={props.className} inputStyle={props.inputStyle}/>
     );
 }
-

@@ -39,7 +39,7 @@ import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRow
 import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
 import {FormProps, OnSaveOrCancelProp} from "../form";
 import {DateInput} from "../date-field";
-import {InputDecimalBase} from "../input-decimal";
+import {NumberInput} from "../number-field";
 import {primeLocaleOption, localeOption} from "../locale/Locale";
 import {FtsInput, FtsInputValue} from "./FtsInput";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
@@ -1527,14 +1527,14 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                             // display: 'flex' umiestni input elementy pod seba (betweenFilter = "column") resp. vedla seba (betweenFilter = "row")
                             filterElement =
                                 <div style={{display: 'flex', flexDirection: betweenFilter}}>
-                                    <InputDecimalBase value={getFilterValue1(childColumn.props.field)}
+                                    <NumberInput value={getFilterValue1(childColumn.props.field)}
                                                        onChange={(value: number | null) => setFilterValue1(childColumn.props.field, value, childColumn.props.autoFilter)} {...params}/>
-                                    <InputDecimalBase value={getFilterValue2(childColumn.props.field)}
+                                    <NumberInput value={getFilterValue2(childColumn.props.field)}
                                                        onChange={(value: number | null) => setFilterValue2(childColumn.props.field, value, childColumn.props.autoFilter)} {...params}/>
                                 </div>;
                         } else {
                             const numberValue: number | null = getFilterValue(childColumn.props.field);
-                            filterElement = <InputDecimalBase value={numberValue}
+                            filterElement = <NumberInput value={numberValue}
                                                                onChange={(value: number | null) => setFilterValue(childColumn.props.field, value, undefined, undefined, childColumn.props.autoFilter)} {...params}/>
                         }
                     }

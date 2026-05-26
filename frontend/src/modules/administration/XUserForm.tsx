@@ -1,7 +1,7 @@
 import type {FormProps} from "../../components/form";
 import {TextField} from "../../components/text-field";
 import React from "react";
-import {InputDecimal} from "../../components/input-decimal";
+import {NumberField} from "../../components/number-field";
 import {Password} from "primereact/password";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
@@ -105,7 +105,7 @@ export class XUserForm extends FormBaseModif {
                 <FormHeader label="User"/>
                 <div className="x-form-row">
                     <div className="x-form-col">
-                        <InputDecimal form={this} field="id" label="ID" readOnly={true} labelStyle={{width:'14rem'}}/>
+                        <NumberField form={this} field="id" label="ID" readOnly={true} labelStyle={{width:'14rem'}}/>
                         <TextField form={this} field="username" label="Username" size={30} labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>
                         <TextField form={this} field="name" label="Name" size={30} labelStyle={{width:'14rem'}}/>
                         <CheckboxField form={this} field="enabled" label="Enabled" labelStyle={{width:'14rem'}} readOnly={this.state.usernameEnabledReadOnly}/>

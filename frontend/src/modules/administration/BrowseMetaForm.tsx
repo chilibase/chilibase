@@ -1,5 +1,5 @@
 import {Form, FormBase} from "../../components/form";
-import {InputDecimal} from "../../components/input-decimal";
+import {NumberField} from "../../components/number-field";
 import {TextField} from "../../components/text-field";
 import React from "react";
 import {Column, FormDataTable} from "../../components/form-data-table";
@@ -13,10 +13,10 @@ export class BrowseMetaForm extends FormBase {
             <div>
                 <div className="x-form-row">
                     <div className="x-form-col">
-                        <InputDecimal form={this} field="id" label="ID" readOnly={true}/>
+                        <NumberField form={this} field="id" label="ID" readOnly={true}/>
                         <TextField form={this} field="entity" label="Entity" size={20}/>
                         <TextField form={this} field="browseId" label="Browse ID" size={20}/>
-                        <InputDecimal form={this} field="rows" label="Rows"/>
+                        <NumberField form={this} field="rows" label="Rows"/>
                     </div>
                 </div>
                 <div className="x-viewport-width">

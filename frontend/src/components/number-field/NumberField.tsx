@@ -3,13 +3,13 @@ import {InputNumber} from "primereact/inputnumber";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 
-export interface InputDecimalProps extends ValueFieldProps {
+export interface NumberFieldProps extends ValueFieldProps {
     size?: number;
 }
 
-export class InputDecimal extends ValueField<InputDecimalProps> {
+export class NumberField extends ValueField<NumberFieldProps> {
 
-    constructor(props: InputDecimalProps) {
+    constructor(props: NumberFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
