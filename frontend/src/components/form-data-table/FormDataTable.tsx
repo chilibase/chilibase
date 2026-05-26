@@ -31,7 +31,7 @@ import {IconType} from "primereact/utils";
 import {ButtonProps} from "primereact/button";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {localeOption} from "../locale/Locale";
-import {InputIntervalDT} from "../input-interval/InputIntervalDT";
+import {TableIntervalField} from "../interval-field";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {SearchBrowseProps} from "../lazy-data-table";
 import {TableMultilineTextField} from "../multiline-text-field";
@@ -421,7 +421,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                 body = <TableDateField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "interval") {
-                body = <InputIntervalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
+                body = <TableIntervalField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else if (xField.type === "boolean") {
                 body = <TableCheckboxField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;

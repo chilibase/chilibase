@@ -1,15 +1,15 @@
 import React from "react";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {IPostgresInterval} from "../../utils/types";
-import {InputIntervalBase} from "./InputIntervalBase";
+import {IntervalInput} from "./IntervalInput";
 
-export interface InputIntervalProps extends ValueFieldProps {
+export interface IntervalFieldProps extends ValueFieldProps {
     inputStyle?: React.CSSProperties;
 }
 
-export class InputInterval extends ValueField<InputIntervalProps> {
+export class IntervalField extends ValueField<IntervalFieldProps> {
 
-    constructor(props: InputIntervalProps) {
+    constructor(props: IntervalFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -27,7 +27,7 @@ export class InputInterval extends ValueField<InputIntervalProps> {
         return (
             <div className="field grid">
                 <label htmlFor={this.props.field} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <InputIntervalBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
+                <IntervalInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
                                     readOnly={this.isReadOnly()} error={this.getError()} style={this.props.inputStyle} {...this.getClassNameTooltip()}/>
             </div>
         );

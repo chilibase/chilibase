@@ -5,7 +5,7 @@ import {IPostgresInterval} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 
 // zatial podporuje len hours a minutes - TODO - pridat aj seconds, ale cez nejaky prepinac
-export const InputIntervalBase = (props: {
+export const IntervalInput = (props: {
     id?: string;
     value: IPostgresInterval | null;
     onChange: (value: IPostgresInterval | null) => void;
@@ -58,4 +58,3 @@ export const InputIntervalBase = (props: {
                    readOnly={props.readOnly} {...Utils.createTooltipOrErrorProps(props.error)} style={{width:'3.5rem', ...props.style}}/>
     );
 }
-

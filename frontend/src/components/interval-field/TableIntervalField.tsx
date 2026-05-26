@@ -1,14 +1,14 @@
 import React from "react";
-import {InputIntervalBase} from "./InputIntervalBase";
+import {IntervalInput} from "./IntervalInput";
 import {IPostgresInterval} from "../../utils/types";
 import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
 
-export interface InputIntervalDTProps extends TableValueFieldProps {
+export interface TableIntervalFieldProps extends TableValueFieldProps {
 }
 
-export class InputIntervalDT extends TableValueField<InputIntervalDTProps> {
+export class TableIntervalField extends TableValueField<TableIntervalFieldProps> {
 
-    constructor(props: InputIntervalDTProps) {
+    constructor(props: TableIntervalFieldProps) {
         super(props);
 
         this.onValueChange = this.onValueChange.bind(this);
@@ -24,7 +24,7 @@ export class InputIntervalDT extends TableValueField<InputIntervalDTProps> {
 
     render() {
         return (
-            <InputIntervalBase id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}/>
+            <IntervalInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()} error={this.getError()}/>
         );
     }
 }
