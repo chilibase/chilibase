@@ -2,7 +2,7 @@ import {Form, FormBase} from "../../components/form";
 import {InputDecimal} from "../../components/input-decimal";
 import {TextField} from "../../components/text-field";
 import React from "react";
-import {FormColumn, FormDataTable} from "../../components/form-data-table";
+import {Column, FormDataTable} from "../../components/form-data-table";
 import {FormFooter} from "../../components/form";
 
 @Form("BrowseMeta")
@@ -21,13 +21,13 @@ export class BrowseMetaForm extends FormBase {
                 </div>
                 <div className="x-viewport-width">
                     <FormDataTable form={this} assocField="columnMetaList" label="Column list">
-                        <FormColumn field="id" header="ID" readOnly={true}/>
-                        <FormColumn field="field" header="Field" width="17rem"/>
-                        <FormColumn field="header" header="Header" width="17rem"/>
-                        <FormColumn field="align" header="Align"/>
-                        <FormColumn field="dropdownInFilter" header="Dropdown in filter"/>
-                        <FormColumn field="width" header="Width"/>
-                        <FormColumn field="columnOrder" header="Column order"/>
+                        <Column field="id" header="ID" readOnly={true}/>
+                        <Column field="field" header="Field" width="17rem"/>
+                        <Column field="header" header="Header" width="17rem"/>
+                        <Column field="align" header="Align"/>
+                        <Column field="dropdownInFilter" header="Dropdown in filter"/>
+                        <Column field="width" header="Width"/>
+                        <Column field="columnOrder" header="Column order"/>
                     </FormDataTable>
                 </div>
                 <FormFooter form={this}/>

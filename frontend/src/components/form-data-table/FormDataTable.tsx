@@ -8,7 +8,7 @@ import {
     DataTableFilterMetaData,
     DataTableOperatorFilterMetaData, DataTableSortMeta
 } from "primereact/datatable";
-import {Column, ColumnBodyOptions} from "primereact/column";
+import {Column as PrimeColumn, ColumnBodyOptions} from "primereact/column";
 import {Button} from "../button";
 import {TableTextField} from "../text-field";
 import {SearchButtonDT} from "../search-button";
@@ -143,7 +143,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
         //props.form.addField(props.assocField + '.*FAKE*'); - vzdy mame aspon 1 field, nie je to potrebne
         for (const child of props.children) {
-            const childColumn = child as {props: FormColumnBaseProps}; // nevedel som to krajsie...
+            const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
             if (childColumn.props.type !== "custom") {
                 const field = props.assocField + '.' + this.getPathForColumn(childColumn.props);
                 props.form.addField(field);
@@ -151,67 +151,67 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
     }
 
-    getPathForColumn(columnProps: FormColumnBaseProps): string {
+    getPathForColumn(columnProps: ColumnBaseProps): string {
         if (columnProps.type === "inputSimple") {
-            const columnPropsInputSimple = (columnProps as FormColumnProps);
+            const columnPropsInputSimple = (columnProps as ColumnProps);
             return columnPropsInputSimple.field;
         }
         else if (columnProps.type === "dropdown") {
-            const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
-            return columnPropsDropdown.assocField + '.' + columnPropsDropdown.displayField;
+            const columnPropsSelect = (columnProps as SelectColumnProps);
+            return columnPropsSelect.assocField + '.' + columnPropsSelect.displayField;
         }
         else if (columnProps.type === "autoComplete") {
-            const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
+            const columnPropsAutocomplete = (columnProps as AutocompleteColumnProps);
             // for simplicity we use here the first column (is used for filtering/sorting)
             // TODO - all columns add in constructor (through method props.form.addField(...))
-            const displayField: string = Array.isArray(columnPropsAutoComplete.displayField) ? columnPropsAutoComplete.displayField[0] : columnPropsAutoComplete.displayField;
-            return columnPropsAutoComplete.assocField + '.' + displayField;
+            const displayField: string = Array.isArray(columnPropsAutocomplete.displayField) ? columnPropsAutocomplete.displayField[0] : columnPropsAutocomplete.displayField;
+            return columnPropsAutocomplete.assocField + '.' + displayField;
         }
         else if (columnProps.type === "searchButton") {
-            const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
+            const columnPropsSearchButton = (columnProps as SearchButtonColumnProps);
             return columnPropsSearchButton.assocField + '.' + columnPropsSearchButton.displayField;
         }
         else if (columnProps.type === "textarea") {
-            const columnPropsTextarea = (columnProps as FormTextareaColumnProps);
-            return columnPropsTextarea.field;
+            const columnPropsMultilineText = (columnProps as MultilineTextColumnProps);
+            return columnPropsMultilineText.field;
         }
         else {
             throw "Unknown prop type = " + columnProps.type;
         }
     }
 
-    static getHeader(columnProps: FormColumnBaseProps, xEntity: Entity, field: string, xField: Field): string {
+    static getHeader(columnProps: ColumnBaseProps, xEntity: Entity, field: string, xField: Field): string {
         // poznamky - parametre field a xField by sme mohli vyratavat na zaklade columnProps ale kedze ich uz mame, setrime performance a neduplikujeme vypocet
         // nie je to tu uplne idealne nakodene, ale je to pomerne prehladne
         let isNullable: boolean = true;
         let readOnly: boolean = false;
         if (columnProps.type === "inputSimple") {
-            const columnPropsInputSimple = (columnProps as FormColumnProps);
+            const columnPropsInputSimple = (columnProps as ColumnProps);
             isNullable = xField.isNullable;
             readOnly = FormDataTable.isReadOnlyHeader(columnPropsInputSimple.field, columnProps.readOnly);
         }
         else if (columnProps.type === "dropdown") {
-            const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
-            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsDropdown.assocField);
+            const columnPropsSelect = (columnProps as SelectColumnProps);
+            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsSelect.assocField);
             isNullable = xAssoc.isNullable;
             readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "autoComplete") {
-            const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
-            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsAutoComplete.assocField);
+            const columnPropsAutocomplete = (columnProps as AutocompleteColumnProps);
+            const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsAutocomplete.assocField);
             isNullable = xAssoc.isNullable;
             readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "searchButton") {
-            const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
+            const columnPropsSearchButton = (columnProps as SearchButtonColumnProps);
             const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsSearchButton.assocField);
             isNullable = xAssoc.isNullable;
             readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "textarea") {
-            const columnPropsTextarea = (columnProps as FormTextareaColumnProps);
+            const columnPropsMultilineText = (columnProps as MultilineTextColumnProps);
             isNullable = xField.isNullable;
-            readOnly = FormDataTable.isReadOnlyHeader(columnPropsTextarea.field, columnProps.readOnly);
+            readOnly = FormDataTable.isReadOnlyHeader(columnPropsMultilineText.field, columnProps.readOnly);
         }
         else {
             throw "Unknown prop type = " + columnProps.type;
@@ -269,7 +269,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
         // TODO - asi by bolo fajn si tieto field, xField niekam ulozit a iterovat ulozene hodnoty, pouziva sa to na viacerych miestach
         for (const child of this.props.children) {
-            const childColumn = child as {props: FormColumnBaseProps}; // nevedel som to krajsie...
+            const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
             // zatial nepodporujeme filter pre custom stlpce
             if (childColumn.props.type !== "custom") {
                 const field: string | undefined = this.getPathForColumn(childColumn.props);
@@ -396,7 +396,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     }
 */
     // body={(rowData: any) => bodyTemplate(childColumn.props.field, rowData)}
-    bodyTemplate(columnProps: FormColumnBaseProps, tableReadOnly: boolean, rowData: any, xEntity: Entity): any {
+    bodyTemplate(columnProps: ColumnBaseProps, tableReadOnly: boolean, rowData: any, xEntity: Entity): any {
         let body: any;
         // columnProps.columnViewStatus "ReadOnly" has higher prio then tableReadOnly
         // tableReadOnly has higher prio then property readOnly
@@ -412,7 +412,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             readOnly = columnProps.readOnly;
         }
         if (columnProps.type === "inputSimple") {
-            const columnPropsInputSimple = (columnProps as FormColumnProps);
+            const columnPropsInputSimple = (columnProps as ColumnProps);
             const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, columnPropsInputSimple.field);
             if (xField.type === "decimal" || xField.type === "number") {
                 body = <InputDecimalDT form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
@@ -432,29 +432,29 @@ export class FormDataTable extends Component<FormDataTableProps> {
             }
         }
         else if (columnProps.type === "dropdown") {
-            const columnPropsDropdown = (columnProps as FormDropdownColumnProps);
-                body = <TableSelectField form={this.props.form} entity={this.getEntity()} assocField={columnPropsDropdown.assocField} displayField={columnPropsDropdown.displayField} sortField={columnPropsDropdown.sortField} filter={columnPropsDropdown.filter} dropdownOptionsMap={this.state.dropdownOptionsMap} onDropdownOptionsMapChange={this.onDropdownOptionsMapChange} rowData={rowData} readOnly={readOnly}/>;
+            const columnPropsSelect = (columnProps as SelectColumnProps);
+                body = <TableSelectField form={this.props.form} entity={this.getEntity()} assocField={columnPropsSelect.assocField} displayField={columnPropsSelect.displayField} sortField={columnPropsSelect.sortField} filter={columnPropsSelect.filter} dropdownOptionsMap={this.state.dropdownOptionsMap} onDropdownOptionsMapChange={this.onDropdownOptionsMapChange} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "autoComplete") {
-            const columnPropsAutoComplete = (columnProps as FormAutoCompleteColumnProps);
+            const columnPropsAutocomplete = (columnProps as AutocompleteColumnProps);
             body = <TableAutocompleteField form={this.props.form} entity={this.getEntity()}
-                                    assocField={columnPropsAutoComplete.assocField} displayField={columnPropsAutoComplete.displayField} itemTemplate={columnPropsAutoComplete.itemTemplate}
-                                    SearchBrowse={columnPropsAutoComplete.SearchBrowse} searchBrowseElement={columnPropsAutoComplete.searchBrowseElement}
-                                    AssocForm={columnPropsAutoComplete.AssocForm} assocFormElement={columnPropsAutoComplete.assocFormElement}
-                                    addRowEnabled={columnPropsAutoComplete.addRowEnabled} filter={columnPropsAutoComplete.filter}
-                                    sortField={columnPropsAutoComplete.sortField} fields={columnPropsAutoComplete.fields}
-                                    scrollHeight={columnPropsAutoComplete.scrollHeight}
-                                    suggestions={columnPropsAutoComplete.suggestions}
-                                    suggestionsLoad={columnPropsAutoComplete.suggestionsLoad} lazyLoadMaxRows={columnPropsAutoComplete.lazyLoadMaxRows}
+                                    assocField={columnPropsAutocomplete.assocField} displayField={columnPropsAutocomplete.displayField} itemTemplate={columnPropsAutocomplete.itemTemplate}
+                                    SearchBrowse={columnPropsAutocomplete.SearchBrowse} searchBrowseElement={columnPropsAutocomplete.searchBrowseElement}
+                                    AssocForm={columnPropsAutocomplete.AssocForm} assocFormElement={columnPropsAutocomplete.assocFormElement}
+                                    addRowEnabled={columnPropsAutocomplete.addRowEnabled} filter={columnPropsAutocomplete.filter}
+                                    sortField={columnPropsAutocomplete.sortField} fields={columnPropsAutocomplete.fields}
+                                    scrollHeight={columnPropsAutocomplete.scrollHeight}
+                                    suggestions={columnPropsAutocomplete.suggestions}
+                                    suggestionsLoad={columnPropsAutocomplete.suggestionsLoad} lazyLoadMaxRows={columnPropsAutocomplete.lazyLoadMaxRows}
                                     rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "searchButton") {
-            const columnPropsSearchButton = (columnProps as FormSearchButtonColumnProps);
+            const columnPropsSearchButton = (columnProps as SearchButtonColumnProps);
             body = <SearchButtonDT form={this.props.form} entity={this.getEntity()} assocField={columnPropsSearchButton.assocField} displayField={columnPropsSearchButton.displayField} searchBrowse={columnPropsSearchButton.searchBrowse} rowData={rowData} readOnly={readOnly}/>;
         }
         else if (columnProps.type === "textarea") {
-            const columnPropsTextarea = (columnProps as FormTextareaColumnProps);
-            body = <TableMultilineTextField form={this.props.form} entity={this.getEntity()} field={columnPropsTextarea.field} rows={columnPropsTextarea.rows} autoResize={columnPropsTextarea.autoResize} rowData={rowData} readOnly={readOnly}/>;
+            const columnPropsMultilineText = (columnProps as MultilineTextColumnProps);
+            body = <TableMultilineTextField form={this.props.form} entity={this.getEntity()} field={columnPropsMultilineText.field} rows={columnPropsMultilineText.rows} autoResize={columnPropsMultilineText.autoResize} rowData={rowData} readOnly={readOnly}/>;
         }
         else {
             throw "Unknown prop type = " + columnProps.type;
@@ -625,12 +625,12 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
         // pre lepsiu citatelnost vytvarame stlpce uz tu
         const columnElemList: JSX.Element[] = React.Children.map(
-            this.props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: FormColumnBaseProps}).props.columnViewStatus) !== ViewStatus.Hidden),
+            this.props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: ColumnBaseProps}).props.columnViewStatus) !== ViewStatus.Hidden),
             function (child) {
                 // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
                 // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
                 // (vzdy musime robit manipulacie so stlpcom, lebo potrebujeme pridat filter={true} sortable={true}
-                const childColumn = child as {props: FormColumnBaseProps}; // nevedel som to krajsie...
+                const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
                 const childColumnProps = childColumn.props;
 
                 let fieldParam: string | undefined;
@@ -643,7 +643,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
                 if (childColumnProps.type === "custom") {
                     // len jednoduche hodnoty, zatial nebude takmer ziadna podpora
-                    const columnPropsCustom = (childColumnProps as FormCustomColumnProps);
+                    const columnPropsCustom = (childColumnProps as CustomColumnProps);
                     fieldParam = columnPropsCustom.field;
                     header = columnPropsCustom.header;
                     filterElement = undefined;
@@ -732,7 +732,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                     headerStyle = {width: width};
                 }
 
-                return <Column field={fieldParam} header={header} filter={thisLocal.props.filterDisplay !== "none"} sortable={thisLocal.props.sortable}
+                return <PrimeColumn field={fieldParam} header={header} filter={thisLocal.props.filterDisplay !== "none"} sortable={thisLocal.props.sortable}
                                filterElement={filterElement} showFilterMenu={showFilterMenu} showClearButton={showClearButton}
                                headerStyle={headerStyle} align={align} body={body}/>;
             }
@@ -740,7 +740,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
 
         if (this.props.showAddRemoveButtons && this.props.removeButtonInRow) {
             // je dolezite nastavit sirku header-a, lebo inac ma stlpec sirku 0 a nevidno ho
-            columnElemList.push(<Column key="removeButton" headerStyle={{width: '2rem'}} body={(rowData: any) => <ButtonIconNarrow icon="pi pi-times" onClick={() => this.removeRow(rowData)} disabled={readOnly} addMargin={false}/>}/>);
+            columnElemList.push(<PrimeColumn key="removeButton" headerStyle={{width: '2rem'}} body={(rowData: any) => <ButtonIconNarrow icon="pi pi-times" onClick={() => this.removeRow(rowData)} disabled={readOnly} addMargin={false}/>}/>);
         }
 
         let addRowLabel: string | undefined = undefined;
@@ -801,7 +801,7 @@ export type TableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => 
 // pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo EntityRow)
 export type TableFieldFilterProp = CustomFilter | ((object: any, rowData: any) => CustomFilter | undefined);
 
-export interface FormColumnBaseProps {
+export interface ColumnBaseProps {
     type: "inputSimple" | "dropdown" | "autoComplete" | "searchButton" | "textarea" | "custom";
     header?: any;
     readOnly?: TableFieldReadOnlyProp;
@@ -812,24 +812,24 @@ export interface FormColumnBaseProps {
     columnViewStatus: ViewStatusOrBoolean;
 }
 
-// default props for FormColumnBaseProps
-const FormColumnBase_defaultProps = {
+// default props for ColumnBaseProps
+const ColumnBase_defaultProps = {
     columnViewStatus: true
 };
 
 
-export interface FormColumnProps extends FormColumnBaseProps {
+export interface ColumnProps extends ColumnBaseProps {
     field: string;
 }
 
-export interface FormDropdownColumnProps extends FormColumnBaseProps {
+export interface SelectColumnProps extends ColumnBaseProps {
     assocField: string;
     displayField: string;
     sortField?: string;
     filter?: CustomFilter;
 }
 
-export interface FormAutoCompleteColumnProps extends FormColumnBaseProps {
+export interface AutocompleteColumnProps extends ColumnBaseProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
@@ -847,84 +847,84 @@ export interface FormAutoCompleteColumnProps extends FormColumnBaseProps {
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
 }
 
-export interface FormSearchButtonColumnProps extends FormColumnBaseProps {
+export interface SearchButtonColumnProps extends ColumnBaseProps {
     assocField: string;
     displayField: string;
     searchBrowse: JSX.Element;
 }
 
-export interface FormTextareaColumnProps extends FormColumnBaseProps {
+export interface MultilineTextColumnProps extends ColumnBaseProps {
     field: string;
     rows: number;
     autoResize?: boolean;
 }
 
-// TODO - FormCustomColumnProps by nemal extendovat od FormColumnBaseProps, niektore propertiesy nedavaju zmysel
-export interface FormCustomColumnProps extends FormColumnBaseProps {
+// TODO - CustomColumnProps by nemal extendovat od ColumnBaseProps, niektore propertiesy nedavaju zmysel
+export interface CustomColumnProps extends ColumnBaseProps {
     body: React.ReactNode | ((data: any, options: ColumnBodyOptions) => React.ReactNode); // the same type as type of property Column.body
     field?: string; // koli pripadnemu sortovaniu/filtrovaniu
 }
 
-export const FormColumn = (props: FormColumnProps) => {
+export const Column = (props: ColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-FormColumn.defaultProps = {
-    ...FormColumnBase_defaultProps,
+Column.defaultProps = {
+    ...ColumnBase_defaultProps,
     type: "inputSimple"
 };
 
-export const FormDropdownColumn = (props: FormDropdownColumnProps) => {
+export const SelectColumn = (props: SelectColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-FormDropdownColumn.defaultProps = {
-    ...FormColumnBase_defaultProps,
+SelectColumn.defaultProps = {
+    ...ColumnBase_defaultProps,
     type: "dropdown"
 };
 
-export const FormAutoCompleteColumn = (props: FormAutoCompleteColumnProps) => {
+export const AutocompleteColumn = (props: AutocompleteColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-FormAutoCompleteColumn.defaultProps = {
-    ...FormColumnBase_defaultProps,
+AutocompleteColumn.defaultProps = {
+    ...ColumnBase_defaultProps,
     type: "autoComplete",
     addRowEnabled: true
 };
 
-export const FormSearchButtonColumn = (props: FormSearchButtonColumnProps) => {
+export const SearchButtonColumn = (props: SearchButtonColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-FormSearchButtonColumn.defaultProps = {
-    ...FormColumnBase_defaultProps,
+SearchButtonColumn.defaultProps = {
+    ...ColumnBase_defaultProps,
     type: "searchButton"
 };
 
-export const FormTextareaColumn = (props: FormTextareaColumnProps) => {
+export const MultilineTextColumn = (props: MultilineTextColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-FormTextareaColumn.defaultProps = {
-    ...FormColumnBase_defaultProps,
+MultilineTextColumn.defaultProps = {
+    ...ColumnBase_defaultProps,
     type: "textarea",
     rows: 1,
     autoResize: true
 };
 
-export const FormCustomColumn = (props: FormCustomColumnProps) => {
+export const CustomColumn = (props: CustomColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-FormCustomColumn.defaultProps = {
-    ...FormColumnBase_defaultProps,
+CustomColumn.defaultProps = {
+    ...ColumnBase_defaultProps,
     type: "custom"
 };
 

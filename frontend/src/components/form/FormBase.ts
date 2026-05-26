@@ -14,7 +14,7 @@ import {localeOption} from "../locale/Locale";
 
 export type OnSaveOrCancelProp = (entityRow: EntityRow | null, objectChange: OperationType) => void;
 
-// poznamka - v assoc button-e (SearchButton, ToOneAssocButton, FormSearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
+// poznamka - v assoc button-e (SearchButton, ToOneAssocButton, SearchButtonColumn) je mozne zadat nazov formulara cez property assocForm={<BrandForm/>}
 // pri tomto zapise sa nezadava property id (id sa doplni automaticky pri otvoreni assoc formularu cez klonovanie elementu)
 // preto umoznujeme aby id mohlo byt undefined
 // zombie
