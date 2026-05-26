@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {Dropdown, DropdownChangeEvent} from "primereact/dropdown";
 import {Utils} from "../../utils/Utils";
 import {CustomFilter} from "../../common/FindParam";
-import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export interface SelectInputProps {

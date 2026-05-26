@@ -1,55 +1,1 @@
-import React from "react";
-import {FilterProp, FormField, FormFieldProps} from "../form";
-import {Assoc} from "../../common/EntityMetadata";
-import {SelectInput} from "./SelectInput";
-import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-
-export interface SelectFieldProps extends FormFieldProps {
-    assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - dropdown will run on <assoc2>)
-    displayField: string;
-    sortField?: string;
-    filter?: FilterProp;
-}
-
-export class SelectField extends FormField<SelectFieldProps> {
-
-    protected xAssoc: Assoc;
-
-    constructor(props: SelectFieldProps) {
-        super(props);
-
-        this.xAssoc = UtilsMetadataCommon.getAssocToOneByPath(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
-
-        props.form.addField(props.assocField + '.' + props.displayField);
-    }
-
-    getField(): string {
-        return this.props.assocField;
-    }
-
-    isNotNull(): boolean {
-        return !this.xAssoc.isNullable;
-    }
-
-    getValue(): any | null {
-        const assocObject: any | null = this.getValueFromObject();
-        return assocObject;
-    }
-
-    render() {
-        // POZOR!
-        // this.getFilterBase(this.props.filter) - nefunguje dynamicky filter, lebo objekt potrebny vo funkcii this.props.filter sa nacitava az v XFormBase.componentDidMount()
-        // a funkcia this.props.filter sa vola skor (pri vypocitavani atributu filter)
-        // ani keby bola funkcia volana vo componentDidMount() tohto SelectField, nepomohlo by to, tento componentDidMount() sa vola skor ako componentDidMount() parenta XFormBase
-        // planuje sa to riesit bud zavedenim cache pre options alebo vytiahnutim options na uroven XFormBase
-        return (
-            <div className="field grid">
-                <label htmlFor={this.props.assocField} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <SelectInput id={this.props.assocField} entity={this.xAssoc.entityName} displayField={this.props.displayField} sortField={this.props.sortField}
-                                    value={this.getValue()} onChange={(value: any | null) => this.onValueChangeBase(value, this.props.onChange)}
-                                    readOnly={this.isReadOnly()} isNotNull={this.isNotNull()} error={this.getError()} filter={this.getFilterBase(this.props.filter)}/>
-            </div>
-        );
-    }
-}
-
+import React from "react";import {FilterProp, FormField, FormFieldProps} from "../form";import {Assoc} from "../../common/EntityMetadata";import {SelectInput} from "./SelectInput";import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";export interface SelectFieldProps extends FormFieldProps {    assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - dropdown will run on <assoc2>)    displayField: string;    sortField?: string;    filter?: FilterProp;}export class SelectField extends FormField<SelectFieldProps> {    protected xAssoc: Assoc;    constructor(props: SelectFieldProps) {        super(props);        this.xAssoc = UtilsMetadataCommon.getAssocToOneByPath(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);        props.form.addField(props.assocField + '.' + props.displayField);    }    getField(): string {        return this.props.assocField;    }    isNotNull(): boolean {        return !this.xAssoc.isNullable;    }    getValue(): any | null {        const assocObject: any | null = this.getValueFromObject();        return assocObject;    }    render() {        // POZOR!        // this.getFilterBase(this.props.filter) - nefunguje dynamicky filter, lebo objekt potrebny vo funkcii this.props.filter sa nacitava az v XFormBase.componentDidMount()        // a funkcia this.props.filter sa vola skor (pri vypocitavani atributu filter)        // ani keby bola funkcia volana vo componentDidMount() tohto SelectField, nepomohlo by to, tento componentDidMount() sa vola skor ako componentDidMount() parenta XFormBase        // planuje sa to riesit bud zavedenim cache pre options alebo vytiahnutim options na uroven XFormBase        return (            <div className="field grid">                <label htmlFor={this.props.assocField} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>                <SelectInput id={this.props.assocField} entity={this.xAssoc.entityName} displayField={this.props.displayField} sortField={this.props.sortField}                                    value={this.getValue()} onChange={(value: any | null) => this.onValueChangeBase(value, this.props.onChange)}                                    readOnly={this.isReadOnly()} isNotNull={this.isNotNull()} error={this.getError()} filter={this.getFilterBase(this.props.filter)}/>            </div>        );    }}
