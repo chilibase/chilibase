@@ -155,8 +155,8 @@ export class UtilsCommon {
     }
 
     static createDisplayValueForField(object: any, xEntity: Entity | undefined, field: string): string {
-        // pouziva sa podobny algoritmus ako v XLazyDataTable - metoda bodyTemplate
-        // (ale nie je to take komplexne ako v XLazyDataTable - nevie renderovat napr. html (rich text))
+        // pouziva sa podobny algoritmus ako v LazyDataTable - metoda bodyTemplate
+        // (ale nie je to take komplexne ako v LazyDataTable - nevie renderovat napr. html (rich text))
         const [prefix, fieldOnly]: [string | null, string] = UtilsCommon.getPrefixAndField(field);
         let xField: Field | undefined = undefined;
         if (xEntity) {

@@ -487,8 +487,8 @@ export class Utils {
             // if the length of field is 2 or more, then readOnly
             isReadOnly = true;
         }
-            // formReadOnlyBase is called on the level XFormDataTable2 and XFormPanelList
-            // the reason is (probably) that in XFormDataTable2 and XFormPanelList we know the assoc name whereas here in component we know only field name
+            // formReadOnlyBase is called on the level FormDataTable and XFormPanelList
+            // the reason is (probably) that in FormDataTable and XFormPanelList we know the assoc name whereas here in component we know only field name
             // (assoc name is param of formReadOnlyBase)
             // else if (this.props.form.formReadOnlyBase("xxx")) {
             //     isReadOnly = true;
@@ -738,7 +738,7 @@ export class Utils {
         }
     }
 
-    // hleper method used for items of XLazyDataTable (shortcut ldt)
+    // hleper method used for items of LazyDataTable (shortcut ldt)
     // static getValueFromStorageLdt(entity: string, stateKeySuffix: XStateKeySuffix, initValue: any): any {
     //     return Utils.getValueFromStorage(`xldt-state-${entity}-${stateKeySuffix}`, initValue);
     // }
@@ -815,7 +815,7 @@ export class Utils {
 
     static reload() {
         // data in session may not correspond with new structures in new version
-        // e.g. if we add new column to XLazyDataTable, filter operator/value for this column new column is missing in data from session and application will crash
+        // e.g. if we add new column to LazyDataTable, filter operator/value for this column new column is missing in data from session and application will crash
         // simple solution is to clear session
         Utils.clearStorage("session");
         Utils.clearStorage("local");

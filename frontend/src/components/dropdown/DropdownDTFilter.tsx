@@ -2,12 +2,11 @@ import React, {useEffect, useState} from "react";
 import {Utils} from "../../utils/Utils";
 import {Dropdown} from "primereact/dropdown";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {Assoc, Field} from "../../common/EntityMetadata";
-import {UtilsMetadata} from "../../utils/UtilsMetadata";
+import {Assoc} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {CustomFilter} from "../../common/FindParam";
 
-// pouzivany vo filtri v XLazyDataTable aj v XFormDataTable2
+// pouzivany vo filtri v LazyDataTable aj v FormDataTable
 export const DropdownDTFilter = (props: {entity: string; path: string; value: any; onValueChange: (field: string, displayValue: any) => void; filter?: CustomFilter; sortField?: string;}) => {
 
     const [options, setOptions] = useState<any[]>([]);

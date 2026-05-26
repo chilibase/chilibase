@@ -36,7 +36,7 @@ export const DocTemplateButton = (props: {
 
     const onClickButton = async (xtDocTemplate: XtDocTemplate) => {
 
-        // in XLazyDataTable if no row is selected
+        // in LazyDataTable if no row is selected
         if (!props.rowId) {
             alert(localeOption('pleaseSelectRow'));
             return;

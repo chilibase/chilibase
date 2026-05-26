@@ -60,7 +60,7 @@ import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
 import {FormDialog, FormDialogState} from "../form";
 
-// typ pouzivany len v XLazyDataTable
+// typ pouzivany len v LazyDataTable
 interface XFieldSetMaps {
     [field: string]: XFieldXFieldMetaMap;
 }
@@ -470,7 +470,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         // jednoduchy sposob - nepouzivame parameter props.displayed a priznak dataLoaded
         if (props.displayed === undefined) {
             loadData();
-            //console.log("XLazyDataTable - data loaded (simple)");
+            //console.log("LazyDataTable - data loaded (simple)");
         }
     },[]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -480,7 +480,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             if (props.displayed) {
                 if (!dataLoaded) {
                     loadData();
-                    //console.log("XLazyDataTable - data loaded (used displayed)");
+                    //console.log("LazyDataTable - data loaded (used displayed)");
                     setDataLoaded(true);
                 }
             }
@@ -889,7 +889,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         formElement?: React.ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
-            throw `No form declared. XLazyDataTable.EditForm/editFormElement is undefined and also Form/formElement in call of the method openFormForInsert is undefined.`;
+            throw `No form declared. LazyDataTable.EditForm/editFormElement is undefined and also Form/formElement in call of the method openFormForInsert is undefined.`;
         }
         setFormDialogState({
             opened: true,
@@ -928,7 +928,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         formElement?: React.ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
-            throw `No form declared. XLazyDataTable.EditForm/editFormElement is undefined and also Form/formElement in call of the method openFormForUpdate is undefined.`;
+            throw `No form declared. LazyDataTable.EditForm/editFormElement is undefined and also Form/formElement in call of the method openFormForUpdate is undefined.`;
         }
         setFormDialogState({
             opened: true,
@@ -1179,7 +1179,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             // for "noBetween" stays betweenFilter = undefined (simple filter used)
         }
         else {
-            betweenFilter = tableBetweenFilter; // betweenFilter from XLazyDataTable property
+            betweenFilter = tableBetweenFilter; // betweenFilter from LazyDataTable property
         }
         return betweenFilter;
     }
@@ -1334,7 +1334,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // check
     if ((props.editMode === true || props.editMode === false) && props.editModeHandlers === undefined) {
-        throw "XLazyDataTable: for props.editMode = true/false, props.editModeHandlers must be defined.";
+        throw "LazyDataTable: for props.editMode = true/false, props.editModeHandlers must be defined.";
     }
 
     // pouzivame paginatorLeft aj paginatorRight (aj prazdny) pouzivame, aby bol default paginator v strede (bez paginatorLeft je default paginator presunuty dolava a naopak)
@@ -1706,7 +1706,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 // property filterElement is of type function, this functions returns custom filter input (e.g. AutoComplete, type React.ReactNode),
 // setFilterItem is function that the custom filter input calls upon onChange - the function setFilterItem sets the selected filter value into "filters"
 // and from "filters" goes the value to lazy service
-// remark: this complicated way is used only to get filter value from custom filter input to "filters" in XLazyDataTable
+// remark: this complicated way is used only to get filter value from custom filter input to "filters" in LazyDataTable
 // remark2: filter value transfer "custom filter input" -> "filters" is (temporary?) only one way, if some third party changes filter value in "filters",
 // the change will be not visible in custom filter input!
 // remark3: autoFilter is just copy of column property autoFilter, should by send to setFilterItem as last param but the constant true/false can be also sent
