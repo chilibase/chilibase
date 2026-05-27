@@ -5,9 +5,9 @@ import {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelect, MultiSelectChangeEvent} from "primereact/multiselect";
 
-// Base komponent pre MultiSelect - podobna uroven ako XAutoCompleteBase, resp. SelectInput
+// Base komponent pre MultiSelectField - podobna uroven ako AutocompleteInput, resp. SelectInput
 
-export interface MultiSelectBaseProps {
+export interface MultiSelectInputProps {
     value: any[];
     onChange: (value: any[]) => void;
     //options?: any[]; // ak su priamo zadane options, nepouziva sa optionsQuery (TODO - toto neviem ci potrebujeme, da sa priamo pouzit MultiSelect v tomto pripade)
@@ -21,7 +21,7 @@ export interface MultiSelectBaseProps {
     error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
 }
 
-export class MultiSelectBase extends Component<MultiSelectBaseProps> {
+export class MultiSelectInput extends Component<MultiSelectInputProps> {
 
     public static defaultProps = {
         //scrollHeight: '15rem'   // primereact has 200px
@@ -33,11 +33,11 @@ export class MultiSelectBase extends Component<MultiSelectBaseProps> {
         options: any[];
     };
 
-    constructor(props: MultiSelectBaseProps) {
+    constructor(props: MultiSelectInputProps) {
         super(props);
 
         if (!this.props.optionsQuery) {
-            throw `MultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
+            throw `MultiSelectInput.optionsQuery: unexpected error - prop optionsQuery is undefined`;
         }
         this.idField = UtilsMetadataCommon.getEntity(this.props.optionsQuery.entity).idField;
 
@@ -52,7 +52,7 @@ export class MultiSelectBase extends Component<MultiSelectBaseProps> {
 
     async loadOptions() {
         if (!this.props.optionsQuery) {
-            throw `MultiSelectBase.optionsQuery: unexpected error - prop optionsQuery is undefined`;
+            throw `MultiSelectInput.optionsQuery: unexpected error - prop optionsQuery is undefined`;
         }
         const options: any[] = await Utils.fetchRows(
             this.props.optionsQuery.entity,
@@ -82,4 +82,3 @@ export class MultiSelectBase extends Component<MultiSelectBaseProps> {
         );
     }
 }
-

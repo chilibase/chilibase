@@ -2,7 +2,7 @@ import React from "react";
 import {FilterProp, FormField, FormFieldProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {MultiSelectBase} from "./MultiSelectBase";
+import {MultiSelectInput} from "./MultiSelectInput";
 import {DataTableSortMeta} from "primereact/datatable";
 import {UtilsCommon} from "../../common/UtilsCommon";
 
@@ -12,7 +12,7 @@ import {UtilsCommon} from "../../common/UtilsCommon";
 // 2. entity of form uses OneToMany assoc to link rows (entity for link table must be created)
 //      in this case prop "assocToMany" is OneToMany assoc to link rows and prop "assocManyToOne" is ManyToOne assoc from link row to option row
 
-export interface MultiSelectProps extends FormFieldProps {
+export interface MultiSelectFieldProps extends FormFieldProps {
     assocToMany: string; // assoc ManyToMany to option rows or assoc OneToMany to link rows; can be also path (e.g. <assoc1>.<assoc2> - multiselect will run on <assoc2>)
     assocManyToOne?: string; // assoc from link row to option row - used only if prop "assocToMany" is OneToMany assoc to link rows
     displayField: string; // field of option row
@@ -23,12 +23,12 @@ export interface MultiSelectProps extends FormFieldProps {
     scrollHeight?: string; // Maximum height of the suggestions panel.
 }
 
-export class MultiSelect extends FormField<MultiSelectProps> {
+export class MultiSelectField extends FormField<MultiSelectFieldProps> {
 
     protected xAssocToMany: Assoc;
     protected xAssocManyToOne?: Assoc;
 
-    constructor(props: MultiSelectProps) {
+    constructor(props: MultiSelectFieldProps) {
         super(props);
 
         this.xAssocToMany = UtilsMetadataCommon.getAssocToManyByPath(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocToMany);
@@ -75,7 +75,7 @@ export class MultiSelect extends FormField<MultiSelectProps> {
     }
 
     onChange(value: any[]) {
-        // value coming from MultiSelectBase is list of selected option rows
+        // value coming from MultiSelectInput is list of selected option rows
         let rowList: any[];
         if (this.props.assocManyToOne) {
             // assoc "assocToMany" expects link rows - we wrap options row into link rows, id is left undefined,
@@ -97,7 +97,7 @@ export class MultiSelect extends FormField<MultiSelectProps> {
         return (
             <div className="field grid">
                 <label htmlFor={this.props.assocToMany} className="col-fixed" style={this.getLabelStyle()}>{this.getLabel()}</label>
-                <MultiSelectBase value={this.getValue()} onChange={this.onChange}
+                <MultiSelectInput value={this.getValue()} onChange={this.onChange}
                                   displayField={this.props.displayField}
                                   optionsQuery={{entity: this.xAssocManyToOne ? this.xAssocManyToOne.entityName : this.xAssocToMany.entityName, filter: () => this.getFilterBase(this.props.filter), sortField: this.props.sortField, fields: this.props.fields}}
                                   width={this.props.width} scrollHeight={this.props.scrollHeight}
@@ -106,4 +106,3 @@ export class MultiSelect extends FormField<MultiSelectProps> {
         );
     }
 }
-

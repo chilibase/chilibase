@@ -71,7 +71,7 @@
     "./interval-field": "./lib/components/interval-field/index.js",
     "./lazy-data-table": "./lib/components/lazy-data-table/index.js",
     "./locale": "./lib/components/locale/index.js",
-    "./multi-select": "./lib/components/multi-select/index.js",
+    "./multi-select-field": "./lib/components/multi-select-field/index.js",
     "./multiline-text-field": "./lib/components/multiline-text-field/index.js",
     "./rich-text-field": "./lib/components/rich-text-field/index.js",
     "./search-field": "./lib/components/search-field/index.js",
