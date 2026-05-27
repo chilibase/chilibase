@@ -8,11 +8,11 @@ export * from "./FtsInput";
 
 /** @deprecated */
 export {LazyDataTable as XLazyDataTable} from "./LazyDataTable";
-export {LazyColumn as XLazyColumn} from "./LazyDataTable";
+export {Column as XLazyColumn} from "./LazyDataTable";
 export type {LazyDataTableRef as XLazyDataTableRef} from "./LazyDataTable";
 export type {LazyDataTableProps as XLazyDataTableProps} from "./LazyDataTable";
-export type {LazyColumnProps as XLazyColumnProps} from "./LazyDataTable";
-export type {LazyColumnType as XLazyColumnType} from "./LazyDataTable";
+export type {ColumnProps as XLazyColumnProps} from "./LazyDataTable";
+export type {ColumnType as XLazyColumnType} from "./LazyDataTable";
 export type {BetweenFilterProp as XBetweenFilterProp} from "./LazyDataTable";
 export type {MultilineRenderType as XMultilineRenderType} from "./LazyDataTable";
 export type {OpenFormForInsert as XOpenFormForInsert} from "./LazyDataTable";

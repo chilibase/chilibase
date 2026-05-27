@@ -1,4 +1,4 @@
-import {BrowseProps, LazyColumn, LazyDataTable} from "../../components/lazy-data-table";
+import {BrowseProps, Column, LazyDataTable} from "../../components/lazy-data-table";
 import React from "react";
 import {BrowseMetaForm} from "./BrowseMetaForm";
 import {BrowseMeta} from "./browse-meta.entity";
@@ -13,10 +13,10 @@ export const BrowseMetaBrowse = (props: BrowseProps) => {
 
     return (
         <LazyDataTable entity="BrowseMeta" rows={15} onEdit={onEdit} removeRow={true} displayed={props.displayed}>
-            <LazyColumn field="id" header="ID"/>
-            <LazyColumn field="entity" header="Entity" width="17rem"/>
-            <LazyColumn field="browseId" header="Browse ID" width="17rem"/>
-            <LazyColumn field="rows" header="Rows"/>
+            <Column field="id" header="ID"/>
+            <Column field="entity" header="Entity" width="17rem"/>
+            <Column field="browseId" header="Browse ID" width="17rem"/>
+            <Column field="rows" header="Rows"/>
         </LazyDataTable>
     );
 }

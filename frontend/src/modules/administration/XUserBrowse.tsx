@@ -1,5 +1,5 @@
 import {
-    LazyColumn,
+    Column,
     LazyDataTable,
     type SearchBrowseProps
 } from "../../components/lazy-data-table";
@@ -27,11 +27,11 @@ export const XUserBrowse = (props: SearchBrowseProps) => {
         <LazyDataTable entity="User" label="Users" rows={30}
                         EditForm={XUserForm} removeRow={onRemoveRow}
                         searchBrowseParams={props.searchBrowseParams}>
-            <LazyColumn field="id" header="ID"/>
-            <LazyColumn field="username" header="Username" width="17rem"/>
-            <LazyColumn field="name" header="Name" width="17rem"/>
-            <LazyColumn field="enabled" header="Enabled"/>
-            <LazyColumn field="admin" header="Admin"/>
+            <Column field="id" header="ID"/>
+            <Column field="username" header="Username" width="17rem"/>
+            <Column field="name" header="Name" width="17rem"/>
+            <Column field="enabled" header="Enabled"/>
+            <Column field="admin" header="Admin"/>
         </LazyDataTable>
     );
 }

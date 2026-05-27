@@ -7,7 +7,7 @@ import {
     DataTableSortMeta, DataTableStateEvent, DataTableValueArray
 } from 'primereact/datatable';
 import {
-    Column,
+    Column as PrimeColumn,
     ColumnBodyOptions,
     ColumnFilterElementTemplateOptions,
     ColumnFilterMatchModeChangeEvent,
@@ -264,10 +264,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         let aggregateItems: SimpleAggregateItem[] = [];
 
         let columns = props.children;
-        for (let column of columns) {
-            const xLazyColumn = column as {props: LazyColumnProps}; // nevedel som to krajsie...
-            if (xLazyColumn.props.aggregateType) {
-                aggregateItems.push({field: xLazyColumn.props.field, aggregateFunction: xLazyColumn.props.aggregateType});
+        for (let columnChild of columns) {
+            const column = columnChild as ColumnType;
+            if (column.props.aggregateType) {
+                aggregateItems.push({field: column.props.field, aggregateFunction: column.props.aggregateType});
             }
         }
 
@@ -286,18 +286,18 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
         let filtersInit: DataTableFilterMeta = {};
 
-        // warning note: props.children are used to get props of LazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
+        // warning note: props.children are used to get props of Column whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
         //let columns = dataTableEl.current.props.children; - does not work
         let columns = props.children;
-        for (let column of columns) {
-            const xLazyColumn = column as {props: LazyColumnProps}; // nevedel som to krajsie...
+        for (let columChild of columns) {
+            const column = columChild as ColumnType;
             // in some situations, this would be suitable, but for dynamic hide/show columns it can cause crash
             // better place for initializing filters is probably creating columns - function(child)
             //if (Utils.xViewStatus(xLazyColumn.props.columnViewStatus) !== ViewStatus.Hidden) {
-                const field: string = xLazyColumn.props.field;
+                const field: string = column.props.field;
                 const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
                 // TODO column.props.dropdownInFilter - pre "menu" by bolo fajn mat zoznam "enumov"
-                const filterMatchMode: FilterMatchMode = getInitFilterMatchMode(xLazyColumn.props, xField);
+                const filterMatchMode: FilterMatchMode = getInitFilterMatchMode(column.props, xField);
                 filtersInit[field] = createFilterItem(props.filterDisplay!, {value: null, matchMode: filterMatchMode});
             //}
         }
@@ -314,12 +314,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return filtersInit;
     }
 
-    const getInitFilterMatchMode = (xLazyColumnProps: LazyColumnProps, xField: Field) : FilterMatchMode => {
+    const getInitFilterMatchMode = (columnProps: ColumnProps, xField: Field) : FilterMatchMode => {
         let filterMatchMode: FilterMatchMode;
-        if (xLazyColumnProps.filterElement !== undefined) {
+        if (columnProps.filterElement !== undefined) {
             filterMatchMode = ExtendedFilterMatchMode.FILTER_ELEMENT as unknown as FilterMatchMode; // little hack
         }
-        else if (isAutoCompleteInFilterEnabled(xLazyColumnProps)) {
+        else if (isAutoCompleteInFilterEnabled(columnProps)) {
             filterMatchMode = ExtendedFilterMatchMode.AUTO_COMPLETE as unknown as FilterMatchMode; // little hack
         }
         else if (xField.type === "string" || xField.type === "jsonb") {
@@ -336,13 +336,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return filterMatchMode;
     }
 
-    const isAutoCompleteInFilterEnabled = (xLazyColumnProps: LazyColumnProps): boolean => {
-        return xLazyColumnProps.autoComplete !== undefined;
+    const isAutoCompleteInFilterEnabled = (columnProps: ColumnProps): boolean => {
+        return columnProps.autoComplete !== undefined;
     }
 
 /*  old version - created for automatical use of autocomplete on every *toOne assoc with string attribute
                 - extra property was used: autoCompleteEnabled: true | false | "forStringOnly"
-    const isAutoCompleteInFilterEnabled = (xLazyColumnProps: LazyColumnProps, xField: XField): boolean => {
+    const isAutoCompleteInFilterEnabled = (xLazyColumnProps: ColumnProps, xField: XField): boolean => {
         let autoCompleteEnabled: boolean = false; // default
         // condition1: field has to have the length >= 2
         if (!XUtilsCommon.isSingleField(xLazyColumnProps.field)) {
@@ -832,8 +832,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const getFieldSetIds = (): string[] => {
         const fieldSetIds = [];
-        // warning note: props.children are used to get props of LazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
-        const columns: LazyColumnType[] = props.children as LazyColumnType[];
+        // warning note: props.children are used to get props of Column whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
+        const columns: ColumnType[] = props.children as ColumnType[];
         for (let column of columns) {
             if (column.props.fieldSetId) {
                 fieldSetIds.push(column.props.fieldSetId);
@@ -844,8 +844,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const hasContentTypeHtml = (): boolean => {
 
-        const columns: LazyColumnType[] = props.children as LazyColumnType[];
-        return columns.some((column: LazyColumnType) => column.props.contentType === "html");
+        const columns: ColumnType[] = props.children as ColumnType[];
+        return columns.some((column: ColumnType) => column.props.contentType === "html");
     }
 
     const onSelectionChange = (event: any) => {
@@ -1081,7 +1081,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     // ****** vseobecne metodky pre set/get do/z filtra ********
     // zatial funguje len pre simple filtrovanie (filterDisplay="row")
 
-    // vseobecna specialna metodka pouzvana pri custom filtri (LazyColumn.filterElement)
+    // vseobecna specialna metodka pouzvana pri custom filtri (Column.filterElement)
     // nepodarilo sa posunut autoFilter takym sposobom aby app programmer nemusel autoFilter nastavovat
     const setFilterItem: SetFilterItem = (field: string, filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData, autoFilter: boolean) => {
         filters[field] = filterItem;
@@ -1092,7 +1092,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         loadDataBaseIfAutoFilter(filtersCloned, autoFilter);
     }
 
-    // vseobecna specialna metodka pouzvana pri custom filtri (LazyColumn.filterElement)
+    // vseobecna specialna metodka pouzvana pri custom filtri (Column.filterElement)
     const getFilterItem = (field: string): DataTableFilterMetaData | DataTableOperatorFilterMetaData => {
         return filters[field];
     }
@@ -1228,7 +1228,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return valueResult;
     }
 
-    const bodyTemplate = (columnProps: LazyColumnProps, rowData: any, xField: Field): React.ReactNode => {
+    const bodyTemplate = (columnProps: ColumnProps, rowData: any, xField: Field): React.ReactNode => {
         let bodyValue: React.ReactNode;
         const rowDataValue: any | any[] = UtilsCommon.getValueOrValueListByPath(rowData, columnProps.field);
         if (Array.isArray(rowDataValue)) {
@@ -1384,12 +1384,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // pre lepsiu citatelnost vytvarame stlpce uz tu
     const columnElemList: JSX.Element[] = React.Children.map(
-        props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: LazyColumnProps}).props.columnViewStatus) !== ViewStatus.Hidden),
+        props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: ColumnProps}).props.columnViewStatus) !== ViewStatus.Hidden),
         function(child) {
             // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
             // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
             // (vzdy musime robit manipulacie so stlpcom, lebo potrebujeme pridat filter={true} sortable={true}
-            const childColumn = child as any as {props: LazyColumnProps}; // nevedel som to krajsie...
+            const childColumn = child as any as {props: ColumnProps}; // nevedel som to krajsie...
             const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, childColumn.props.field);
 
             // *********** header ***********
@@ -1441,7 +1441,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                         if (autoComplete.assocField) {
                             // check - autoComplete.assocField must be prefix (part) of childColumn.props.field
                             if (!childColumn.props.field.startsWith(autoComplete.assocField + ".")) {
-                                throw `LazyColumn with field "${childColumn.props.field}": autoComplete.assocField "${autoComplete.assocField}" is not prefix of the field`;
+                                throw `Column with field "${childColumn.props.field}": autoComplete.assocField "${autoComplete.assocField}" is not prefix of the field`;
                             }
                             assocField = autoComplete.assocField;
                             if (displayField === undefined) {
@@ -1454,7 +1454,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                         // default - take assocField/displayField from childColumn.props.field
                         const [assocFieldTemp, displayFieldTemp] = UtilsCommon.getPathToAssocAndField(childColumn.props.field);
                         if (assocFieldTemp === null) {
-                            throw `LazyColumn with field "${childColumn.props.field}": unexpected error - path of length >= 2 expected`;
+                            throw `Column with field "${childColumn.props.field}": unexpected error - path of length >= 2 expected`;
                         }
                         assocField = assocFieldTemp;
                         if (displayField === undefined) {
@@ -1641,7 +1641,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 footer = aggregateValue;
             }
 
-            return <Column field={childColumn.props.field} header={header} footer={footer} filter={true} sortable={true}
+            return <PrimeColumn field={childColumn.props.field} header={header} footer={footer} filter={true} sortable={true}
                            filterElement={filterElement} dataType={dataType} showFilterMenu={showFilterMenu}
                            filterMatchModeOptions={filterMatchModeOptions} showClearButton={showClearButton} onFilterMatchModeChange={onFilterMatchModeChange}
                            body={body} headerStyle={headerStyle} align={align}/>;
@@ -1736,7 +1736,7 @@ export type AutoCompleteInFilterProps = {
 
 export type ContentType = "multiline" | "html" | undefined;
 
-export interface LazyColumnProps {
+export interface ColumnProps {
     field: string;
     header?: any;
     align?: "left" | "center" | "right";
@@ -1760,15 +1760,14 @@ export interface LazyColumnProps {
     body?: React.ReactNode | ((data: any, options: ColumnBodyOptions) => React.ReactNode); // the same type as type of property Column.body
 }
 
-export type LazyColumnType = {props: LazyColumnProps};
+export type ColumnType = {props: ColumnProps};
 
-// TODO - LazyColumn neni idealny nazov, lepsi je Column (ale zatial nechame LazyColumn)
-export const LazyColumn = (props: LazyColumnProps) => {
+export const Column = (props: ColumnProps) => {
     // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
     return (null);
 }
 
-LazyColumn.defaultProps = {
+Column.defaultProps = {
     //autoCompleteEnabled: "forStringOnly",
     columnViewStatus: true,  // ViewStatus.ReadWrite
     autoFilter: false

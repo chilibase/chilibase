@@ -6,7 +6,7 @@ import {BrowseMeta, ColumnMeta} from "../../modules/administration";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {Entity} from "../../common/EntityMetadata";
 import {Utils} from "../../utils/Utils";
-import {EditModeHandlers, LazyColumn, LazyDataTable} from "../lazy-data-table";
+import {Column, EditModeHandlers, LazyDataTable} from "../lazy-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {UtilsCommon} from "../../common/UtilsCommon";
 
@@ -243,7 +243,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
             <div>
                 <LazyDataTable entity={browseMeta.entity} rows={browseMeta.rows ?? undefined} editMode={this.state.editMode} editModeHandlers={editModeHandlers} onEdit={this.onEdit} displayed={(this.props as any).displayed}>
                     {browseMeta.columnMetaList.map(function (columnMeta: ColumnMeta, index: number) {
-                            return (<LazyColumn key={index} field={columnMeta.field} header={columnMeta.header} dropdownInFilter={columnMeta.dropdownInFilter} align={columnMeta.align as "center" | "left" | "right" | undefined} width={columnMeta.width}/>);
+                            return (<Column key={index} field={columnMeta.field} header={columnMeta.header} dropdownInFilter={columnMeta.dropdownInFilter} align={columnMeta.align as "center" | "left" | "right" | undefined} width={columnMeta.width}/>);
                         }
                     )}
                 </LazyDataTable>
