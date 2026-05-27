@@ -6,11 +6,11 @@ import {useAuthSession} from "../auth";
 
 // helper component
 
-export interface MenubarProps {
+export interface MenuBarProps {
     model: MenuItem[];
 }
 
-export const Menubar = (props: MenubarProps) => {
+export const MenuBar = (props: MenuBarProps) => {
 
     const {session} = useAuthSession();
 

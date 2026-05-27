@@ -5,9 +5,9 @@
 // import {XMenuItem} from "@michalrakus/x-react-web-lib/XMenuItem";
 // import {XMenubar} from "@michalrakus/x-react-web-lib/XMenubar";
 
-export * from "./Menubar";
+export * from "./MenuBar";
 export * from "./MenuItem";
 
 /** @deprecated */
-export {Menubar as XMenubar} from "./Menubar";
+export {MenuBar as XMenubar} from "./MenuBar";
 export {MenuItem as XMenuItem} from "./MenuItem";
