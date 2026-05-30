@@ -22,7 +22,7 @@ Contact: michalrakus@gmail.com
 ### Prerequisites
 
 Install postgres DB  
-Install pnpm (e.g. using command: `npm install -g pnpm@latest-10`)
+Install pnpm (e.g. using command: `npm install -g pnpm@11.4.0`)
 
 Create new chilibase project using create script `create-chilibase` and follow the instructions in the console.
 
@@ -51,15 +51,15 @@ pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 
 ### Form component (for the row editing)
 
-- input components for the editing of all basic field types (string, decimal, date, interval, ...)
-- dropdown and autocomplete component for setting of the associated row (via many-to-one association)
-- text area inputs for multiline texts (with autoresize)
-- rich text support - editor based on library `quill`
+- field components for the editing of all basic field types (string, numeric, date, interval, ...)
+- select (dropdown) and autocomplete component for setting of the associated row (via many-to-one association)
+- multiline text field (with autoresize)
+- rich text field - editor based on library `quill`
 - for large forms, primereact component `TabView` can be used
 - supports master-detail (one-to-many associations)
   * component FormDataTable enables editing of the detail rows in the table layout
   * component FormPanelList enables custom layout of the inputs for detail row (*)
-  * in the detail rows, also dropdown and autocomplete components are supported
+  * in the detail rows, also select (dropdown) and autocomplete components are supported
   * on the backend, saving detail rows is implemented
 - basic validation (check and conversion of types, check for required fields)
 - custom validation supported
@@ -69,7 +69,7 @@ pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 - pessimistic locking (via fields `lock_date`, `lock_x_user_id` in DB row) (*)
 - source code example: [CarForm.tsx](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarForm.tsx)
 
-### AutoComplete component
+### Autocomplete component
 
 - lazy loading supported (search performed on DB via SQL)
 - multiple fields can be displayed and searched through in autocomplete (fields can be also paths like `assoc1.assoc2.fieldX`)
@@ -98,3 +98,5 @@ pnpx create-chilibase <app-name> <db-name> <db-schema-name>
 - all used third party libraries are open source
 
 (*) - these features are not part of the chilibase for this moment, because they are in some project or in the previous version of the library (they can be moved to chilibase on demand)
+
+Warning: API of this framework can be changed in the future (some objects have still legacy prefix X - this prefix is supposed to be removed (or replaced with prefix CB in some special cases), also backend is supposed to be refactored)
