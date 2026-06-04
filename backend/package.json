@@ -81,6 +81,7 @@
     "./common": "./lib/common/index.js",
     "./administration": "./lib/modules/administration/index.js",
     "./services": "./lib/services/index.js",
+    "./utils": "./lib/utils/index.js",
 
     "./ExportImportParam": "./lib/common/ExportImportParam.js",
     "./XUtilsCommon": "./lib/common/XUtilsCommon.js",
@@ -96,7 +97,6 @@
     "./XAppError": "./lib/services/XAppError.js",
     "./XEnvVars": "./lib/services/XEnvVars.js",
     "./XLocale": "./lib/services/XLocale.js",
-    "./XOptimisticLockingSubscriber": "./lib/services/XOptimisticLockingSubscriber.js",
-    "./XUtils": "./lib/services/XUtils.js"
+    "./XOptimisticLockingSubscriber": "./lib/services/XOptimisticLockingSubscriber.js"
   }
 }

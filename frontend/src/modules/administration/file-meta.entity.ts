@@ -1,4 +1,4 @@
-export interface XFile {
+export interface FileMeta {
     id: number;
     name: string;
     size: number;

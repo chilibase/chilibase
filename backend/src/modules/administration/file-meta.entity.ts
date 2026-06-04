@@ -1,8 +1,8 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 import {Buffer} from "buffer";
 
-@Entity('x_file')
-export class XFile {
+@Entity({name: 'x_file_meta'})
+export class FileMeta {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -18,7 +18,7 @@ export class XFile {
 
     // for mysql use type: 'longblob'
     // for postgres use type: 'bytea'
-    // select: false - nechceme selectovat stlpec lebo obsahuje vela dat
+    // select: false - we do not want to select the attribute because can contain big data
     @Column({type: 'bytea', nullable: true, select: false})
     data: Buffer;
 
@@ -27,7 +27,7 @@ export class XFile {
     @Column({name: 'modif_date', type: 'timestamp', nullable: true})
     modifDate: Date;
 
-    // tuto len jednoduchy number atribut, lebo namiesto XUser triedy pouzivame v aplikacii specificku napr. XUserSkch a nefunguje start backendu koli tomu
+    // here only simple attribute, because instead of framework entity User we often use in app some specific user entity (e.g. UserSkch)
     @Column({name: 'modif_x_user_id', nullable: true})
     modifUser: number;
 }

@@ -56,7 +56,7 @@ import {TextInput} from "../text-field";
 import {useStateStorage} from "../use-state/useStateStorage";
 import {useStateStorageBase} from "../use-state/useStateStorageBase";
 import * as _ from "lodash";
-import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
+import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template.entity";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
 import {FormDialog, FormDialogState} from "../form";
 

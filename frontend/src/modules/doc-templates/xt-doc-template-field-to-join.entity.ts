@@ -1,4 +1,4 @@
-import {XtDocTemplate} from "./xt-doc-template";
+import {XtDocTemplate} from "./xt-doc-template.entity";
 
 export interface XtDocTemplateFieldToJoin {
     id: number;

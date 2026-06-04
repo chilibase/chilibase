@@ -1,32 +1,32 @@
 import {Body, Controller, Post, StreamableFile, UploadedFile, UseInterceptors} from "@nestjs/common";
-import {XFileService} from "./x-file.service.js";
+import {FileService} from "./file.service.js";
 import {createReadStream, existsSync, mkdirSync, renameSync} from "fs";
 import {Readable} from "stream";
-import {XUtils} from "./XUtils.js";
-import {XFile} from "../modules/administration/x-file.entity.js";
+import {Utils} from "../utils/Utils.js";
+import {FileMeta} from "../modules/administration/file-meta.entity.js";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {join} from "path";
 import {FileJsonField} from "../common/lib-api.js";
 
 @Controller()
-export class XFileController {
+export class FileController {
     constructor(
-        private readonly xFileService: XFileService) {
+        private readonly fileService: FileService) {
     }
 
     // uploadovany subor sa uklada do file systemu do adresara 'app-files/uploaded/'
     @Post('x-upload-file-into-file-system')
     @UseInterceptors(FileInterceptor('fileField', {dest: 'app-files/uploaded/'}))
-    async uploadFileIntoFileSystem(@Body() body: any, @UploadedFile() file: Express.Multer.File/*, @Res() res: Response*/): Promise<XFile> {
+    async uploadFileIntoFileSystem(@Body() body: any, @UploadedFile() file: Express.Multer.File/*, @Res() res: Response*/): Promise<FileMeta> {
 
         // body.jsonField je string, treba ho explicitne konvertovat na objekt, ani ked specifikujem typ pre "body" tak nefunguje
         const jsonField: FileJsonField = JSON.parse(body.jsonField);
 
-        // insertneme zaznam XFile a vratime ho
+        // insertneme zaznam FileMeta a vratime ho
         // file.originalname ma zlu diakritiku, preto vezmeme filename z json-u
         // pathName vytvarame z id-cka, preto ho doplnime neskor - TODO - ziskat nove id-cko a spustit len insert
         const filename: string = jsonField.filename;
-        const xFile: XFile = await this.xFileService.saveXFile({
+        const fileMeta: FileMeta = await this.fileService.saveFileMeta({
             id: undefined,
             name: filename,
             size: file.size,
@@ -37,14 +37,14 @@ export class XFileController {
         });
 
         // subor ulozime do adresara app-files/x-files/<jsonField.filepath>
-        let destPath: string = XUtils.getXFilesDir();
+        let destPath: string = Utils.getXFilesDir();
         // adresar x-files by uz mal existovat
         // if (!existsSync(destPath)){
         //     mkdirSync(destPath);
         // }
 
         // k nazvu suboru pridame id-cko, aby sme vedeli ulozit aj 2 subory s rovnakym nazvom
-        const filenameWithId: string = 'id-' + xFile.id + '-' + filename;
+        const filenameWithId: string = 'id-' + fileMeta.id + '-' + filename;
         let pathName: string = filenameWithId;
         if (jsonField.subdir) {
             pathName = join(jsonField.subdir, pathName);
@@ -64,23 +64,23 @@ export class XFileController {
         renameSync(file.path, destPath);
 
         // zapiseme destPath do DB
-        xFile.pathName = pathName;
-        await this.xFileService.saveXFile(xFile);
+        fileMeta.pathName = pathName;
+        await this.fileService.saveFileMeta(fileMeta);
 
-        return xFile;
+        return fileMeta;
     }
 
     // vo FileInterceptor nie je uvedeny adresar, uploadovany subor sa uklada do pamete (do file.buffer)
     @Post('x-upload-file-into-db')
     @UseInterceptors(FileInterceptor('fileField'))
-    uploadFileIntoDb(@Body() body: any, @UploadedFile() file: Express.Multer.File/*, @Res() res: Response*/): Promise<XFile> {
+    uploadFileIntoDb(@Body() body: any, @UploadedFile() file: Express.Multer.File/*, @Res() res: Response*/): Promise<FileMeta> {
 
         // body.jsonField je string, treba ho explicitne konvertovat na objekt, ani ked specifikujem typ pre "body" tak nefunguje
         const jsonField: FileJsonField = JSON.parse(body.jsonField);
 
-        // insertneme zaznam XFile a vratime ho
+        // insertneme zaznam FileMeta a vratime ho
         // file.originalname ma zlu diakritiku, preto vezmeme filename z json fieldu
-        return this.xFileService.saveXFile({
+        return this.fileService.saveFileMeta({
             id: undefined,
             name: jsonField.filename,
             size: file.buffer.byteLength,
@@ -92,31 +92,27 @@ export class XFileController {
     }
 
     @Post('x-download-file')
-    async downloadFile(@Body() body: {xFileId: number;}/*, @Res({ passthrough: true }) response: Response*/): Promise<StreamableFile> {
+    async downloadFile(@Body() body: {fileMetaId: number;}/*, @Res({ passthrough: true }) response: Response*/): Promise<StreamableFile> {
 
-        const xFile: XFile = await this.xFileService.readXFileByIdWithData(body.xFileId);
+        const fileMeta: FileMeta = await this.fileService.readFileMetaByIdWithData(body.fileMetaId);
 
         let readable: Readable;
-        if (xFile.pathName) {
-            // subor citame z adresara app-files/x-files/<xFile.pathName>
-            let destPath: string = join(XUtils.getXFilesDir(), xFile.pathName);
+        if (fileMeta.pathName) {
+            // subor citame z adresara app-files/x-files/<fileMeta.pathName>
+            let destPath: string = join(Utils.getXFilesDir(), fileMeta.pathName);
             readable = createReadStream(destPath);
         }
         else {
-            readable = Readable.from(xFile.data);
+            readable = Readable.from(fileMeta.data);
         }
 
         // ciel tohto je pri ukladani v browseri zapisat subor pod spravnym nazvom
         // nefungovalo mi to, musel som nazov suboru zapisat na klientovi
         // response.set({
-        //   'Content-Disposition': `inline; filename="${xFile.filename}"`,
+        //   'Content-Disposition': `inline; filename="${fileMeta.filename}"`,
         //   'Content-Type': 'image'
         // })
 
         return new StreamableFile(readable);
-    }
-
-    private static getXFilesDir(): string {
-        return join('app-files', 'x-files');
     }
 }

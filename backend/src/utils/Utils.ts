@@ -1,10 +1,10 @@
-import {XEnvVar} from "./XEnvVars.js";
+import {XEnvVar} from "../services/XEnvVars.js";
 import {join} from "path";
 import {IPostgresInterval} from "postgres-interval";
 import {ValueTransformer} from "typeorm";
-import {XLocaleOptions} from "./XLocale.js";
+import {XLocaleOptions} from "../services/XLocale.js";
 
-export class XUtils {
+export class Utils {
 
     // token pouzivany pre public stranky (napr. XLoginForm), meno/heslo natvrdo (lepsie ako nic)
     //static xTokenPublic = {username: "xPublicUser", password: "xPublicUserPassword123"};
@@ -14,19 +14,19 @@ export class XUtils {
      * @param envVar
      */
     static getEnvVarValue(envVarEnum: XEnvVar): string {
-        let value: string = XUtils.getEnvVarValueBase(envVarEnum);
+        let value: string = Utils.getEnvVarValueBase(envVarEnum);
         // value can be also "reference" to another environment variable used by cloud,
         // for example string value "[process.env.JAWSDB_URL]" means, that we read the real value from environment variable process.env.JAWSDB_URL
         // (in this variable is URL for MySQL DB on Heroku)
         if (value.startsWith('[process.env.') && value.endsWith("]")) {
             const envVarName: string = value.substring('[process.env.'.length, value.length - 1);
-            value = XUtils.getEnvVarValueBase(envVarName);
+            value = Utils.getEnvVarValueBase(envVarName);
         }
         return value;
     }
 
     static getEnvVarValueBoolean(envVarEnum: XEnvVar): boolean {
-        const value: string = XUtils.getEnvVarValue(envVarEnum);
+        const value: string = Utils.getEnvVarValue(envVarEnum);
         return value === "true";
     }
 
@@ -42,7 +42,7 @@ export class XUtils {
         return join('app-files', 'x-files');
     }
 
-    public static xIntervalTransformer: ValueTransformer = {
+    public static intervalTransformer: ValueTransformer = {
         // typeOrm sends object PostgresInterval into db but db wants string like '5 days 5 hours 5 seconds'
         // that's why this transformation is necessary
         to: (interval: IPostgresInterval): string | null => {
@@ -67,20 +67,20 @@ export class XUtils {
     private static schema: string | undefined = undefined;
 
     static setSchema(schema: string) {
-        XUtils.schema = schema;
+        Utils.schema = schema;
     }
 
     static getSchema(): string {
-        return XUtils.schema;
+        return Utils.schema;
     }
 
     private static xLocaleOptions: XLocaleOptions | undefined = undefined;
 
     static setXLocaleOptions(xLocaleOptions: XLocaleOptions) {
-        XUtils.xLocaleOptions = xLocaleOptions;
+        Utils.xLocaleOptions = xLocaleOptions;
     }
 
     static getXLocaleOptions(): XLocaleOptions {
-        return XUtils.xLocaleOptions;
+        return Utils.xLocaleOptions;
     }
 }

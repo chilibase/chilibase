@@ -1,18 +1,13 @@
-import {BrowseProps, Column, LazyDataTable} from "../../components/lazy-data-table";
+import {Column, LazyDataTable, type SearchBrowseProps} from "../../components/lazy-data-table";
 import React from "react";
 import {BrowseMetaForm} from "./BrowseMetaForm";
-import {BrowseMeta} from "./browse-meta.entity";
 
-export const BrowseMetaBrowse = (props: BrowseProps) => {
-
-    const onEdit = (selectedRow: BrowseMeta) => {
-
-        // openForm pridavame automaticky v XFormNavigator3 pri renderovani komponentu
-        props.openForm!(<BrowseMetaForm id={selectedRow.id}/>);
-    }
+export const BrowseMetaBrowse = (props: SearchBrowseProps) => {
 
     return (
-        <LazyDataTable entity="BrowseMeta" rows={15} onEdit={onEdit} removeRow={true} displayed={props.displayed}>
+        <LazyDataTable entity="BrowseMeta" rows={15}
+                       EditForm={BrowseMetaForm} removeRow={true}
+                       searchBrowseParams={props.searchBrowseParams}>
             <Column field="id" header="ID"/>
             <Column field="entity" header="Entity" width="17rem"/>
             <Column field="browseId" header="Browse ID" width="17rem"/>

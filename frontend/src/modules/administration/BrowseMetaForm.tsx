@@ -1,12 +1,15 @@
-import {Form, FormBase} from "../../components/form";
+import {FormBase, type FormProps} from "../../components/form";
 import {NumberField} from "../../components/number-field";
 import {TextField} from "../../components/text-field";
 import React from "react";
 import {Column, FormDataTable} from "../../components/form-data-table";
 import {FormFooter} from "../../components/form";
 
-@Form("BrowseMeta")
 export class BrowseMetaForm extends FormBase {
+
+    constructor(props: FormProps) {
+        super(props, "BrowseMeta");
+    }
 
     render() {
         return (

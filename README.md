@@ -78,8 +78,8 @@ pnpx create-chilibase@0.2.0 <app-name> <db-name> <db-schema-name>
 
 ### Uploading/downloading files
 
-- file is saved in entity via many-to-one association to framework entity `XFile` (table `x_file`)
-- file can be stored in filesystem (recommended) or in DB table `x_file` (not recommended)
+- file is saved in entity via many-to-one association to framework entity `FileMeta` (table `x_file_meta`)
+- file can be stored in filesystem (recommended) or in DB table `x_file_meta` (not recommended)
 - progress of uploading is displayed
 
 

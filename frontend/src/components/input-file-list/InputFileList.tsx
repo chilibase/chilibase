@@ -10,7 +10,7 @@ import {numberAsUI} from "../../common/UtilsConversions";
 import {localeOption} from "../locale/Locale";
 import {FileJsonField} from "../../common/lib-api";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {XFile} from "../../modules/files/x-file";
+import {FileMeta} from "../../modules/administration/file-meta.entity";
 
 export interface InputFileListProps {
     form: FormBase;
@@ -35,7 +35,7 @@ export class InputFileList extends Component<InputFileListProps> {
     props: InputFileListProps;
     entity: string;
     idField: string;
-    xFileField: string;
+    fileMetaField: string;
 
     constructor(props: InputFileListProps) {
         super(props);
@@ -48,13 +48,13 @@ export class InputFileList extends Component<InputFileListProps> {
         this.entity = xAssocToMany.entityName;
         const xEntity = UtilsMetadataCommon.getEntity(this.entity);
         this.idField = xEntity.idField;
-        this.xFileField = UtilsMetadataCommon.getAssocToOneByAssocEntity(xEntity, 'XFile').name;
+        this.fileMetaField = UtilsMetadataCommon.getAssocToOneByAssocEntity(xEntity, 'FileMeta').name;
 
         this.onDownloadFile = this.onDownloadFile.bind(this);
         this.onRemoveFile = this.onRemoveFile.bind(this);
         this.uploadHandler = this.uploadHandler.bind(this);
 
-        const fieldFilename = `${props.assocField}.${this.xFileField}.filename`;
+        const fieldFilename = `${props.assocField}.${this.fileMetaField}.filename`;
         props.form.addField(fieldFilename);
     }
 
@@ -69,16 +69,16 @@ export class InputFileList extends Component<InputFileListProps> {
                 alert(localeOption('fileUploadSizeToBig', {fileName: file.name, fileSize: InputFileList.sizeInMB(file.size), maxFileSize: InputFileList.sizeInMB(this.props.maxFileSize)}))
                 continue; // ideme na dalsi subor
             }
-            // uploadneme subor na server, insertne sa tam zaznam XFile a tento insertnuty zaznam pride sem a zapiseme ho do zoznamu form.object.<assocField>
+            // uploadneme subor na server, insertne sa tam zaznam FileMeta a tento insertnuty zaznam pride sem a zapiseme ho do zoznamu form.object.<assocField>
             const jsonFieldValue: FileJsonField = {
                 filename: file.name,
                 subdir: this.props.subdir,
                 modifDate: new Date(),
                 modifUser: Utils.getAuthSession()?.user?.id
             }
-            let xFile: XFile;
+            let fileMeta: FileMeta;
             try {
-                xFile = await Utils.fetchFile(endpoint, jsonFieldValue, file);
+                fileMeta = await Utils.fetchFile(endpoint, jsonFieldValue, file);
             }
             catch (e) {
                 Utils.showErrorMessage(localeOption('fileUploadFailed', {fileName: file.name}), e);
@@ -87,7 +87,7 @@ export class InputFileList extends Component<InputFileListProps> {
             }
 
             const newFileItem: any = {};
-            newFileItem[this.xFileField] = xFile;
+            newFileItem[this.fileMetaField] = fileMeta;
             this.props.form.onTableAddRow(this.props.assocField, newFileItem, this.idField);
         }
 
@@ -100,8 +100,8 @@ export class InputFileList extends Component<InputFileListProps> {
         return numberAsUI(sizeInMB, 2) + ' MB'; // zobrazime 2 desatinky
     }
 
-    async onDownloadFile(xFile: XFile) {
-        Utils.downloadFile('x-download-file',{xFileId: xFile.id}, xFile.name);
+    async onDownloadFile(fileMeta: FileMeta) {
+        Utils.downloadFile('x-download-file',{fileMetaId: fileMeta.id}, fileMeta.name);
     }
 
     async onRemoveFile(fileItem: any) {
@@ -119,12 +119,12 @@ export class InputFileList extends Component<InputFileListProps> {
 
         let elemList: any[] = [];
         for (const fileItem of fileItemList) {
-            const xFile: XFile = fileItem[this.xFileField];
+            const fileMeta: FileMeta = fileItem[this.fileMetaField];
             // p-inputgroup uklada child elementy do riadku (display:flex)
             // TODO - pouzit XButtonIconSmall pre button na mazanie - problem je ze tam nevieme (narychlo) dat class m-1
             elemList.push(
                 <div key={fileItem[this.idField].toString()} className="p-inputgroup p-mb-1">
-                    <Button label={xFile.name} onClick={() => this.onDownloadFile(xFile)}/>
+                    <Button label={fileMeta.name} onClick={() => this.onDownloadFile(fileMeta)}/>
                     <ButtonIconNarrow icon="pi pi-times" onClick={() => this.onRemoveFile(fileItem)} disabled={readOnly}/>
                 </div>
             );

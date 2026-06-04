@@ -7,8 +7,8 @@ import {
 } from "typeorm";
 import {User} from "./user.entity.js";
 
-@Entity("x_param")
-export class XParam {
+@Entity("x_parameter")
+export class Parameter {
     @PrimaryGeneratedColumn({ type: "integer", name: "id" })
     id: number;
 
@@ -31,3 +31,4 @@ export class XParam {
     @VersionColumn()
     version: number;
 }
+

@@ -1,9 +1,9 @@
 import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, VersionColumn} from "typeorm";
-import {XEnum} from "./x-enum.entity.js";
+import {EnumValue} from "./enum-value.entity.js";
 import {User} from "./user.entity.js";
 
-@Entity({name: 'x_enum_enum'})
-export class XEnumEnum {
+@Entity({name: 'x_enum_type'})
+export class EnumType {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -17,8 +17,8 @@ export class XEnumEnum {
     @Column({name: 'read_only', nullable: false})
     readOnly: boolean;
 
-    @OneToMany('XEnum', 'xEnumEnum', {cascade: ["insert", "update", "remove"]})
-    xEnumList: XEnum[];
+    @OneToMany('EnumValue', 'enumType', {cascade: ["insert", "update", "remove"]})
+    enumValueList: EnumValue[];
 
     @Column({name: 'modif_date', type: 'timestamp', nullable: true})
     modifDate: Date;

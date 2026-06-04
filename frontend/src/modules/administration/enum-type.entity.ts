@@ -1,12 +1,12 @@
 import {User} from "./user.entity";
-import {XEnum} from "./x-enum";
+import {EnumValue} from "./enum-value.entity";
 
-export interface XEnumEnum {
+export interface EnumType {
     id: number;
     code: string;
     name: string;
     readOnly: boolean;
-    xEnumList: XEnum[];
+    enumValueList: EnumValue[];
     modifDate: Date;
     modifUser: User;
     version: number;

@@ -1,11 +1,11 @@
-import {XEnumEnum} from "./x-enum-enum";
+import {EnumType} from "./enum-type.entity";
 
-export interface XEnum {
+export interface EnumValue {
     id: number;
     code: string;
     name: string;
     enabled: boolean;
     readOnly: boolean;
     enumOrder: number;
-    xEnumEnum: XEnumEnum;
+    enumType: EnumType;
 }

@@ -9,7 +9,7 @@ import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {XEntityMetadataService} from "./x-entity-metadata.service.js";
 import {Assoc, Entity} from "../common/EntityMetadata.js";
 import {User} from "../modules/administration/user.entity.js";
-import {XUtils} from "./XUtils.js";
+import {Utils} from "../utils/Utils.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
@@ -20,7 +20,7 @@ import {XAuth, XEnvVar} from "./XEnvVars.js";
 import {join} from "path";
 import {unlinkSync} from "fs";
 import {XRowIdListToRemove} from "./XRowIdListToRemove.js";
-import {XParam} from "../modules/administration/x-param.entity.js";
+import {Parameter} from "../modules/administration/parameter.entity.js";
 import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../common/UtilsConversions.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
 import {UnlockRowRequest} from "../common/lib-api.js";
@@ -214,7 +214,7 @@ export class XLibService {
         // ani pridanie onDelete: "CASCADE" na OneToMany, resp. ManyToOne nepomohlo...
         // ani poslanie celeho json objektu (aj s child zaznamami) nepomohlo... <- to je asi nutne ak to ma zafungovat...
         // preto sme kaskadny delete dorobili, funguje cez vsetky asociacie ktore maju cascade "remove"
-        // navyse tu mame aj mazanie suborov, ak strom objektov obsahuje zaznam XFile
+        // navyse tu mame aj mazanie suborov, ak strom objektov obsahuje zaznam FileMeta
 
         // update 14.5.2024: TypeORM nepodporuje cascade delete na asociaciach ("remove" mozno sluzi na volanie listenerov zavesenych na remove operaciu, netusim...)
         // cascade delete sa realizuje v DB cez FK constrainty (klauzula ON DELETE CASCADE - tuto klauzulu vytvara option {onDelete: "CASCADE"} zapisany
@@ -292,13 +292,13 @@ export class XLibService {
         // ulozime id-cko zaznamu "row" na remove
         const rowId: any = row[xEntity.idField];
         rowIdListToRemove.addRowId(xEntity.name, rowId);
-        // ak sa jedna o row typu XFile, vymazeme aj subor (ak existuje)
-        if (fileListToRemove !== undefined && xEntity.name === "XFile") {
-            // TODO - cast na XFile
+        // ak sa jedna o row typu FileMeta, vymazeme aj subor (ak existuje)
+        if (fileListToRemove !== undefined && xEntity.name === "FileMeta") {
+            // TODO - cast na FileMeta
             // ak row.pathName === null, subor je zapisany v DB v zazname "row"
             if (row.pathName !== null) {
                 // subor mazeme z adresara app-files/x-files/<xFile.pathName>
-                fileListToRemove.push(join(XUtils.getXFilesDir(), row.pathName));
+                fileListToRemove.push(join(Utils.getXFilesDir(), row.pathName));
             }
         }
 
@@ -475,7 +475,7 @@ export class XLibService {
         const repository = this.dataSource.getRepository(row.entity);
         // ak bolo zmenene heslo, treba ho zahashovat
         // ak nebolo vyplnene nove heslo, tak v password pride undefined a mapper atribut nebude menit
-        if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
+        if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
             if (row.object.password && row.object.password !== '') {
                 row.object.password = await this.localAuthService.hashPassword(row.object.password);
             }
@@ -520,7 +520,7 @@ export class XLibService {
 
     /* old authentication
     checkAuthenticationPublic(headerAuth: string) {
-        const xTokenPublic = XUtils.xTokenPublic;
+        const xTokenPublic = Utils.xTokenPublic;
         if (headerAuth === undefined || headerAuth !== `Basic ${Buffer.from(xTokenPublic.username + ':' + xTokenPublic.password).toString('base64')}`) {
             throw "Authentication failed.";
         }
@@ -530,13 +530,13 @@ export class XLibService {
 
     async postLogin(reqUser: any, xPostLoginRequest: PostLoginRequest): Promise<PostLoginResponse> {
         let username: string;
-        if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.OFF) {
+        if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.OFF) {
             username = xPostLoginRequest.username;
         }
-        else if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
+        else if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
             username = reqUser.username; // remark: could be also xPostLoginRequest.username, but username from token is harder to replace/fake
         }
-        else if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.AUTH0) {
+        else if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.AUTH0) {
             // email (username) must be added in auth0.com to the access token
             // how to do it: in auth0.com: Actions -> Triggers -> click post-login, then create custom action with this body:
             /*
@@ -550,14 +550,14 @@ export class XLibService {
             // and add action to the diagram of post-login using drag and drop
 
             // original solution was:
-            //const emailKey = XUtils.getEnvVarValue(XEnvVar.X_AUTH0_AUDIENCE) + 'email'; <-- why to use audience?
+            //const emailKey = Utils.getEnvVarValue(XEnvVar.X_AUTH0_AUDIENCE) + 'email'; <-- why to use audience?
             const emailKey = 'x-custom-claim-email'; // new solution
             username = reqUser[emailKey];
             if (username === undefined) {
                 throw `Email of the current user was not found in access token. Email-key = ${emailKey}`;
             }
         }
-        else if (XUtils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.MS_ENTRA_ID) {
+        else if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.MS_ENTRA_ID) {
             // toto sa pouziva pri AAD - preferred_username je podozrivy nazov ale nechcelo sa mi hladat nieco lepsie
             //console.log(reqUser);
             username = reqUser.preferred_username
@@ -578,15 +578,15 @@ export class XLibService {
         return {user: xUser !== null ? xUser : undefined};
     }
 
-    // helper functions - maybe better XUtilsService
+    // helper functions - maybe better UtilsService
 
     async getSequenceValue(sequenceName: string): Promise<number> {
-        const rowList: any[] = await this.dataSource.query(`SELECT nextval('${XUtils.getSchema()}.${sequenceName}') AS value`);
+        const rowList: any[] = await this.dataSource.query(`SELECT nextval('${Utils.getSchema()}.${sequenceName}') AS value`);
         return numberFromModel(rowList[0].value);
     }
 
     async setSequenceValue(sequenceName: string, value: number): Promise<void> {
-        await this.dataSource.query(`SELECT setval('${XUtils.getSchema()}.${sequenceName}', ${value}, false)`);
+        await this.dataSource.query(`SELECT setval('${Utils.getSchema()}.${sequenceName}', ${value}, false)`);
     }
 
     async getParamValueAsInt(paramCode: string): Promise<number> {
@@ -608,13 +608,13 @@ export class XLibService {
     }
 
     async getParamValue(paramCode: string): Promise<string> {
-        const repository = this.dataSource.getRepository(XParam);
-        const sqb: SelectQueryBuilder<XParam> = repository.createQueryBuilder("xParam");
-        sqb.where("xParam.code = :code", {code: paramCode});
-        const xParam: XParam | null = await sqb.getOne();
-        if (xParam === null) {
-            throw `XParam row for code = ${paramCode} not found.`;
+        const repository = this.dataSource.getRepository(Parameter);
+        const sqb: SelectQueryBuilder<Parameter> = repository.createQueryBuilder("parameter");
+        sqb.where("parameter.code = :code", {code: paramCode});
+        const parameter: Parameter | null = await sqb.getOne();
+        if (parameter === null) {
+            throw `Parameter row for code = ${paramCode} not found.`;
         }
-        return xParam.value;
+        return parameter.value;
     }
 }

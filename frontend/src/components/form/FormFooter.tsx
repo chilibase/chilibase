@@ -3,7 +3,7 @@ import {FormBase} from "./FormBase";
 import {Button} from "../button";
 import {localeOption} from "../locale/Locale";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
-import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template";
+import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template.entity";
 import {Utils} from "../../utils/Utils";
 
 // constant to be used in method formReadOnly to identify save button

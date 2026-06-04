@@ -1,6 +1,5 @@
 import React from "react";
-import {FormBaseModif} from "../../components/form";
-import {Form} from "../../components/form";
+import {FormBaseModif, type FormProps} from "../../components/form";
 import {EntityRow} from "../../common/types";
 import {NumberField} from "../../components/number-field";
 import {DateField} from "../../components/date-field";
@@ -8,8 +7,11 @@ import {TextField} from "../../components/text-field";
 import {FormFooter} from "../../components/form";
 import {FormHeader} from "../../components/form";
 
-@Form("XParam")
-export class XParamForm extends FormBaseModif {
+export class ParameterForm extends FormBaseModif {
+
+    constructor(props: FormProps) {
+        super(props, "Parameter");
+    }
 
     createNewObject(): EntityRow {
         return {version: 0};
@@ -33,4 +35,8 @@ export class XParamForm extends FormBaseModif {
             </div>
         );
     }
+}
+
+(ParameterForm as any).assocList = (): string[] => {
+    return ["modifUser"];
 }

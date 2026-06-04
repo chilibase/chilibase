@@ -5,10 +5,10 @@ import {
 } from "../../components/lazy-data-table";
 import React from "react";
 import {User} from "./user.entity";
-import {XUserForm} from "./XUserForm";
+import {UserForm} from "./UserForm";
 import {Utils} from "../../utils/Utils";
 
-export const XUserBrowse = (props: SearchBrowseProps) => {
+export const UserBrowse = (props: SearchBrowseProps) => {
 
     const onRemoveRow = async (selectedRow: User): Promise<boolean> => {
         if (selectedRow.username === Utils.getUsername()) {
@@ -25,7 +25,7 @@ export const XUserBrowse = (props: SearchBrowseProps) => {
 
     return (
         <LazyDataTable entity="User" label="Users" rows={30}
-                        EditForm={XUserForm} removeRow={onRemoveRow}
+                        EditForm={UserForm} removeRow={onRemoveRow}
                         searchBrowseParams={props.searchBrowseParams}>
             <Column field="id" header="ID"/>
             <Column field="username" header="Username" width="17rem"/>

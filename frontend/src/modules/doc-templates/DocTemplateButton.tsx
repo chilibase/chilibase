@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button as PrimeButton} from "primereact/button";
 import {SplitButton} from "primereact/splitbutton";
 import {MenuItem} from "primereact/menuitem";
-import {XtDocTemplate} from "./xt-doc-template";
+import {XtDocTemplate} from "./xt-doc-template.entity";
 import {Utils} from "../../utils/Utils";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {RunDocTemplateRequest} from "../../common/lib-api";

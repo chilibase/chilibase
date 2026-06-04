@@ -1,4 +1,4 @@
--- DROP TABLE x_file;
+-- DROP TABLE x_file_meta;
 -- DROP TABLE x_column_meta;
 -- DROP TABLE x_browse_meta;
 -- DROP TABLE x_user;
@@ -45,7 +45,7 @@ ALTER TABLE x_column_meta ADD CONSTRAINT x_column_meta_x_browse_meta FOREIGN KEY
 -- LONGBLOB has limit 4 GB
 -- size is informative field
 -- file can be saved in file system (path + name is saved in field path_name, data is null) or can be saved direct in field data (path_name is null)
-CREATE TABLE x_file (
+CREATE TABLE x_file_meta (
     id int NOT NULL auto_increment,
     name varchar(256) NOT NULL,
     size INT NOT NULL,
@@ -56,4 +56,4 @@ CREATE TABLE x_file (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE x_file ADD CONSTRAINT x_file_x_user FOREIGN KEY (modif_x_user_id) REFERENCES x_user (id);
+ALTER TABLE x_file_meta ADD CONSTRAINT x_file_meta_x_user FOREIGN KEY (modif_x_user_id) REFERENCES x_user (id);

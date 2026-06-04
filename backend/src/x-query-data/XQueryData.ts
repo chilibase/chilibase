@@ -4,7 +4,7 @@ import {
     FilterMatchMode
 } from "../common/PrimeFilterSortMeta.js";
 import {ObjectLiteral} from "typeorm";
-import {XUtils} from "../services/XUtils.js";
+import {Utils} from "../utils/Utils.js";
 import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
 import {Entity, Field} from "../common/EntityMetadata.js";
 import {stringAsDB} from "../common/UtilsConversions.js";
@@ -184,8 +184,8 @@ export abstract class XQueryData {
         const notOperator: string = not ? "NOT " : "";
         let whereItem: string;
         // AI/CI search works only for postgres (for mysql must be false, AI/CI can be achieved by using proprietary default collation, e.g. utf8mb4_0900_ai_ci)
-        if (XUtils.getEnvVarValueBoolean(XEnvVar.X_STRING_DB_SEARCH_AI_CI)) {
-            whereItem = `${XUtils.getSchema()}.unaccent(${field}) ${notOperator}ILIKE ${XUtils.getSchema()}.unaccent(:${paramName})`;
+        if (Utils.getEnvVarValueBoolean(XEnvVar.X_STRING_DB_SEARCH_AI_CI)) {
+            whereItem = `${Utils.getSchema()}.unaccent(${field}) ${notOperator}ILIKE ${Utils.getSchema()}.unaccent(:${paramName})`;
             this.params[paramName] = paramValue;
         }
         else {
@@ -300,7 +300,7 @@ export abstract class XQueryData {
             // ILIKE - I = insensitive case
             // <schema>.unaccent - odstranuje diakritiku - neviem ci je lepsie ju volat raz alebo radsej pre kazdy field zvlast
             const ftsValueDB: string = stringAsDB(`%${ftsValue}%`);
-            whereItem = `${XUtils.getSchema()}.unaccent('${ftsSeparator}' || ${this.ftsFieldList.join(` || '${ftsSeparator}' || `)} || '${ftsSeparator}') ILIKE ${XUtils.getSchema()}.unaccent(${ftsValueDB})`;
+            whereItem = `${Utils.getSchema()}.unaccent('${ftsSeparator}' || ${this.ftsFieldList.join(` || '${ftsSeparator}' || `)} || '${ftsSeparator}') ILIKE ${Utils.getSchema()}.unaccent(${ftsValueDB})`;
         }
         return whereItem;
     }

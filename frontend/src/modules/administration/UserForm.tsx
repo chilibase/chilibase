@@ -12,8 +12,9 @@ import {FormBaseModif} from "../../components/form";
 import {DateField} from "../../components/date-field";
 import {EntityRow} from "../../common/types";
 import {FormHeader} from "../../components/form";
+import {ParameterForm} from "./ParameterForm";
 
-export class XUserForm extends FormBaseModif {
+export class UserForm extends FormBaseModif {
 
     constructor(props: FormProps) {
         super(props, "User");
@@ -119,4 +120,8 @@ export class XUserForm extends FormBaseModif {
             </div>
         );
     }
+}
+
+(UserForm as any).assocList = (): string[] => {
+    return ["modifUser"];
 }

@@ -1,7 +1,7 @@
-import {XtDocTemplateFieldToJoin} from "./xt-doc-template-field-to-join";
+import {XtDocTemplateFieldToJoin} from "./xt-doc-template-field-to-join.entity";
 import {User} from "../administration/user.entity";
-import {XFile} from "../files/x-file";
-import {XEnum} from "../administration/x-enum";
+import {FileMeta} from "../administration/file-meta.entity";
+import {EnumValue} from "../administration/enum-value.entity";
 
 export interface XtDocTemplate {
     id: number;
@@ -10,8 +10,8 @@ export interface XtDocTemplate {
     entity: string;
     xtDocTemplateFieldToJoinList: XtDocTemplateFieldToJoin[];
     templateId: string | null;
-    templateType: XEnum;
-    templateXFile: XFile;
+    templateType: EnumValue;
+    templateXFile: FileMeta;
     fileNameTemplate: string | null;
     availableInForms: boolean;
     modifDate: Date | null;

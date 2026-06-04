@@ -1,8 +1,8 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {XEnumEnum} from "./x-enum-enum.entity.js";
+import {EnumType} from "./enum-type.entity.js";
 
-@Entity('x_enum')
-export class XEnum {
+@Entity('x_enum_value')
+export class EnumValue {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -22,7 +22,7 @@ export class XEnum {
     @Column({name: 'enum_order', nullable: true})
     enumOrder: number;
 
-    @ManyToOne('XEnumEnum', 'xEnumList', {nullable: false})
-    @JoinColumn({name: 'x_enum_enum_id'})
-    xEnumEnum: XEnumEnum;
+    @ManyToOne('EnumType', 'enumValueList', {nullable: false})
+    @JoinColumn({name: 'x_enum_type_id'})
+    enumType: EnumType;
 }
