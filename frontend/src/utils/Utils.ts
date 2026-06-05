@@ -520,7 +520,7 @@ export class Utils {
     static showErrorMessage(message: string, e: unknown, entity?: string) {
         let msg = message + UtilsCommon.newLine;
         if (e instanceof ResponseError) {
-            if (e.responseErrorBody.exceptionName === 'XAppError') {
+            if (e.responseErrorBody.exceptionName === 'AppError') {
                 // app error from backend, we show only the error message
                 msg += e.responseErrorBody.message;
             }

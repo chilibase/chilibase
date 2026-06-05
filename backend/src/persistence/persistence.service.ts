@@ -22,7 +22,7 @@ import {Parameter} from "../modules/administration/parameter.entity.js";
 import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../common/UtilsConversions.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
 import {UnlockRowRequest} from "../common/lib-api.js";
-import {XAppError} from "../services/XAppError.js";
+import {AppError} from "../utils/AppError.js";
 import {xLocaleOption} from "../services/XLocale.js";
 
 @Injectable()
@@ -334,13 +334,13 @@ export class PersistenceService {
                 // we use exception to inform user (like by optimistic locking)
                 if (lockDateFromDB) {
                     const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "lockUser");
-                    throw new XAppError(xLocaleOption('pessimisticLockFailedLockPresent', {lockUser: rowFromDBWithUser.lockUser?.name, lockDate: datetimeAsUI(lockDateFromDB)}));
+                    throw new AppError(xLocaleOption('pessimisticLockFailedLockPresent', {lockUser: rowFromDBWithUser.lockUser?.name, lockDate: datetimeAsUI(lockDateFromDB)}));
                 }
                 else {
                     // editing by other user has finished
                     // TODO - check if attributes modifDate/modifUser exist in entity
                     const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "modifUser");
-                    throw new XAppError(xLocaleOption('pessimisticLockFailedLockFinished', {modifUser: rowFromDBWithUser.modifUser?.name, modifDate: datetimeAsUI(rowFromDBWithUser.modifDate)}));
+                    throw new AppError(xLocaleOption('pessimisticLockFailedLockFinished', {modifUser: rowFromDBWithUser.modifUser?.name, modifDate: datetimeAsUI(rowFromDBWithUser.modifDate)}));
                 }
             }
         }

@@ -1,10 +1,10 @@
-import {ExceptionFilter, Catch, ArgumentsHost, HttpStatus, HttpException} from '@nestjs/common';
+import {ExceptionFilter as NestExceptionFilter, Catch, ArgumentsHost, HttpStatus, HttpException} from '@nestjs/common';
 import { Request, Response } from 'express';
 import {QueryFailedError} from "typeorm";
-import {XAppError} from "./XAppError.js";
+import {AppError} from "./AppError.js";
 
 @Catch()
-export class XExceptionFilter implements ExceptionFilter {
+export class ExceptionFilter implements NestExceptionFilter {
     catch(exception: unknown, host: ArgumentsHost) {
 
         const ctx = host.switchToHttp();
@@ -35,7 +35,7 @@ export class XExceptionFilter implements ExceptionFilter {
         }
         else if (exception instanceof Error) {
             // default (toto by mohlo ist aj v produkcii pre vsetky pripady)
-            // tadeto ide aj XAppError
+            // tadeto ide aj AppError
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             responseBody = {
                 statusCode: status,
@@ -43,8 +43,8 @@ export class XExceptionFilter implements ExceptionFilter {
                 exceptionName: exception.name
                 //stacktrace: exception.stack
             };
-            // XAppError netreba logovat
-            if (!(exception instanceof XAppError)) {
+            // AppError netreba logovat
+            if (!(exception instanceof AppError)) {
                 console.log(exception.stack);
             }
         }
@@ -58,7 +58,7 @@ export class XExceptionFilter implements ExceptionFilter {
             };
         }
 
-        console.log("XExceptionFilter responseBody = " + JSON.stringify(responseBody));
+        console.log("ExceptionFilter responseBody = " + JSON.stringify(responseBody));
 
         response
             .status(status)
