@@ -1,12 +1,12 @@
 import {HttpStatus, Injectable} from "@nestjs/common";
-import {XExportService} from "./x-export.service.js";
+import {ExportService} from "./export.service.js";
 import {SelectQueryBuilder} from "typeorm";
 import {Response} from "express";
 import {UtilsCommon} from "../common/UtilsCommon.js";
 import {ReadStream} from "fs";
 
 @Injectable()
-export class XExportJsonService extends XExportService {
+export class ExportJsonService extends ExportService {
 
     async exportJsonUsingList(selectQueryBuilder: SelectQueryBuilder<unknown>, res: Response): Promise<void> {
 

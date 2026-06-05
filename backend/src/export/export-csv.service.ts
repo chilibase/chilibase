@@ -11,14 +11,14 @@ import {UtilsCommon} from "../common/UtilsCommon.js";
 import {dateFormat, datetimeFormat, numberFromModel} from "../common/UtilsConversions.js";
 // poznamka - ked tu bolo: import iconv from "iconv-lite"; tak to nefungovalo a zevraj to suvisi s nestjs
 import * as iconv from "iconv-lite";
-import {XExportColumn, XExportService} from "./x-export.service.js";
+import {ExportColumn, ExportService} from "./export.service.js";
 import {SelectQueryBuilder} from "typeorm";
 import {ReadStream} from "fs";
 import {Entity} from "../common/EntityMetadata.js";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon.js";
 
 // pomocna trieda
-export class XCsvWriter {
+export class CsvWriter {
 
     csvParam: CsvParam;
     res: Response;
@@ -54,7 +54,7 @@ export class XCsvWriter {
         this.res.end();
     }
 
-    // po spravnosti by sa mala diat konverzia v XExportService.exportRow volanim convertValueBase, lebo tam mame metadata o typoch (fractionDigits, ci je date/datetime),
+    // po spravnosti by sa mala diat konverzia v ExportService.exportRow volanim convertValueBase, lebo tam mame metadata o typoch (fractionDigits, ci je date/datetime),
     // tu zas mame info ci decimal cisla konvertovat do formatu 123456.78 alebo 123456,78 (v metode numberAsCsv)
     private convertToStr(value: any): string {
 
@@ -119,30 +119,30 @@ export class XCsvWriter {
 }
 
 @Injectable()
-export class XExportCsvService extends XExportService {
+export class ExportCsvService extends ExportService {
 
     // simple api for custom export
-    export(csvParam: CsvParam, columns: XExportColumn[], entity: string | undefined, rows: any[], res: Response) {
+    export(csvParam: CsvParam, columns: ExportColumn[], entity: string | undefined, rows: any[], res: Response) {
         this.exportBase(csvParam, columns, true, MultilineExportType.Multiline, undefined, entity, rows, res);
     }
 
     // extended api for custom export
     // TODO - nepouzivame stream ale zapisujeme do res: Response, nevraciame Promise<StreamableFile> - je to take zvlastne, nie je to moc pekne
     // (ak to chceme mat poriadne, asi by sme mali mat 2 rest metody v controlleri - jednu na stream (pouziva res: Response) a druhu na list (vracia Promise<StreamableFile>))
-    exportBase(csvParam: CsvParam, columns: XExportColumn[], createHeaders: boolean, multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[], res: Response) {
+    exportBase(csvParam: CsvParam, columns: ExportColumn[], createHeaders: boolean, multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[], res: Response) {
 
-        const xCsvWriter: XCsvWriter = this.startExport(csvParam, columns, createHeaders, res);
+        const csvWriter: CsvWriter = this.startExport(csvParam, columns, createHeaders, res);
 
-        const xEntity: Entity | undefined = entity ? UtilsMetadataCommon.getEntity(entity) : undefined;
+        const entityMetadata: Entity | undefined = entity ? UtilsMetadataCommon.getEntity(entity) : undefined;
 
         for (const row of rows) {
-            this.exportRowToCsv(columns, multilineExportType, fieldsToDuplicateValues, xEntity, row, xCsvWriter);
+            this.exportRowToCsv(columns, multilineExportType, fieldsToDuplicateValues, entityMetadata, row, csvWriter);
         }
 
-        xCsvWriter.end();
+        csvWriter.end();
     }
 
-    async exportUsingList(exportCsvParam: ExportCsvParam, columns: XExportColumn[], selectQueryBuilder: SelectQueryBuilder<unknown>, res: Response): Promise<void> {
+    async exportUsingList(exportCsvParam: ExportCsvParam, columns: ExportColumn[], selectQueryBuilder: SelectQueryBuilder<unknown>, res: Response): Promise<void> {
 
         const rowList: any[] = await selectQueryBuilder.getMany();
 
@@ -150,43 +150,43 @@ export class XExportCsvService extends XExportService {
         this.exportBase(exportCsvParam.csvParam, columns, excelCsvParam.headers !== undefined, excelCsvParam.toManyAssocExport, excelCsvParam.fieldsToDuplicateValues, exportCsvParam.queryParam.entity, rowList, res);
     }
 
-    async exportUsingStream(exportCsvParam: ExportCsvParam, columns: XExportColumn[], selectQueryBuilder: SelectQueryBuilder<unknown>, res: Response): Promise<void> {
+    async exportUsingStream(exportCsvParam: ExportCsvParam, columns: ExportColumn[], selectQueryBuilder: SelectQueryBuilder<unknown>, res: Response): Promise<void> {
 
-        const xCsvWriter: XCsvWriter = this.startExport(exportCsvParam.csvParam, columns, exportCsvParam.excelCsvParam.headers !== undefined, res);
+        const csvWriter: CsvWriter = this.startExport(exportCsvParam.csvParam, columns, exportCsvParam.excelCsvParam.headers !== undefined, res);
 
         const readStream: ReadStream = await selectQueryBuilder.stream();
 
-        const xEntity = UtilsMetadataCommon.getEntity(exportCsvParam.queryParam.entity);
+        const entityMetadata = UtilsMetadataCommon.getEntity(exportCsvParam.queryParam.entity);
 
         readStream.on('data', data => {
             const entityObj = this.transformToEntity(data, selectQueryBuilder);
-            this.exportRowToCsv(columns, exportCsvParam.excelCsvParam.toManyAssocExport, exportCsvParam.excelCsvParam.fieldsToDuplicateValues, xEntity, entityObj, xCsvWriter);
+            this.exportRowToCsv(columns, exportCsvParam.excelCsvParam.toManyAssocExport, exportCsvParam.excelCsvParam.fieldsToDuplicateValues, entityMetadata, entityObj, csvWriter);
         });
 
         readStream.on('end', () => {
-            xCsvWriter.end();
+            csvWriter.end();
         });
     }
 
-    startExport(csvParam: CsvParam, columns: XExportColumn[], createHeaders: boolean, res: Response): XCsvWriter {
+    startExport(csvParam: CsvParam, columns: ExportColumn[], createHeaders: boolean, res: Response): CsvWriter {
 
-        const headerCharset: string = XExportCsvService.getHeaderCharset(csvParam.csvEncoding); // napr. UTF-8, windows-1250
+        const headerCharset: string = ExportCsvService.getHeaderCharset(csvParam.csvEncoding); // napr. UTF-8, windows-1250
 
         res.setHeader("Content-Type", `text/csv; charset=${headerCharset}`);
         res.charset = headerCharset; // default encoding - pravdepodobne setne tuto hodnotu do charset=<res.charset> v header-i "Content-Type"
         // ak neni atribut charset definovany explicitne - TODO - odskusat
 
-        const xCsvWriter: XCsvWriter = new XCsvWriter(csvParam, res);
+        const csvWriter: CsvWriter = new CsvWriter(csvParam, res);
 
         if (createHeaders) {
-            xCsvWriter.writeRow(...columns.map((value: XExportColumn) => value.header));
+            csvWriter.writeRow(...columns.map((value: ExportColumn) => value.header));
         }
 
-        // because of using streams, the programmer has to call xCsvWriter.end() explicitly
+        // because of using streams, the programmer has to call csvWriter.end() explicitly
         //res.status(HttpStatus.OK);
         //res.end();
 
-        return xCsvWriter;
+        return csvWriter;
     }
 
     static getHeaderCharset(csvEncoding: CsvEncoding): string {
@@ -205,11 +205,11 @@ export class XExportCsvService extends XExportService {
     }
 
     // helper
-    private exportRowToCsv(columns: XExportColumn[], multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[], xEntity: Entity, row: any, xCsvWriter: XCsvWriter) {
-        // metoda this.exportRow skonvertuje hodnoty na typy (napr. number, Date) a xCsvWriter.writeRow skonvertuje typy na string
-        const resultRowList: Array<Array<any>> = this.exportRow(columns, multilineExportType, fieldsToDuplicateValues, xEntity, row);
+    private exportRowToCsv(columns: ExportColumn[], multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[], entityMetadata: Entity, row: any, csvWriter: CsvWriter) {
+        // metoda this.exportRow skonvertuje hodnoty na typy (napr. number, Date) a csvWriter.writeRow skonvertuje typy na string
+        const resultRowList: Array<Array<any>> = this.exportRow(columns, multilineExportType, fieldsToDuplicateValues, entityMetadata, row);
         for (const resultRow of resultRowList) {
-            xCsvWriter.writeRow(...resultRow);
+            csvWriter.writeRow(...resultRow);
         }
     }
 }

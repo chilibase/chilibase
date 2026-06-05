@@ -18,10 +18,10 @@ import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
 import {MainQueryData} from "./query-data/MainQueryData.js";
 import {QueryData} from "./query-data/QueryData.js";
 import {SubQueryData} from "./query-data/SubQueryData.js";
-import {XExportColumn} from "../services/x-export.service.js";
-import {XExportExcelService} from "../services/x-export-excel.service.js";
-import {XExportJsonService} from "../services/x-export-json.service.js";
-import {XExportCsvService} from "../services/x-export-csv.service.js";
+import {ExportColumn} from "../export/export.service.js";
+import {ExportExcelService} from "../export/export-excel.service.js";
+import {ExportJsonService} from "../export/export-json.service.js";
+import {ExportCsvService} from "../export/export-csv.service.js";
 import {numberFromString} from "../common/UtilsConversions.js";
 import {DataTableSortMeta} from "../common/PrimeFilterSortMeta.js";
 import {Assoc, Entity} from "../common/EntityMetadata.js";
@@ -36,9 +36,9 @@ export class LazyDataTableService {
         private readonly dataSource: DataSource,
         private readonly xEntityMetadataService: XEntityMetadataService,
         private readonly persistenceService: PersistenceService,
-        private readonly xExportCsvService: XExportCsvService,
-        private readonly xExportExcelService: XExportExcelService,
-        private readonly xExportJsonService: XExportJsonService
+        private readonly exportCsvService: ExportCsvService,
+        private readonly exportExcelService: ExportExcelService,
+        private readonly exportJsonService: ExportJsonService
     ) {
     }
 
@@ -249,7 +249,7 @@ export class LazyDataTableService {
         const [selectQueryBuilder, existsToManyAssoc]: [SelectQueryBuilder<unknown>, boolean] = this.createSelectQueryBuilder(exportExcelParam.queryParam);
         const rowList: any[] = await selectQueryBuilder.getMany();
 
-        const columns: XExportColumn[] = [];
+        const columns: ExportColumn[] = [];
         for (const [index, field] of exportExcelParam.queryParam.fields.entries()) {
             const header: string = exportExcelParam.excelCsvParam.headers ? exportExcelParam.excelCsvParam.headers[index] : "";
             let width: number | undefined = undefined;
@@ -261,7 +261,7 @@ export class LazyDataTableService {
             columns.push({header: header, field: field, width: width});
         }
 
-        return this.xExportExcelService.exportBase(
+        return this.exportExcelService.exportBase(
             exportExcelParam.queryParam.entity,
             columns,
             exportExcelParam.excelCsvParam.headers !== undefined,
@@ -274,7 +274,7 @@ export class LazyDataTableService {
 
     exportCsv(exportCsvParam: ExportCsvParam, res: Response): Promise<void> {
 
-        const columns: XExportColumn[] = [];
+        const columns: ExportColumn[] = [];
         for (const [index, field] of exportCsvParam.queryParam.fields.entries()) {
             const header: string = exportCsvParam.excelCsvParam.headers ? exportCsvParam.excelCsvParam.headers[index] : "";
             columns.push({header: header, field: field});
@@ -282,9 +282,9 @@ export class LazyDataTableService {
 
         const [selectQueryBuilder, existsToManyAssoc]: [SelectQueryBuilder<unknown>, boolean] = this.createSelectQueryBuilder(exportCsvParam.queryParam);
         if (existsToManyAssoc) {
-            return this.xExportCsvService.exportUsingList(exportCsvParam, columns, selectQueryBuilder, res);
+            return this.exportCsvService.exportUsingList(exportCsvParam, columns, selectQueryBuilder, res);
         } else {
-            return this.xExportCsvService.exportUsingStream(exportCsvParam, columns, selectQueryBuilder, res);
+            return this.exportCsvService.exportUsingStream(exportCsvParam, columns, selectQueryBuilder, res);
         }
     }
 
@@ -296,10 +296,10 @@ export class LazyDataTableService {
 
         const [selectQueryBuilder, existsToManyAssoc]: [SelectQueryBuilder<unknown>, boolean] = this.createSelectQueryBuilder(exportJsonParam.queryParam);
         if (existsToManyAssoc) {
-            return this.xExportJsonService.exportJsonUsingList(selectQueryBuilder, res);
+            return this.exportJsonService.exportJsonUsingList(selectQueryBuilder, res);
         }
         else {
-            return this.xExportJsonService.exportJsonUsingStream(selectQueryBuilder, res);
+            return this.exportJsonService.exportJsonUsingStream(selectQueryBuilder, res);
         }
     }
 
@@ -384,7 +384,7 @@ export class LazyDataTableService {
             xFieldList.push(this.xEntityMetadataService.getXFieldByPath(xEntity, field));
         }
 
-        const headerCharset: string = XExportService.getHeaderCharset(exportParam.csvParam.csvEncoding); // napr. UTF-8, windows-1250
+        const headerCharset: string = ExportCsvService.getHeaderCharset(exportParam.csvParam.csvEncoding); // napr. UTF-8, windows-1250
         const iconvCharset: CsvEncoding = exportParam.csvParam.csvEncoding; // napr. utf-8, win1250
 
         res.setHeader("Content-Type", `text/csv; charset=${headerCharset}`);

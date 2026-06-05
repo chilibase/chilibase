@@ -11,46 +11,46 @@ import {RawSqlResultsToEntityTransformer} from "typeorm/query-builder/transforme
 // typ fieldu - ide ako parameter do funkcie convertValue
 // mal by sa pouzivat ako typ pre XField.type namiesto string-u ale v sucasnosti moze ist do XField.type hocico, takze zatial len tu pouzivame
 
-export type XFieldType = "string" | "decimal" | "date" | "datetime" | "interval" | "boolean";
+export type FieldType = "string" | "decimal" | "date" | "datetime" | "interval" | "boolean";
 
-export interface XExportColumn {
+export interface ExportColumn {
     header: string;
     field: string | ((row: any) => any);
-    type?: XFieldType; // explicitne zadany typ - pouziva sa, ak nemame metadatovy XField
+    type?: FieldType; // explicitne zadany typ - pouziva sa, ak nemame metadatovy XField
     width?: number;
 }
 
-export abstract class XExportService {
+export abstract class ExportService {
 
-    // funkcia pouzivana v XExportExcelService a XExportCsvService
-    exportRow(columns: XExportColumn[], multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, xEntity: Entity | undefined, row: any): Array<Array<any>> {
+    // funkcia pouzivana v ExportExcelService a ExportCsvService
+    exportRow(columns: ExportColumn[], multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, entityMetadata: Entity | undefined, row: any): Array<Array<any>> {
 
         // vytvarany excel/csv row je tvoreny stlpcami - standardne ma stlpec presne 1 hodnotu,
         // ak sa vsak jedna o field dotahovany cez one-to-many asociaciu, ma dany stlpec vsetky hodnoty dotiahnute cez danu asociaciu (moze byt aj 0 hodnot)
         // dlzku najdlhsieho stlpca si zapiseme do "maxColumnIndex"
         const columnList: Array<any[]> = new Array<any[]>(columns.length);
         let maxColumnLength: number = 1;
-        for (const [columnIndex, xExportColumn] of columns.entries()) {
+        for (const [columnIndex, exportColumn] of columns.entries()) {
 
-            let fieldType: string | undefined = xExportColumn.type;
+            let fieldType: string | undefined = exportColumn.type;
             let scale: number | undefined = undefined;
             let value: any | any[];
-            if (typeof xExportColumn.field === 'function') {
-                value = xExportColumn.field(row);
+            if (typeof exportColumn.field === 'function') {
+                value = exportColumn.field(row);
             } else {
-                // mame field - xExportColumn.field je typu string
+                // mame field - exportColumn.field je typu string
                 // ak nemame explicitny typ a mame zadanu entitu, skusime najst typ v metadatach
                 if (!fieldType) {
-                    if (xEntity) {
-                        const xField: Field | undefined = UtilsMetadataCommon.getFieldByPathBase(xEntity, xExportColumn.field);
-                        if (xField) {
-                            fieldType = xField.type;
-                            scale = xField.scale; // pouzivane pri decimal a date
+                    if (entityMetadata) {
+                        const field: Field | undefined = UtilsMetadataCommon.getFieldByPathBase(entityMetadata, exportColumn.field);
+                        if (field) {
+                            fieldType = field.type;
+                            scale = field.scale; // pouzivane pri decimal a date
                         }
                     }
                 }
 
-                value = UtilsCommon.getValueOrValueListByPath(row, xExportColumn.field);
+                value = UtilsCommon.getValueOrValueListByPath(row, exportColumn.field);
             }
 
             let columnValues: any[];
@@ -89,7 +89,7 @@ export abstract class XExportService {
             }
 
             // skonvertujeme hodnoty, ak je to potrebne
-            //columnValues = this.convertValues(columnValues, xFieldList[index], xCsvWriter);
+            //columnValues = this.convertValues(columnValues, xFieldList[index], csvWriter);
 
             // ulozime si stlpec do pola stlpcov
             columnList[columnIndex] = columnValues;

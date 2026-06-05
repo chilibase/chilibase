@@ -6,9 +6,9 @@ import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
 import {XBrowseFormMetadataService} from "../services/x-browse-form-metadata.service.js";
 import {FileController} from "../services/file.controller.js";
 import {FileService} from "../services/file.service.js";
-import {XExportCsvService} from "../services/x-export-csv.service.js";
-import {XExportJsonService} from "../services/x-export-json.service.js";
-import {XExportExcelService} from "../services/x-export-excel.service.js";
+import {ExportCsvService} from "../export/export-csv.service.js";
+import {ExportJsonService} from "../export/export-json.service.js";
+import {ExportExcelService} from "../export/export-excel.service.js";
 import {AuthModule} from "../auth/auth.module.js";
 
 @Module({})
@@ -23,9 +23,9 @@ export class ChilibaseModule {
       providers: [
           PersistenceService,
           LazyDataTableService,
-          XExportCsvService,
-          XExportExcelService,
-          XExportJsonService,
+          ExportCsvService,
+          ExportExcelService,
+          ExportJsonService,
           XEntityMetadataService,
           XBrowseFormMetadataService,
           FileService
@@ -35,9 +35,9 @@ export class ChilibaseModule {
             PersistenceService,
             FileService,
             LazyDataTableService,
-            XExportCsvService,
-            XExportExcelService,
-            XExportJsonService,
+            ExportCsvService,
+            ExportExcelService,
+            ExportJsonService,
             XEntityMetadataService
         ],
       module: ChilibaseModule
