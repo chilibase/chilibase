@@ -82,6 +82,7 @@
     "./export": "./lib/export/index.js",
     "./main-module": "./lib/main-module/index.js",
     "./administration": "./lib/modules/administration/index.js",
+    "./files": "./lib/modules/files/index.js",
     "./persistence": "./lib/persistence/index.js",
     "./services": "./lib/services/index.js",
     "./utils": "./lib/utils/index.js",

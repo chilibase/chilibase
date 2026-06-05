@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {DataSource, Repository, SelectQueryBuilder} from "typeorm";
-import {FileMeta} from "../modules/administration/file-meta.entity.js";
+import {FileMeta} from "./file-meta.entity.js";
 
 @Injectable()
 export class FileService {

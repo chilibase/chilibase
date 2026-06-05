@@ -2,11 +2,11 @@ import {Body, Controller, Post, StreamableFile, UploadedFile, UseInterceptors} f
 import {FileService} from "./file.service.js";
 import {createReadStream, existsSync, mkdirSync, renameSync} from "fs";
 import {Readable} from "stream";
-import {Utils} from "../utils/Utils.js";
-import {FileMeta} from "../modules/administration/file-meta.entity.js";
+import {Utils} from "../../utils/Utils.js";
+import {FileMeta} from "./file-meta.entity.js";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {join} from "path";
-import {FileJsonField} from "../common/lib-api.js";
+import {FileJsonField} from "../../common/lib-api.js";
 
 @Controller()
 export class FileController {
