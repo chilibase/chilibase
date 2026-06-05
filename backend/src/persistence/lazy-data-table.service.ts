@@ -14,7 +14,7 @@ import {
     ExportJsonParam,
     LazyDataTableQueryParam
 } from "../common/ExportImportParam.js";
-import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
+import {EntityMetadataService} from "../entity-metadata/entity-metadata.service.js";
 import {MainQueryData} from "./query-data/MainQueryData.js";
 import {QueryData} from "./query-data/QueryData.js";
 import {SubQueryData} from "./query-data/SubQueryData.js";
@@ -34,7 +34,7 @@ export class LazyDataTableService {
 
     constructor(
         private readonly dataSource: DataSource,
-        private readonly xEntityMetadataService: XEntityMetadataService,
+        private readonly entityMetadataService: EntityMetadataService,
         private readonly persistenceService: PersistenceService,
         private readonly exportCsvService: ExportCsvService,
         private readonly exportExcelService: ExportExcelService,
@@ -48,13 +48,13 @@ export class LazyDataTableService {
         // TODO - optimalizacia - leftJoin-y sa mozu nahradit za join-y, ak je ManyToOne asociacia not null (join-y su rychlejsie ako leftJoin-y)
 
         this.createDefaultFieldsForFullTextSearch(findParam.fullTextSearch, findParam.fields);
-        const mainQueryData: MainQueryData = new MainQueryData(this.xEntityMetadataService, findParam.entity, "t", findParam.filters, findParam.fullTextSearch, findParam.customFilterItems);
+        const mainQueryData: MainQueryData = new MainQueryData(this.entityMetadataService, findParam.entity, "t", findParam.filters, findParam.fullTextSearch, findParam.customFilterItems);
 
         let rowCount: number;
         const aggregateValues: AggregateValues = {};
         if (findParam.resultType === ResultType.OnlyRowCount || findParam.resultType === ResultType.RowCountAndPagedRows) {
-            //const xEntity: XEntity = this.xEntityMetadataService.getXEntity(findParam.entity);
-            const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.xEntity.name, mainQueryData.rootAlias);
+            //const xEntity: XEntity = this.entityMetadataService.getEntity(findParam.entity);
+            const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.entity.name, mainQueryData.rootAlias);
             // povodne tu bol COUNT(1) ale koli where podmienkam na OneToMany asociaciach sme zmenili na COUNT(DISTINCT t0.id)
             // da sa zoptimalizovat, ze COUNT(DISTINCT t0.id) sa bude pouzivat len v pripade ze je pouzita where podmienka na OneToMany asociacii
             // (ale potom to treba nejako detekovat, zatial dame vzdy COUNT(DISTINCT t0.id))
@@ -157,8 +157,8 @@ export class LazyDataTableService {
         // TODO - podobne aj tabulky pridane cez custom filter alebo cez full-text search ktory obsahuje ine stlpce ako su v browse - tie tiez nepotrebujeme selectovat,
         // t.j. netreba volat leftJoinAndSelect(field, alias), staci volat leftJoin(field, alias) - chcelo by to okrem alias-u si zapisovat aj ci treba aj select (boolean hodnotu)
         // original code (before use manager/transaction) (there are some differences between using repository and not using repository)
-        //const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.xEntity.name, mainQueryData.rootAlias);
-        const repository: Repository<unknown> = manager ? manager.getRepository(mainQueryData.xEntity.name) : this.dataSource.getRepository(mainQueryData.xEntity.name);
+        //const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.entity.name, mainQueryData.rootAlias);
+        const repository: Repository<unknown> = manager ? manager.getRepository(mainQueryData.entity.name) : this.dataSource.getRepository(mainQueryData.entity.name);
         const selectQueryBuilder: SelectQueryBuilder<unknown> = repository.createQueryBuilder(mainQueryData.rootAlias);
 
         for (const [field, alias] of mainQueryData.assocAliasMap.entries()) {
@@ -218,7 +218,7 @@ export class LazyDataTableService {
 
     async findRowByIdBase(manager: EntityManager, findRowRequest: FindRowByIdRequest): Promise<any> {
         // select the whole row (also with assocs)
-        const mainQueryData: MainQueryData = new MainQueryData(this.xEntityMetadataService, findRowRequest.entity, "t", undefined, undefined, undefined);
+        const mainQueryData: MainQueryData = new MainQueryData(this.entityMetadataService, findRowRequest.entity, "t", undefined, undefined, undefined);
         mainQueryData.addSelectItems(findRowRequest.fields);
 
         const selectQueryBuilder: SelectQueryBuilder<unknown> = this.createQueryBuilderFromMainQuery(manager, mainQueryData);
@@ -229,10 +229,10 @@ export class LazyDataTableService {
     // sorts all oneToMany assocs with cascade (insert and update) by id - it is default sorting used by XFormDataTable2 on the frontend
     // helper method to avoid explicit sorting, used usually after LazyDataTableService.findRowById
     sortCascadeAssocsByIdField(xEntity: Entity, row: any) {
-        const assocOneToManyList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many"]).filter((assoc: Assoc) => assoc.isCascadeInsert && assoc.isCascadeUpdate);
+        const assocOneToManyList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many"]).filter((assoc: Assoc) => assoc.isCascadeInsert && assoc.isCascadeUpdate);
         for (const assoc of assocOneToManyList) {
             const assocRowList: any[] = row[assoc.name];
-            const xEntityAssoc: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xEntityAssoc: Entity = this.entityMetadataService.getEntity(assoc.entityName);
             // not all associations must be read from DB (if join is missing that assocRowList is undefined)
             if (assocRowList) {
                 row[assoc.name] = UtilsCommon.arraySort(assocRowList, xEntityAssoc.idField);
@@ -306,7 +306,7 @@ export class LazyDataTableService {
     private createSelectQueryBuilder(queryParam: LazyDataTableQueryParam): [SelectQueryBuilder<unknown>, boolean] {
 
         this.createDefaultFieldsForFullTextSearch(queryParam.fullTextSearch, queryParam.fields);
-        const mainQueryData: MainQueryData = new MainQueryData(this.xEntityMetadataService, queryParam.entity, "t", queryParam.filters, queryParam.fullTextSearch, queryParam.customFilterItems);
+        const mainQueryData: MainQueryData = new MainQueryData(this.entityMetadataService, queryParam.entity, "t", queryParam.filters, queryParam.fullTextSearch, queryParam.customFilterItems);
         mainQueryData.addSelectItems(queryParam.fields);
         mainQueryData.addOrderByItems(queryParam.multiSortMeta);
         return [this.createQueryBuilderFromMainQuery(null, mainQueryData), mainQueryData.assocSubQueryDataMap.size > 0];
@@ -379,9 +379,9 @@ export class LazyDataTableService {
 
         // potrebujeme zoznam xField-ov, aby sme vedeli urcit typ fieldu
         const xFieldList: XField[] = [];
-        const xEntity = this.xEntityMetadataService.getXEntity(exportParam.queryParam.entity);
+        const xEntity = this.entityMetadataService.getEntity(exportParam.queryParam.entity);
         for (const field of exportParam.queryParam.fields) {
-            xFieldList.push(this.xEntityMetadataService.getXFieldByPath(xEntity, field));
+            xFieldList.push(this.entityMetadataService.getFieldByPath(xEntity, field));
         }
 
         const headerCharset: string = ExportCsvService.getHeaderCharset(exportParam.csvParam.csvEncoding); // napr. UTF-8, windows-1250

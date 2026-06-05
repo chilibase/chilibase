@@ -1,5 +1,5 @@
 import {QueryData} from "./QueryData.js";
-import {XEntityMetadataService} from "../../services/x-entity-metadata.service.js";
+import {EntityMetadataService} from "../../entity-metadata/entity-metadata.service.js";
 import {OrderByCondition, SelectQueryBuilder} from "typeorm";
 import {SubQueryData} from "./SubQueryData.js";
 import {DataTableFilterMeta, DataTableSortMeta} from "../../common/PrimeFilterSortMeta.js";
@@ -20,8 +20,8 @@ export class MainQueryData extends QueryData {
     fullTextSearch: FullTextSearch | undefined;
     orderByItems: OrderByCondition;
 
-    constructor(xEntityMetadataService: XEntityMetadataService, entity: string, rootAlias: string, filters: DataTableFilterMeta | undefined, fullTextSearch: FullTextSearch | undefined, customFilterItems: CustomFilterItem[] | undefined) {
-        super(xEntityMetadataService, entity, rootAlias);
+    constructor(entityMetadataService: EntityMetadataService, entity: string, rootAlias: string, filters: DataTableFilterMeta | undefined, fullTextSearch: FullTextSearch | undefined, customFilterItems: CustomFilterItem[] | undefined) {
+        super(entityMetadataService, entity, rootAlias);
         this.assocSubQueryDataMap = new Map<string, SubQueryData>();
         this.selectItems = [];
         this.fullTextSearch = fullTextSearch;
@@ -170,9 +170,9 @@ export class MainQueryData extends QueryData {
         // ak mame OneToMany asociaciu, vytvorime/pouzijeme subquery
         const [field, restPath]: [string, string | null] = UtilsCommon.getFieldAndRestPath(pathField);
         if (restPath !== null) {
-            const xAssoc: Assoc = this.xEntityMetadataService.getXAssoc(this.xEntity, field);
-            if (xAssoc.relationType === "one-to-many") {
-                const subQueryData: SubQueryData = this.getSubQueryData(xAssoc);
+            const assoc: Assoc = this.entityMetadataService.getAssoc(this.entity, field);
+            if (assoc.relationType === "one-to-many") {
+                const subQueryData: SubQueryData = this.getSubQueryData(assoc);
                 //console.log("created subquery for pathField = " + pathField);
                 return [subQueryData, restPath];
             }
@@ -185,8 +185,8 @@ export class MainQueryData extends QueryData {
         let subQueryData: SubQueryData = this.assocSubQueryDataMap.get(aliasAssocOneToMany);
         if (subQueryData === undefined) {
             const aliasSubQuery: string = "ts" + (this.assocSubQueryDataMap.size + 1).toString();
-            const assocToOneWhereItem: string = `${aliasSubQuery}.${xAssocOneToMany.inverseAssocName} = ${this.rootAlias}.${this.xEntity.idField}`;
-            subQueryData = new SubQueryData(this.xEntityMetadataService, xAssocOneToMany.entityName, aliasSubQuery, assocToOneWhereItem);
+            const assocToOneWhereItem: string = `${aliasSubQuery}.${xAssocOneToMany.inverseAssocName} = ${this.rootAlias}.${this.entity.idField}`;
+            subQueryData = new SubQueryData(this.entityMetadataService, xAssocOneToMany.entityName, aliasSubQuery, assocToOneWhereItem);
             this.assocSubQueryDataMap.set(aliasAssocOneToMany, subQueryData);
         }
         return subQueryData;

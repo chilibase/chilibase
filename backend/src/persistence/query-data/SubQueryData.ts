@@ -1,6 +1,6 @@
 import {QueryData} from "./QueryData.js";
 import {SelectQueryBuilder} from "typeorm";
-import {XEntityMetadataService} from "../../services/x-entity-metadata.service.js";
+import {EntityMetadataService} from "../../entity-metadata/entity-metadata.service.js";
 
 export class SubQueryData extends QueryData {
 
@@ -14,8 +14,8 @@ export class SubQueryData extends QueryData {
     // key from xAssocSubQueryDataList is used for creating left join (t0.assocXList, <rootAlias>)) in the main query selecting data (detail rows must be selected using left join)
     // assocToOneWhereItem is used to create real SQL subquery - using EXISTS in where condition in count/sum aggregate query or direct in select clause to sum field from detail row
 
-    constructor(xEntityMetadataService: XEntityMetadataService, entity: string, rootAlias: string, assocToOneWhereItem: string) {
-        super(xEntityMetadataService, entity, rootAlias);
+    constructor(entityMetadataService: EntityMetadataService, entity: string, rootAlias: string, assocToOneWhereItem: string) {
+        super(entityMetadataService, entity, rootAlias);
         this.assocToOneWhereItem = assocToOneWhereItem;
     }
 
@@ -26,7 +26,7 @@ export class SubQueryData extends QueryData {
     createQueryBuilder(selectQueryBuilder: SelectQueryBuilder<unknown>, selection: string): SelectQueryBuilder<unknown> {
         const selectSubQueryBuilder: SelectQueryBuilder<unknown> = selectQueryBuilder.subQuery();
         selectSubQueryBuilder.select(selection);
-        selectSubQueryBuilder.from(this.xEntity.name, this.rootAlias);
+        selectSubQueryBuilder.from(this.entity.name, this.rootAlias);
         for (const [field, alias] of this.assocAliasMap.entries()) {
             selectSubQueryBuilder.leftJoin(field, alias);
         }
@@ -42,7 +42,7 @@ export class SubQueryData extends QueryData {
         if (this.ftsFieldList.length > 0) {
             selectSubQueryBuilder = selectQueryBuilder.subQuery();
             selectSubQueryBuilder.select(selection);
-            selectSubQueryBuilder.from(this.xEntity.name, this.rootAlias);
+            selectSubQueryBuilder.from(this.entity.name, this.rootAlias);
             for (const [field, alias] of this.assocAliasMap.entries()) {
                 selectSubQueryBuilder.leftJoin(field, alias);
             }

@@ -1,37 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import {Assoc, AssocMap, Entity, EntityMap, Field, FieldMap, RelationType} from "../common/EntityMetadata.js";
-import {DataSource, EntityMetadata, EntitySchema} from "typeorm";
+import {DataSource, EntityMetadata} from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {ColumnMetadata} from "typeorm/metadata/ColumnMetadata.js";
-import {MixedList} from "typeorm/common/MixedList.js";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon.js";
 
 @Injectable()
-export class XEntityMetadataService {
-
-    private entityList: MixedList<Function | string | EntitySchema>;
+export class EntityMetadataService {
 
     constructor(
         private readonly dataSource: DataSource
     ) {}
 
-    getXEntityMap(): EntityMap {
-        let xEntityMap: EntityMap | undefined = UtilsMetadataCommon.getEntityMap();
-        if (xEntityMap === undefined) {
-            xEntityMap = {};
+    getEntityMap(): EntityMap {
+        let entityMap: EntityMap | undefined = UtilsMetadataCommon.getEntityMap();
+        if (entityMap === undefined) {
+            entityMap = {};
             const entityMetadataList = this.dataSource.entityMetadatas;
             for (const entityMetadata of entityMetadataList) {
                 if (!entityMetadata.isJunction) { // tabulky vytvorene manyToMany asociaciami nechceme
-                    const xEntity: Entity = this.getXEntityForEntityMetadata(entityMetadata);
-                    xEntityMap[xEntity.name] = xEntity;
+                    const entity: Entity = this.getEntityForEntityMetadata(entityMetadata);
+                    entityMap[entity.name] = entity;
                 }
             }
-            UtilsMetadataCommon.setEntityMap(xEntityMap);
+            UtilsMetadataCommon.setEntityMap(entityMap);
         }
-        return xEntityMap;
+        return entityMap;
     }
 
-    private getXEntityForEntityMetadata(entityMetadata: EntityMetadata): Entity {
+    private getEntityForEntityMetadata(entityMetadata: EntityMetadata): Entity {
 
         const fieldMap: FieldMap = {};
         // entityMetadata.columns obsahuje aj asociacie (napr. ManyToOne), preto ich vyfiltrujeme
@@ -123,26 +120,41 @@ export class XEntityMetadataService {
         return assocMap;
     }
 
-    // TODO - zrusit tieto metody a pouzivat priamo XUtilsMetadataCommon
+    // TODO - use UtilsMetadataCommon and remove these methods
 
-    getXEntity(entity: string): Entity {
-        this.getXEntityMap(); // pre istotu, nech sa zoznam nainicializuje, ak treba
+    /**
+     * @deprecated
+     */
+    getEntity(entity: string): Entity {
+        this.getEntityMap(); // pre istotu, nech sa zoznam nainicializuje, ak treba
         return UtilsMetadataCommon.getEntity(entity);
     }
 
-    getXField(xEntity: Entity, field: string): Field {
-        return UtilsMetadataCommon.getField(xEntity, field);
+    /**
+     * @deprecated
+     */
+    getField(entity: Entity, field: string): Field {
+        return UtilsMetadataCommon.getField(entity, field);
     }
 
-    getXFieldByPath(xEntity: Entity, path: string): Field {
-        return UtilsMetadataCommon.getFieldByPath(xEntity, path);
+    /**
+     * @deprecated
+     */
+    getFieldByPath(entity: Entity, path: string): Field {
+        return UtilsMetadataCommon.getFieldByPath(entity, path);
     }
 
-    getXAssocList(xEntity: Entity, relationTypeList?: RelationType[]): Assoc[] {
-        return UtilsMetadataCommon.getAssocList(xEntity, relationTypeList);
+    /**
+     * @deprecated
+     */
+    getAssocList(entity: Entity, relationTypeList?: RelationType[]): Assoc[] {
+        return UtilsMetadataCommon.getAssocList(entity, relationTypeList);
     }
 
-    public getXAssoc(xEntity: Entity, assocField: string, relationTypeList?: RelationType[]): Assoc {
-        return UtilsMetadataCommon.getAssoc(xEntity, assocField, relationTypeList);
+    /**
+     * @deprecated
+     */
+    public getAssoc(entity: Entity, assocField: string, relationTypeList?: RelationType[]): Assoc {
+        return UtilsMetadataCommon.getAssoc(entity, assocField, relationTypeList);
     }
 }

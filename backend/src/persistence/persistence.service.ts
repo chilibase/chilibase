@@ -5,7 +5,7 @@ import {
     SelectQueryBuilder
 } from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
-import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
+import {EntityMetadataService} from "../entity-metadata/entity-metadata.service.js";
 import {Assoc, Entity} from "../common/EntityMetadata.js";
 import {User} from "../modules/administration/user.entity.js";
 import {Utils} from "../utils/Utils.js";
@@ -30,7 +30,7 @@ export class PersistenceService {
 
     constructor(
         private readonly dataSource: DataSource,
-        private readonly xEntityMetadataService: XEntityMetadataService,
+        private readonly entityMetadataService: EntityMetadataService,
         private readonly localAuthService: LocalAuthService
     ) {}
 
@@ -80,7 +80,7 @@ export class PersistenceService {
         // je pravdepodobne, ze tento atribut robi tu odprogramovany "orphan removal",
         // mal by byt zadany na ManyToOne asociacii (https://john-hu.medium.com/typeorm-deletes-one-to-many-orphans-a7404f922895)
 
-        const xEntity: Entity = this.xEntityMetadataService.getXEntity(row.entity);
+        const xEntity: Entity = this.entityMetadataService.getEntity(row.entity);
 
         // ak mame vygenerovane id-cko, zmenime ho na undefined (aby sme mali priamy insert a korektne id-cko)
         if (row.object.__x_generatedRowId) {
@@ -88,13 +88,13 @@ export class PersistenceService {
             delete row.object.__x_generatedRowId; // v pripade ze objekt vraciame klientovi (reload === true), nechceme tam __x_generatedRowId
         }
 
-        let assocOneToManyList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many"]);
+        let assocOneToManyList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many"]);
         const rowId = row.object[xEntity.idField];
         const insert: boolean = (rowId === undefined);
         assocOneToManyList = assocOneToManyList.filter(insert ? (assoc: Assoc) => assoc.isCascadeInsert : (assoc: Assoc) => assoc.isCascadeUpdate);
 
         for (const assoc of assocOneToManyList) {
-            const xChildEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xChildEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
 
             // uprava toho co prislo z klienta - vynullujeme umelo vytvorene id-cka
             // (robime to tu a nie na klientovi, lebo ak nam nezbehne save, tak formular zostava otvoreny)
@@ -122,7 +122,7 @@ export class PersistenceService {
             // kedze nam chyba "remove orphaned entities" na asociaciach s detailami, tak ho zatial musime odprogramovat rucne
             // asi je to jedno ci pred save alebo po save (ak po save, tak cascade "remove" musi byt vypnuty - nefuguje ale tento remove zbehne skor)
             for (const assoc of assocOneToManyList) {
-                const xChildEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+                const xChildEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
 
                 const idList: any[] = [];
                 const childRowList = row.object[assoc.name];
@@ -202,7 +202,7 @@ export class PersistenceService {
 
         // asi by nebolo od veci v buducnosti prejst na cascade delete realizovany v DB cez FK constrainty, ked sa preto v TypeORM rozhodli...
 
-        const xEntity: Entity = this.xEntityMetadataService.getXEntity(row.entity);
+        const xEntity: Entity = this.entityMetadataService.getEntity(row.entity);
         return this.removeRowsInTransaction(manager, xEntity, [row.id], fileListToRemove, row.assocsToRemove);
     }
 
@@ -242,12 +242,12 @@ export class PersistenceService {
     addAssocsOfEntity(selectQueryBuilder: SelectQueryBuilder<unknown>, xEntity: Entity, alias: string, assocsToRemove?: string[]): boolean {
         // prejdeme vsetky asociacie (ktore maju cascade "remove", aj *toMany aj *toOne) a pridame ich do query
         let leftJoinAdded: boolean = false;
-        const assocList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
+        const assocList: Assoc[] = this.entityMetadataService.getAssocList(xEntity).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const [index, assoc] of assocList.entries()) {
             const aliasForAssoc: string = `${alias}_${index}`; // chceme mat unique alias v ramci celeho stromu, tak vytvarame nieco ako napr. t_2_0_1
             selectQueryBuilder.leftJoinAndSelect(`${alias}.${assoc.name}`, aliasForAssoc);
             leftJoinAdded = true;
-            const xAssocEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xAssocEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
             this.addAssocsOfEntity(selectQueryBuilder, xAssocEntity, aliasForAssoc, undefined); // zatial zimplementovane len pre prvu uroven
         }
         return leftJoinAdded;
@@ -258,11 +258,11 @@ export class PersistenceService {
         // musime mazat v spravnom poradi aby sme nenarusili FK constrainty (a ak asociacie vytvaraju cyklus, tak nam ani spravne poradie nepomoze...)
 
         // najprv *toMany asociacie
-        const assocToManyList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
+        const assocToManyList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const assoc of assocToManyList) {
             const assocRowList: any[] = row[assoc.name];
             for (const assocRow of assocRowList) {
-                this.addRowOfEntityToRemove(this.xEntityMetadataService.getXEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // zatial zimplementovane len pre prvu uroven
+                this.addRowOfEntityToRemove(this.entityMetadataService.getEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // zatial zimplementovane len pre prvu uroven
             }
         }
 
@@ -280,12 +280,12 @@ export class PersistenceService {
         }
 
         // teraz mozme vymazat *toOne asociacie
-        const assocToOneList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-one", "many-to-one"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
+        const assocToOneList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-one", "many-to-one"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const assoc of assocToOneList) {
             const assocRow: any = row[assoc.name];
             // ak je v FK-stlpci null, potom je myslim asociacia null (este by mohla byt undefined (nepritomna))
             if (assocRow) {
-                this.addRowOfEntityToRemove(this.xEntityMetadataService.getXEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // zatial zimplementovane len pre prvu uroven
+                this.addRowOfEntityToRemove(this.entityMetadataService.getEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // zatial zimplementovane len pre prvu uroven
             }
         }
     }
@@ -319,7 +319,7 @@ export class PersistenceService {
 
         const lockDate: Date | null = dateFromModel(object.lockDate ?? null);
         if (lockDate) {
-            const xEntity: Entity = this.xEntityMetadataService.getXEntity(entity);
+            const xEntity: Entity = this.entityMetadataService.getEntity(entity);
             const rowId: number = object[xEntity.idField];
             const rowFromDB: any = await this.findRowByIdForLocking(manager, entity, rowId);
             // if the lock was not replaced by newer lock, remove the lock
@@ -383,12 +383,12 @@ export class PersistenceService {
     /* old simple removeRow
     async removeRowInTransactionOld(manager: EntityManager, row: RemoveRowParam): Promise<void> {
 
-        const xEntity: Entity = this.xEntityMetadataService.getXEntity(row.entity);
+        const xEntity: Entity = this.entityMetadataService.getEntity(row.entity);
 
         // prejdeme vsetky *ToMany asociacie (ktore maju cascade "remove") a zmazeme ich child zaznamy
-        const assocList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => assoc.isCascadeRemove);
+        const assocList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => assoc.isCascadeRemove);
         for (const assoc of assocList) {
-            const xChildEntity: Entity = this.xEntityMetadataService.getXEntity(assoc.entityName);
+            const xChildEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
             if (assoc.inverseAssocName === undefined) {
                 throw `Assoc ${xEntity.name}.${assoc.name} has no inverse assoc.`;
             }

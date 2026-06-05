@@ -7,20 +7,20 @@ import {BrowseMetaMap} from "../common/types";
 
 // idelany nazov: UtilsEntityMetadata - ale strasne dlhy
 // tato funkcionalita by mala ist bud do tried XEntity, XField alebo lepsie do nejakeho servisu
-// ekvivalentna funkcionalita sa nachadza aj na servri v servise XEntityMetadataService.ts (TODO - v buducnosti spravit spolocnu triedu/servis)
+// ekvivalentna funkcionalita sa nachadza aj na servri v servise EntityMetadataService.ts (TODO - v buducnosti spravit spolocnu triedu/servis)
 export class UtilsMetadata {
     // nacachovane metadata (setuju sa v App.fetchAndSetXMetadata)
     private static xBrowseMetaMap: BrowseMetaMap;
 
     static async fetchAndSetXEntityMap(): Promise<any> {
         if (UtilsMetadataCommon.getEntityMap() === undefined) {
-            UtilsMetadataCommon.setEntityMap(await Utils.fetch("getXEntityMap", {dummy: "dummy"}));
+            UtilsMetadataCommon.setEntityMap(await Utils.fetch("x-get-entity-metadata-map", {dummy: "dummy"}));
         }
     }
 
     static async fetchAndSetXBrowseMetaMap(): Promise<any> {
         if (UtilsMetadata.xBrowseMetaMap === undefined) {
-            UtilsMetadata.xBrowseMetaMap = await Utils.fetch("getXBrowseMetaMap", {dummy: "dummy"});
+            UtilsMetadata.xBrowseMetaMap = await Utils.fetch("x-get-browse-meta-map", {dummy: "dummy"});
         }
     }
 

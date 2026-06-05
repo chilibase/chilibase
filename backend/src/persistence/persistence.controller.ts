@@ -8,14 +8,14 @@ import {
 import {PersistenceService} from "./persistence.service.js";
 import {FindResult} from "../common/FindResult.js";
 import {LazyDataTableService} from "./lazy-data-table.service.js";
-import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
+import {EntityMetadataService} from "../entity-metadata/entity-metadata.service.js";
 import {EntityMap} from "../common/EntityMetadata.js";
 import {FindParam, LazyAutoCompleteSuggestionsRequest} from "../common/FindParam.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import {BrowseMetaMap} from "../common/types.js";
-import {XBrowseFormMetadataService} from "../services/x-browse-form-metadata.service.js";
+import {BrowseFormMetadataService} from "../dynamic-browse/browse-form-metadata.service.js";
 import {Response} from 'express';
 import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../common/ExportImportParam.js";
 import {PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
@@ -35,8 +35,8 @@ export class PersistenceController {
     constructor(
         private readonly persistenceService: PersistenceService,
         private readonly lazyDataTableService: LazyDataTableService,
-        private readonly xEntityMetadataService: XEntityMetadataService,
-        private readonly xBrowseFormMetadataService: XBrowseFormMetadataService,
+        private readonly entityMetadataService: EntityMetadataService,
+        private readonly browseFormMetadataService: BrowseFormMetadataService,
         private readonly localAuthService: LocalAuthService) {}
 
     @Post('lazyDataTableFindRows')
@@ -163,15 +163,15 @@ export class PersistenceController {
         return {value: await this.persistenceService.getParamValue(request.code)};
     }
 
-    @Post('getXEntityMap')
-    async getXEntityMap(@Body() body: any): Promise<EntityMap> {
-        console.log("************************* zavolany getXEntityMap *******************************************");
-        return this.xEntityMetadataService.getXEntityMap();
+    @Post('x-get-entity-metadata-map')
+    async getEntityMap(@Body() body: any): Promise<EntityMap> {
+        //console.log("************************* called getEntityMap *******************************************");
+        return this.entityMetadataService.getEntityMap();
     }
 
-    @Post('getXBrowseMetaMap')
+    @Post('x-get-browse-meta-map')
     async getXBrowseMetaMap(@Body() body: any): Promise<BrowseMetaMap> {
-        console.log("*********************** zavolany getXBrowseMetaMap *****************************************");
-        return this.xBrowseFormMetadataService.getXBrowseMetaMap();
+        //console.log("*********************** called getXBrowseMetaMap *****************************************");
+        return this.browseFormMetadataService.getBrowseMetaMap();
     }
 }

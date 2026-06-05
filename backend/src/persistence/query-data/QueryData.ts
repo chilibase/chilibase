@@ -5,7 +5,7 @@ import {
 } from "../../common/PrimeFilterSortMeta.js";
 import {ObjectLiteral} from "typeorm";
 import {Utils} from "../../utils/Utils.js";
-import {XEntityMetadataService} from "../../services/x-entity-metadata.service.js";
+import {EntityMetadataService} from "../../entity-metadata/entity-metadata.service.js";
 import {Entity, Field} from "../../common/EntityMetadata.js";
 import {stringAsDB} from "../../common/UtilsConversions.js";
 import {XEnvVar} from "../../services/XEnvVars.js";
@@ -14,8 +14,8 @@ import {ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode} from "../../co
 export abstract class QueryData {
 
     // helper members
-    xEntityMetadataService: XEntityMetadataService;
-    xEntity: Entity;
+    entityMetadataService: EntityMetadataService;
+    entity: Entity;
 
     rootAlias: string; // alias for root table of the query, e.g. "t0"
     assocAliasMap: Map<string, string>; // assoc1.assoc2.fieldX = :valueX -> (t0.assoc1, t1), (t1.assoc2, t2)
@@ -23,9 +23,9 @@ export abstract class QueryData {
     params: ObjectLiteral;                         // {valueX, <valueX>}
     ftsFieldList: string[];             // fts = full-text search
 
-    protected constructor(xEntityMetadataService: XEntityMetadataService, entity: string, rootAlias: string) {
-        this.xEntityMetadataService = xEntityMetadataService;
-        this.xEntity = this.xEntityMetadataService.getXEntity(entity);
+    protected constructor(entityMetadataService: EntityMetadataService, entity: string, rootAlias: string) {
+        this.entityMetadataService = entityMetadataService;
+        this.entity = this.entityMetadataService.getEntity(entity);
         this.rootAlias = rootAlias;
         this.assocAliasMap = new Map<string, string>();
         this.where = "";
@@ -235,8 +235,8 @@ export abstract class QueryData {
     }
 
     addDBCastIfNeeded(dbField: string, field: string): string {
-        const xField: Field = this.xEntityMetadataService.getXFieldByPath(this.xEntity, field);
-        if (xField.type === "jsonb") {
+        const fieldMetadata: Field = this.entityMetadataService.getFieldByPath(this.entity, field);
+        if (fieldMetadata.type === "jsonb") {
             // ak neprecastujeme typ jsonb, tak nam vyhodi chybu
             // toto je potrebne ak chceme aby fungovalo jednoduche zadanie textu do filtra na stlpci ktory zobrazuje jsonb atribut
             // (fts filter funguje s jsonb atributmi pekne aj bez tejto upravy (tam sa vzdy robi cast na ::VARCHAR))
@@ -260,23 +260,23 @@ export abstract class QueryData {
 
     addFtsField(prefix: string | null, ftsField: string) {
         const dbField: string = this.getFieldFromPathField(ftsField);
-        const xField: Field = this.xEntityMetadataService.getXFieldByPath(this.xEntity, ftsField);
+        const fieldMetadata: Field = this.entityMetadataService.getFieldByPath(this.entity, ftsField);
         // TODO - add other conversions if needed
         // TODO - create DB conversion functions if used on multiple places
         let dbFieldWithCast: string;
-        if (xField.type === "boolean") {
+        if (fieldMetadata.type === "boolean") {
             // ak dbField castujeme cez ::VARCHAR (::INT), treba ho uviest v zatvorkach, inac nam TypeORM neurobi replace na nazov stlpca
             dbFieldWithCast = `(${dbField})::INT::VARCHAR`; // nechceme vytvorit hodnoty |true| reps. |false|, radsej vytvorime |1| resp. |0|
                                         // - tie sa budu menej pliest s vyhladavaniami zameranymi na ine stlpce
         }
-        else if (xField.type === "decimal") {
+        else if (fieldMetadata.type === "decimal") {
             // decimal attributes (financial sums) are displayed like: 123,45 - we change "." to ","
             dbFieldWithCast = `replace((${dbField})::VARCHAR, '.', ',')`;
         }
-        else if (xField.type === "date") {
+        else if (fieldMetadata.type === "date") {
             dbFieldWithCast = `to_char(${dbField}, 'DD.MM.YYYY')`;
         }
-        else if (xField.type === "datetime") {
+        else if (fieldMetadata.type === "datetime") {
             dbFieldWithCast = `to_char(${dbField}, 'DD.MM.YYYY HH24:MI:SS')`;
         }
         else {
