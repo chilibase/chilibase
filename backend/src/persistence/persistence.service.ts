@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import {
     DataSource, EntityManager,
     EntityMetadata,
-    OrderByCondition,
     SelectQueryBuilder
 } from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
-import {XEntityMetadataService} from "./x-entity-metadata.service.js";
+import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
 import {Assoc, Entity} from "../common/EntityMetadata.js";
 import {User} from "../modules/administration/user.entity.js";
 import {Utils} from "../utils/Utils.js";
@@ -14,21 +13,20 @@ import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import * as bcrypt from 'bcrypt';
-import {FindParamRows} from "./FindParamRows.js";
 import {PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
-import {XAuth, XEnvVar} from "./XEnvVars.js";
+import {XAuth, XEnvVar} from "../services/XEnvVars.js";
 import {join} from "path";
 import {unlinkSync} from "fs";
-import {XRowIdListToRemove} from "./XRowIdListToRemove.js";
+import {RowIdListToRemove} from "./RowIdListToRemove.js";
 import {Parameter} from "../modules/administration/parameter.entity.js";
 import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} from "../common/UtilsConversions.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
 import {UnlockRowRequest} from "../common/lib-api.js";
-import {XAppError} from "./XAppError.js";
-import {xLocaleOption} from "./XLocale.js";
+import {XAppError} from "../services/XAppError.js";
+import {xLocaleOption} from "../services/XLocale.js";
 
 @Injectable()
-export class XLibService {
+export class PersistenceService {
 
     constructor(
         private readonly dataSource: DataSource,
@@ -37,7 +35,7 @@ export class XLibService {
     ) {}
 
     /**
-     * @deprecated - mal by sa pouzivat findRows
+     * @deprecated - use LazyDataTableService.findRows
      */
     async findRowsForAssoc(findParamRows : FindParamRowsForAssoc): Promise<any[]> {
         const repository = this.dataSource.getRepository(findParamRows.entity);
@@ -54,27 +52,6 @@ export class XLibService {
 
         const rows: any[] = await selectQueryBuilder.getMany();
         return rows;
-    }
-
-    // toto je specialny pripad vseobecnejsieho servisu XLazyDataTableService.findRows, ak resultType === ResultType.AllRows
-    // (nedava napr. moznost dotahovat aj asociovane objekty, sortovat podla viacerych stlpcov a pod. - je to take zjednodusene)
-    /**
-     * @deprecated - mal by sa pouzivat lazy findRows + customFilterItems
-     */
-    async findRows(findParamRows: FindParamRows): Promise<any[]> {
-        const repository = this.dataSource.getRepository(findParamRows.entity);
-        const selectQueryBuilder: SelectQueryBuilder<unknown> = repository.createQueryBuilder("t0");
-        // filter cez displayField pouziva napr. SearchButton, ak user v inpute vyplni len cast hodnoty a odide,
-        // tak cez tento filter hladame ci hodnote zodpoveda prave 1 zaznam
-        if (findParamRows.displayField && findParamRows.filter) {
-            selectQueryBuilder.where("t0." + findParamRows.displayField + " LIKE :filter", {filter: findParamRows.filter + "%"});
-        }
-        if (findParamRows.sortMeta) {
-            let orderByItems: OrderByCondition = {};
-            orderByItems["t0." + findParamRows.sortMeta.field] = (findParamRows.sortMeta.order === 1 ? "ASC" : "DESC");
-            selectQueryBuilder.orderBy(orderByItems);
-        }
-        return await selectQueryBuilder.getMany();
     }
 
     async saveRow(row: SaveRowParam): Promise<any> {
@@ -245,7 +222,7 @@ export class XLibService {
 
             // nacitame cely strom a zapiseme si id-cka na remove (v spravnom poradi)
             const rowList: any[] = await selectQueryBuilder.getMany();
-            const rowIdListToRemove: XRowIdListToRemove = new XRowIdListToRemove();
+            const rowIdListToRemove: RowIdListToRemove = new RowIdListToRemove();
             for (const row of rowList) {
                 this.addRowOfEntityToRemove(xEntity, row, rowIdListToRemove, fileListToRemove, assocsToRemove);
             }
@@ -276,7 +253,7 @@ export class XLibService {
         return leftJoinAdded;
     }
 
-    addRowOfEntityToRemove(xEntity: Entity, row: any, rowIdListToRemove: XRowIdListToRemove, fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
+    addRowOfEntityToRemove(xEntity: Entity, row: any, rowIdListToRemove: RowIdListToRemove, fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
         // vymazeme "row" aj s jeho asociovanymi objektmi
         // musime mazat v spravnom poradi aby sme nenarusili FK constrainty (a ak asociacie vytvaraju cyklus, tak nam ani spravne poradie nepomoze...)
 

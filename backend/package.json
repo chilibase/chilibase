@@ -79,7 +79,9 @@
     "./x-en": "./lib/locale/x-en.js",
 
     "./common": "./lib/common/index.js",
+    "./main-module": "./lib/main-module/index.js",
     "./administration": "./lib/modules/administration/index.js",
+    "./persistence": "./lib/persistence/index.js",
     "./services": "./lib/services/index.js",
     "./utils": "./lib/utils/index.js",
 
@@ -91,12 +93,8 @@
     "./x-export.service": "./lib/services/x-export.service.js",
     "./x-export-csv.service": "./lib/services/x-export-csv.service.js",
     "./x-export-excel.service": "./lib/services/x-export-excel.service.js",
-    "./x-lib.service": "./lib/services/x-lib.service.js",
-    "./x-lib.module": "./lib/services/x-lib.module.js",
-    "./XAdvancedConsoleLogger": "./lib/services/XAdvancedConsoleLogger.js",
     "./XAppError": "./lib/services/XAppError.js",
     "./XEnvVars": "./lib/services/XEnvVars.js",
-    "./XLocale": "./lib/services/XLocale.js",
-    "./XOptimisticLockingSubscriber": "./lib/services/XOptimisticLockingSubscriber.js"
+    "./XLocale": "./lib/services/XLocale.js"
   }
 }

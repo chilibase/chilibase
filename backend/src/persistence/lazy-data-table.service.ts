@@ -14,28 +14,28 @@ import {
     ExportJsonParam,
     LazyDataTableQueryParam
 } from "../common/ExportImportParam.js";
-import {XEntityMetadataService} from "./x-entity-metadata.service.js";
-import {XMainQueryData} from "../x-query-data/XMainQueryData.js";
-import {XQueryData} from "../x-query-data/XQueryData.js";
-import {XSubQueryData} from "../x-query-data/XSubQueryData.js";
-import {XExportColumn} from "./x-export.service.js";
-import {XExportExcelService} from "./x-export-excel.service.js";
-import {XExportJsonService} from "./x-export-json.service.js";
-import {XExportCsvService} from "./x-export-csv.service.js";
+import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
+import {MainQueryData} from "./query-data/MainQueryData.js";
+import {QueryData} from "./query-data/QueryData.js";
+import {SubQueryData} from "./query-data/SubQueryData.js";
+import {XExportColumn} from "../services/x-export.service.js";
+import {XExportExcelService} from "../services/x-export-excel.service.js";
+import {XExportJsonService} from "../services/x-export-json.service.js";
+import {XExportCsvService} from "../services/x-export-csv.service.js";
 import {numberFromString} from "../common/UtilsConversions.js";
 import {DataTableSortMeta} from "../common/PrimeFilterSortMeta.js";
 import {Assoc, Entity} from "../common/EntityMetadata.js";
 import {UtilsCommon} from "../common/UtilsCommon.js";
 import {FindRowByIdRequest, FindRowByIdResponse} from "../common/lib-api.js";
-import {XLibService} from "./x-lib.service.js";
+import {PersistenceService} from "./persistence.service.js";
 
 @Injectable()
-export class XLazyDataTableService {
+export class LazyDataTableService {
 
     constructor(
         private readonly dataSource: DataSource,
         private readonly xEntityMetadataService: XEntityMetadataService,
-        private readonly xLibService: XLibService,
+        private readonly persistenceService: PersistenceService,
         private readonly xExportCsvService: XExportCsvService,
         private readonly xExportExcelService: XExportExcelService,
         private readonly xExportJsonService: XExportJsonService
@@ -48,13 +48,13 @@ export class XLazyDataTableService {
         // TODO - optimalizacia - leftJoin-y sa mozu nahradit za join-y, ak je ManyToOne asociacia not null (join-y su rychlejsie ako leftJoin-y)
 
         this.createDefaultFieldsForFullTextSearch(findParam.fullTextSearch, findParam.fields);
-        const xMainQueryData: XMainQueryData = new XMainQueryData(this.xEntityMetadataService, findParam.entity, "t", findParam.filters, findParam.fullTextSearch, findParam.customFilterItems);
+        const mainQueryData: MainQueryData = new MainQueryData(this.xEntityMetadataService, findParam.entity, "t", findParam.filters, findParam.fullTextSearch, findParam.customFilterItems);
 
         let rowCount: number;
         const aggregateValues: AggregateValues = {};
         if (findParam.resultType === ResultType.OnlyRowCount || findParam.resultType === ResultType.RowCountAndPagedRows) {
             //const xEntity: XEntity = this.xEntityMetadataService.getXEntity(findParam.entity);
-            const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(xMainQueryData.xEntity.name, xMainQueryData.rootAlias);
+            const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.xEntity.name, mainQueryData.rootAlias);
             // povodne tu bol COUNT(1) ale koli where podmienkam na OneToMany asociaciach sme zmenili na COUNT(DISTINCT t0.id)
             // da sa zoptimalizovat, ze COUNT(DISTINCT t0.id) sa bude pouzivat len v pripade ze je pouzita where podmienka na OneToMany asociacii
             // (ale potom to treba nejako detekovat, zatial dame vzdy COUNT(DISTINCT t0.id))
@@ -63,17 +63,17 @@ export class XLazyDataTableService {
             // aggregate fields
             if (findParam.aggregateItems) {
                 for (const aggregateItem of findParam.aggregateItems) {
-                    const [xQueryData, fieldNew]: [XQueryData, string] = xMainQueryData.getQueryForPathField(aggregateItem.field);
-                    const dbField: string = xQueryData.getFieldFromPathField(fieldNew);
-                    if (xQueryData.isMainQueryData()) {
+                    const [queryData, fieldNew]: [QueryData, string] = mainQueryData.getQueryForPathField(aggregateItem.field);
+                    const dbField: string = queryData.getFieldFromPathField(fieldNew);
+                    if (queryData.isMainQueryData()) {
                         // ako alias pouzivame aggregateItem.field, moze mat aj "." (napr. assoc1.field1), DB to zvlada ak sa pouziju `assoc1.field1`, mozno to bude treba prerobit
                         selectQueryBuilder.addSelect(`${aggregateItem.aggregateFunction}(${dbField})`, aggregateItem.field);
                     }
                     else {
                         // vytvorime subquery, pre kazdy field samostatne, ak by sme to chceli efektivnejsie, museli by sme urobit samostatny select
                         // ale tomuto samostatnemu selectu by sme museli komplikovane pridavat where podmienky z main query
-                        const xSubQueryData: XSubQueryData = xQueryData as XSubQueryData;
-                        const selectSubQueryBuilder: SelectQueryBuilder<unknown> = xSubQueryData.createQueryBuilder(selectQueryBuilder, `${aggregateItem.aggregateFunction}(${dbField})`);
+                        const subQueryData: SubQueryData = queryData as SubQueryData;
+                        const selectSubQueryBuilder: SelectQueryBuilder<unknown> = subQueryData.createQueryBuilder(selectQueryBuilder, `${aggregateItem.aggregateFunction}(${dbField})`);
                         // alias obsahuje "." !
                         // tu uz druhykrat pouzivame agregacnu funkciu - pre SUM, MIN, MAX je to ok, ale pri AVG to ovplyvni vysledok!
                         selectQueryBuilder.addSelect(`${aggregateItem.aggregateFunction}(${selectSubQueryBuilder.getQuery()})`, aggregateItem.field);
@@ -81,23 +81,23 @@ export class XLazyDataTableService {
                 }
             }
 
-            for (const [field, alias] of xMainQueryData.assocAliasMap.entries()) {
+            for (const [field, alias] of mainQueryData.assocAliasMap.entries()) {
                 selectQueryBuilder.leftJoin(field, alias);
             }
-            if (xMainQueryData.where !== "") {
-                selectQueryBuilder.where(xMainQueryData.where, xMainQueryData.params);
+            if (mainQueryData.where !== "") {
+                selectQueryBuilder.where(mainQueryData.where, mainQueryData.params);
             }
             else {
                 selectQueryBuilder.where("1 = 1");// aby zafungovalo pripadne pridanie selectQueryBuilder.andWhereExists
             }
 
-            for (const [assocOneToMany, xSubQueryData] of xMainQueryData.assocXSubQueryDataMap.entries()) {
+            for (const [assocOneToMany, subQueryData] of mainQueryData.assocSubQueryDataMap.entries()) {
                 // pridame podmienku EXISTS (subquery)
                 // EXISTS pridame len vtedy ak vyplnenim nejakej polozky vo filtri (alebo cez custom filter) vznikla nejaka where podmienka
                 // (subquery moze vzniknut aj napr. cez SUM stlpca na OneToMany asociacii, vtedy ale EXISTS nechceme, lebo hlavny select funguje cez LEFT JOIN,
                 // vybera aj zaznamy ktore nemaju detail a my chceme aby COUNT naratal presne tolko zaznamov, kolko vracia hlavny select)
-                if (xSubQueryData.where !== "") {
-                    const selectSubQueryBuilder: SelectQueryBuilder<unknown> = xSubQueryData.createQueryBuilder(selectQueryBuilder, `1`);
+                if (subQueryData.where !== "") {
+                    const selectSubQueryBuilder: SelectQueryBuilder<unknown> = subQueryData.createQueryBuilder(selectQueryBuilder, `1`);
                     selectQueryBuilder.andWhereExists(selectSubQueryBuilder);
                 }
             }
@@ -108,7 +108,7 @@ export class XLazyDataTableService {
             // -> a tuto celu podmienku pridame (cez AND) tolkokrat kolko mame hodnot z inputu pre full-text search
             // (t.j. ak mame na vstupe "Janko Mrkvicka", tak jedna where podmienka bude pre "Janko" a druha pre "Mrkvicka" a budu spojene cez AND)
             // param selectQueryBuilder = bude vytvarat EXISTS podmienky pre subqueries
-            const ftsWhereItem: string | "" = xMainQueryData.createFtsWhereItem(selectQueryBuilder);
+            const ftsWhereItem: string | "" = mainQueryData.createFtsWhereItem(selectQueryBuilder);
             if (ftsWhereItem !== "") {
                 selectQueryBuilder.andWhere(`(${ftsWhereItem})`);
             }
@@ -121,15 +121,15 @@ export class XLazyDataTableService {
                 }
             }
 
-            //console.log("XLazyDataTableService.readLazyDataTable rowCount = " + rowCount);
+            //console.log("LazyDataTableService.readLazyDataTable rowCount = " + rowCount);
         }
 
         let rowList: any[];
         if (findParam.resultType === ResultType.OnlyPagedRows || findParam.resultType === ResultType.RowCountAndPagedRows || findParam.resultType === ResultType.AllRows) {
-            xMainQueryData.addSelectItems(findParam.fields);
-            xMainQueryData.addOrderByItems(findParam.multiSortMeta);
+            mainQueryData.addSelectItems(findParam.fields);
+            mainQueryData.addOrderByItems(findParam.multiSortMeta);
 
-            const selectQueryBuilder: SelectQueryBuilder<unknown> = this.createQueryBuilderFromXMainQuery(null, xMainQueryData);
+            const selectQueryBuilder: SelectQueryBuilder<unknown> = this.createQueryBuilderFromMainQuery(null, mainQueryData);
 
             if (findParam.resultType === ResultType.OnlyPagedRows || findParam.resultType === ResultType.RowCountAndPagedRows) {
                 selectQueryBuilder.skip(findParam.first);
@@ -148,41 +148,41 @@ export class XLazyDataTableService {
     }
 
     // metoda hlavne na zjednotenie spolocneho kodu
-    // TODO - nema ist do XMainQueryData? mal by ale potom aj vytvraranie query builder pre COUNT/SUM select by malo ist do XMainQueryData, zatial nechame
+    // TODO - nema ist do MainQueryData? mal by ale potom aj vytvraranie query builder pre COUNT/SUM select by malo ist do MainQueryData, zatial nechame
     // for using in transaction, pass param manager, otherwise pass manager = null
-    createQueryBuilderFromXMainQuery(manager: EntityManager, xMainQueryData: XMainQueryData): SelectQueryBuilder<unknown> {
+    createQueryBuilderFromMainQuery(manager: EntityManager, mainQueryData: MainQueryData): SelectQueryBuilder<unknown> {
 
         // TODO - selectovat len stlpce ktore treba - nepodarilo sa, viac v TODO.txt
-        // TODO - tabulky pridane pri vytvoreni xMainQueryData.orderByItems nemusime selectovat, staci ich joinovat, ale koli jednoduchosti ich tiez selectujeme
+        // TODO - tabulky pridane pri vytvoreni mainQueryData.orderByItems nemusime selectovat, staci ich joinovat, ale koli jednoduchosti ich tiez selectujeme
         // TODO - podobne aj tabulky pridane cez custom filter alebo cez full-text search ktory obsahuje ine stlpce ako su v browse - tie tiez nepotrebujeme selectovat,
         // t.j. netreba volat leftJoinAndSelect(field, alias), staci volat leftJoin(field, alias) - chcelo by to okrem alias-u si zapisovat aj ci treba aj select (boolean hodnotu)
         // original code (before use manager/transaction) (there are some differences between using repository and not using repository)
-        //const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(xMainQueryData.xEntity.name, xMainQueryData.rootAlias);
-        const repository: Repository<unknown> = manager ? manager.getRepository(xMainQueryData.xEntity.name) : this.dataSource.getRepository(xMainQueryData.xEntity.name);
-        const selectQueryBuilder: SelectQueryBuilder<unknown> = repository.createQueryBuilder(xMainQueryData.rootAlias);
+        //const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.xEntity.name, mainQueryData.rootAlias);
+        const repository: Repository<unknown> = manager ? manager.getRepository(mainQueryData.xEntity.name) : this.dataSource.getRepository(mainQueryData.xEntity.name);
+        const selectQueryBuilder: SelectQueryBuilder<unknown> = repository.createQueryBuilder(mainQueryData.rootAlias);
 
-        for (const [field, alias] of xMainQueryData.assocAliasMap.entries()) {
+        for (const [field, alias] of mainQueryData.assocAliasMap.entries()) {
             selectQueryBuilder.leftJoinAndSelect(field, alias);
         }
         // najoinujeme aj tabulky pridane cez oneToMany asociacie (lebo mozno potrebujeme nacitat fieldy z tychto tabuliek)
-        let where: string = xMainQueryData.where;
-        let params: {} = xMainQueryData.params;
-        for (const [assocOneToMany, xSubQueryData] of xMainQueryData.assocXSubQueryDataMap.entries()) {
-            selectQueryBuilder.leftJoinAndSelect(assocOneToMany, xSubQueryData.rootAlias);
-            for (const [field, alias] of xSubQueryData.assocAliasMap.entries()) {
+        let where: string = mainQueryData.where;
+        let params: {} = mainQueryData.params;
+        for (const [assocOneToMany, subQueryData] of mainQueryData.assocSubQueryDataMap.entries()) {
+            selectQueryBuilder.leftJoinAndSelect(assocOneToMany, subQueryData.rootAlias);
+            for (const [field, alias] of subQueryData.assocAliasMap.entries()) {
                 selectQueryBuilder.leftJoinAndSelect(field, alias);
             }
-            where = XQueryData.whereItemAnd(where, xSubQueryData.where);
-            params = {...params, ...xSubQueryData.params}; // TODO - nedojde k prepisaniu params? ak ano, druha hodnota prepise tu predchadzajucu
+            where = QueryData.whereItemAnd(where, subQueryData.where);
+            params = {...params, ...subQueryData.params}; // TODO - nedojde k prepisaniu params? ak ano, druha hodnota prepise tu predchadzajucu
         }
 
         // param undefined = nechceme EXISTS, chceme klasicke where podmienky
-        where = XQueryData.whereItemAnd(where, xMainQueryData.createFtsWhereItem(undefined));
+        where = QueryData.whereItemAnd(where, mainQueryData.createFtsWhereItem(undefined));
 
         if (where !== "") {
             selectQueryBuilder.where(where, params);
         }
-        selectQueryBuilder.orderBy(xMainQueryData.orderByItems);
+        selectQueryBuilder.orderBy(mainQueryData.orderByItems);
 
         return selectQueryBuilder;
     }
@@ -202,7 +202,7 @@ export class XLazyDataTableService {
 
     private async findRowByIdWithLockInTransaction(manager: EntityManager, findRowRequest: FindRowByIdRequest): Promise<FindRowByIdResponse> {
         // we select the row in transaction, in order to use SELECT FOR UPDATE and write the lock (if the row is not locked)
-        const rowForUpdate: any = await this.xLibService.findRowByIdForLocking(manager, findRowRequest.entity, findRowRequest.id);
+        const rowForUpdate: any = await this.persistenceService.findRowByIdForLocking(manager, findRowRequest.entity, findRowRequest.id);
         let lockAcquired: boolean = false;
         if (rowForUpdate.lockDate === null || findRowRequest.overwriteLock) {
             // row is not locked (or we do lock overwrite), put the lock
@@ -218,16 +218,16 @@ export class XLazyDataTableService {
 
     async findRowByIdBase(manager: EntityManager, findRowRequest: FindRowByIdRequest): Promise<any> {
         // select the whole row (also with assocs)
-        const xMainQueryData: XMainQueryData = new XMainQueryData(this.xEntityMetadataService, findRowRequest.entity, "t", undefined, undefined, undefined);
-        xMainQueryData.addSelectItems(findRowRequest.fields);
+        const mainQueryData: MainQueryData = new MainQueryData(this.xEntityMetadataService, findRowRequest.entity, "t", undefined, undefined, undefined);
+        mainQueryData.addSelectItems(findRowRequest.fields);
 
-        const selectQueryBuilder: SelectQueryBuilder<unknown> = this.createQueryBuilderFromXMainQuery(manager, xMainQueryData);
+        const selectQueryBuilder: SelectQueryBuilder<unknown> = this.createQueryBuilderFromMainQuery(manager, mainQueryData);
         selectQueryBuilder.whereInIds([findRowRequest.id]);
         return selectQueryBuilder.getOneOrFail();
     }
 
     // sorts all oneToMany assocs with cascade (insert and update) by id - it is default sorting used by XFormDataTable2 on the frontend
-    // helper method to avoid explicit sorting, used usually after XLazyDataTableService.findRowById
+    // helper method to avoid explicit sorting, used usually after LazyDataTableService.findRowById
     sortCascadeAssocsByIdField(xEntity: Entity, row: any) {
         const assocOneToManyList: Assoc[] = this.xEntityMetadataService.getXAssocList(xEntity, ["one-to-many"]).filter((assoc: Assoc) => assoc.isCascadeInsert && assoc.isCascadeUpdate);
         for (const assoc of assocOneToManyList) {
@@ -306,10 +306,10 @@ export class XLazyDataTableService {
     private createSelectQueryBuilder(queryParam: LazyDataTableQueryParam): [SelectQueryBuilder<unknown>, boolean] {
 
         this.createDefaultFieldsForFullTextSearch(queryParam.fullTextSearch, queryParam.fields);
-        const xMainQueryData: XMainQueryData = new XMainQueryData(this.xEntityMetadataService, queryParam.entity, "t", queryParam.filters, queryParam.fullTextSearch, queryParam.customFilterItems);
-        xMainQueryData.addSelectItems(queryParam.fields);
-        xMainQueryData.addOrderByItems(queryParam.multiSortMeta);
-        return [this.createQueryBuilderFromXMainQuery(null, xMainQueryData), xMainQueryData.assocXSubQueryDataMap.size > 0];
+        const mainQueryData: MainQueryData = new MainQueryData(this.xEntityMetadataService, queryParam.entity, "t", queryParam.filters, queryParam.fullTextSearch, queryParam.customFilterItems);
+        mainQueryData.addSelectItems(queryParam.fields);
+        mainQueryData.addOrderByItems(queryParam.multiSortMeta);
+        return [this.createQueryBuilderFromMainQuery(null, mainQueryData), mainQueryData.assocSubQueryDataMap.size > 0];
     }
 
     private createDefaultFieldsForFullTextSearch(fullTextSearch: FullTextSearch | undefined, fields: string[] | undefined) {

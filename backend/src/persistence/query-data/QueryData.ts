@@ -2,16 +2,16 @@ import {
     DataTableFilterMetaData,
     DataTableOperatorFilterMetaData,
     FilterMatchMode
-} from "../common/PrimeFilterSortMeta.js";
+} from "../../common/PrimeFilterSortMeta.js";
 import {ObjectLiteral} from "typeorm";
-import {Utils} from "../utils/Utils.js";
-import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
-import {Entity, Field} from "../common/EntityMetadata.js";
-import {stringAsDB} from "../common/UtilsConversions.js";
-import {XEnvVar} from "../services/XEnvVars.js";
-import {ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode} from "../common/index.js";
+import {Utils} from "../../utils/Utils.js";
+import {XEntityMetadataService} from "../../services/x-entity-metadata.service.js";
+import {Entity, Field} from "../../common/EntityMetadata.js";
+import {stringAsDB} from "../../common/UtilsConversions.js";
+import {XEnvVar} from "../../services/XEnvVars.js";
+import {ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode} from "../../common/index.js";
 
-export abstract class XQueryData {
+export abstract class QueryData {
 
     // helper members
     xEntityMetadataService: XEntityMetadataService;
@@ -157,7 +157,7 @@ export abstract class XQueryData {
                         const value2: any | null = filterItem.value[1];
                         const whereItem1: string | "" = (value1 !== null ? this.createWhereItemBase(field, ">=", paramName + '_1', value1) : "");
                         const whereItem2: string | "" = (value2 !== null ? this.createWhereItemBase(field, "<=", paramName + '_2', value2) : "");
-                        whereItem = XQueryData.whereItemAnd(whereItem1, whereItem2);
+                        whereItem = QueryData.whereItemAnd(whereItem1, whereItem2);
                     }
                     else {
                         console.log(`FilterMatchMode "${filterItem.matchMode}": value is expected to be array of length = 2`);
@@ -291,7 +291,7 @@ export abstract class XQueryData {
 
     // pouzivam ako separator namiesto space-u (' ') lebo space sa moze nachadzat v hodnotach
     // otazne je ci je to vhodna volba pri pouziti GIN indexu
-    static xFtsSeparator: string = '|';
+    static ftsSeparator: string = '|';
 
     createFtsWhereItemForQuery(ftsValue: string, ftsSeparator: string): string | "" {
         let whereItem: string | "" = "";
@@ -306,11 +306,11 @@ export abstract class XQueryData {
     }
 
     static whereItemAnd(whereItem1: string | "", whereItem2: string | ""): string | "" {
-        return XQueryData.whereItemAndOr("AND", whereItem1, whereItem2);
+        return QueryData.whereItemAndOr("AND", whereItem1, whereItem2);
     }
 
     static whereItemOr(whereItem1: string | "", whereItem2: string | ""): string | "" {
-        return XQueryData.whereItemAndOr("OR", whereItem1, whereItem2);
+        return QueryData.whereItemAndOr("OR", whereItem1, whereItem2);
     }
 
     static whereItemAndOr(and_or: "AND" | "OR", whereItem1: string | "", whereItem2: string | ""): string | "" {

@@ -5,7 +5,7 @@ optimistic locking - used solution from https://github.com/typeorm/typeorm/issue
 works for every entity with column (of type number) decorated with @VersionColumn()
  */
 @EventSubscriber()
-export class XOptimisticLockingSubscriber implements EntitySubscriberInterface {
+export class OptimisticLockingSubscriber implements EntitySubscriberInterface {
 
     beforeUpdate(event: UpdateEvent<any>) {
         // To know if an entity has a version number, we check if versionColumn

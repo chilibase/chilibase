@@ -5,20 +5,19 @@ import {
     Post,
     Res, StreamableFile, UseGuards
 } from '@nestjs/common';
-import {XLibService} from "./x-lib.service.js";
+import {PersistenceService} from "./persistence.service.js";
 import {FindResult} from "../common/FindResult.js";
-import {XLazyDataTableService} from "./x-lazy-data-table.service.js";
-import {XEntityMetadataService} from "./x-entity-metadata.service.js";
+import {LazyDataTableService} from "./lazy-data-table.service.js";
+import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
 import {EntityMap} from "../common/EntityMetadata.js";
 import {FindParam, LazyAutoCompleteSuggestionsRequest} from "../common/FindParam.js";
 import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
 import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import {BrowseMetaMap} from "../common/types.js";
-import {XBrowseFormMetadataService} from "./x-browse-form-metadata.service.js";
+import {XBrowseFormMetadataService} from "../services/x-browse-form-metadata.service.js";
 import {Response} from 'express';
 import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../common/ExportImportParam.js";
-import {FindParamRows} from "./FindParamRows.js";
 import {PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
 import {LocalAuthGuard} from "../auth/local-auth.guard.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
@@ -32,24 +31,24 @@ import {
 } from "../common/lib-api.js";
 
 @Controller()
-export class XLibController {
+export class PersistenceController {
     constructor(
-        private readonly xLibService: XLibService,
-        private readonly xLazyDataTableService: XLazyDataTableService,
+        private readonly persistenceService: PersistenceService,
+        private readonly lazyDataTableService: LazyDataTableService,
         private readonly xEntityMetadataService: XEntityMetadataService,
         private readonly xBrowseFormMetadataService: XBrowseFormMetadataService,
         private readonly localAuthService: LocalAuthService) {}
 
     @Post('lazyDataTableFindRows')
     async lazyDataTableFindRows(@Body() body: FindParam): Promise<FindResult> {
-        const findResult: FindResult = await this.xLazyDataTableService.findRows(body);
+        const findResult: FindResult = await this.lazyDataTableService.findRows(body);
         return findResult;
     }
 
     @Post('x-lazy-data-table-export-excel')
     async lazyDataTableExportExcel(@Body() body: ExportExcelParam): Promise<StreamableFile> {
         // pri exceli zatial nepouzivame stream-y, mozno v buducnosti dorobime (lib-ka exceljs stream-y podporuje)
-        return await this.xLazyDataTableService.exportExcel(body);
+        return await this.lazyDataTableService.exportExcel(body);
     }
 
     @Post('x-lazy-data-table-export-csv')
@@ -64,18 +63,18 @@ export class XLibController {
         // netusim, ci sa tym nepreplni pamet... zostane metoda write stat ak klient neodobera data?
 
         // metoda export zapisuje do "res"
-        await this.xLazyDataTableService.exportCsv(body, res);
+        await this.lazyDataTableService.exportCsv(body, res);
     }
 
     @Post('x-lazy-data-table-export-json')
     async lazyDataTableExportJson(@Body() body: ExportJsonParam, @Res() res: Response) {
         // podobne ako pri lazyDataTableExportCsv podporujeme stream-y
-        await this.xLazyDataTableService.exportJson(body, res);
+        await this.lazyDataTableService.exportJson(body, res);
     }
 
     @Post('x-lazy-auto-complete-suggestions')
     lazyAutoCompleteSuggestions(@Body() body: LazyAutoCompleteSuggestionsRequest): Promise<FindResult> {
-        return this.xLazyDataTableService.lazyAutoCompleteSuggestions(body);
+        return this.lazyDataTableService.lazyAutoCompleteSuggestions(body);
     }
 
     /**
@@ -83,34 +82,29 @@ export class XLibController {
      */
     @Post('findRowsForAssoc')
     async findRowsForAssoc(@Body() body: FindParamRowsForAssoc): Promise<any[]> {
-        const rows: any[] = await this.xLibService.findRowsForAssoc(body);
+        const rows: any[] = await this.persistenceService.findRowsForAssoc(body);
         return rows;
-    }
-
-    @Post('findRows')
-    async findRows(@Body() body: FindParamRows): Promise<any[]> {
-        return await this.xLibService.findRows(body);
     }
 
     @Post('x-find-row-by-id')
     async findRowById(@Body() body: FindRowByIdRequest): Promise<FindRowByIdResponse> {
-        return await this.xLazyDataTableService.findRowById(body);
+        return await this.lazyDataTableService.findRowById(body);
     }
 
     @Post('saveRow')
     async saveRow(@Body() body: SaveRowParam): Promise<any> {
-        return await this.xLibService.saveRow(body);
+        return await this.persistenceService.saveRow(body);
     }
 
     @Post('x-unlock-row')
     async unlockRow(@Body() body: UnlockRowRequest) {
-        await this.xLibService.unlockRow(body);
+        await this.persistenceService.unlockRow(body);
     }
 
     @Post('removeRow')
     async removeRow(@Body() body: RemoveRowParam) {
 //        try {
-            await this.xLibService.removeRow(body);
+            await this.persistenceService.removeRow(body);
         // }
         // catch(error) {
         //     console.log("mame chybu *************");
@@ -128,7 +122,7 @@ export class XLibController {
     // old authentication
     // @Post('userAuthentication')
     // async userAuthentication(@Body() body: XUserAuthenticationRequest): Promise<XUserAuthenticationResponse> {
-    //     return await this.xLibService.userAuthentication(body);
+    //     return await this.persistenceService.userAuthentication(body);
     // }
 
     @Post('x-local-auth-change-password')
@@ -149,24 +143,24 @@ export class XLibController {
 
     @Post('post-login')
     async postLogin(@Request() req: any, @Body() xPostLoginRequest: PostLoginRequest): Promise<PostLoginResponse> {
-        return await this.xLibService.postLogin(req.user, xPostLoginRequest);
+        return await this.persistenceService.postLogin(req.user, xPostLoginRequest);
     }
 
     @Post('userSaveRow')
     async userSaveRow(@Body() body: SaveRowParam) {
-        await this.xLibService.userSaveRow(body);
+        await this.persistenceService.userSaveRow(body);
     }
 
     // helper functions - maybe better XUtilsController
 
     @Post('x-get-sequence-value')
     async getSequenceValue(@Body() xGetSequenceValueRequest: GetSequenceValueRequest): Promise<GetSequenceValueResponse> {
-        return {value: await this.xLibService.getSequenceValue(xGetSequenceValueRequest.name)};
+        return {value: await this.persistenceService.getSequenceValue(xGetSequenceValueRequest.name)};
     }
 
     @Post('x-get-param-value')
     async getParamValue(@Body() request: {code: string;}): Promise<{value: string;}> {
-        return {value: await this.xLibService.getParamValue(request.code)};
+        return {value: await this.persistenceService.getParamValue(request.code)};
     }
 
     @Post('getXEntityMap')

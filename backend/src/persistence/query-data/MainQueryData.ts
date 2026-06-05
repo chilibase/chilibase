@@ -1,28 +1,28 @@
-import {XQueryData} from "./XQueryData.js";
-import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
+import {QueryData} from "./QueryData.js";
+import {XEntityMetadataService} from "../../services/x-entity-metadata.service.js";
 import {OrderByCondition, SelectQueryBuilder} from "typeorm";
-import {XSubQueryData} from "./XSubQueryData.js";
-import {DataTableFilterMeta, DataTableSortMeta} from "../common/PrimeFilterSortMeta.js";
+import {SubQueryData} from "./SubQueryData.js";
+import {DataTableFilterMeta, DataTableSortMeta} from "../../common/PrimeFilterSortMeta.js";
 import {
     CustomFilterItem,
     ExtendedDataTableFilterMeta,
     ExtendedDataTableFilterMetaData,
     FullTextSearch
-} from "../common/FindParam.js";
-import {Assoc} from "../common/EntityMetadata.js";
-import {UtilsCommon} from "../common/UtilsCommon.js";
+} from "../../common/FindParam.js";
+import {Assoc} from "../../common/EntityMetadata.js";
+import {UtilsCommon} from "../../common/UtilsCommon.js";
 
-export class XMainQueryData extends XQueryData {
+export class MainQueryData extends QueryData {
 
-    // key in this map is main table alias with OneToMany assoc that creates this XSubQueryData, e.g. "t0.assocXList"
-    assocXSubQueryDataMap: Map<string, XSubQueryData>;
+    // key in this map is main table alias with OneToMany assoc that creates this SubQueryData, e.g. "t0.assocXList"
+    assocSubQueryDataMap: Map<string, SubQueryData>;
     selectItems: string[]; // not used now
     fullTextSearch: FullTextSearch | undefined;
     orderByItems: OrderByCondition;
 
     constructor(xEntityMetadataService: XEntityMetadataService, entity: string, rootAlias: string, filters: DataTableFilterMeta | undefined, fullTextSearch: FullTextSearch | undefined, customFilterItems: CustomFilterItem[] | undefined) {
         super(xEntityMetadataService, entity, rootAlias);
-        this.assocXSubQueryDataMap = new Map<string, XSubQueryData>();
+        this.assocSubQueryDataMap = new Map<string, SubQueryData>();
         this.selectItems = [];
         this.fullTextSearch = fullTextSearch;
         this.orderByItems = {};
@@ -50,8 +50,8 @@ export class XMainQueryData extends XQueryData {
                         this.addCustomFilterItems((filterValue as ExtendedDataTableFilterMetaData).customFilterItems);
                     }
                     else {
-                        const [xQueryData, filterFieldNew]: [XQueryData, string] = this.getQueryForPathField(filterField);
-                        xQueryData.addFilterField(filterFieldNew, filterValue);
+                        const [queryData, filterFieldNew]: [QueryData, string] = this.getQueryForPathField(filterField);
+                        queryData.addFilterField(filterFieldNew, filterValue);
                     }
                 }
             }
@@ -64,8 +64,8 @@ export class XMainQueryData extends XQueryData {
             if (fields) {
                 for (const field of fields) {
                     const [prefix, fieldOnly]: [string | null, string] = UtilsCommon.getPrefixAndField(field);
-                    const [xQueryData, filterFieldNew]: [XQueryData, string] = this.getQueryForPathField(fieldOnly);
-                    xQueryData.addFtsField(prefix, filterFieldNew);
+                    const [queryData, filterFieldNew]: [QueryData, string] = this.getQueryForPathField(fieldOnly);
+                    queryData.addFtsField(prefix, filterFieldNew);
                 }
             }
         }
@@ -88,12 +88,12 @@ export class XMainQueryData extends XQueryData {
         // this.selectFields sa sice momentalne nepouzivaju ale dolezite je ze sa joinuju pripadne asociovane tabulky (plni sa this.assocAliasMap)
         if (fields) {
             for (const field of fields) {
-                const [xQueryData, fieldNew]: [XQueryData, string] = this.getQueryForPathField(field);
-                const dbField: string = xQueryData.getFieldFromPathField(fieldNew);
+                const [queryData, fieldNew]: [QueryData, string] = this.getQueryForPathField(field);
+                const dbField: string = queryData.getFieldFromPathField(fieldNew);
                 // path "<asociacia>.*FAKE*" sa pouziva ak chceme nacitat asociaciu a nemame konkretny field ktory chceme nacitat
                 // momentalne sa pouziva len v XToOneAssocButton
                 if (!dbField.endsWith('*FAKE*')) {
-                    // poznamka2: je v poriadku ze do XMainQueryData.selectItems zapisujeme aj pripadne fieldy zo subquery
+                    // poznamka2: je v poriadku ze do MainQueryData.selectItems zapisujeme aj pripadne fieldy zo subquery
                     // - subquery sa joinuje k hlavnemu select-u, vezba fieldu na prislusnu tabulku je vyriesena cez alias
                     this.selectItems.push(dbField);
                 }
@@ -104,51 +104,51 @@ export class XMainQueryData extends XQueryData {
     addOrderByItems(multiSortMeta: DataTableSortMeta[] | undefined) {
         if (multiSortMeta) {
             for (const sortMeta of multiSortMeta) {
-                const [xQueryData, fieldNew]: [XQueryData, string] = this.getQueryForPathField(sortMeta.field);
-                const dbField: string = xQueryData.getFieldFromPathField(fieldNew);
+                const [queryData, fieldNew]: [QueryData, string] = this.getQueryForPathField(sortMeta.field);
+                const dbField: string = queryData.getFieldFromPathField(fieldNew);
                 // tuto je velmi zvlastne ze sa dbField zapisuje do map-u ale funguje to zevraj na takom principe ze javascript
                 // si pamata poradie zapisu do this.orderByItems a v tom istom poradi tento map aj iteruje pri pouziti this.orderByItems
-                // poznamka2: je v poriadku ze do XMainQueryData.orderByItems zapisujeme aj pripadne fieldy zo subquery
+                // poznamka2: je v poriadku ze do MainQueryData.orderByItems zapisujeme aj pripadne fieldy zo subquery
                 // - subquery sa joinuje k hlavnemu select-u, vezba fieldu na prislusnu tabulku je vyriesena cez alias
                 this.orderByItems[dbField] = (sortMeta.order === 1 ? "ASC" : "DESC");
             }
         }
     }
 
-    private addCustomFilterItem(xCustomFilterItem: CustomFilterItem) {
-        const [sqlExpWithAliases, xQueryData] = this.replacePathFieldQueryData(xCustomFilterItem.where);
-        xQueryData.addWhereItem(sqlExpWithAliases);
-        xQueryData.addParams(xCustomFilterItem.params);
+    private addCustomFilterItem(customFilterItem: CustomFilterItem) {
+        const [sqlExpWithAliases, queryData] = this.replacePathFieldQueryData(customFilterItem.where);
+        queryData.addWhereItem(sqlExpWithAliases);
+        queryData.addParams(customFilterItem.params);
     }
 
-    replacePathFieldQueryData(sqlExpParam: string): [string, XQueryData] {
+    replacePathFieldQueryData(sqlExpParam: string): [string, QueryData] {
         // example of sql expression (e.g. where condition or subselect):
         // ([assocField1.field2] BETWEEN :value1 AND :value2) AND ([field3] IN (:...values3))
         // fields in [] will be replaced with <table alias>.<column>
         let sqlExp: string = sqlExpParam;
         let match: string;
-        let xQueryDataForItem: XQueryData | null = null;
+        let queryDataForItem: QueryData | null = null;
         while ((match = UtilsCommon.findFirstMatch(/\[[a-zA-Z0-9_.]+\]/, sqlExp)) != null) {
             const filterField: string = match.substring(1, match.length - 1); // remove []
-            const [xQueryData, filterFieldNew]: [XQueryData, string] = this.getQueryForPathField(filterField);
-            if (xQueryDataForItem === null) {
-                xQueryDataForItem = xQueryData;
-            } else if (xQueryData !== xQueryDataForItem) {
+            const [queryData, filterFieldNew]: [QueryData, string] = this.getQueryForPathField(filterField);
+            if (queryDataForItem === null) {
+                queryDataForItem = queryData;
+            } else if (queryData !== queryDataForItem) {
                 throw `Custom filter (or custom filter item) "${sqlExpParam}" must use the same query for all fields (all fields must use the same OneToMany assoc or OneToMany assoc cannot be used). Please divide your custom filter into more custom filters in form of array [filter1, filter2, ...].`;
             }
-            const dbField: string = xQueryDataForItem.getFieldFromPathField(filterFieldNew);
+            const dbField: string = queryDataForItem.getFieldFromPathField(filterFieldNew);
             sqlExp = sqlExp.replaceAll(match, dbField);
         }
-        if (xQueryDataForItem === null) {
+        if (queryDataForItem === null) {
             throw `Custom filter (or custom filter item) "${sqlExpParam}" - no field was found. Example of custom filter: [fieldX] = :valueX`;
         }
-        return [sqlExp, xQueryDataForItem];
+        return [sqlExp, queryDataForItem];
     }
 
     // api function
     getDBFieldForPathField(pathField: string): string {
-        const [xQueryData, fieldNew]: [XQueryData, string] = this.getQueryForPathField(pathField);
-        return xQueryData.getFieldFromPathField(fieldNew);
+        const [queryData, fieldNew]: [QueryData, string] = this.getQueryForPathField(pathField);
+        return queryData.getFieldFromPathField(fieldNew);
     }
 
     // api function
@@ -160,36 +160,36 @@ export class XMainQueryData extends XQueryData {
             sqlExp = this.getDBFieldForPathField(pathFieldOrPathFieldExp);
         }
         else {
-            const [sqlExpWithAliases, xQueryData] = this.replacePathFieldQueryData(pathFieldOrPathFieldExp);
+            const [sqlExpWithAliases, queryData] = this.replacePathFieldQueryData(pathFieldOrPathFieldExp);
             sqlExp = sqlExpWithAliases;
         }
         return sqlExp;
     }
 
-    getQueryForPathField(pathField: string): [XQueryData, string] {
+    getQueryForPathField(pathField: string): [QueryData, string] {
         // ak mame OneToMany asociaciu, vytvorime/pouzijeme subquery
         const [field, restPath]: [string, string | null] = UtilsCommon.getFieldAndRestPath(pathField);
         if (restPath !== null) {
             const xAssoc: Assoc = this.xEntityMetadataService.getXAssoc(this.xEntity, field);
             if (xAssoc.relationType === "one-to-many") {
-                const xSubQueryData: XSubQueryData = this.getXSubQueryData(xAssoc);
+                const subQueryData: SubQueryData = this.getSubQueryData(xAssoc);
                 //console.log("created subquery for pathField = " + pathField);
-                return [xSubQueryData, restPath];
+                return [subQueryData, restPath];
             }
         }
         return [this, pathField];
     }
 
-    getXSubQueryData(xAssocOneToMany: Assoc): XSubQueryData {
+    getSubQueryData(xAssocOneToMany: Assoc): SubQueryData {
         const aliasAssocOneToMany: string = `${this.rootAlias}.${xAssocOneToMany.name}`;
-        let xSubQueryData: XSubQueryData = this.assocXSubQueryDataMap.get(aliasAssocOneToMany);
-        if (xSubQueryData === undefined) {
-            const aliasSubQuery: string = "ts" + (this.assocXSubQueryDataMap.size + 1).toString();
+        let subQueryData: SubQueryData = this.assocSubQueryDataMap.get(aliasAssocOneToMany);
+        if (subQueryData === undefined) {
+            const aliasSubQuery: string = "ts" + (this.assocSubQueryDataMap.size + 1).toString();
             const assocToOneWhereItem: string = `${aliasSubQuery}.${xAssocOneToMany.inverseAssocName} = ${this.rootAlias}.${this.xEntity.idField}`;
-            xSubQueryData = new XSubQueryData(this.xEntityMetadataService, xAssocOneToMany.entityName, aliasSubQuery, assocToOneWhereItem);
-            this.assocXSubQueryDataMap.set(aliasAssocOneToMany, xSubQueryData);
+            subQueryData = new SubQueryData(this.xEntityMetadataService, xAssocOneToMany.entityName, aliasSubQuery, assocToOneWhereItem);
+            this.assocSubQueryDataMap.set(aliasAssocOneToMany, subQueryData);
         }
-        return xSubQueryData;
+        return subQueryData;
     }
 
     // ******************* methods for processing created data - creating where items, creating SelectQueryBuilder ********************
@@ -211,7 +211,7 @@ export class XMainQueryData extends XQueryData {
                 else {
                     ftsValueList = ftsValueFromParam.split(' ').filter((value: string) => value !== ''); // nechceme pripadne prazdne retazce ''
                 }
-                ftsSeparator = XQueryData.xFtsSeparator; // separator | - hlavne koli pripadnym startsWith, startsEnd, equals operatorom
+                ftsSeparator = QueryData.ftsSeparator; // separator | - hlavne koli pripadnym startsWith, startsEnd, equals operatorom
             }
             else {
                 ftsValueList = [ftsValueFromParam]; // no split by space
@@ -221,13 +221,13 @@ export class XMainQueryData extends XQueryData {
                 // vezmeme podmienku z main query
                 let ftsWhereForValue: string | "" = this.createFtsWhereItemForQuery(ftsValue, ftsSeparator);
                 // vezmeme podmienky zo subqueries
-                for (const [assocOneToMany, xSubQueryData] of this.assocXSubQueryDataMap.entries()) {
-                    ftsWhereForValue = XQueryData.whereItemOr(ftsWhereForValue, xSubQueryData.createFtsWhereItemForSubQuery(mainQueryBuilderForExistsSubQueries, ftsValue, ftsSeparator));
+                for (const [assocOneToMany, subQueryData] of this.assocSubQueryDataMap.entries()) {
+                    ftsWhereForValue = QueryData.whereItemOr(ftsWhereForValue, subQueryData.createFtsWhereItemForSubQuery(mainQueryBuilderForExistsSubQueries, ftsValue, ftsSeparator));
                 }
                 if (ftsWhereForValue !== "") {
                     ftsWhereForValue = `(${ftsWhereForValue})`; // pripadne OR-y uzatvorkujeme
                 }
-                ftsWhere = XQueryData.whereItemAnd(ftsWhere, ftsWhereForValue);
+                ftsWhere = QueryData.whereItemAnd(ftsWhere, ftsWhereForValue);
             }
         }
         return ftsWhere;

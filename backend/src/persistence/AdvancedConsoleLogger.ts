@@ -1,7 +1,7 @@
-import {AdvancedConsoleLogger} from "typeorm";
+import {AdvancedConsoleLogger as TypeOrmAdvancedConsoleLogger} from "typeorm";
 import {Buffer} from "buffer";
 
-export class XAdvancedConsoleLogger extends AdvancedConsoleLogger {
+export class AdvancedConsoleLogger extends TypeOrmAdvancedConsoleLogger {
 
     /**
      * Overrides method in AbstractLogger, the goal is not to log Buffer values (data are usually very long)

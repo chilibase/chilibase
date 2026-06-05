@@ -1,4 +1,4 @@
-// deprecated - mal by sa pouzivat findParamRows
+// deprecated - use LazyDataTableService.findRows
 export interface FindParamRowsForAssoc {
     entity: string;
     assocField: string;

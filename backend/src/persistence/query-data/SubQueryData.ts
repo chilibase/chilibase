@@ -1,8 +1,8 @@
-import {XQueryData} from "./XQueryData.js";
+import {QueryData} from "./QueryData.js";
 import {SelectQueryBuilder} from "typeorm";
-import {XEntityMetadataService} from "../services/x-entity-metadata.service.js";
+import {XEntityMetadataService} from "../../services/x-entity-metadata.service.js";
 
-export class XSubQueryData extends XQueryData {
+export class SubQueryData extends QueryData {
 
     assocToOneWhereItem: string; // condition to link subquery with main query,
     // example: "t1.assocY = t0.id", where:
