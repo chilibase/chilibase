@@ -1,16 +1,15 @@
 import {Utils} from "../utils/Utils.js";
 
-// type for x-locale
-export interface XLocaleOptions {
+export interface LocaleOptions {
     pessimisticLockFailedLockPresent?: string;
     pessimisticLockFailedLockFinished?: string;
 }
 
-export function xLocaleOption(xOptionKey: string, options?: any[string]) {
-    const xLocaleOptions: XLocaleOptions = Utils.getXLocaleOptions();
+export function localeOption(optionKey: string, options?: any[string]) {
+    const localeOptions: LocaleOptions = Utils.getLocaleOptions();
 
     try {
-        let optionValue = (xLocaleOptions as any)[xOptionKey];
+        let optionValue = (localeOptions as any)[optionKey];
 
         if (optionValue && options) {
             for (const key in options) {
@@ -22,6 +21,6 @@ export function xLocaleOption(xOptionKey: string, options?: any[string]) {
 
         return optionValue;
     } catch (error) {
-        throw new Error(`The ${xOptionKey} option is not found in the current x-locale.`);
+        throw new Error(`The ${optionKey} option is not found in the current locale.`);
     }
 }

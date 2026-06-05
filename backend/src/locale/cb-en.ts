@@ -1,7 +1,7 @@
 // for simplicity, instead of json file x-en.json
-import {XLocaleOptions} from "../services/XLocale.js";
+import {LocaleOptions} from "./Locale.js";
 
-export const localeEn: {"en": XLocaleOptions} =
+export const localeEn: {"en": LocaleOptions} =
 {
   "en": {
     "pessimisticLockFailedLockPresent": "The pessimistic lock failed - (probably) user {lockUser} took over the lock (from {lockDate}) and is editing the row right now. Sorry, you have to cancel the editation and start the editation again.",

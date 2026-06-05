@@ -8,7 +8,7 @@ import {Utils} from "../../utils/Utils.js";
 import {EntityMetadataService} from "../../entity-metadata/entity-metadata.service.js";
 import {Entity, Field} from "../../common/EntityMetadata.js";
 import {stringAsDB} from "../../common/UtilsConversions.js";
-import {XEnvVar} from "../../services/XEnvVars.js";
+import {EnvVar} from "../../env-vars/EnvVars.js";
 import {ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode} from "../../common/index.js";
 
 export abstract class QueryData {
@@ -184,7 +184,7 @@ export abstract class QueryData {
         const notOperator: string = not ? "NOT " : "";
         let whereItem: string;
         // AI/CI search works only for postgres (for mysql must be false, AI/CI can be achieved by using proprietary default collation, e.g. utf8mb4_0900_ai_ci)
-        if (Utils.getEnvVarValueBoolean(XEnvVar.X_STRING_DB_SEARCH_AI_CI)) {
+        if (Utils.getEnvVarValueBoolean(EnvVar.X_STRING_DB_SEARCH_AI_CI)) {
             whereItem = `${Utils.getSchema()}.unaccent(${field}) ${notOperator}ILIKE ${Utils.getSchema()}.unaccent(:${paramName})`;
             this.params[paramName] = paramValue;
         }

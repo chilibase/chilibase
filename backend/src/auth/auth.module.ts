@@ -4,7 +4,7 @@ import {JwtModule} from "@nestjs/jwt";
 import {LocalStrategy} from "./local.strategy.js";
 import {LocalAuthService} from "./local-auth.service.js";
 import {Utils} from "../utils/Utils.js";
-import {XAuth, XEnvVar} from "../services/XEnvVars.js";
+import {Auth, EnvVar} from "../env-vars/EnvVars.js";
 
 @Module({})
 export class AuthModule {
@@ -15,7 +15,7 @@ export class AuthModule {
             imports: [
                 // JwtModule is needed for JwtService (used in LocalAuthService)
                 JwtModule.register({
-                    secret: Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL ? Utils.getEnvVarValue(XEnvVar.X_AUTH_LOCAL_JWT_SECRET) : "dummy",
+                    secret: Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.LOCAL ? Utils.getEnvVarValue(EnvVar.X_AUTH_LOCAL_JWT_SECRET) : "dummy",
                     signOptions: { expiresIn: '180m' }, // TODO - shoud be 15m and implement refresh token with expiry 7d
                 })
             ],

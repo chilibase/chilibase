@@ -1,8 +1,8 @@
-import {XEnvVar} from "../services/XEnvVars.js";
+import {EnvVar} from "../env-vars/EnvVars.js";
 import {join} from "path";
 import {IPostgresInterval} from "postgres-interval";
 import {ValueTransformer} from "typeorm";
-import {XLocaleOptions} from "../services/XLocale.js";
+import {LocaleOptions} from "../locale/Locale.js";
 
 export class Utils {
 
@@ -13,7 +13,7 @@ export class Utils {
      * returns value of environment variable from configuration file .env
      * @param envVar
      */
-    static getEnvVarValue(envVarEnum: XEnvVar): string {
+    static getEnvVarValue(envVarEnum: EnvVar): string {
         let value: string = Utils.getEnvVarValueBase(envVarEnum);
         // value can be also "reference" to another environment variable used by cloud,
         // for example string value "[process.env.JAWSDB_URL]" means, that we read the real value from environment variable process.env.JAWSDB_URL
@@ -25,7 +25,7 @@ export class Utils {
         return value;
     }
 
-    static getEnvVarValueBoolean(envVarEnum: XEnvVar): boolean {
+    static getEnvVarValueBoolean(envVarEnum: EnvVar): boolean {
         const value: string = Utils.getEnvVarValue(envVarEnum);
         return value === "true";
     }
@@ -74,13 +74,13 @@ export class Utils {
         return Utils.schema;
     }
 
-    private static xLocaleOptions: XLocaleOptions | undefined = undefined;
+    private static localeOptions: LocaleOptions | undefined = undefined;
 
-    static setXLocaleOptions(xLocaleOptions: XLocaleOptions) {
-        Utils.xLocaleOptions = xLocaleOptions;
+    static setLocaleOptions(localeOptions: LocaleOptions) {
+        Utils.localeOptions = localeOptions;
     }
 
-    static getXLocaleOptions(): XLocaleOptions {
-        return Utils.xLocaleOptions;
+    static getLocaleOptions(): LocaleOptions {
+        return Utils.localeOptions;
     }
 }

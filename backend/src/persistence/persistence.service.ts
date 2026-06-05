@@ -14,7 +14,7 @@ import {SaveRowParam} from "./SaveRowParam.js";
 import {RemoveRowParam} from "./RemoveRowParam.js";
 import * as bcrypt from 'bcrypt';
 import {PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
-import {XAuth, XEnvVar} from "../services/XEnvVars.js";
+import {Auth, EnvVar} from "../env-vars/EnvVars.js";
 import {join} from "path";
 import {unlinkSync} from "fs";
 import {RowIdListToRemove} from "./RowIdListToRemove.js";
@@ -23,7 +23,7 @@ import {dateFromModel, dateFromUI, datetimeAsUI, intFromUI, numberFromModel} fro
 import {LocalAuthService} from "../auth/local-auth.service.js";
 import {UnlockRowRequest} from "../common/lib-api.js";
 import {AppError} from "../utils/AppError.js";
-import {xLocaleOption} from "../services/XLocale.js";
+import {localeOption} from "../locale/Locale.js";
 
 @Injectable()
 export class PersistenceService {
@@ -334,13 +334,13 @@ export class PersistenceService {
                 // we use exception to inform user (like by optimistic locking)
                 if (lockDateFromDB) {
                     const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "lockUser");
-                    throw new AppError(xLocaleOption('pessimisticLockFailedLockPresent', {lockUser: rowFromDBWithUser.lockUser?.name, lockDate: datetimeAsUI(lockDateFromDB)}));
+                    throw new AppError(localeOption('pessimisticLockFailedLockPresent', {lockUser: rowFromDBWithUser.lockUser?.name, lockDate: datetimeAsUI(lockDateFromDB)}));
                 }
                 else {
                     // editing by other user has finished
                     // TODO - check if attributes modifDate/modifUser exist in entity
                     const rowFromDBWithUser: any = await this.findRowByIdWithAssoc(manager, entity, rowId, "modifUser");
-                    throw new AppError(xLocaleOption('pessimisticLockFailedLockFinished', {modifUser: rowFromDBWithUser.modifUser?.name, modifDate: datetimeAsUI(rowFromDBWithUser.modifDate)}));
+                    throw new AppError(localeOption('pessimisticLockFailedLockFinished', {modifUser: rowFromDBWithUser.modifUser?.name, modifDate: datetimeAsUI(rowFromDBWithUser.modifDate)}));
                 }
             }
         }
@@ -452,7 +452,7 @@ export class PersistenceService {
         const repository = this.dataSource.getRepository(row.entity);
         // ak bolo zmenene heslo, treba ho zahashovat
         // ak nebolo vyplnene nove heslo, tak v password pride undefined a mapper atribut nebude menit
-        if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
+        if (Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.LOCAL) {
             if (row.object.password && row.object.password !== '') {
                 row.object.password = await this.localAuthService.hashPassword(row.object.password);
             }
@@ -507,13 +507,13 @@ export class PersistenceService {
 
     async postLogin(reqUser: any, xPostLoginRequest: PostLoginRequest): Promise<PostLoginResponse> {
         let username: string;
-        if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.OFF) {
+        if (Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.OFF) {
             username = xPostLoginRequest.username;
         }
-        else if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.LOCAL) {
+        else if (Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.LOCAL) {
             username = reqUser.username; // remark: could be also xPostLoginRequest.username, but username from token is harder to replace/fake
         }
-        else if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.AUTH0) {
+        else if (Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.AUTH0) {
             // email (username) must be added in auth0.com to the access token
             // how to do it: in auth0.com: Actions -> Triggers -> click post-login, then create custom action with this body:
             /*
@@ -527,14 +527,14 @@ export class PersistenceService {
             // and add action to the diagram of post-login using drag and drop
 
             // original solution was:
-            //const emailKey = Utils.getEnvVarValue(XEnvVar.X_AUTH0_AUDIENCE) + 'email'; <-- why to use audience?
+            //const emailKey = Utils.getEnvVarValue(EnvVar.X_AUTH0_AUDIENCE) + 'email'; <-- why to use audience?
             const emailKey = 'x-custom-claim-email'; // new solution
             username = reqUser[emailKey];
             if (username === undefined) {
                 throw `Email of the current user was not found in access token. Email-key = ${emailKey}`;
             }
         }
-        else if (Utils.getEnvVarValue(XEnvVar.X_AUTH) === XAuth.MS_ENTRA_ID) {
+        else if (Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.MS_ENTRA_ID) {
             // toto sa pouziva pri AAD - preferred_username je podozrivy nazov ale nechcelo sa mi hladat nieco lepsie
             //console.log(reqUser);
             username = reqUser.preferred_username

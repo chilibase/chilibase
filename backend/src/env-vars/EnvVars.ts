@@ -1,5 +1,5 @@
 // enum for environment variables in configuration file .env (backend)
-export enum XEnvVar {
+export enum EnvVar {
     X_PROTOCOL = 'X_PROTOCOL',
     X_DOMAIN = 'X_DOMAIN',
     X_PORT = 'X_PORT',
@@ -15,13 +15,13 @@ export enum XEnvVar {
 }
 
 // enum for values of the environment variable X_PROTOCOL
-export enum XProtocol {
+export enum Protocol {
     HTTP = 'HTTP',
     HTTPS = 'HTTPS'
 }
 
 // enum for values of the environment variable X_AUTH
-export enum XAuth {
+export enum Auth {
     OFF = 'OFF',
     LOCAL = 'LOCAL',
     AUTH0 = 'AUTH0',
