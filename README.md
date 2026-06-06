@@ -99,4 +99,4 @@ pnpx create-chilibase@0.2.0 <app-name> <db-name> <db-schema-name>
 
 (*) - these features are not part of the chilibase for this moment, because they are in some project or in the previous version of the library (they can be moved to chilibase on demand)
 
-Warning: API of this framework can be changed in the future (some objects have still legacy prefix X - this prefix is supposed to be removed (or replaced with prefix CB in some special cases), also backend is supposed to be refactored)
+Note: the framework uses prefix X for some objects to distinguish the names from app objects (e.g. DB tables, css styles, XUtils, ...)
