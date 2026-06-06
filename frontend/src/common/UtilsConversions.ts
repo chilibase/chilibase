@@ -253,7 +253,7 @@ export function timeFromModel(value: any): Date | null {
     let timeValue: Date | null = null;
     if (typeof value === 'string') {
         // ak prichadza cas priamo z databazy, pride '19:30:00'
-        // ak prichadza reloadnuty objekt (napr. cez webservis saveRow), pride '2021-06-07 19:30:00'
+        // ak prichadza reloadnuty objekt (napr. cez webservis x-save-row), pride '2021-06-07 19:30:00'
         let rowDataCasStr = value;
         if (rowDataCasStr.length < 10) {
             // mame '19:30:00' -> pridame hociaky rok aby sme skonvertovali na validny Date

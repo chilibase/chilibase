@@ -34,19 +34,19 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
     }
 
     // method is here to be similar to other auth methods (Auth0Provider, MSEntraIDProvider)
-    // 'post-login' request can be united with 'x-local-auth-login' request in the LoginForm
+    // 'x-post-login' request can be united with 'x-local-auth-login' request in the LoginForm
     const setAuthSessionAndDoPostLogin = async (username: string, accessToken: string) => {
 
         // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
         setSession({accessToken: accessToken});
 
-        // zavolame post-login
+        // zavolame x-post-login
         // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
         // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: username};
-            xPostLoginResponse = await Utils.fetch('post-login', xPostLoginRequest);
+            xPostLoginResponse = await Utils.fetch('x-post-login', xPostLoginRequest);
         }
         catch (e) {
             // console.log(typeof e);
@@ -59,8 +59,8 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
             // @ts-ignore
             console.log(error.cause);
 
-            Utils.showErrorMessage('post-login failed', e);
-            throw 'post-login failed';
+            Utils.showErrorMessage('x-post-login failed', e);
+            throw 'x-post-login failed';
         }
 
         if (xPostLoginResponse.user === undefined) {

@@ -74,7 +74,7 @@ export class UserForm extends FormBaseModif {
         // zapise this.state.entityRow do DB - samostatny servis koli hashovaniu password-u
         let entityRow: EntityRow;
         try {
-            entityRow = await Utils.post('userSaveRow', {entity: this.getEntity(), object: this.state.entityRow});
+            entityRow = await Utils.post('x-user-save-row', {entity: this.getEntity(), object: this.state.entityRow});
         }
         catch (e) {
             Utils.showErrorMessage("Save row failed.", e);

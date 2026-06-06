@@ -91,7 +91,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
 
         console.log(browseMeta);
         try {
-            await Utils.post('saveRow', {entity: "XBrowseMeta", object: browseMeta});
+            await Utils.post('x-save-row', {entity: "XBrowseMeta", object: browseMeta});
         }
         catch (e) {
             Utils.showErrorMessage("Save row XBrowseMeta failed.", e);

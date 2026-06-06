@@ -757,7 +757,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const findByFilter = async (findParam: FindParam) : Promise<FindResult> => {
 
         // vysledok je typu FindResult
-        const findResult: FindResult = await Utils.fetchOne('lazyDataTableFindRows', findParam);
+        const findResult: FindResult = await Utils.fetchOne('x-lazy-data-table-find-rows', findParam);
         findResult.totalRecords = parseInt(findResult.totalRecords as any as string);
         return findResult;
     }

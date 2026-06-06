@@ -39,7 +39,7 @@ export class PersistenceController {
         private readonly browseFormMetadataService: BrowseFormMetadataService,
         private readonly localAuthService: LocalAuthService) {}
 
-    @Post('lazyDataTableFindRows')
+    @Post('x-lazy-data-table-find-rows')
     async lazyDataTableFindRows(@Body() body: FindParam): Promise<FindResult> {
         const findResult: FindResult = await this.lazyDataTableService.findRows(body);
         return findResult;
@@ -78,9 +78,9 @@ export class PersistenceController {
     }
 
     /**
-     * @deprecated - lepsie je pouzit findRows
+     * @deprecated - use findRows
      */
-    @Post('findRowsForAssoc')
+    @Post('x-find-rows-for-assoc')
     async findRowsForAssoc(@Body() body: FindParamRowsForAssoc): Promise<any[]> {
         const rows: any[] = await this.persistenceService.findRowsForAssoc(body);
         return rows;
@@ -91,7 +91,7 @@ export class PersistenceController {
         return await this.lazyDataTableService.findRowById(body);
     }
 
-    @Post('saveRow')
+    @Post('x-save-row')
     async saveRow(@Body() body: SaveRowParam): Promise<any> {
         return await this.persistenceService.saveRow(body);
     }
@@ -101,7 +101,7 @@ export class PersistenceController {
         await this.persistenceService.unlockRow(body);
     }
 
-    @Post('removeRow')
+    @Post('x-remove-row')
     async removeRow(@Body() body: RemoveRowParam) {
 //        try {
             await this.persistenceService.removeRow(body);
@@ -141,12 +141,12 @@ export class PersistenceController {
         return this.localAuthService.createJwtToken(req.user);
     }
 
-    @Post('post-login')
+    @Post('x-post-login')
     async postLogin(@Request() req: any, @Body() xPostLoginRequest: PostLoginRequest): Promise<PostLoginResponse> {
         return await this.persistenceService.postLogin(req.user, xPostLoginRequest);
     }
 
-    @Post('userSaveRow')
+    @Post('x-user-save-row')
     async userSaveRow(@Body() body: SaveRowParam) {
         await this.persistenceService.userSaveRow(body);
     }

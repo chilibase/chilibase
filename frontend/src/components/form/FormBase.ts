@@ -697,9 +697,9 @@ export abstract class FormBase extends Component<FormProps> {
     preSave(entityRow: EntityRow) {
     }
 
-    // this method can be overriden in subclass if needed (to use another service then default 'saveRow')
+    // this method can be overriden in subclass if needed (to use another service then default 'x-save-row')
     async saveRow(): Promise<any> {
-        return Utils.fetch('saveRow', {entity: this.getEntity(), object: this.state.entityRow, reload: this.props.onSaveOrCancel !== undefined});
+        return Utils.fetch('x-save-row', {entity: this.getEntity(), object: this.state.entityRow, reload: this.props.onSaveOrCancel !== undefined});
     }
 
     // this method can be overriden in subclass if needed (custom unlock row)

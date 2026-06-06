@@ -103,12 +103,12 @@ export class SearchField extends FormField<SearchFieldProps> {
             // optimalizacia - testujeme len ak inputChanged === true
             if (inputChanged) {
                 //console.log('onBlur = ' + e.target.value + ' - ideme testovat');
-                // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (findRowsForAssoc)
+                // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (x-find-rows-for-assoc)
                 if (e.target.value === '' || e.target.value === undefined || e.target.value === null) {
                     setValueToModel(null); // prazdny retazec znamena null hodnotu
                 } else {
                     // deprecated code
-                    // const rows: any[] = await Utils.fetchMany('findRowsForAssoc', {
+                    // const rows: any[] = await Utils.fetchMany('x-find-rows-for-assoc', {
                     //     entity: props.form.entity,
                     //     assocField: props.assocField,
                     //     displayField: props.displayField,

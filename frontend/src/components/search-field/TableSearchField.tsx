@@ -46,8 +46,8 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
                 setValueToModel(null); // prazdny retazec znamena null hodnotu
             }
             else {
-                // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (findRowsForAssoc)
-                const rows: any[] = await Utils.fetchMany('findRowsForAssoc', {entity: props.entity, assocField: props.assocField, displayField: props.displayField, filter: e.target.value});
+                // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (x-find-rows-for-assoc)
+                const rows: any[] = await Utils.fetchMany('x-find-rows-for-assoc', {entity: props.entity, assocField: props.assocField, displayField: props.displayField, filter: e.target.value});
                 if (rows.length === 0) {
                     setDialogOpened(true);
                 }

@@ -48,15 +48,15 @@ function AppAuthOff({children}: {children: ReactNode;}) {
 
         // TODO - provizorne
         // Utils.getAccessToken() vyhadzuje chybu ak je accessToken null
-        // post-login potrebuje accessToken, preto ho uz tu setneme
+        // x-post-login potrebuje accessToken, preto ho uz tu setneme
         setSession({accessToken: 'dummy'});
 
-        // zavolame post-login
+        // zavolame x-post-login
         const username: string = Utils.getEnvVarValue(EnvVar.VITE_AUTH_OFF_USERNAME);
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: username};
-            xPostLoginResponse = await Utils.fetch('post-login', xPostLoginRequest);
+            xPostLoginResponse = await Utils.fetch('x-post-login', xPostLoginRequest);
         }
         catch (e) {
             // console.log(typeof e);
@@ -69,8 +69,8 @@ function AppAuthOff({children}: {children: ReactNode;}) {
             // @ts-ignore
             console.log(error.cause);
 
-            Utils.showErrorMessage('post-login failed', e);
-            throw 'post-login failed';
+            Utils.showErrorMessage('x-post-login failed', e);
+            throw 'x-post-login failed';
         }
 
         if (xPostLoginResponse.user === undefined) {

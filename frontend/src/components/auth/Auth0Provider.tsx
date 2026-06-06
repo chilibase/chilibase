@@ -75,13 +75,13 @@ function AppAuth0({children}: {children: ReactNode;}) {
         const accessToken: () => Promise<string> = getAccessToken;
         setSession({accessToken: accessToken});
 
-        // zavolame post-login
+        // zavolame x-post-login
         // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
         // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: user?.name};
-            xPostLoginResponse = await Utils.fetch('post-login', xPostLoginRequest);
+            xPostLoginResponse = await Utils.fetch('x-post-login', xPostLoginRequest);
         }
         catch (e) {
             // console.log(typeof e);
@@ -94,8 +94,8 @@ function AppAuth0({children}: {children: ReactNode;}) {
             // @ts-ignore
             console.log(error.cause);
 
-            Utils.showErrorMessage('post-login failed', e);
-            throw 'post-login failed';
+            Utils.showErrorMessage('x-post-login failed', e);
+            throw 'x-post-login failed';
         }
 
         if (xPostLoginResponse.user === undefined) {

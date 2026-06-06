@@ -229,14 +229,14 @@ export class Utils {
     // pomocna metodka pouzivajuca lazyDataTable service
     static async fetchRows(entity: string, customFilter?: CustomFilter | undefined, sortField?: string | DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
         const findParam: FindParam = {resultType: ResultType.AllRows, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter), multiSortMeta: UtilsCommon.createMultiSortMeta(sortField), fields: fields};
-        const {rowList}: {rowList: any[];} = await Utils.fetchOne('lazyDataTableFindRows', findParam);
+        const {rowList}: {rowList: any[];} = await Utils.fetchOne('x-lazy-data-table-find-rows', findParam);
         return rowList;
     }
 
     // pomocna metodka pouzivajuca lazyDataTable service
     static async fetchRowCount(entity: string, customFilter?: CustomFilter | undefined): Promise<number> {
         const findParam: FindParam = {resultType: ResultType.OnlyRowCount, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter)};
-        const {totalRecords}: {totalRecords: number;} = await Utils.fetchOne('lazyDataTableFindRows', findParam);
+        const {totalRecords}: {totalRecords: number;} = await Utils.fetchOne('x-lazy-data-table-find-rows', findParam);
         return totalRecords;
     }
 
@@ -462,7 +462,7 @@ export class Utils {
     static async removeRow(entity: string, row: any) {
         const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
         const id = row[xEntity.idField];
-        await Utils.post('removeRow', {entity: entity, id: id});
+        await Utils.post('x-remove-row', {entity: entity, id: id});
     }
 
     // helper
