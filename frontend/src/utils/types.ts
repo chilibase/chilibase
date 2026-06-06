@@ -1,7 +1,7 @@
 import {CustomFilter} from "../common/FindParam";
 import {DataTableSortMeta} from "primereact/datatable";
 
-// types used in frontend (separated from Utils.ts because Utils is reexported as CBUtils)
+// types used in frontend (separated from Utils.ts because Utils is reexported as XUtils)
 
 export enum OperationType {
     None,

@@ -6,11 +6,11 @@ export * from "./FindParam.js";
 export * from "./FindResult.js";
 export * from "./lib-api.js";
 export * from "./types.js";
-// change the api name to CBUtilsCommon to preserve the name UtilsCommon for app
-export {type Params, UtilsCommon as CBUtilsCommon} from "./UtilsCommon.js";
+// change the api name to XUtilsCommon to preserve the name UtilsCommon for app
+export {type Params, UtilsCommon as XUtilsCommon} from "./UtilsCommon.js";
 export * from "./UtilsConversions.js";
 export * from "./UtilsMetadataCommon.js";
-export {UtilsMetadataCommon as CBUtilsMetadataCommon} from "./UtilsMetadataCommon.js"; // alternative name to enable to use prefix CB
+export {UtilsMetadataCommon as XUtilsMetadataCommon} from "./UtilsMetadataCommon.js"; // alternative name to enable to use prefix X
 export * from "./PrimeFilterSortMeta.js";
 
 /** @deprecated */
@@ -18,12 +18,6 @@ export * from "./PrimeFilterSortMeta.js";
 export type {
     Params as XParams
 } from "./UtilsCommon.js";
-export {
-    UtilsCommon as XUtilsCommon
-} from "./UtilsCommon.js";
-export {
-    UtilsMetadataCommon as XUtilsMetadataCommon
-} from "./UtilsMetadataCommon.js";
 export type {
     DateScale as XDateScale,
     AsUIType as XAsUIType

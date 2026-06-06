@@ -7,23 +7,17 @@ export * from "./FindParam";
 export * from "./FindResult";
 export * from "./lib-api";
 export * from "./types";
-// change the api name to CBUtilsCommon to preserve the name UtilsCommon for app
-export {type Params, UtilsCommon as CBUtilsCommon} from "./UtilsCommon";
+// change the api name to XUtilsCommon to preserve the name UtilsCommon for app
+export {type Params, UtilsCommon as XUtilsCommon} from "./UtilsCommon";
 export * from "./UtilsConversions";
 export * from "./UtilsMetadataCommon";
-export {UtilsMetadataCommon as CBUtilsMetadataCommon} from "./UtilsMetadataCommon"; // alternative name to enable to use prefix CB
+export {UtilsMetadataCommon as XUtilsMetadataCommon} from "./UtilsMetadataCommon"; // alternative name to enable to use prefix X
 
 /** @deprecated */
 // X-prefixed aliases for backward compatibility
 export type {
     Params as XParams
 } from "./UtilsCommon";
-export {
-    UtilsCommon as XUtilsCommon
-} from "./UtilsCommon";
-export {
-    UtilsMetadataCommon as XUtilsMetadataCommon
-} from "./UtilsMetadataCommon";
 export type {
     DateScale as XDateScale,
     AsUIType as XAsUIType
