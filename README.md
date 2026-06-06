@@ -27,7 +27,7 @@ Install pnpm (e.g. using command: `npm install -g pnpm@11.4.0`)
 Create new chilibase project using create script `create-chilibase` and follow the instructions in the console.
 
 ```
-pnpx create-chilibase@0.2.0 <app-name> <db-name> <db-schema-name>
+pnpx create-chilibase@0.3.0 <app-name> <db-name> <db-schema-name>
 ```
 ## Features
 
