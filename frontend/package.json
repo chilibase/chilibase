@@ -1,6 +1,6 @@
 {
   "name": "@chilibase/frontend",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "",
   "type": "module",
   "scripts": {
@@ -13,8 +13,13 @@
     "preinstall": "npx only-allow pnpm",
     "generate:exports": "node generate-exports.js"
   },
-  "author": "Michal Rakus",
+  "author": "Michal Rakus <michalrakus@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chilibase/chilibase.git"
+  },
+  "keywords": ["react", "primereact", "react-router", "vite", "crud", "datatable", "filtering", "sorting", "paging", "form", "low-code", "model-driven", "typescript", "fullstack-framework", "fullstack"],
   "engines": {
     "node": ">=20"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@chilibase/backend",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "",
   "type": "module",
   "scripts": {
@@ -12,8 +12,13 @@
     "prepublishOnly": "pnpm run build",
     "preinstall": "npx only-allow pnpm"
   },
-  "author": "Michal Rakus",
+  "author": "Michal Rakus <michalrakus@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chilibase/chilibase.git"
+  },
+  "keywords": ["nestjs", "typeorm", "postgresql", "crud", "low-code", "model-driven", "typescript", "fullstack-framework", "fullstack", "rest-api"],
   "engines": {
     "node": ">=20"
   },
