@@ -265,6 +265,7 @@ export class LazyDataTableService {
             exportExcelParam.queryParam.entity,
             columns,
             exportExcelParam.excelCsvParam.headers !== undefined,
+            undefined,
             exportExcelParam.excelCsvParam.toManyAssocExport,
             exportExcelParam.excelCsvParam.fieldsToDuplicateValues,
             exportExcelParam.queryParam.entity,
