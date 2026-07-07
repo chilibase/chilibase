@@ -28,7 +28,6 @@ export type {SetFilterItem as XSetFilterItem} from "./LazyDataTable";
 export type {FilterElementParams as XFilterElementParams} from "./LazyDataTable";
 export type {FilterElementProp as XFilterElementProp} from "./LazyDataTable";
 export type {AutoCompleteInFilterProps as XAutoCompleteInFilterProps} from "./LazyDataTable";
-export type {ContentType as XContentType} from "./LazyDataTable";
 export type {ExportParams as XExportParams} from "./ExportRowsDialog";
 export type {ExportRowsDialogState as XExportRowsDialogState} from "./ExportRowsDialog";
 export type {FtsInputValue as XFtsInputValue} from "./FtsInput";

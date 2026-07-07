@@ -7,7 +7,7 @@ import {
     CsvEncoding,
     CsvSeparator,
     ExportType,
-    MultilineExportType
+    ToManyAssocExportType
 } from "../common/ExportImportParam";
 import {ResponseError} from "./ResponseError";
 import React from "react";
@@ -44,7 +44,8 @@ export class Utils {
     static exportTypeOptions = [ExportType.Excel, ExportType.Csv, ExportType.Json];
 
     // moznost Off zatial nie je implementovana
-    static multilineExportTypeOptions = [MultilineExportType.Multiline, MultilineExportType.Singleline/*, MultilineExportType.Off*/];
+    static toManyAssocExportTypeExcelOptions = [ToManyAssocExportType.Singleline, ToManyAssocExportType.Multiline, ToManyAssocExportType.Multirow/*, ToManyAssocExportType.Off*/];
+    static toManyAssocExportTypeCsvOptions = [ToManyAssocExportType.Singleline, ToManyAssocExportType.Multirow/*, ToManyAssocExportType.Off*/];
 
     static csvSeparatorOptions = [CsvSeparator.Semicolon, CsvSeparator.Comma];
 

@@ -8,3 +8,10 @@ export type EntityRow = Record<string, any>;
 export interface BrowseMetaMap {
     [name: string]: BrowseMeta;
 }
+
+/**
+ * used in LazyDataTable and also in export to excel in backend,
+ * describes the text content of some string attributes (type varchar in DB),
+ * text format is declared in column of the LazyDataTable, more correct would be to declare the text format in the model in the backend,
+ */
+export type TextFormat = "multiline" | "html" | undefined;

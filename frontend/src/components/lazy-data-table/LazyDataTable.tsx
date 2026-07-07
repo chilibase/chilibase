@@ -34,7 +34,7 @@ import {
 import {ButtonIconSmall} from "../button";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {LazyDataTableQueryParam} from "../../common/ExportImportParam";
+import {ExportColumnParam, LazyDataTableQueryParam} from "../../common/ExportImportParam";
 import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRowsDialog";
 import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
 import {FormProps, OnSaveOrCancelProp} from "../form";
@@ -59,6 +59,7 @@ import * as _ from "lodash";
 import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template.entity";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
 import {FormDialog, FormDialogState} from "../form";
+import {TextFormat} from '../../common';
 
 // typ pouzivany len v LazyDataTable
 interface XFieldSetMaps {
@@ -805,29 +806,53 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return fields;
     }
 
-    const getHeaders = (): string[] => {
+    // const getHeaders = (): string[] => {
+    //
+    //     // krasne zobrazi cely objekt!
+    //     //console.log(dataTableEl.current);
+    //
+    //     let headers = [];
+    //     let columns = dataTableEl.current.props.children;
+    //     for (let column of columns) {
+    //         // pozor! headers tahame z primereact DataTable a napr. pri editacii nemusi byt v atribute header string
+    //         headers.push(column.props.header);
+    //     }
+    //     return headers;
+    // }
+
+    // const getWidths = (): string[] => {
+    //     // vrati sirky stlpcov napr. ['7.75rem', '20rem', '8.5rem', '8.5rem', '6rem']
+    //     // nevracia aktualne sirky stlpcov (po manualnom rozsireni) ale tie ktore boli nastavene/vypocitane v kode
+    //     let widths = [];
+    //     let columns = dataTableEl.current.props.children;
+    //     for (let column of columns) {
+    //         widths.push(column.props.headerStyle?.width);
+    //     }
+    //     return widths;
+    // }
+
+    const createExportColumns = (): ExportColumnParam[] => {
 
         // krasne zobrazi cely objekt!
         //console.log(dataTableEl.current);
 
-        let headers = [];
-        let columns = dataTableEl.current.props.children;
-        for (let column of columns) {
-            // pozor! headers tahame z primereact DataTable a napr. pri editacii nemusi byt v atribute header string
-            headers.push(column.props.header);
-        }
-        return headers;
-    }
+        // warning note: props.children are used to get props of XLazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
 
-    const getWidths = (): string[] => {
-        // vrati sirky stlpcov napr. ['7.75rem', '20rem', '8.5rem', '8.5rem', '6rem']
-        // nevracia aktualne sirky stlpcov (po manualnom rozsireni) ale tie ktore boli nastavene/vypocitane v kode
-        let widths = [];
-        let columns = dataTableEl.current.props.children;
-        for (let column of columns) {
-            widths.push(column.props.headerStyle?.width);
+        const exportColumns: ExportColumnParam[] = [];
+        const columnsDataTable = dataTableEl.current.props.children;
+        const columnsLazyDataTable: ColumnType[] = props.children as ColumnType[];
+        for (const [index, columnDataTable] of columnsDataTable.entries()) {
+            const columnLazyDataTable: ColumnType = columnsLazyDataTable[index];
+            exportColumns.push({
+                // pozor! headers tahame z primereact DataTable a napr. pri editacii nemusi byt v atribute header string
+                header: columnDataTable.props.header,
+                // returns the width of the column e.g. '7.75rem', '20rem', '125px'
+                // does not return the current widths (after manual extending by user) but those widths that were set/computed in source code
+                width: columnDataTable.props.headerStyle?.width,
+                textFormat: columnLazyDataTable.props.textFormat
+            });
         }
-        return widths;
+        return exportColumns;
     }
 
     const getFieldSetIds = (): string[] => {
@@ -842,10 +867,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return fieldSetIds;
     }
 
-    const hasContentTypeHtml = (): boolean => {
+    const hasTextFormatHtml = (): boolean => {
 
         const columns: ColumnType[] = props.children as ColumnType[];
-        return columns.some((column: ColumnType) => column.props.contentType === "html");
+        return columns.some((column: ColumnType) => column.props.textFormat === "html");
     }
 
     const onSelectionChange = (event: any) => {
@@ -1040,8 +1065,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             rowCount: rowCount,
             existsToManyAssoc: existsToManyAssoc(fields),
             queryParam: queryParam,
-            headers: getHeaders(),
-            widths: getWidths(),
+            columns: createExportColumns(),
             fieldsToDuplicateValues: props.exportFieldsToDuplicateValues,
             fileName: `${props.entity}`
         };
@@ -1196,7 +1220,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
 
-    const valueAsUI = (value: any, xField: Field, contentType: ContentType | undefined, fieldSetId: string | undefined): React.ReactNode => {
+    const valueAsUI = (value: any, xField: Field, textFormat: TextFormat | undefined, fieldSetId: string | undefined): React.ReactNode => {
         let valueResult: React.ReactNode;
         if (xField.type === "boolean") {
             // TODO - efektivnejsie by bolo renderovat len prislusne ikonky
@@ -1208,7 +1232,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             valueResult = <div className={multilineSwitchValue === "fewLines" || multilineSwitchValue === "allLines" ? "x-multiline-content" : undefined}>{XFieldSetBase.xFieldSetValuesAsUI(value, xFieldSetMaps[fieldSetId])}</div>;
         }
         else {
-            if (contentType === "html") {
+            if (textFormat === "html") {
                 // value should be always string (xField.type === "string")
                 valueResult = <HtmlRenderer htmlValue={value} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
             }
@@ -1217,7 +1241,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 // mame zapnutu konverziu fromModel, lebo z json-u nam prichadzaju objekty typu string (napr. pri datumoch)
                 valueResult = convertValue(xField, value, true, AsUIType.Form);
                 // ak mame viacriadkovy text a multilineSwitch nastaveny na viac ako 1 riadok (defaultne je nastaveny na "allLines") pouzijeme MultilineRenderer
-                if (contentType === "multiline" && multilineSwitchValue !== "singleLine") {
+                if (textFormat === "multiline" && multilineSwitchValue !== "singleLine") {
                     if (xField.type === "string" && typeof valueResult === "string" && valueResult) {
                         const lines: string[] = valueResult.split(UtilsCommon.newLine);
                         valueResult = <MultilineRenderer valueList={lines} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!} multilineContent={true}/>;
@@ -1232,11 +1256,11 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         let bodyValue: React.ReactNode;
         const rowDataValue: any | any[] = UtilsCommon.getValueOrValueListByPath(rowData, columnProps.field);
         if (Array.isArray(rowDataValue)) {
-            const elemList: React.ReactNode[] = rowDataValue.map((value: any) => valueAsUI(value, xField, columnProps.contentType, columnProps.fieldSetId));
+            const elemList: React.ReactNode[] = rowDataValue.map((value: any) => valueAsUI(value, xField, columnProps.textFormat, columnProps.fieldSetId));
             bodyValue = <MultilineRenderer valueList={elemList} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
         }
         else {
-            bodyValue = valueAsUI(rowDataValue, xField, columnProps.contentType, columnProps.fieldSetId);
+            bodyValue = valueAsUI(rowDataValue, xField, columnProps.textFormat, columnProps.fieldSetId);
         }
         if (columnProps.className || columnProps.style) {
             bodyValue = <div className={columnProps.className} style={columnProps.style}>{bodyValue}</div>;
@@ -1698,7 +1722,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 {editFormExists ? <FormDialog key="formDialog" dialogState={formDialogState} entity={props.entity}/> : null}
                 {exportRows ? <ExportRowsDialog key="exportRowsDialog" dialogState={exportRowsDialogState} hideDialog={() => setExportRowsDialogState({dialogOpened: false})}/> : null}
             </div>
-            {hasContentTypeHtml() ? <Editor style={{display: 'none'}} showHeader={false}/> : null /* we want to import css if needed (<style type="text/css" data-primereact-style-id="editor">) */}
+            {hasTextFormatHtml() ? <Editor style={{display: 'none'}} showHeader={false}/> : null /* we want to import css if needed (<style type="text/css" data-primereact-style-id="editor">) */}
         </div>
     );
 });
@@ -1734,8 +1758,6 @@ export type AutoCompleteInFilterProps = {
     scrollHeight?: string; // Maximum height of the suggestions panel.
 };
 
-export type ContentType = "multiline" | "html" | undefined;
-
 export interface ColumnProps {
     field: string;
     header?: any;
@@ -1749,7 +1771,7 @@ export interface ColumnProps {
     betweenFilter?: BetweenFilterProp | "noBetween"; // creates 2 inputs from to, only for type date/datetime/decimal/number implemented, "row"/"column" - position of inputs from to
     autoFilter: boolean; // if true, filtering starts immediately after setting filter value (user does not have to click the button Filter) (default false)
     width?: string; // for example 150px or 10rem or 10% (value 10 means 10rem)
-    contentType?: ContentType; // multiline (output from MultilineTextField) - wraps the content; html (output from Editor) - for rendering raw html
+    textFormat?: TextFormat; // multiline (output from MultilineTextField) - wraps the content; html (output from Editor) - for rendering raw html
     fieldSetId?: string; // in case that we render json attribute (output from XFieldSet), here is id of XFieldSet (saved in x_field_set_meta), fieldSet metadata is needed to get labels of field set attributes
                         // note: better solution would be take fieldSetId from json attribute from model, but we would have to create decorator for this purpose...
     aggregateType?: AggregateFunction;

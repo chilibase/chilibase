@@ -1,13 +1,15 @@
 import {
     CsvDecimalFormat,
     CsvEncoding,
-    CsvSeparator, ExcelCsvParam,
+    CsvSeparator,
+    ExcelCsvParam,
+    ExportColumnParam,
     ExportCsvParam,
     ExportExcelParam,
     ExportJsonParam,
     ExportType,
     LazyDataTableQueryParam,
-    MultilineExportType
+    ToManyAssocExportType
 } from "../../common/ExportImportParam";
 import React, {useState} from "react";
 import {Dialog} from "primereact/dialog";
@@ -24,8 +26,7 @@ export interface ExportParams {
     rowCount: number; // parameter pre dialog
     existsToManyAssoc: boolean; // parameter pre dialog - ak true, zobrazi option "Detail rows export"
     queryParam: LazyDataTableQueryParam | any; // parametre specificke pre konkretny export (zvycajne hodnoty filtra)
-    headers: string[];
-    widths: string[];
+    columns: ExportColumnParam[];
     fieldsToDuplicateValues?: string[]; // pouziva sa pri exporte do excelu a csv
     fileName: string; // fileName without extension
 }
@@ -43,7 +44,7 @@ export const ExportRowsDialog = (props: {
 
     const [exportType, setExportType] = useState<ExportType>(ExportType.Excel);
     const [createHeaderLine, setCreateHeaderLine] = useState<boolean>(true);
-    const [detailRowsExport, setDetailRowsExport] = useState<MultilineExportType>(MultilineExportType.Multiline);
+    const [detailRowsExport, setDetailRowsExport] = useState<ToManyAssocExportType>(ToManyAssocExportType.Multiline);
     const [csvSeparator, setCsvSeparator] = useState(CsvSeparator.Semicolon);
     const [decimalFormat, setDecimalFormat] = useState(CsvDecimalFormat.Comma);
     const [csvEncoding, setCsvEncoding] = useState(CsvEncoding.Win1250);
@@ -53,10 +54,18 @@ export const ExportRowsDialog = (props: {
 
         setExportType(ExportType.Excel);
         setCreateHeaderLine(true);
-        setDetailRowsExport(MultilineExportType.Multiline);
+        setDetailRowsExport(ToManyAssocExportType.Multiline);
         setCsvSeparator(CsvSeparator.Semicolon);
         setDecimalFormat(CsvDecimalFormat.Comma);
         setCsvEncoding(CsvEncoding.Win1250);
+    }
+
+    const onChangeExportType = (e: any) => {
+        setExportType(e.value);
+        // multiline is not allowed for csv
+        if (e.value === ExportType.Csv && detailRowsExport === ToManyAssocExportType.Multiline) {
+            setDetailRowsExport(ToManyAssocExportType.Singleline);
+        }
     }
 
     const onExport = async () => {
@@ -76,8 +85,7 @@ export const ExportRowsDialog = (props: {
             apiPath = "x-lazy-data-table-export-excel";
             const exportExcelParam: ExportExcelParam = {
                 queryParam: exportParams.queryParam,
-                excelCsvParam: createExcelCsvParam(exportParams),
-                widths: exportParams.widths
+                excelCsvParam: createExcelCsvParam(exportParams)
             };
             requestPayload = exportExcelParam;
         }
@@ -110,10 +118,10 @@ export const ExportRowsDialog = (props: {
 
     const createExcelCsvParam = (exportParams: ExportParams): ExcelCsvParam => {
         return {
-            headers: createHeaderLine ? exportParams.headers : undefined,
+            columns: exportParams.columns,
+            createHeaders: createHeaderLine,
             fieldsToDuplicateValues: exportParams.fieldsToDuplicateValues,
-            toManyAssocExport: detailRowsExport,
-            multilineTextExport: MultilineExportType.Multiline // TODO - dorobit aj tuto dropdown kde si uzivatel vyberie ci chce mat v texte \n alebo nechce - aj na backende treba dorobit
+            toManyAssocExportType: detailRowsExport
         };
     }
 
@@ -127,10 +135,11 @@ export const ExportRowsDialog = (props: {
                 </div>
             );
             if (props.dialogState.exportParams?.existsToManyAssoc) {
+                const options: ToManyAssocExportType[] = exportType === ExportType.Excel ? Utils.toManyAssocExportTypeExcelOptions : Utils.toManyAssocExportTypeCsvOptions;
                 elem.push(
                     <div key="expDetailRowsExport" className="field grid">
                         <label className="col-fixed" style={{width: '12rem'}}>{localeOption('expDetailRowsExport')}</label>
-                        <Dropdown value={detailRowsExport} options={Utils.options(Utils.multilineExportTypeOptions)} onChange={(e: any) => setDetailRowsExport(e.value)}/>
+                        <Dropdown value={detailRowsExport} options={Utils.options(options)} onChange={(e: any) => setDetailRowsExport(e.value)}/>
                     </div>
                 );
             }
@@ -165,7 +174,7 @@ export const ExportRowsDialog = (props: {
             }
             <div key="expExportType" className="field grid">
                 <label className="col-fixed" style={{width:'12rem'}}>{localeOption('expExportType')}</label>
-                <Dropdown value={exportType} options={Utils.options(props.exportTypeOptions ?? Utils.exportTypeOptions)} onChange={(e: any) => setExportType(e.value)}/>
+                <Dropdown value={exportType} options={Utils.options(props.exportTypeOptions ?? Utils.exportTypeOptions)} onChange={onChangeExportType}/>
             </div>
             {elem}
             <div key="exportRows" className="flex justify-content-center">

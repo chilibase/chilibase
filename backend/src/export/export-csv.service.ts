@@ -5,7 +5,7 @@ import {
     CsvEncoding,
     CsvParam, ExcelCsvParam,
     ExportCsvParam,
-    MultilineExportType
+    ToManyAssocExportType
 } from "../common/ExportImportParam.js";
 import {UtilsCommon} from "../common/UtilsCommon.js";
 import {dateFormat, datetimeFormat, numberFromModel} from "../common/UtilsConversions.js";
@@ -123,20 +123,20 @@ export class ExportCsvService extends ExportService {
 
     // simple api for custom export
     export(csvParam: CsvParam, columns: ExportColumn[], entity: string | undefined, rows: any[], res: Response) {
-        this.exportBase(csvParam, columns, true, MultilineExportType.Multiline, undefined, entity, rows, res);
+        this.exportBase(csvParam, columns, true, ToManyAssocExportType.Multiline, undefined, entity, rows, res);
     }
 
     // extended api for custom export
     // TODO - nepouzivame stream ale zapisujeme do res: Response, nevraciame Promise<StreamableFile> - je to take zvlastne, nie je to moc pekne
     // (ak to chceme mat poriadne, asi by sme mali mat 2 rest metody v controlleri - jednu na stream (pouziva res: Response) a druhu na list (vracia Promise<StreamableFile>))
-    exportBase(csvParam: CsvParam, columns: ExportColumn[], createHeaders: boolean, multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[], res: Response) {
+    exportBase(csvParam: CsvParam, columns: ExportColumn[], createHeaders: boolean, toManyAssocExportType: ToManyAssocExportType, fieldsToDuplicateValues: string[] | undefined, entity: string | undefined, rows: any[], res: Response) {
 
         const csvWriter: CsvWriter = this.startExport(csvParam, columns, createHeaders, res);
 
         const entityMetadata: Entity | undefined = entity ? UtilsMetadataCommon.getEntity(entity) : undefined;
 
         for (const row of rows) {
-            this.exportRowToCsv(columns, multilineExportType, fieldsToDuplicateValues, entityMetadata, row, csvWriter);
+            this.exportRowToCsv(columns, toManyAssocExportType, fieldsToDuplicateValues, entityMetadata, row, csvWriter);
         }
 
         csvWriter.end();
@@ -147,12 +147,12 @@ export class ExportCsvService extends ExportService {
         const rowList: any[] = await selectQueryBuilder.getMany();
 
         const excelCsvParam: ExcelCsvParam = exportCsvParam.excelCsvParam;
-        this.exportBase(exportCsvParam.csvParam, columns, excelCsvParam.headers !== undefined, excelCsvParam.toManyAssocExport, excelCsvParam.fieldsToDuplicateValues, exportCsvParam.queryParam.entity, rowList, res);
+        this.exportBase(exportCsvParam.csvParam, columns, excelCsvParam.createHeaders, excelCsvParam.toManyAssocExportType, excelCsvParam.fieldsToDuplicateValues, exportCsvParam.queryParam.entity, rowList, res);
     }
 
     async exportUsingStream(exportCsvParam: ExportCsvParam, columns: ExportColumn[], selectQueryBuilder: SelectQueryBuilder<unknown>, res: Response): Promise<void> {
 
-        const csvWriter: CsvWriter = this.startExport(exportCsvParam.csvParam, columns, exportCsvParam.excelCsvParam.headers !== undefined, res);
+        const csvWriter: CsvWriter = this.startExport(exportCsvParam.csvParam, columns, exportCsvParam.excelCsvParam.createHeaders, res);
 
         const readStream: ReadStream = await selectQueryBuilder.stream();
 
@@ -160,7 +160,7 @@ export class ExportCsvService extends ExportService {
 
         readStream.on('data', data => {
             const entityObj = this.transformToEntity(data, selectQueryBuilder);
-            this.exportRowToCsv(columns, exportCsvParam.excelCsvParam.toManyAssocExport, exportCsvParam.excelCsvParam.fieldsToDuplicateValues, entityMetadata, entityObj, csvWriter);
+            this.exportRowToCsv(columns, exportCsvParam.excelCsvParam.toManyAssocExportType, exportCsvParam.excelCsvParam.fieldsToDuplicateValues, entityMetadata, entityObj, csvWriter);
         });
 
         readStream.on('end', () => {
@@ -205,9 +205,9 @@ export class ExportCsvService extends ExportService {
     }
 
     // helper
-    private exportRowToCsv(columns: ExportColumn[], multilineExportType: MultilineExportType, fieldsToDuplicateValues: string[], entityMetadata: Entity, row: any, csvWriter: CsvWriter) {
+    private exportRowToCsv(columns: ExportColumn[], toManyAssocExportType: ToManyAssocExportType, fieldsToDuplicateValues: string[], entityMetadata: Entity, row: any, csvWriter: CsvWriter) {
         // metoda this.exportRow skonvertuje hodnoty na typy (napr. number, Date) a csvWriter.writeRow skonvertuje typy na string
-        const resultRowList: Array<Array<any>> = this.exportRow(columns, multilineExportType, fieldsToDuplicateValues, entityMetadata, row);
+        const resultRowList: Array<Array<any>> = this.exportRow(columns, toManyAssocExportType, fieldsToDuplicateValues, entityMetadata, row);
         for (const resultRow of resultRowList) {
             csvWriter.writeRow(...resultRow);
         }

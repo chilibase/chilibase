@@ -46,7 +46,6 @@ export type {
     ExportJsonParam as XExportJsonParam,
     LazyDataTableQueryParam as XLazyDataTableQueryParam,
     ExcelCsvParam as XExcelCsvParam,
-    MultilineExportType as XMultilineExportType,
     CsvParam as XCsvParam,
     CsvSeparator as XCsvSeparator,
     CsvDecimalFormat as XCsvDecimalFormat,

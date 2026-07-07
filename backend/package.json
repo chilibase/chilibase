@@ -26,7 +26,8 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "iconv-lite": "^0.7.2",
-    "@nestjs/jwt": "^11.0.1"
+    "@nestjs/jwt": "^11.0.1",
+    "cheerio": "^1.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.6",
