@@ -64,7 +64,7 @@ pnpx create-chilibase@0.3.2 <app-name> <db-name> <db-schema-name>
   * on the backend, saving detail rows is implemented
 - basic validation (check and conversion of types, check for required fields)
 - custom validation supported
-- custom fetching row supported
+- custom row fetching supported
 - *form component* is generally displayed in dialog, that means that associated rows can be created/edited during editing of the base row
 - optimistic locking (via field `version` in DB row)
 - pessimistic locking (via fields `lock_date`, `lock_x_user_id` in DB row) (*)
