@@ -494,7 +494,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         buttonItems.push(
             {
                 icon: 'pi pi-plus',
-                tooltip: this.props.insertButtonTooltip,
+                tooltip: !Utils.isMobile() ? this.props.insertButtonTooltip : undefined,
                 command: (e: any) => {
                     if (this.props.onAddRow) {
                         // mame custom handler pre "plus" button
@@ -528,7 +528,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         buttonItems.push(
             {
                 icon: 'pi pi-pencil',
-                tooltip: this.props.updateButtonTooltip,
+                tooltip: !Utils.isMobile() ? this.props.updateButtonTooltip : undefined,
                 command: (e: any) => {
                     if (this.state.inputChanged) {
                         alert(`Value "${this.state.inputValueState}" was not found among valid values, please enter some valid value.`);
@@ -556,7 +556,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         buttonItems.push(
             {
                 icon: 'pi pi-search',
-                tooltip: this.props.searchButtonTooltip,
+                tooltip: !Utils.isMobile() ? this.props.searchButtonTooltip : undefined,
                 command: (e: any) => {
                     const searchBrowseDialogState: SearchBrowseDialogState = {
                         opened: true,
@@ -712,7 +712,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
                 }
 
                 if (this.props.buttonsLayout === "buttons") {
-                    buttons = buttonItems.map((value: ButtonItem, index: number) => <PrimeButton key={`button${index}`} icon={value.icon} tooltip={value.tooltip} tooltipOptions={{position: 'top'}}
+                    buttons = buttonItems.map((value: ButtonItem, index: number) => <PrimeButton key={`button${index}`} icon={value.icon} tooltip={value.tooltip} tooltipOptions={value.tooltip ? {position: 'top'} : undefined}
                                                                               onClick={(e: any) => value.command!(e)} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>);
                 }
                 else {
@@ -731,8 +731,10 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
             // readOnly
             // ak mame valueForm a mame asociovany objekt, umoznime editovat asociovany objekt
             if (this.hasValueForm() && this.props.value !== null) {
-                buttons = [<PrimeButton icon="pi pi-pencil" tooltip={this.props.updateButtonTooltip} tooltipOptions={{position: 'top'}}
-                                   onClick={(e: any) => this.onEditAssocValue()} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>];
+                buttons = [<PrimeButton icon="pi pi-pencil"
+                                        tooltip={!Utils.isMobile() ? this.props.updateButtonTooltip : undefined}
+                                        tooltipOptions={!Utils.isMobile() ? {position: 'top'} : undefined}
+                                        onClick={(e: any) => this.onEditAssocValue()} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>];
             }
             else {
                 // dame disablovany button (z estetickych dovodov, zachovame sirku)

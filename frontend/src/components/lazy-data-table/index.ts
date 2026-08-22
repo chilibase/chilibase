@@ -1,4 +1,5 @@
 export * from "./LazyDataTable";
+export * from "./ColumnToggleDialog";
 export * from "./ExportRowsDialog";
 export * from "./MultilineSwitch";
 export * from "./MultilineRenderer";

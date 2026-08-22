@@ -10,7 +10,7 @@ export interface FtsInputValue {
     matchMode: 'startsWith' | 'contains' | 'endsWith' | 'equals'; // zatial tieto (podmnozina z DataTableFilterMetaData), default bude 'contains'
 }
 
-export const FtsInput = (props: {value: FtsInputValue; onChange: (value: FtsInputValue) => void;}) => {
+export const FtsInput = (props: {value: FtsInputValue; onChange: (value: FtsInputValue) => void; width?: string;}) => {
 
     const onChange = (value: string | null) => {
         props.value.value = value;
@@ -20,7 +20,7 @@ export const FtsInput = (props: {value: FtsInputValue; onChange: (value: FtsInpu
     // TODO - pridat input na zmenu matchMode
     // we use TextInput - we save onChange calls
     return (
-        <TextInput value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: Utils.isMobile() ? '7rem' : '17rem'}} className="m-1"
+        <TextInput value={props.value.value} onChange={onChange} style={{height: '2.5rem', width: props.width ?? (Utils.isMobile() ? '7rem' : '17rem')}} className="m-1"
         placeholder={localeOption('searchInAllFields')}/>
     );
 }

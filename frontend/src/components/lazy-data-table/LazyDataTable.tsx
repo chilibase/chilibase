@@ -60,6 +60,7 @@ import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template.entity"
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
 import {FormDialog, FormDialogState} from "../form";
 import {TextFormat} from '../../common';
+import {ColumnToggleDialog, ColumnToggleDialogItem} from "./ColumnToggleDialog";
 
 // typ pouzivany len v LazyDataTable
 interface XFieldSetMaps {
@@ -142,7 +143,8 @@ export enum StateKeySuffix {
     multiSortMeta = 'multi-sort-meta',
     pagingFirst = 'paging-first',
     selectedRow = 'selected-row',
-    multilineSwitchValue = 'multiline-switch-value'
+    multilineSwitchValue = 'multiline-switch-value',
+    columnToggles = 'column-toggles'
 }
 
 // exposed methods
@@ -166,6 +168,7 @@ export interface LazyDataTableProps {
     betweenFilter?: BetweenFilterProp; // umiestnenie inputov od do: "row" - vedla seba, "column" - pod sebou; plati pre vsetky stlpce typu date/datetime/decimal/number ak nemaju definovany svoj betweenFilter
     autoFilter?: boolean; // if true, filtering starts immediately after setting filter value (button Filter is not used/rendered) (default false)
     showFilterButtons?: boolean; // if true, Filter/Clear filter buttons are rendered (default true)
+    showColumnToggleButton?: boolean; // if true, column toggle button is rendered (default true) (for mobile the button can take too much space)
     showExportRows?: boolean; // true - export button rendered, false - export button not rendered, undefined (default) - Export button rendered only on desktop (not on mobile)
     scrollable?: boolean; // default true, ak je false, tak je scrollovanie vypnute (scrollWidth/scrollHeight/formFooterHeight su ignorovane)
     scrollWidth?: string; // hodnota "none" vypne horizontalne scrollovanie
@@ -192,6 +195,7 @@ export interface LazyDataTableProps {
     optionalCustomFilters?: OptionalCustomFilter[]; // programatorom predpripravene filtre, user si moze vybrat predpripraveny filter v dropdown-e vedla Filter/Clear buttonov
     sortField?: string | DataTableSortMeta[];
     fullTextSearch?: boolean | string[]; // false - nemame full-text search, true - mame full-text search na default stlpcoch, string[] - full-text search na danych stlpcoch
+    fullTextSearchWidth?: string; // width of the full text search input (sometimes we need to save the space on mobile)
     fields?: string[]; // ak chceme nacitat aj asociovane objekty mimo tych ktore sa nacitavaju koli niektoremu zo stlpcov
     assocsToSort?: AssocToSort[]; // oneToMany assocs for sorting detail rows of after fetching data from backend (only first level assocs are supported, only default asc order supported)
     multilineSwitch?: boolean; // default false, ak true tak zobrazi switch, ktorym sa da vypnut zobrazenie viacriadkovych textov v sirokom riadku
@@ -226,6 +230,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         filterDisplay = "row",
         autoFilter = false,
         showFilterButtons = true,
+        showColumnToggleButton = true,
         fullTextSearch = true,
         multilineSwitch = false,
         multilineSwitchInitValue = "allLines",
@@ -246,6 +251,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         filterDisplay,
         autoFilter,
         showFilterButtons,
+        showColumnToggleButton,
         fullTextSearch,
         multilineSwitch,
         multilineSwitchInitValue,
@@ -393,6 +399,11 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return {value: null, matchMode: "contains"};
     }
 
+    const createInitColumnToggles = (): boolean[] => {
+        const columns: ColumnType[] = props.children as ColumnType[];
+        return columns.map((column: ColumnType) => column.props.initColumnToggle !== false);
+    }
+
 /*
     // TODO turn off/on storage
     const saveValueIntoStorage = (stateKeySuffix: StateKeySuffix, value: any) => {
@@ -455,6 +466,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const [multilineSwitchValue, setMultilineSwitchValue] = props.multilineSwitchValue ?? useStateStorage<MultilineRenderType>(props.stateStorage!, getStateKey(StateKeySuffix.multilineSwitchValue), props.multilineSwitchInitValue!);
     const [multiSortMeta, setMultiSortMeta] = useStateStorage<DataTableSortMeta[] | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.multiSortMeta), UtilsCommon.createMultiSortMeta(props.sortField));
     const [selectedRow, setSelectedRow] = useStateStorage<any>(props.stateStorage!, getStateKey(StateKeySuffix.selectedRow), null);
+    const [columnToggles, setColumnToggles] = useStateStorage<boolean[]>(props.stateStorage!, getStateKey(StateKeySuffix.columnToggles), createInitColumnToggles());
     /**
      * @deprecated was used to reread data after save/cancel of the form when using XFormNavigator (deprecated)
      */
@@ -465,6 +477,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const [ftsInputValueAfterFiltering, setFtsInputValueAfterFiltering] = useState<FtsInputValue | undefined>(ftsInputValue); // tak isto ako filtersAfterFiltering
     const [optionalCustomFilterAfterFiltering, setOptionalCustomFilterAfterFiltering] = useState<OptionalCustomFilter | undefined>(optionalCustomFilter); // tak isto ako filtersAfterFiltering
     const [formDialogState, setFormDialogState] = useState<FormDialogState>({opened: false});
+    const [columnToggleDialogOpened, setColumnToggleDialogOpened] = useState<boolean>(false);
 
     // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
     useEffect(() => {
@@ -658,6 +671,15 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         loadDataBase(findParam);
     };
 
+    const onColumnTogglesOk = (columnTogglesLocal: boolean[]) => {
+        setColumnToggles(columnTogglesLocal);
+
+        // fields depend on columnToggles - override, setState does not update columnToggles immediately
+        const findParam: FindParam = createFindParam();
+        findParam.fields = getFields(true, columnTogglesLocal);
+        loadDataBase(findParam);
+    };
+
     // API function
     const reread = () => {
         loadData();
@@ -788,14 +810,22 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return UtilsCommon.filterAnd(customFilterItems, optionalCustomFilter?.filter);
     }
 
-    const getFields = (addPropsFields: boolean): string[] => {
+    const getFields = (addPropsFields: boolean, columnTogglesParam?: boolean[]): string[] => {
 
-        // krasne zobrazi cely objekt!
-        //console.log(dataTableEl.current);
+        // remark: fields are computed from columns of LazyDataTable (props.children), not from columns of Primereact DataTable (dataTableEl.current.props.children),
+        // because this method is called from onColumnTogglesOk (columnTogglesParam !== undefined) and in this case columns of Primereact DataTable are still not updated to the new column toggle state
 
-        let fields = [];
-        let columns = dataTableEl.current.props.children;
-        for (let column of columns) {
+        const toggles: boolean[] = columnTogglesParam ?? columnToggles;
+        const fields = [];
+        const columns: ColumnType[] = props.children as ColumnType[];
+        for (let index = 0; index < columns.length; index++) {
+            const column: ColumnType = columns[index];
+            if (Utils.xViewStatus(column.props.columnViewStatus) === ViewStatus.Hidden) {
+                continue;
+            }
+            if (toggles[index] === false) {
+                continue;
+            }
             fields.push(column.props.field);
         }
         if (addPropsFields) {
@@ -841,15 +871,18 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         const exportColumns: ExportColumnParam[] = [];
         const columnsDataTable = dataTableEl.current.props.children;
         const columnsLazyDataTable: ColumnType[] = props.children as ColumnType[];
-        for (const [index, columnDataTable] of columnsDataTable.entries()) {
-            const columnLazyDataTable: ColumnType = columnsLazyDataTable[index];
+        for (const columnDataTable of columnsDataTable) {
+            // match by field - indexes may differ when some columns are hidden (columnViewStatus / columnToggles)
+            const columnLazyDataTable: ColumnType | undefined = columnsLazyDataTable.find(
+                (column: ColumnType) => column.props.field === columnDataTable.props.field
+            );
             exportColumns.push({
                 // pozor! headers tahame z primereact DataTable a napr. pri editacii nemusi byt v atribute header string
                 header: columnDataTable.props.header,
                 // returns the width of the column e.g. '7.75rem', '20rem', '125px'
                 // does not return the current widths (after manual extending by user) but those widths that were set/computed in source code
                 width: columnDataTable.props.headerStyle?.width,
-                textFormat: columnLazyDataTable.props.textFormat
+                textFormat: columnLazyDataTable?.props.textFormat
             });
         }
         return exportColumns;
@@ -871,6 +904,22 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
         const columns: ColumnType[] = props.children as ColumnType[];
         return columns.some((column: ColumnType) => column.props.textFormat === "html");
+    }
+
+    const createColumnToggleDialogItems = (): ColumnToggleDialogItem[] => {
+        const items: ColumnToggleDialogItem[] = [];
+        const columns: ColumnType[] = props.children as ColumnType[];
+        for (let index = 0; index < columns.length; index++) {
+            const column: ColumnType = columns[index];
+            if (Utils.xViewStatus(column.props.columnViewStatus) === ViewStatus.Hidden) {
+                continue;
+            }
+            items.push({
+                index: index,
+                label: column.props.header ?? column.props.field
+            });
+        }
+        return items;
     }
 
     const onSelectionChange = (event: any) => {
@@ -1406,9 +1455,18 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         exportRows = !isMobile;
     }
 
-    // pre lepsiu citatelnost vytvarame stlpce uz tu
+    // for better readability we create the columns already here
     const columnElemList: JSX.Element[] = React.Children.map(
-        props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: ColumnProps}).props.columnViewStatus) !== ViewStatus.Hidden),
+        // props.children are columns of LazyDataTable
+        // the column is rendered (Primereact DataTable column created) if viewStatus is not hidden and the column is not off via column toggle
+        props.children.filter((child: React.ReactChild, index: number) => {
+            const columnProps: ColumnProps = (child as {props: ColumnProps}).props;
+            if (Utils.xViewStatus(columnProps.columnViewStatus) === ViewStatus.Hidden) {
+                return false;
+            }
+            // columnToggles[index] === undefined -> treat as displayed (e.g. shorter array from older session)
+            return columnToggles[index] !== false;
+        }),
         function(child) {
             // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
             // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
@@ -1683,7 +1741,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             <div className="flex justify-content-center align-items-center">
                 {props.label ? <div className="x-lazy-datatable-label" style={props.labelStyle}>{props.label}</div> : null}
                 {props.headerBodyLeft}
-                {ftsInputValue ? <FtsInput value={ftsInputValue} onChange={(value: FtsInputValue) => setFtsInputValue(value)}/> : null}
+                {ftsInputValue ? <FtsInput value={ftsInputValue} onChange={(value: FtsInputValue) => setFtsInputValue(value)} width={props.fullTextSearchWidth}/> : null}
                 {props.showFilterButtons ? <Button key="filter" icon={isMobile ? "pi pi-search" : undefined} label={!isMobile ? localeOption('filter') : undefined} onClick={onClickFilter} /> : null}
                 {props.showFilterButtons ? <Button key="resetTable" icon={isMobile ? "pi pi-ban" : undefined} label={!isMobile ? localeOption('resetTable') : undefined} onClick={onClickResetTable} /> : null}
                 {props.optionalCustomFilters ? <OcfDropdown optionalCustomFilters={props.optionalCustomFilters} value={optionalCustomFilter} onChange={(value: OptionalCustomFilter | undefined) => setOptionalCustomFilter(value)} className="m-1"/> : null}
@@ -1693,6 +1751,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     }} className="m-1"/> : null}
                 {props.headerBodyRight}
                 {props.label && !isMobile ? <div className="x-lazy-datatable-label-right-compensation"/> : null}
+                {props.showColumnToggleButton ? [
+                    <div className="m-1"/>,
+                    <ButtonIconSmall key="columnToggle" icon="pi pi-table" onClick={() => setColumnToggleDialogOpened(true)}
+                                      tooltip={!Utils.isMobile() ? localeOption('columnToggle') : undefined}
+                                      tooltipShowDelay={!Utils.isMobile() ? 1000 : undefined}/>
+                ] : null}
             </div>
             <div className="flex justify-content-center">
                 <DataTable value={value.rowList} dataKey={dataKey}
@@ -1721,6 +1785,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 {props.searchBrowseParams !== undefined ? <Button key="choose" label={localeOption('chooseRow')} onClick={onClickChoose}/> : null}
                 {editFormExists ? <FormDialog key="formDialog" dialogState={formDialogState} entity={props.entity}/> : null}
                 {exportRows ? <ExportRowsDialog key="exportRowsDialog" dialogState={exportRowsDialogState} hideDialog={() => setExportRowsDialogState({dialogOpened: false})}/> : null}
+                {props.showColumnToggleButton ?
+                    <ColumnToggleDialog key="columnToggleDialog" dialogOpened={columnToggleDialogOpened}
+                                     items={createColumnToggleDialogItems()} columnToggles={columnToggles}
+                                     initColumnToggles={createInitColumnToggles()}
+                                     onOk={onColumnTogglesOk}
+                                     onHide={() => setColumnToggleDialogOpened(false)}/> : null}
             </div>
             {hasTextFormatHtml() ? <Editor style={{display: 'none'}} showHeader={false}/> : null /* we want to import css if needed (<style type="text/css" data-primereact-style-id="editor">) */}
         </div>
@@ -1776,6 +1846,7 @@ export interface ColumnProps {
                         // note: better solution would be take fieldSetId from json attribute from model, but we would have to create decorator for this purpose...
     aggregateType?: AggregateFunction;
     columnViewStatus: ViewStatusOrBoolean; // aby sme mohli mat Hidden stlpec (nedarilo sa mi priamo v kode "o-if-ovat" stlpec), zatial netreba funkciu, vola sa columnViewStatus lebo napr. v Edit tabulke moze byt viewStatus na row urovni
+    initColumnToggle: boolean; // initial value for column toggle - if false, column is not displayed initially (user can display it via column toggle dialog) (default true)
     filterElement?: FilterElementProp;
     className?: string; // wraps the content of the column cell with div element with this className (prop is not applied if prop body is used)
     style?: React.CSSProperties; // wraps the content of the column cell with div element with this style (prop is not applied if prop body is used)
@@ -1792,5 +1863,6 @@ export const Column = (props: ColumnProps) => {
 Column.defaultProps = {
     //autoCompleteEnabled: "forStringOnly",
     columnViewStatus: true,  // ViewStatus.ReadWrite
+    initColumnToggle: true,
     autoFilter: false
 };

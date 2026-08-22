@@ -47,6 +47,7 @@ pnpx create-chilibase@0.3.0 <app-name> <db-name> <db-schema-name>
 - export data to file - excel, csv, json
 - parameter *form component* - enables inserting and editing rows (in the *form component*)
 - row expansion (DB row displayed in multiple table rows)
+- column visibility toggle
 - source code example: [CarBrowse.tsx](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarBrowse.tsx)
 
 ### Form component (for the row editing)
