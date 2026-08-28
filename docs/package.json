@@ -1,0 +1,20 @@
+{
+  "name": "@chilibase/docs",
+  "private": true,
+  "description": "Developer documentation for the Chilibase framework",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "author": "Michal Rakus <michalrakus@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.4.0"
+}

@@ -2,7 +2,9 @@
 
 Fullstack framework for creating model driven apps.  
 Uses react (primereact), vite, nestjs, typeorm, postgres DB. Platform: javascript/typescript.  
-Similar to low coding frameworks. 
+Similar to low coding frameworks.
+
+See developer docs at https://chilibase.org
 
 See live demo at https://car-demo.michalrakus.sk  
 Username: x_test_user@yahoo.com  
