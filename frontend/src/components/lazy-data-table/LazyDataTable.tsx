@@ -83,6 +83,19 @@ export type OpenFormForUpdate = (
     formElement?: React.ReactElement
 ) => void;
 
+// selectedRow is here in order to enable to copy some attributes from selected row into new row (selectedRow is null if no row is selected)
+// filters are here in order to enable init some attributes of new row from filters values (if needed)
+// function openFormForInsert can be used to open form from the body of the onAddRow method (no need to implement the whole boilerplate for opening form, it iś shortcut back into the framework)
+export type OnAddRowFn = (selectedRow: any | null, filters: DataTableFilterMeta, openFormForInsert: OpenFormForInsert) => void;
+
+export interface AddRowButton {
+    key?: string;
+    icon?: IconType<ButtonProps>;
+    label: string;
+    onClick: OnAddRowFn;
+    style?: React.CSSProperties;
+}
+
 export type AppButtonForRowOnClick = (
     selectedRow: any,
     findParam: FindParam // query info for current filtered rows (can be used to run function over filtered rows)
@@ -178,9 +191,8 @@ export interface LazyDataTableProps {
     onResetTable?: () => void; // zavola sa pri kliknuti na button resetTable (Reset filter)
     EditForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
     editFormElement?: React.ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
-    onAddRow?: ((filters: DataTableFilterMeta, openFormForInsert: OpenFormForInsert) => void) | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
-                                                            // filters are here in order to enable init some attributes of new row from filters values (if needed)
-                                                            // function openFormForInsert can be used to open form from the body of the onAddRow method (no need to implement the whole boilerplate for opening form, it iś shortcut back into the framework)
+    onAddRow?: OnAddRowFn | AddRowButton[] | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
+                                                        // array form (like appButtonsForRow) renders multiple add buttons instead of the standard "Add" button
     onEdit?: ((selectedRow: any, openFormForUpdate: OpenFormForUpdate) => void) | false; // creates edit row button (or overrides default edit function used by editForm); if false, no edit row button is created
                                                             // function openFormForUpdate can be used to open form from the body of the onEditRow method (no need to implement the whole boilerplate for opening form, it iś shortcut back into the framework)
         // -> TODO - rename to onEditRow
@@ -949,7 +961,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         //console.log("zavolany onClickAddRow");
 
         if (typeof props.onAddRow === 'function') {
-            props.onAddRow(filters, openFormForInsert);
+            props.onAddRow(selectedRow, filters, openFormForInsert);
         }
         else if ((props.EditForm !== undefined || props.editFormElement !== undefined) && props.onAddRow !== false) {
             openFormForInsert();
@@ -1730,6 +1742,18 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
     );
 
+    let addRowButton: React.ReactNode = null;
+    if (props.onAddRow !== false && props.searchBrowseParams === undefined) { // onAddRow is not off (false) and browse is not in search mode
+        if (Array.isArray(props.onAddRow)) {
+            // more add row buttons
+            addRowButton = props.onAddRow.map((addRowButtonItem: AddRowButton) => <Button key={addRowButtonItem.key} icon={addRowButtonItem.icon ?? "pi pi-plus"} label={addRowButtonItem.label} onClick={() => addRowButtonItem.onClick(selectedRow, filters, openFormForInsert)} style={addRowButtonItem.style}/>);
+        }
+        else if (editFormExists || typeof props.onAddRow === 'function') {
+            // either EditForm/editFormElement or onAddRow (custom add row) used
+            addRowButton = <Button key="addRow" icon="pi pi-plus" label={localeOption('addRow')} onClick={onClickAddRow}/>;
+        }
+    }
+
     // align-items-center centruje vertikalne (posuva smerom dolu do stredu)
     // x-lazy-datatable-label-right-compensation - vyvazuje label, aby item-y v strede isli aspon priblizne do stredu
     return (
@@ -1775,7 +1799,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 </DataTable>
             </div>
             <div className="flex justify-content-center">
-                {(props.onAddRow !== false && (editFormExists || props.onAddRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="addRow" icon="pi pi-plus" label={localeOption('addRow')} onClick={onClickAddRow}/> : null}
+                {addRowButton}
                 {(props.onEdit !== false && (editFormExists || props.onEdit !== undefined)) && props.searchBrowseParams === undefined ? <Button key="editRow" icon="pi pi-pencil" label={localeOption('editRow')} onClick={onClickEditRow}/> : null}
                 {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="removeRow" icon="pi pi-times" label={localeOption('removeRow')} onClick={onClickRemoveRow}/> : null}
                 {exportRows ? <Button key="exportRows" icon="pi pi-file-export" label={localeOption('exportRows')} onClick={onClickExport} /> : null}

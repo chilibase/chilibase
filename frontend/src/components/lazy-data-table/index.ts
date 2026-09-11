@@ -18,6 +18,8 @@ export type {BetweenFilterProp as XBetweenFilterProp} from "./LazyDataTable";
 export type {MultilineRenderType as XMultilineRenderType} from "./LazyDataTable";
 export type {OpenFormForInsert as XOpenFormForInsert} from "./LazyDataTable";
 export type {OpenFormForUpdate as XOpenFormForUpdate} from "./LazyDataTable";
+export type {OnAddRowFn as XOnAddRowFn} from "./LazyDataTable";
+export type {AddRowButton as XAddRowButton} from "./LazyDataTable";
 export type {AppButtonForRow as XAppButtonForRow} from "./LazyDataTable";
 export type {OptionalCustomFilter as XOptionalCustomFilter} from "./LazyDataTable";
 export type {EditModeHandlers as XEditModeHandlers} from "./LazyDataTable";
