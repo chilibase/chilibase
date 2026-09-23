@@ -34,8 +34,9 @@ The scaffold creates a frontend (Vite + React) and a backend (NestJS) that depen
 
 For each business entity you usually create:
 
-1. A TypeORM entity class (table mapping).
-2. A **browse** screen — `LazyDataTable` plus `Column`s, often with an `EditForm`.
-3. A **form** — a class extending `FormBase` / `FormBaseModif` with field components.
+1. A DB table (create table script).
+2. A TypeORM entity class (table mapping).
+3. A **browse** screen — `LazyDataTable` plus `Column`s, often with an `EditForm`.
+4. A **form** — a class extending `FormBase` / `FormBaseModif` with field components.
 
 See [Browse](/features/browse) and [Forms](/features/forms). Full examples live in [car-demo](https://github.com/chilibase/car-demo) ([`CarBrowse.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarBrowse.tsx), [`CarForm.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarForm.tsx)).

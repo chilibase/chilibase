@@ -11,7 +11,7 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: Live demo
-      link: https://car-demo.michalrakus.sk
+      link: /guide/getting-started#live-demo
     - theme: alt
       text: GitHub
       link: https://github.com/chilibase/chilibase
