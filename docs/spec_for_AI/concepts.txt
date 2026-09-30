@@ -1,0 +1,235 @@
+The way of building app is:
+
+First you create database tables with relations (FK constraints) among tables.
+
+Then you create TypeORM entities mapped onto the database tables. Entities are classes that contain fields (attributes)
+and ManyToOne and OneToMany associations. TypeORM entities create the scaffold of the backend, it is the data model of the app
+and the frontend is dependent on that model. The frontend is model driven. The model enables the framework to create SQL queries
+to fetch and modify the rows in DB.
+
+When we have TypeORM entities (backend) created, we can create UI components on the frontend. There are 2 main components:
+Browse - displays list of rows of the specified entity, enables filtering, sorting, paging, removing rows
+Form - enables editing (insert/update) of the selected/created row
+
+The UI components work over entities, fields and associations declared on the backend.
+
+Example from car-demo app - we have 3 main entities - CarReservation, Car and Client. Entity CarReservation has some fields (dateFrom, dateTo, price)
+and ManyToOne association car pointing to entity Car and ManyToOne association client pointing to entity Client.
+
+Table scripts:
+
+<put here table scripts for entities CarReservation, Car and Client>
+
+Entities:
+
+<put here entities CarReservation, Car and Client>
+
+Browse component CarReservationBrowse (simplified):
+
+import {
+    Column,
+    LazyDataTable,
+    type SearchBrowseProps
+} from "@chilibase/frontend/lazy-data-table";
+import {CarReservationForm} from "./CarReservationForm";
+import {ClientForm} from "./ClientForm";
+
+export const CarReservationBrowse = (props: SearchBrowseProps) => {
+
+    return (
+        <div>
+            <LazyDataTable entity="CarReservation" label="Car reservations" rows={30} sortField="id desc"
+                           editForm={CarReservationForm} removeRow={true}
+                           searchBrowseParams={props.searchBrowseParams}>
+                <Column field="id" header="ID" width="5rem"/>
+                <Column field="client.name" header="Client" width="15rem"
+                            autoFilter={true}
+                            autoComplete={{
+                                assocField: "client", field: "name", ValueForm: ClientForm,
+                                lazyLoadMaxRows: 15, scrollHeight: "25rem"
+                            }}/>
+                <Column field="dateFrom" header="Date from"/>
+                <Column field="dateTo" header="Date to"/>
+                <Column field="car.id" header="Car ID" width="5rem"/>
+                <Column field="car.brandAssoc.brand" header="Car brand" width="10rem"/>
+                <Column field="car.color" header="Car color" width="10rem"/>
+                <Column field="price" header="Price"/>
+                <Column field="comment" header="Comment" width="15rem" textFormat="multiline"/>
+            </LazyDataTable>
+        </div>
+    );
+}
+
+The main component of the browse component is LazyDataTable, the table works over entity CarReservation (entity="CarReservation"),
+the table has the list of columns, every column displays the specified field of the entity CarReservation.
+Field can be a simple single field (e.g. dateFrom) or it can be a field path - e.g. client.name, field path is composed
+of associations (usually ManyToOne but can be also OneToMany) and at the end of the field path there must be a simple field from the coresponding entity.
+In our case - field path client.name - client is ManyToOne association (in CarReservation) pointing to entity Client and name is simple field from entity Client.
+
+LazyDataTable provides useful features, the most important are filtering, sorting, lazy loading (paging) - only (first) 30 rows are fetched from DB.
+Framework uses the entity model on the backend to create corresponding SQL queries for fetching rows.
+For example for fetching associated rows (e.g. Client), joins are added into SQL queries, if needed.
+
+
+The second main component is Form, it enables editing row. The form component works over the specified entity and has render() method,
+the method uses field components of the framework to render the particular fields of the form.
+Every component works over the specified field of the entity.
+
+Example from car-demo app - form component CarReservationForm (simplified):
+
+import {TextField} from "@chilibase/frontend/text-field";
+import {NumberField} from "@chilibase/frontend/number-field";
+import {FormFooter, FormHeader, FormBaseModif} from "@chilibase/frontend/form";
+import {MultilineTextField} from "@chilibase/frontend/multiline-text-field";
+import {DateField} from "@chilibase/frontend/date-field";
+import {AutocompleteField} from "@chilibase/frontend/autocomplete-field";
+import {ClientBrowse} from "./ClientBrowse";
+import {ClientForm} from "./ClientForm";
+import {CarBrowse} from "./CarBrowse";
+import {CarForm} from "./CarForm";
+import type {FormProps} from "@chilibase/frontend/form";
+import type {CarReservation} from "../model/car-reservation.entity.ts";
+import {FormCol, FormRow} from "@chilibase/frontend/form-layout";
+
+export class CarReservationForm extends FormBaseModif {
+
+    constructor(props: FormProps) {
+        super(props, "CarReservation");
+    }
+
+    render() {
+        return (
+            <div>
+                <FormHeader form={this} label="Car reservation"/>
+                <FormRow>
+                    <FormCol>
+                        <NumberField form={this} field="id" label="ID" readOnly={true}/>
+                        <AutocompleteField form={this} assocField="client" label="Client" width="30rem"
+                                       displayField={["name", "birthDate", "address"]} sortField="name" scrollHeight="25rem"
+                                       suggestionsLoad="lazy"
+                                       SearchBrowse={ClientBrowse} AssocForm={ClientForm}
+                        />
+                        <DateField form={this} field="dateFrom" label="Date from"/>
+                        <DateField form={this} field="dateTo" label="Date to"/>
+                        <AutocompleteField form={this} assocField="car" label="Car"
+                                       displayField={["id", "brandAssoc.brand", "color"]} scrollHeight="25rem"
+                                       suggestionsLoad="lazy"
+                                       SearchBrowse={CarBrowse} AssocForm={CarForm}/>
+                        <NumberField form={this} field="price" label="Price"/>
+                        <MultilineTextField form={this} field="comment" label="Comment" rows={2} autoResize={true}/>
+                        <DateField form={this} field="modifDate" label="Modified at" readOnly={true}/>
+                        <TextField form={this} field="modifUser.name" label="Modified by" readOnly={true} inputStyle={{width: '12.5rem'}}/>
+                    </FormCol>
+                </FormRow>
+                <FormFooter form={this}/>
+            </div>
+        );
+    }
+}
+
+// static function (can be used without instantiating)
+(CarReservationForm as any).createObject = async (): Promise<CarReservation> => {
+    return {version: 0, price: 32200} as CarReservation; // init values
+}
+
+// static function (can be used without instantiating)
+(CarReservationForm as any).assocList = (): string[] => {
+    return ["client", "car.brandAssoc", "modifUser"];
+}
+
+
+There are simple field components - example is DateField component - it enables editing field dateFrom of the CarReservation row.
+(Entity in the model is CarReservation, the entity has field dateFrom.)
+
+There are also field components for setting ManyToOne associations - example is AutocompleteField component - it enables setting
+ManyToOne association client of the CarReservation row.
+In the example, the prop assocField="client" specifies the ManyToOne association client in the entity CarReservation pointing to the entity Client.
+The prop displayField={["name", "birthDate", "address"]} specifies the fields of the entity Client displayed in the input of the autocomplete.
+The values of the fields are concatenated using space. When the user is typing values in the input of autocomplete, the search in DB is performed
+to find suggestions (because prop suggestionsLoad="lazy" is specified). The suggestions are rows of entity Client, the displayed fields (name, birthDate, address) are checked if one of them contains the value typed by user.
+If the user has typed more values separated by space, every value must be found in some of the displayed field.
+The more values the user types, the narrower (more exact) is the search (like web search).
+Lazy searching (search performed on DB using ILIKE operator) enables to use AutocompleteField component also for entities with many rows (10 000 works well).
+For millions of rows, PostgreSQL Full-Text Search feature should be considered to avoid full table scan (option to improve the framework).
+
+TODO - here screenshot of autocomplete (not ready yet)
+
+AutocompleteField component has also 4 buttons for creating/modifying/searching associated rows.
+<here make table with 4 rows>
+Plus button enables to create new row of entity Client (opens ClientForm specified by prop AssocForm={ClientForm}).
+After clicking on Save of the ClientForm, the new row is inserted into the DB and set into the field client of the CarReservation row being currently edited.
+Pencil button enables to edit the associated Client row (also opens ClientForm specified by prop AssocForm={ClientForm}, but fetches the associated row from the DB).
+Search button opens ClientBrowse for search and pick up the associated Client row (ClientBrowse is specified by prop SearchBrowse={ClientBrowse}).
+It is an alternative way to search the associated row next to the autocomplete search (by typing value into the input).
+Last dropdown button displays all suggestions in dropdown panel (in the case of lazy search only first 10 rows are fetched and displayed).
+
+ClientForm and ClientBrowse are opened in modal dialog, it enables the user to continue editing of CarReservation row after closing the modal dialog.
+
+AutocompleteField is one of the most important components of the framework, because enables the user to work with associated rows very effective also if the number of rows of associated entity is relative big.
+
+Note: static function assocList:
+
+(CarReservationForm as any).assocList = (): string[] => {
+    return ["client", "car.brandAssoc", "modifUser"];
+}
+
+is used to inform the CarReservationForm that it is not enaugh to fetch only CarReservation row but we need fetch also associated rows on ManyToOne associations.
+Association client fetches Client row.
+Associations car.brandAssoc fetch Car row and Brand row.
+Association modifUser fetches User row.
+Without associated rows, the javascript object (of type CarReservation) would be not complete and the fields of associated objects (e.g. name, birthDate, address) would be not showed (they would be empty in form).
+
+
+
+Setting CarReservationForm into CarReservationBrowse is done by prop EditForm={CarReservationForm}. Setting this prop in LazyDataTable creates Add and Edit buttons in the bottom of the LazyDataTable.
+These buttons open CarReservationForm in model dialog (like opening the form from AutocompleteField)
+
+The CarReservationForm creates/fetches/modifies javascript object (of type CarReservation) that is sent to the backend after clicking the Save button.
+Here is example of such javascript object in json format:
+
+{
+    "id": 1,
+    "dateFrom": "2025-03-12",
+    "dateTo": "2025-03-20",
+    "price": "200.00",
+    "comment": null,
+    "client": {
+        "id": 227,
+        "name": "Ashley Cooper",
+        "birthDate": "1991-02-02",
+        "contact": "555-7369",
+        "address": "734 Johnny Loop, South Brianbury, WV 68301",
+        "modifDate": null,
+        "version": 0
+    },
+    "car": {
+        "id": 5,
+        "vin": "09a06548",
+        "brandString": "VW",
+        "year": 1965,
+        "color": "Red",
+        "price": "123.11",
+        "carDate": "2015-03-09",
+        "carDatetime": "2015-03-22T00:00:00.000Z",
+        "carBoolean": false,
+        "comment": "line 1\nline 2\nline 3",
+        "brandAssoc": {
+            "id": 19,
+            "brand": "BMW*"
+        },
+        "modifDate": "2025-03-11T18:06:43.000Z",
+        "version": 3
+    },
+    "modifDate": "2026-09-25 19:19:11",
+    "modifUser": {
+        "id": 2,
+        "username": "michalrakus@gmail.com",
+        "password": null,
+        "name": "Michal Rakus",
+        "enabled": true,
+        "admin": true,
+        "modifDate": "2025-03-06T10:06:55.000Z",
+        "version": 2
+    },
+    "version": 0
+}

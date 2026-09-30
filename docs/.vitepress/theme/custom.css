@@ -11,3 +11,32 @@
   --vp-c-brand-3: #c23d2b;
   --vp-c-brand-soft: rgba(224, 122, 108, 0.16);
 }
+
+/* Entity names (dark gold in light, gold in dark) and field names (green). */
+:root {
+  --cb-entity: #9a6700;
+  --cb-field: #1a7f37;
+}
+
+.dark {
+  --cb-entity: #ffd56a;
+  --cb-field: #7ee787;
+}
+
+.vp-doc :not(pre) > code.cb-entity {
+  color: var(--cb-entity);
+  font-weight: 600;
+}
+
+.vp-doc :not(pre) > code.cb-field {
+  color: var(--cb-field);
+}
+
+.vp-doc .shiki span.cb-entity {
+  color: var(--cb-entity) !important;
+  font-weight: 600;
+}
+
+.vp-doc .shiki span.cb-field {
+  color: var(--cb-field) !important;
+}

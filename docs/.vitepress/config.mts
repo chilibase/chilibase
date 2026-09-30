@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitepress'
+import { entityFieldColors } from './entity-field-colors'
 
 export default defineConfig({
+  markdown: {
+    codeTransformers: [entityFieldColors()]
+  },
   title: 'Chilibase',
   description: 'Fullstack framework for model-driven apps — React, NestJS, TypeORM, PostgreSQL.',
   lang: 'en-US',
@@ -30,7 +34,8 @@ export default defineConfig({
           items: [
             { text: 'Getting started', link: '/guide/getting-started' },
             { text: 'Concepts', link: '/guide/concepts' },
-            { text: 'Architecture', link: '/guide/architecture' }
+            { text: 'Architecture', link: '/guide/architecture' },
+            { text: 'Concepts old', link: '/guide/concepts-old' }
           ]
         }
       ],
