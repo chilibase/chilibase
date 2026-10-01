@@ -1,13 +1,13 @@
 # Packages
 
-Published from this repository (version **0.6.2**):
+Published from this repository:
 
 | Package | Role |
 | --- | --- |
 | [`@chilibase/frontend`](https://github.com/chilibase/chilibase/tree/main/frontend) | React UI: browse, forms, auth, administration |
 | [`@chilibase/backend`](https://github.com/chilibase/chilibase/tree/main/backend) | NestJS: persistence, files, auth, export |
 
-Scaffold: [`create-chilibase`](https://github.com/chilibase/create-chilibase) (`pnpx create-chilibase@0.3.2 …`). Demo app: [`chilibase/car-demo`](https://github.com/chilibase/car-demo).
+Scaffold: [`create-chilibase`](https://github.com/chilibase/create-chilibase) (`pnpx create-chilibase@0.3.3 …`). Demo app: [`chilibase/car-demo`](https://github.com/chilibase/car-demo).
 
 License: MIT. Author: Michal Rakus.
 

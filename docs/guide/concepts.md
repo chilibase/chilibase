@@ -18,11 +18,15 @@ Both work over the entities, fields, and associations declared on the backend.
 
 [car-demo](https://github.com/chilibase/car-demo) has three main entities: <Entity>CarReservation</Entity>, <Entity>Car</Entity>, and <Entity>Client</Entity>.
 
-<Entity>CarReservation</Entity> has fields <Field>dateFrom</Field>, <Field>dateTo</Field>, and <Field>price</Field>, a many-to-one <Field>car</Field> to <Entity>Car</Entity>, and a many-to-one <Field>client</Field> to <Entity>Client</Entity>.
+<Entity>CarReservation</Entity> has fields <Field>dateFrom</Field>, <Field>dateTo</Field>, and <Field>price</Field>, a many-to-one association <Field>car</Field> to <Entity>Car</Entity>, and a many-to-one association <Field>client</Field> to <Entity>Client</Entity>.
 
-<Entity>Car</Entity> also has a many-to-one <Field>brandAssoc</Field> to <Entity>Brand</Entity>. The snippets below are the tables and entities that example uses. Browse and form listings are shortened; the full screens are [`CarReservationBrowse.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarReservationBrowse.tsx) and [`CarReservationForm.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarReservationForm.tsx).
+<Entity>Car</Entity> also has a many-to-one association <Field>brandAssoc</Field> to <Entity>Brand</Entity>. The snippets below are the tables and entities that example uses. Browse and form listings are shortened; the full screens are [`CarReservationBrowse.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarReservationBrowse.tsx) and [`CarReservationForm.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarReservationForm.tsx).
+
+<details class="cb-fold">
+<summary>
 
 ## Tables
+</summary>
 
 Tables live in schema `car_demo`. <Entity>Brand</Entity> is included because <Field>car.brandAssoc</Field> points at it. `x_user` is the framework user table (`modif_x_user_id`).
 
@@ -93,7 +97,14 @@ CREATE INDEX ON car_reservation (modif_x_user_id);
 
 Column names in the database are snake_case (`date_from`). Entity fields are camelCase (<Field>dateFrom</Field>). `@Column({ name: 'date_from' })` connects the two. Browse columns and form fields use the camelCase name.
 
+</details>
+
+<details class="cb-fold">
+<summary>
+
 ## Entities
+
+</summary>
 
 `@ManyToOne` / `@OneToMany` are the associations. The property name (<Field>client</Field>, <Field>car</Field>, <Field>brandAssoc</Field>) is what the UI uses in a field path.
 
@@ -273,6 +284,8 @@ export class Client {
 }
 ```
 
+</details>
+
 ## Browse
 
 A browse is a thin wrapper around `LazyDataTable`. This one lists <Entity>CarReservation</Entity> rows. `EditForm` adds the Add and Edit buttons and opens `CarReservationForm` in a dialog. The table is sorted by <Field>id</Field> descending and loads 30 rows per page.
@@ -420,24 +433,23 @@ Scalar components edit one field. For example `DateField` with `field="dateFrom"
 Many-to-one components set an association. For example `AutocompleteField` with `assocField="client"` sets many-to-one association <Field>client</Field> on <Entity>CarReservation</Entity>, which points at <Entity>Client</Entity>. `displayField={['name', 'birthDate', 'address']}` is the list of <Entity>Client</Entity> fields shown in the input: <Field>name</Field>, <Field>birthDate</Field>, and <Field>address</Field>, joined with a space.
 
 With `suggestionsLoad="lazy"`, when user types a text in the input, a search in the database is invoked to find suggestions. Suggestions are <Entity>Client</Entity> rows. A row matches when one of the displayed fields contains the typed text. 
-If the user has typed more values separated by space, every value must be found in some of the displayed field.
+If the user has typed more values separated by space, every value must be found in some of the displayed fields.
 The more values the user types, the narrower (more exact) is the search (like web search).
 
 Lazy searching (search performed on DB using ILIKE operator) enables to use AutocompleteField component also for entities with many rows (10 000 works well).
 For millions of rows, PostgreSQL Full-Text Search feature should be considered to avoid full table scan (option to improve the framework).
 
-::: info
-A screenshot of the autocomplete will be added here.
-:::
+Client autocomplete opened when text “ashl” typed:
+![Car reservation form with the client autocomplete open on “ashl”](CarDemoAutocomplete.png)
 
 `AutocompleteField` also has four buttons for the associated row:
 
-| Button | Icon | What it does                                                                                                                                                                                                                         |
-| --- | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Plus** | `pi-plus` | Creates a new row of the associated entity. Opens the form from `AssocForm` (here `ClientForm`). After Save, the row is inserted into DB and written into <Field>client</Field> on the <Entity>CarReservation</Entity> that is open. |
-| **Pencil** | `pi-pencil` | Edits the associated row. Opens the form from `AssocForm` (here `ClientForm`) and loads that row from the database.                                                                                                               |
-| **Search** | `pi-search` | Opens the browse from `SearchBrowse` (here `ClientBrowse`) so you can search and pick the row. This is the other way to choose a row, next to typing in the input.                                                                   |
-| **Dropdown** | `pi-chevron-down` | Opens the suggestion list. With lazy search only the first 10 rows are loaded (`lazyLoadMaxRows`, default 10).                                                                                                                       |
+| Button | Icon | What it does                                                                                                                                                                                                                                              |
+| --- | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Plus** | `pi-plus` | Creates a new row of the associated entity. Opens the form from prop `AssocForm` (here `ClientForm`). After Save, the row is inserted into DB and written into association <Field>client</Field> on the <Entity>CarReservation</Entity> row that is open. |
+| **Pencil** | `pi-pencil` | Edits the associated row. Opens the form from prop `AssocForm` (here `ClientForm`) and reloads that row from the database.                                                                                                                                |
+| **Search** | `pi-search` | Opens the browse from prop `SearchBrowse` (here `ClientBrowse`) so you can search and pick the row. This is the other way to choose a row, next to typing in the input.                                                                                   |
+| **Dropdown** | `pi-chevron-down` | Opens the suggestion list. With lazy search only the first 10 rows are loaded (`lazyLoadMaxRows`, default 10).                                                                                                                                            |
 
 `ClientForm` and `ClientBrowse` open in a modal dialog, so you continue editing the <Entity>CarReservation</Entity> row after the dialog closes.
 
@@ -451,7 +463,7 @@ A screenshot of the autocomplete will be added here.
 }
 ```
 
-`assocList` tells the form that the <Entity>CarReservation</Entity> row is not enough on its own. These many-to-one paths are loaded with it:
+`assocList` tells the form that it is not enough to load only <Entity>CarReservation</Entity> row but we need to load also associated rows on many-to-one associations. These many-to-one paths are loaded with the main row (join is used on the backend):
 
 - <Field>client</Field> loads the <Entity>Client</Entity> row.
 - <Field>car.brandAssoc</Field> loads the <Entity>Car</Entity> row and the <Entity>Brand</Entity> row.
@@ -465,7 +477,7 @@ Without those rows the object is incomplete, and fields of the associated object
 
 `EditForm={CarReservationForm}` on `LazyDataTable` creates the Add and Edit buttons. They open `CarReservationForm` in a modal dialog, the same way `AutocompleteField` opens its form.
 
-The form builds a <Entity>CarReservation</Entity> object and sends it to the backend when you click Save:
+The form builds a <Entity>CarReservation</Entity> object during the edit and sends it to the backend when the user clicks Save:
 
 ```json
 {
@@ -518,4 +530,29 @@ The form builds a <Entity>CarReservation</Entity> object and sends it to the bac
 
 The keys are the same fields as on the entities: <Field>dateFrom</Field> and <Field>price</Field> on <Entity>CarReservation</Entity>, <Field>name</Field> on <Entity>Client</Entity>, <Field>brandAssoc</Field> and <Field>brand</Field> on <Entity>Car</Entity> / <Entity>Brand</Entity>, and <Field>modifUser</Field> pointing at <Entity>User</Entity>.
 
-Locking, dialog nesting, and the `X` prefix are summarized on [Concepts old](/guide/concepts-old). Day-to-day API detail is in [Browse](/features/browse) and [Forms](/features/forms).
+## Save, details, and locking
+
+- Default save endpoint is `x-save-row`.
+- One-to-many **detail rows** are saved with the master when TypeORM associations use `cascade: ["insert", "update", "remove"]`.
+- **Optimistic locking** uses a TypeORM `@VersionColumn()` (`version`). A subscriber rejects the update if the version in the database does not match.
+- **Pessimistic locking** (`lockDate` / `lockUser`) is implemented in persistence for entities that have those fields. It is optional and not required for typical apps. You can turn on pessimistic locking by setting third param in constructor of Form to true, e.g.: 
+```ts
+constructor(props: FormProps) {
+  super(props, 'CarReservation', true); // true -> pessimistic locking turned on 
+})
+```
+- `FormBaseModif` sets `modifDate` and `modifUser` before save.
+
+## Prefix `X`
+
+Framework objects often use prefix **X** so they do not clash with application names: tables (`x_user`, `x_file_meta`), CSS classes, some typescript objects (`XUtils`, `XUtilsCommon`).
+
+## What is not in core yet
+
+These exist in some apps or older library versions and can be moved into Chilibase on demand:
+
+- `FormPanelList` (custom layout of detail rows)
+- Excel / Word export via templates (`{assoc1.assoc2.fieldX}`)
+- Statistics and runtime reporting modules
+
+Day-to-day API detail is in [Browse](/features/browse) and [Forms](/features/forms).

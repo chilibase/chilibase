@@ -2,7 +2,7 @@
 
 Chilibase is a fullstack framework for **model-driven** CRUD apps. You define TypeORM entities; the UI (browse tables and forms) is built from that model with React and PrimeReact.
 
-Current library version in this repository is **0.6.2** (`@chilibase/frontend` and `@chilibase/backend`). Node **20+** and **pnpm 11.4.0** are required.
+Current library version in this repository is **0.6.3** (`@chilibase/frontend` and `@chilibase/backend`). Node **22+** and pnpm **11+** are required.
 
 ## Live demo
 
@@ -19,13 +19,13 @@ Source of that app: [github.com/chilibase/car-demo](https://github.com/chilibase
 2. Install pnpm:
 
 ```sh
-npm install -g pnpm@11.4.0
+npm install -g pnpm
 ```
 
 3. Scaffold an app with `create-chilibase` and follow the console prompts:
 
 ```sh
-pnpx create-chilibase@0.3.2 <app-name> <db-name> <db-schema-name>
+pnpx create-chilibase@0.3.3 <app-name> <db-name> <db-schema-name>
 ```
 
 The scaffold creates a frontend (Vite + React) and a backend (NestJS) that depend on `@chilibase/frontend` and `@chilibase/backend`.
@@ -38,5 +38,7 @@ For each business entity you usually create:
 2. A TypeORM entity class (table mapping).
 3. A **browse** screen — `LazyDataTable` plus `Column`s, often with an `EditForm`.
 4. A **form** — a class extending `FormBase` / `FormBaseModif` with field components.
+
+See [Concepts](/guide/concepts) to learn about the main principles of the framework.
 
 See [Browse](/features/browse) and [Forms](/features/forms). Full examples live in [car-demo](https://github.com/chilibase/car-demo) ([`CarBrowse.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarBrowse.tsx), [`CarForm.tsx`](https://github.com/chilibase/car-demo/blob/main/frontend/src/forms/CarForm.tsx)).

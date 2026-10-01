@@ -40,3 +40,39 @@
 .vp-doc .shiki span.cb-field {
   color: var(--cb-field) !important;
 }
+
+/* Collapsed reference sections. The heading stays visible and toggles the body. */
+.vp-doc .cb-fold > summary {
+  display: block;
+  cursor: pointer;
+  list-style: none;
+}
+
+.vp-doc .cb-fold > summary::-webkit-details-marker,
+.vp-doc .cb-fold > summary::marker {
+  display: none;
+  content: '';
+}
+
+.vp-doc .cb-fold > summary h2::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 0.28em;
+  color: var(--vp-c-text-2);
+  font-size: 1.45em;
+  line-height: 0;
+  vertical-align: -0.08em;
+}
+
+.vp-doc .cb-fold[open] > summary h2::before {
+  content: '▾';
+}
+
+.vp-doc .cb-fold:not([open]) > summary h2 {
+  margin-bottom: 0;
+}
+
+.vp-doc .cb-fold:not([open]) + .cb-fold > summary h2,
+.vp-doc .cb-fold:not([open]) + h2 {
+  margin-top: 20px;
+}

@@ -1,6 +1,6 @@
 {
   "name": "@chilibase/frontend",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "",
   "type": "module",
   "scripts": {
@@ -21,9 +21,9 @@
   },
   "keywords": ["react", "primereact", "react-router", "vite", "crud", "datatable", "filtering", "sorting", "paging", "form", "low-code", "model-driven", "typescript", "fullstack-framework", "fullstack"],
   "engines": {
-    "node": ">=20"
+    "node": ">=22",
+    "pnpm": ">=11"
   },
-  "packageManager": "pnpm@11.4.0",
   "dependencies": {
     "lodash": "^4.18.1",
     "@auth0/auth0-react": "^2.3.0",

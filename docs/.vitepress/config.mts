@@ -19,7 +19,7 @@ export default defineConfig({
       { text: 'Features', link: '/features/browse' },
       { text: 'Reference', link: '/reference/packages' },
       {
-        text: '0.6.2',
+        text: '0.6.3',
         items: [
           { text: 'GitHub', link: 'https://github.com/chilibase/chilibase' },
           { text: 'Car demo', link: 'https://github.com/chilibase/car-demo' }
@@ -35,7 +35,6 @@ export default defineConfig({
             { text: 'Getting started', link: '/guide/getting-started' },
             { text: 'Concepts', link: '/guide/concepts' },
             { text: 'Architecture', link: '/guide/architecture' },
-            { text: 'Concepts old', link: '/guide/concepts-old' }
           ]
         }
       ],

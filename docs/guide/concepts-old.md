@@ -1,4 +1,4 @@
-# Concepts old
+# Concepts old (not used / zombie)
 
 This is the previous concepts page. The current page is [Concepts](/guide/concepts).
 

@@ -24,12 +24,12 @@ Contact: michalrakus@gmail.com
 ### Prerequisites
 
 Install postgres DB  
-Install pnpm (e.g. using command: `npm install -g pnpm@11.4.0`)
+Install pnpm (e.g. using command: `npm install -g pnpm`)
 
 Create new chilibase project using create script `create-chilibase` and follow the instructions in the console.
 
 ```
-pnpx create-chilibase@0.3.2 <app-name> <db-name> <db-schema-name>
+pnpx create-chilibase@0.3.3 <app-name> <db-name> <db-schema-name>
 ```
 ## Features
 

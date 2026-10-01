@@ -22,7 +22,7 @@ Dotted paths walk associations: `modifUser.name`, `brandAssoc.country.code`. One
 
 ## ESM and pnpm
 
-Packages are `"type": "module"`. Backend imports use `.js` extensions in TypeScript source. Apps are expected to use **pnpm** (`preinstall` uses `only-allow pnpm`). `packageManager` is `pnpm@11.4.0`.
+Packages are `"type": "module"`. Backend imports use `.js` extensions in TypeScript source. Apps are expected to use **pnpm 11+** (`preinstall` uses `only-allow pnpm`).
 
 ## Administration UI
 

@@ -13,6 +13,9 @@ hero:
       text: Live demo
       link: /guide/getting-started#live-demo
     - theme: alt
+      text: Concepts
+      link: /guide/concepts
+    - theme: alt
       text: GitHub
       link: https://github.com/chilibase/chilibase
 
