@@ -761,6 +761,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                     </div>
                     : undefined
                 }
+                {/* cellMemo={false} - memoizing causes that SelectColumn does not rerender after fetching assoc rows, because row does not change during fetching assoc rows (fetching is called after first render) */}
                 <div className="flex justify-content-center">
                     <DataTable ref={(el) => this.dt = el} value={valueList} dataKey={this.dataKey} paginator={paginator} rows={rows}
                                totalRecords={valueList.length}
@@ -768,7 +769,8 @@ export class FormDataTable extends Component<FormDataTableProps> {
                                sortMode="multiple" removableSort={true} multiSortMeta={sortField !== undefined ? [{field: sortField, order: 1}] : undefined}
                                selectionMode="single" selection={this.state.selectedRow} onSelectionChange={this.onSelectionChange}
                                className="p-datatable-sm x-form-datatable" resizableColumns columnResizeMode="expand" tableStyle={tableStyle}
-                               scrollable={this.props.scrollable} scrollHeight={scrollHeight} style={style}>
+                               scrollable={this.props.scrollable} scrollHeight={scrollHeight} style={style}
+                               cellMemo={false}>
                         {columnElemList}
                     </DataTable>
                 </div>

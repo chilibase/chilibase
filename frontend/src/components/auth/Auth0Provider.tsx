@@ -22,6 +22,8 @@ export const Auth0Provider = ({children}: {children: ReactNode;}) => {
         <Auth0Auth0Provider
             domain={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_DOMAIN)}
             clientId={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_CLIENT_ID)}
+            useRefreshTokens={true}
+            cacheLocation="localstorage"
             authorizationParams={{redirect_uri: window.location.origin, audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)}}>
             <AppAuth0>
                 {children}
@@ -129,10 +131,14 @@ function AppAuth0({children}: {children: ReactNode;}) {
     // ked sa vola len pri inicializacii, tak token po case (24h default) exspiruje a user si musi restartnut aplikaciu
     const getAccessToken = async (): Promise<string> => {
 
-        return await getAccessTokenSilently(/*{
+        const accessToken: string | undefined = await getAccessTokenSilently(/*{
             audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)
             //scope: "openid profile admin:demo try:demo" - treba nam na nieco?
         }*/);
+        if (accessToken === undefined) {
+            throw new Error("Auth0 did not return an access token.");
+        }
+        return accessToken;
     }
 
     let elem: ReactNode;
