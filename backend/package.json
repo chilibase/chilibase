@@ -4,7 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
     "compile": "tsc",
     "build": "pnpm run clean && pnpm run compile",
     "buildAndPack": "pnpm run build && pnpm pack",
@@ -20,22 +20,22 @@
   },
   "keywords": ["nestjs", "typeorm", "postgresql", "crud", "low-code", "model-driven", "typescript", "fullstack-framework", "fullstack", "rest-api"],
   "engines": {
-    "node": ">=22",
+    "node": ">=22.12",
     "pnpm": ">=11"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "iconv-lite": "^0.7.3",
-    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/jwt": "^12.0.2",
     "cheerio": "^1.2.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.24",
-    "@nestjs/schematics": "^11.1.0",
-    "@nestjs/testing": "^11.2.7",
+    "@nestjs/cli": "^12.0.8",
+    "@nestjs/schematics": "^12.0.6",
+    "@nestjs/testing": "^12.1.2",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
-    "@types/jest": "29.5.14",
+    "@types/jest": "30.0.0",
     "@types/lodash": "^4.17.25",
     "@types/multer": "^1.4.13",
     "@types/node": "^22.20.5",
@@ -46,7 +46,7 @@
     "@typescript-eslint/eslint-plugin": "8.71.1",
     "@typescript-eslint/parser": "8.71.1",
     "eslint": "10.12.0",
-    "jest": "29.7.0",
+    "jest": "30.5.2",
     "prettier": "^3.9.9",
     "rimraf": "^6.1.3",
     "supertest": "^7.3.1",
@@ -54,17 +54,17 @@
     "ts-loader": "^9.6.2",
     "ts-node": "10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.2.7",
-    "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.2.7",
-    "@nestjs/passport": "^11.0.5",
-    "@nestjs/platform-express": "^11.2.7",
-    "@nestjs/typeorm": "^11.0.3",
+    "@nestjs/common": "^12.1.2",
+    "@nestjs/config": "^12.0.1",
+    "@nestjs/core": "^12.1.2",
+    "@nestjs/passport": "^12.0.0",
+    "@nestjs/platform-express": "^12.1.2",
+    "@nestjs/typeorm": "^12.0.2",
     "exceljs": "^4.4.0",
-    "jwks-rsa": "^3.2.2",
+    "jwks-rsa": "^4.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -73,7 +73,7 @@
     "postgres-interval": "^4.1.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "typeorm": "^0.3.31"
+    "typeorm": "^1.1.2"
   },
   "files": [
     "lib/**/*"
@@ -81,6 +81,7 @@
   "exports": {
     "./auth": "./lib/auth/index.js",
     "./common": "./lib/common/index.js",
+    "./entity-metadata": "./lib/entity-metadata/index.js",
     "./env-vars": "./lib/env-vars/index.js",
     "./export": "./lib/export/index.js",
     "./locale": "./lib/locale/index.js",

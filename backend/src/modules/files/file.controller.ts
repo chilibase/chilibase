@@ -5,6 +5,8 @@ import {Readable} from "stream";
 import {Utils} from "../../utils/Utils.js";
 import {FileMeta} from "./file-meta.entity.js";
 import {FileInterceptor} from "@nestjs/platform-express";
+// without this import, we get TS2694: Namespace global.Express has no exported member Multer
+import type {} from "multer";
 import {join} from "path";
 import {FileJsonField} from "../../common/lib-api.js";
 

@@ -4,6 +4,7 @@ import {DataSource, EntityMetadata} from "typeorm";
 import {RelationMetadata} from "typeorm/metadata/RelationMetadata.js";
 import {ColumnMetadata} from "typeorm/metadata/ColumnMetadata.js";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon.js";
+import {getNumberWidth} from "./NumberWidth.js";
 
 @Injectable()
 export class EntityMetadataService {
@@ -79,9 +80,12 @@ export class EntityMetadataService {
             if (isNaN(length)) {
                 length = undefined;
             }
-            let width: number = columnMetadata.width; // Podla dokumentacie sa width pouziva pri MySql (pri stlpci int). Ale v principe, co si tam zapiseme to tam bude. Ak nic nezapiseme, tak tam bude undefined.
+            // TypeORM 1 removed MySQL display width. Integer digit count comes from @NumberWidth; 11 is the old MySQL int default.
+            let width: number | undefined = typeof columnMetadata.target === "function"
+                ? getNumberWidth(columnMetadata.target, fieldName)
+                : undefined;
             if (type === "number" && width === undefined) {
-                width = 11; // tychto 11 je default pre int stlpce v MySql, pre ine databazy to nemusi platit
+                width = 11;
             }
             // poznamka: columnMetadata.isNullable - default je false, co nie je moc prijemne, vecsina stlpcov je nullable
             fieldMap[fieldName] = {name: fieldName, type: type, isNullable: columnMetadata.isNullable,

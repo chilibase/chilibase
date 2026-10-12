@@ -1,5 +1,6 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {BrowseMeta} from "./browse-meta.entity.js";
+import {NumberWidth} from "../../entity-metadata/NumberWidth.js";
 
 @Entity('x_column_meta')
 export class ColumnMeta {
@@ -23,7 +24,8 @@ export class ColumnMeta {
     @Column({length: 16, nullable: true})
     width: string;
 
-    @Column({name: 'column_order', width: 3, nullable: false})
+    @NumberWidth(3)
+    @Column({name: 'column_order', nullable: false})
     columnOrder: number;
 
     @ManyToOne('BrowseMeta', 'columnMetaList', {nullable: false})

@@ -7,6 +7,35 @@ import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {useAuthSession} from "./useAuthSession";
 
+// for localstorage, maybe we will use it in future
+/*
+// Auth0 stores the cache as @@auth0spajs@@::<clientId>::... with body.refresh_token.
+function removeAuth0RefreshToken(): void {
+    const prefix = "@@auth0spajs@@";
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key === null || !key.startsWith(prefix)) {
+            continue;
+        }
+        const raw = localStorage.getItem(key);
+        if (raw === null) {
+            continue;
+        }
+        try {
+            const entry = JSON.parse(raw);
+            if (entry?.body?.refresh_token === undefined) {
+                continue;
+            }
+            delete entry.body.refresh_token;
+            localStorage.setItem(key, JSON.stringify(entry));
+        }
+        catch {
+            // not an Auth0 cache entry
+        }
+    }
+}
+*/
+
 export const Auth0Provider = ({children}: {children: ReactNode;}) => {
     // na fungovanie klienta stacili domain, clientId, redirectUri - tak som nechal len tie
     // a este som sem pridal audience (id-cko backend-u) aby pri prihlasovani pytal suhlas na scope "profile"
@@ -18,12 +47,13 @@ export const Auth0Provider = ({children}: {children: ReactNode;}) => {
     // redirect_uri je url-ka, na ktoru sa flow vrati po logine z auth0.com (musi byt uvedena v configuracii aplikacie na auth0.com vo fielde Allowed Callback URLs)
     // (poznamka: mohli by sme pouzivat window.location.origin + "/callback" a na "/callback" v router-i zavesit specialny komponent ktory by sa cez navigate() dostal na spravnu stranku)
     //console.log('redirect_uri = ' + window.location.origin + window.location.pathname);
+    // note: cacheLocation="localstorage" is also good but during developing, if new version si built, developer has to manually remove refresh token from local storage
     return (
         <Auth0Auth0Provider
             domain={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_DOMAIN)}
             clientId={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_CLIENT_ID)}
             useRefreshTokens={true}
-            cacheLocation="localstorage"
+            cacheLocation="memory"
             authorizationParams={{redirect_uri: window.location.origin, audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)}}>
             <AppAuth0>
                 {children}

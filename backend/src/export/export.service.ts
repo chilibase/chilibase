@@ -134,7 +134,7 @@ export abstract class ExportService {
     // ak bude treba, presunut do XUtils
     protected transformToEntity(data: any, selectQueryBuilder: SelectQueryBuilder<unknown>): any {
         // pozor, tato transformacia vracia niektore decimaly (napr. Car.price) ako string, to asi nie je standard
-        const transformer = new RawSqlResultsToEntityTransformer(selectQueryBuilder.expressionMap, selectQueryBuilder.connection.driver, [], [], undefined);
+        const transformer = new RawSqlResultsToEntityTransformer(selectQueryBuilder.expressionMap, selectQueryBuilder.connection.driver, []);
         const entityList: any[] = transformer.transform([data], selectQueryBuilder.expressionMap.mainAlias!);
         return entityList[0];
     }

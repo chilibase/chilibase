@@ -6,24 +6,23 @@ import {
     Res, StreamableFile, UseGuards
 } from '@nestjs/common';
 import {PersistenceService} from "./persistence.service.js";
-import {FindResult} from "../common/FindResult.js";
+import type {FindResult} from "../common/FindResult.js";
 import {LazyDataTableService} from "./lazy-data-table.service.js";
 import {EntityMetadataService} from "../entity-metadata/entity-metadata.service.js";
-import {EntityMap} from "../common/EntityMetadata.js";
-import {FindParam, LazyAutoCompleteSuggestionsRequest} from "../common/FindParam.js";
-import {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
-import {SaveRowParam} from "./SaveRowParam.js";
-import {RemoveRowParam} from "./RemoveRowParam.js";
-import {BrowseMetaMap} from "../common/types.js";
+import type {EntityMap} from "../common/EntityMetadata.js";
+import type {FindParam, LazyAutoCompleteSuggestionsRequest} from "../common/FindParam.js";
+import type {FindParamRowsForAssoc} from "./FindParamRowsForAssoc.js";
+import type {SaveRowParam} from "./SaveRowParam.js";
+import type {RemoveRowParam} from "./RemoveRowParam.js";
+import type {BrowseMetaMap} from "../common/types.js";
 import {BrowseFormMetadataService} from "../dynamic-browse/browse-form-metadata.service.js";
-import {Response} from 'express';
-import {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../common/ExportImportParam.js";
-import {PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
+import type {Response} from 'express';
+import type {ExportCsvParam, ExportExcelParam, ExportJsonParam} from "../common/ExportImportParam.js";
+import type {LocalAuthLoginResponse, PostLoginRequest, PostLoginResponse} from "../common/auth-api.js";
 import {LocalAuthGuard} from "../auth/local-auth.guard.js";
 import {LocalAuthService} from "../auth/local-auth.service.js";
-import {LocalAuthLoginResponse} from "../common/auth-api.js";
 import {Public} from "../auth/public.js";
-import {
+import type {
     FindRowByIdRequest,
     FindRowByIdResponse,
     GetSequenceValueRequest,

@@ -11,7 +11,7 @@
     "target": "ESNext",
     "sourceMap": true,
     "outDir": "./lib",
-    "baseUrl": "./",
+    "rootDir": "./src",
     "incremental": true,
     "strictNullChecks": false,
 
@@ -19,6 +19,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "isolatedModules": true,
     "skipLibCheck": true
   },
   "include": ["src"],
