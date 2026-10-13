@@ -1,4 +1,4 @@
-import React, {ReactElement} from "react";
+import React, {ReactElement, ComponentType, cloneElement} from "react";
 import {Dialog} from "primereact/dialog";
 import {SearchBrowseParams} from "./SearchBrowseParams";
 import {SearchBrowseProps} from "../lazy-data-table";
@@ -10,7 +10,7 @@ export interface SearchBrowseDialogState {
 
 export const SearchBrowseDialog = (props: {
     dialogState: SearchBrowseDialogState;
-    SearchBrowse?: React.ComponentType<SearchBrowseProps>;
+    SearchBrowse?: ComponentType<SearchBrowseProps>;
     searchBrowseElement?: ReactElement;
     onHide: () => void;
 }) => {
@@ -26,7 +26,7 @@ export const SearchBrowseDialog = (props: {
                 }
                 else {
                     // we use JSX element (not recommended way, but we can pass (custom) props at app level)
-                    browse = React.cloneElement(props.searchBrowseElement as ReactElement<SearchBrowseProps>, {
+                    browse = cloneElement(props.searchBrowseElement as ReactElement<SearchBrowseProps>, {
                         searchBrowseParams: props.dialogState.searchBrowseParams,
                     });
                 }

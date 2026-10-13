@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import {Component, Ref, ComponentType} from "react";
 import {EntityRow} from "../../common/types";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
@@ -19,7 +19,7 @@ export type OnSaveOrCancelProp = (entityRow: EntityRow | null, objectChange: Ope
 // preto umoznujeme aby id mohlo byt undefined
 // zombie
 export interface FormPropsOld {
-    ref?: React.Ref<FormBase>;
+    ref?: Ref<FormBase>;
     id?: number;
     loaderData?: object; // objekt nacitany cez clientLoader (id by malo byt undefined, initValues je tiez undefined, v buducnosti nahradi id)
     initValues?: object; // pri inserte (id je undefined) mozme cez tuto property poslat do formulara default hodnoty ktore sa nastavia do objektu vytvoreneho v metode this.createNewObject(): EntityRow
@@ -29,7 +29,7 @@ export interface FormPropsOld {
 }
 
 export interface FormProps {
-    ref?: React.Ref<FormBase>;
+    ref?: Ref<FormBase>;
     entityRow?: EntityRow; // entityRow(row) created/loaded using methods createObject(id undefined)/loadObject (id exists)
                     // "?" is DEPRECATED - if entityRow is undefined then entityRow is loaded in componentDidMount - legacy way of loading
     id?: number; // DEPRECATED - used only if entityRow is undefined (legacy way of loading)
@@ -41,7 +41,7 @@ export interface FormProps {
 }
 
 export interface FormWithLoaderProps {
-    formBaseRef?: React.Ref<FormBase>; // forwarded to FormProps
+    formBaseRef?: Ref<FormBase>; // forwarded to FormProps
     id: number | undefined; // for id === undefined we do insert, for id !== undefined we do update
     initValues?: object; // DEPRECATED (forwarded to FormProps)
     onSaveOrCancel?: OnSaveOrCancelProp; // forwarded to FormProps
@@ -52,7 +52,7 @@ export interface FormWithLoaderProps {
 // type for Form param - either Form is used (Form={CarForm}) or formElement is used (formElement={<CarForm/>})
 // if both are undefined or both are defined - invalid state
 // export interface FormParam {
-//     Form?: React.ComponentType<FormProps>;
+//     Form?: ComponentType<FormProps>;
 //     formElement?: ReactElement;
 // }
 

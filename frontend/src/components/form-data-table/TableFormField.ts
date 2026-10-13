@@ -1,5 +1,5 @@
 import {FormBase} from "../form";
-import React, {Component} from "react";
+import {Component, CSSProperties} from "react";
 import {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType} from "../../utils/types";
@@ -20,7 +20,7 @@ export interface TableFormFieldProps {
     label?: string;
     tooltip?: string;
     desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat placeholder a tooltip pre label) - vytvoreny pre depaul
-    labelStyle?: React.CSSProperties;
+    labelStyle?: CSSProperties;
 }
 
 export abstract class TableFormField<P extends TableFormFieldProps> extends Component<P> {
@@ -118,8 +118,8 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
         return label;
     }
 
-    getLabelStyle(): React.CSSProperties {
-        let labelStyle: React.CSSProperties = this.props.labelStyle ?? {};
+    getLabelStyle(): CSSProperties {
+        let labelStyle: CSSProperties = this.props.labelStyle ?? {};
         // this.props.inline nepouzivame, lebo je to asi zombie
         Utils.addCssPropIfNotExists(labelStyle, {width: Utils.FIELD_LABEL_WIDTH});
         return labelStyle;

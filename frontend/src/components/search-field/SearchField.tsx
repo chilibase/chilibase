@@ -1,4 +1,4 @@
-import React, {ReactElement} from "react";
+import React, {ReactElement, CSSProperties, createRef, cloneElement} from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";
@@ -21,7 +21,7 @@ export interface SearchFieldProps extends FormFieldProps {
     assocForm?: ReactElement;
     filter?: FilterProp;
     size?: number;
-    inputStyle?: React.CSSProperties;
+    inputStyle?: CSSProperties;
 }
 
 export class SearchField extends FormField<SearchFieldProps> {
@@ -41,9 +41,9 @@ export class SearchField extends FormField<SearchFieldProps> {
 
         this.xAssoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
 
-        this.inputTextRef = React.createRef();
+        this.inputTextRef = createRef();
         // POVODNY KOD
-        //this.overlayPanelEl = React.createRef();
+        //this.overlayPanelEl = createRef();
 
         this.state = {
             inputChanged: false,
@@ -151,7 +151,7 @@ export class SearchField extends FormField<SearchFieldProps> {
                     // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
                     const id = (assocObject !== null) ? assocObject[xEntityAssoc.idField] : null;
                     // klonovanim elementu pridame atribut id
-                    const assocForm = React.cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
+                    const assocForm = cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
                     (props.form.props as any).openForm(assocForm);
                 }
             }
@@ -198,7 +198,7 @@ export class SearchField extends FormField<SearchFieldProps> {
                 </div>
                 <Dialog className="x-dialog-without-header" visible={dialogOpened} /*style={{ width: '50vw' }}*/ onHide={onHide}>
                     {/* klonovanim elementu pridame atribut searchBrowseParams */}
-                    {React.cloneElement(props.searchBrowse as ReactElement<any>, {searchBrowseParams: createSearchBrowseParams()}/*, props.searchBrowse.children*/)}
+                    {cloneElement(props.searchBrowse as ReactElement<any>, {searchBrowseParams: createSearchBrowseParams()}/*, props.searchBrowse.children*/)}
                 </Dialog>
             </div>
         );

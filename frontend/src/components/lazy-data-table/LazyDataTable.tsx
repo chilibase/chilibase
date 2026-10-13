@@ -1,4 +1,4 @@
-import React, {forwardRef, ReactElement, ReactNode, useEffect, useImperativeHandle, useRef, useState} from 'react';
+import React, {forwardRef, ReactElement, ReactNode, useEffect, useImperativeHandle, useRef, useState, ComponentType, CSSProperties, Dispatch, SetStateAction, Children, useContext} from 'react';
 import {
     DataTable, DataTableExpandedRows,
     DataTableFilterMeta,
@@ -73,13 +73,13 @@ export type MultilineRenderType = "singleLine" | "fewLines" | "allLines";
 export type OpenFormForInsert = (
     initValues?: object,
     onSaveOrCancel?: OnSaveOrCancelProp,
-    Form?: React.ComponentType<FormProps>,
+    Form?: ComponentType<FormProps>,
     formElement?: ReactElement
 ) => void;
 export type OpenFormForUpdate = (
     id: number,
     onSaveOrCancel?: OnSaveOrCancelProp,
-    Form?: React.ComponentType<FormProps>,
+    Form?: ComponentType<FormProps>,
     formElement?: ReactElement
 ) => void;
 
@@ -93,7 +93,7 @@ export interface AddRowButton {
     icon?: IconType<ButtonProps>;
     label: string;
     onClick: OnAddRowFn;
-    style?: React.CSSProperties;
+    style?: CSSProperties;
 }
 
 export type AppButtonForRowOnClick = (
@@ -106,7 +106,7 @@ export interface AppButtonForRow {
     icon?: IconType<ButtonProps>;
     label: string;
     onClick: AppButtonForRowOnClick;
-    style?: React.CSSProperties;
+    style?: CSSProperties;
 }
 
 export interface OptionalCustomFilter {
@@ -171,7 +171,7 @@ export interface LazyDataTableProps {
     stateStorage?: StorageType; // default is session
     stateKey?: string; // key used to save the state into session (or local), default is entity, but sometimes we have more then 1 browse/LazyDataTable for 1 entity
     label?: string;
-    labelStyle?: React.CSSProperties; // used to override default style or add new style
+    labelStyle?: CSSProperties; // used to override default style or add new style
     dataKey?: string;
     rowExpansionTemplate?: (row: any, options: DataTableRowExpansionTemplate) => ReactNode;
     showExpandedRow?: (row: any, multilineSwitchValue: MultilineRenderType) => boolean;
@@ -189,7 +189,7 @@ export interface LazyDataTableProps {
     formFooterHeight?: string; // pouziva sa (zatial) len pri deme - zadava sa sem vyska linkov na zdrojaky (SourceCodeLinkForm, SourceCodeLinkEntity) aby ich bolo vidno pri automatickom vypocte vysky tabulky
     shrinkWidth?: boolean; // default true - ak je true, nerozsiruje stlpce na viac ako je ich explicitna sirka (nevznikaju "siroke" tabulky na celu dlzku parent elementu)
     onResetTable?: () => void; // zavola sa pri kliknuti na button resetTable (Reset filter)
-    EditForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
+    EditForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
     editFormElement?: ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
     onAddRow?: OnAddRowFn | AddRowButton[] | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
                                                         // array form (like appButtonsForRow) renders multiple add buttons instead of the standard "Add" button
@@ -214,7 +214,7 @@ export interface LazyDataTableProps {
     multilineSwitchInitValue?: MultilineRenderType; // default "allLines"
     multilineSwitchFewLinesCount?: number; // max count of rendered lines for render type "fewLines" (default 2)
     // ak chceme mat pristup k stavu multilineSwitchu, treba vytiahnut "const [multilineSwitchValue, setMultilineSwitchValue] = useState<MultilineRenderType>(...);" do browse komponentu
-    multilineSwitchValue?: [MultilineRenderType, React.Dispatch<React.SetStateAction<MultilineRenderType>>]; // TODO - specialny typ vytvor, napr. XuseState<boolean>
+    multilineSwitchValue?: [MultilineRenderType, Dispatch<SetStateAction<MultilineRenderType>>]; // TODO - specialny typ vytvor, napr. XuseState<boolean>
     headerBodyTop?: ReactNode; // adds stuff above input for full text search and search buttons (used for mobile if there is not enaugh space in headerBodyLeft or headerBodyRight)
     headerBodyLeft?: ReactNode; // adds stuff before input for full text search
     headerBodyRight?: ReactNode; // prida sa hned za multilineSwitch, moze sa tu pridat napr. custom switch
@@ -277,7 +277,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // must be here, is used in createFiltersInit()
     const xEntity: Entity = UtilsMetadataCommon.getEntity(props.entity);
-    const propsColumns: ReactElement[] = Utils.applyDefaultProps(React.Children.toArray(props.children) as ReactElement[]);
+    const propsColumns: ReactElement[] = Utils.applyDefaultProps(Children.toArray(props.children) as ReactElement[]);
 
     const createAggregateItems = (): SimpleAggregateItem[] => {
 
@@ -435,7 +435,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     // premenne platne pre cely component (obdoba member premennych v class-e)
-    const primeReactContext: APIOptions = React.useContext(PrimeReactContext); // probably does not work and deprecated PrimeReact.filterMatchModeOptions is used
+    const primeReactContext: APIOptions = useContext(PrimeReactContext); // probably does not work and deprecated PrimeReact.filterMatchModeOptions is used
     const dataTableEl = useRef<any>(null);
     let customFilterItems: CustomFilterItem[] | undefined = UtilsCommon.createCustomFilterItems(props.customFilter);
     if (props.searchBrowseParams !== undefined) {
@@ -970,7 +970,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const openFormForInsert: OpenFormForInsert = (
         initValues?: object,
         onSaveOrCancel?: OnSaveOrCancelProp,
-        Form?: React.ComponentType<FormProps>,
+        Form?: ComponentType<FormProps>,
         formElement?: ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
@@ -1009,7 +1009,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const openFormForUpdate: OpenFormForUpdate = (
         id: number,
         onSaveOrCancel?: OnSaveOrCancelProp,
-        Form?: React.ComponentType<FormProps>,
+        Form?: ComponentType<FormProps>,
         formElement?: ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
@@ -1397,7 +1397,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
     }
 
-    let style: React.CSSProperties = {};
+    let style: CSSProperties = {};
     if (scrollWidthLocal !== undefined) {
         style.width = scrollWidthLocal;
     }
@@ -1407,7 +1407,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     // pri prechode z Primereact 6.x na 9.x sa tableLayout zmenil z fixed na auto a nefungovalo nastavenie sirok stlpcov - docasne teda takto
-    let tableStyle: React.CSSProperties = {tableLayout: 'fixed'};
+    let tableStyle: CSSProperties = {tableLayout: 'fixed'};
     if (props.width !== undefined) {
         let width: string = props.width;
         if (!isNaN(Number(width))) { // if width is number
@@ -1467,7 +1467,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     // for better readability we create the columns already here
-    const columnElemList: ReactElement[] = React.Children.map(
+    const columnElemList: ReactElement[] = Children.map(
         // props.children are columns of LazyDataTable
         // the column is rendered (Primereact DataTable column created) if viewStatus is not hidden and the column is not off via column toggle
         propsColumns.filter((child: ReactElement, index: number) => {
@@ -1698,7 +1698,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 const filterButtonInHeader: boolean = props.filterDisplay === "menu";
                 width = UtilsMetadata.computeColumnWidth(xField, betweenFilter, filterMenuInFilterRow, undefined, headerLabel, true, filterButtonInHeader);
             }
-            let headerStyle: React.CSSProperties = {};
+            let headerStyle: CSSProperties = {};
             if (width !== undefined) {
                 headerStyle = {width: width};
             }
@@ -1843,9 +1843,9 @@ export type AutoCompleteInFilterProps = {
     field?: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     inputClassName?: string;
-    SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
+    SearchBrowse?: ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
-    ValueForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
+    ValueForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
     valueFormElement?: ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
     minLength?: number; // Minimum number of characters to initiate a search (default 1)
     scrollHeight?: string; // Maximum height of the suggestions panel.
@@ -1872,7 +1872,7 @@ export interface ColumnProps {
     initColumnToggle: boolean; // initial value for column toggle - if false, column is not displayed initially (user can display it via column toggle dialog) (default true)
     filterElement?: FilterElementProp;
     className?: string; // wraps the content of the column cell with div element with this className (prop is not applied if prop body is used)
-    style?: React.CSSProperties; // wraps the content of the column cell with div element with this style (prop is not applied if prop body is used)
+    style?: CSSProperties; // wraps the content of the column cell with div element with this style (prop is not applied if prop body is used)
     body?: ReactNode | ((data: any, options: ColumnBodyOptions) => ReactNode); // the same type as type of property Column.body
 }
 

@@ -10,7 +10,7 @@ import {
     ToManyAssocExportType
 } from "../common/ExportImportParam";
 import {ResponseError} from "./ResponseError";
-import React, {ReactElement} from "react";
+import {ReactElement, CSSProperties, RefObject, ComponentType} from "react";
 import {EnvVar} from "../components/env-vars/EnvVars";
 import {FieldError, FieldErrorMap} from "../components/form/FormErrors";
 import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
@@ -198,7 +198,7 @@ export class Utils {
         return width;
     }
 
-    static addCssPropIfNotExists(cssProps: React.CSSProperties, newCssProps: React.CSSProperties) {
+    static addCssPropIfNotExists(cssProps: CSSProperties, newCssProps: CSSProperties) {
         for (const [cssProp, cssPropValue] of Object.entries(newCssProps)) {
             if (!(cssProp in cssProps)) {
                 (cssProps as any)[cssProp] = cssPropValue;
@@ -828,7 +828,7 @@ export class Utils {
     /**
      * @deprecated returns onSaveOrCancel method used when opening form from browse when using XFormNavigator (deprecated)
      */
-    static onSaveOrCancelNavigator(openForm: (newFormElement: ReactElement | null) => void, xLazyDataTableRef: React.RefObject<LazyDataTableRef>): OnSaveOrCancelProp {
+    static onSaveOrCancelNavigator(openForm: (newFormElement: ReactElement | null) => void, xLazyDataTableRef: RefObject<LazyDataTableRef>): OnSaveOrCancelProp {
         return (object: any | null, objectChange: OperationType) => {
             // close form and display the previous form (it should be browse)
             openForm(null);
@@ -840,7 +840,7 @@ export class Utils {
     }
 
     // helper
-    // static createXFormParam(form?: React.ComponentType<XFormProps>, formElement?: ReactElement): XFormParam | undefined {
+    // static createXFormParam(form?: ComponentType<XFormProps>, formElement?: ReactElement): XFormParam | undefined {
     //     let xFormParam: XFormParam | undefined = undefined;
     //     if (form || formElement) {
     //         xFormParam = {Form: form, formElement};

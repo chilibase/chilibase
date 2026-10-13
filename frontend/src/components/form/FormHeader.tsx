@@ -1,8 +1,8 @@
-import React from "react";
+import React, {CSSProperties} from "react";
 import {FormBase} from "./FormBase";
 import {localeOption} from "../locale/Locale";
 
-export const FormHeader = (props: {form?: FormBase; label: string; appendNewRow?: boolean; style?: React.CSSProperties;}) => {
+export const FormHeader = (props: {form?: FormBase; label: string; appendNewRow?: boolean; style?: CSSProperties;}) => {
     const appendNewRow = props.appendNewRow ?? true;
 
     return (

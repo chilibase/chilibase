@@ -1,4 +1,4 @@
-import React, {Component, ReactElement, ReactNode} from "react";
+import React, {Component, ReactElement, ReactNode, ComponentType, createRef, FocusEvent} from "react";
 import {AutoComplete, AutoCompleteChangeEvent} from "primereact/autocomplete";
 import {SplitButton} from "primereact/splitbutton";
 import {OperationType, Query} from "../../utils/types";
@@ -43,9 +43,9 @@ export interface AutocompleteInputProps {
     field: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     splitQueryValue: boolean; // ak true, tak splituje natypovanu hodnotu podla space a vsetky parcialne hodnoty sa musia vyskytovat v danom suggestion (default je true)
-    SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
+    SearchBrowse?: ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
-    ValueForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
+    ValueForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
     valueFormElement?: ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
     idField?: string; // id field (nazov atributu) objektu z value/suggestions - je potrebny pri otvoreni formularu na editaciu, formular potrebuje id-cko na nacitanie/update zaznamu z DB
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
@@ -106,8 +106,8 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
     constructor(props: AutocompleteInputProps) {
         super(props);
 
-        this.autoCompleteRef = React.createRef();
-        this.autoCompleteInputRef = React.createRef();
+        this.autoCompleteRef = createRef();
+        this.autoCompleteInputRef = createRef();
 
         this.state = {
             inputChanged: false,
@@ -348,7 +348,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         }
     }
 
-    onBlur(e: React.FocusEvent<HTMLInputElement>) {
+    onBlur(e: FocusEvent<HTMLInputElement>) {
         // optimalizacia - testujeme len ak inputChanged === true
         if (this.state.inputChanged) {
             if (e.target.value === '') {

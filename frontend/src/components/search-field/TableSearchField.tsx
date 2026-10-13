@@ -1,5 +1,5 @@
 import {FormBase} from "../form";
-import React, {ReactElement, useRef, useState} from "react";
+import React, {ReactElement, useRef, useState, cloneElement} from "react";
 import {Utils} from "../../utils/Utils";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
@@ -84,7 +84,7 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
                     // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
                     const id = (assocObject !== null && assocObject !== undefined) ? assocObject[xEntityAssoc.idField] : null;
                     // klonovanim elementu pridame atribut id
-                    const assocForm = React.cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
+                    const assocForm = cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
                     (props.form.props as any).openForm(assocForm);
                 }
             }
@@ -120,7 +120,7 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
             </div>
             <Dialog className="x-dialog-without-header" visible={dialogOpened} /*style={{ width: '50vw' }}*/ onHide={onHide}>
                 {/* klonovanim elementu pridame atribut searchBrowseParams */}
-                {React.cloneElement(props.searchBrowse as ReactElement<any>,
+                {cloneElement(props.searchBrowse as ReactElement<any>,
                     {
                             searchBrowseParams : {
                                 onChoose: onChoose,

@@ -4,11 +4,11 @@ import {Field} from "../../common/EntityMetadata";
 // (probably XInputDT cannot be instantiated)
 import {TableFormField, TableFormFieldProps} from "./TableFormField";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import React from "react";
+import {CSSProperties} from "react";
 
 export interface TableValueFieldProps extends TableFormFieldProps {
     field: string;
-    inputStyle?: React.CSSProperties; // pridane koli label/desc funkcionalite ale mozno sa zide aj pri DT sposobe (pouziva sa v subclasses, napr. TableMultilineTextField)
+    inputStyle?: CSSProperties; // pridane koli label/desc funkcionalite ale mozno sa zide aj pri DT sposobe (pouziva sa v subclasses, napr. TableMultilineTextField)
 }
 
 // common superclass for simple fields (not assoc fields)

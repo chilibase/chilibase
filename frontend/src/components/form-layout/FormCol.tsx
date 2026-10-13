@@ -1,12 +1,12 @@
-import React, {ReactNode} from "react";
+import React, {ReactNode, CSSProperties} from "react";
 import {FormRowCol} from "./FormRowCol";
 import {FormBase} from "../form";
 
 export interface FormColProps {
     form?: FormBase;
     width?: string | "full"; // nastavi css property {width: <props.width>} na div (full nastavuje 100%)
-    labelStyle?: React.CSSProperties;
-    style?: React.CSSProperties; // prenesie sa na div
+    labelStyle?: CSSProperties;
+    style?: CSSProperties; // prenesie sa na div
     children: ReactNode;
 }
 

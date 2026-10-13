@@ -1,4 +1,4 @@
-import React from "react";
+import React, {CSSProperties, createRef} from "react";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {MultilineTextInput} from "./MultilineTextInput";
@@ -9,7 +9,7 @@ export interface MultilineTextFieldProps extends ValueFieldProps {
     cols?: number | "full"; // full - maximalna sirka (width:100%)
     labelOnTop?: boolean;
     autoResize?: boolean;
-    fieldStyle?: React.CSSProperties; // zatial sem, mozno v buducnosti posunieme do superclass
+    fieldStyle?: CSSProperties; // zatial sem, mozno v buducnosti posunieme do superclass
 }
 
 export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
@@ -24,7 +24,7 @@ export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
     constructor(props: MultilineTextFieldProps) {
         super(props);
 
-        this.multilineTextInputRef = React.createRef();
+        this.multilineTextInputRef = createRef();
 
         if (props.labelOnTop !== undefined) {
             this.labelOnTop = props.labelOnTop;
@@ -44,7 +44,7 @@ export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
         this.onValueChangeBase(value, this.props.onChange);
     }
 
-    getLabelStyle(): React.CSSProperties {
+    getLabelStyle(): CSSProperties {
         return this.labelOnTop ? (this.props.labelStyle ?? {}) : super.getLabelStyle();
     }
 
@@ -57,9 +57,9 @@ export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
 
     render() {
 
-        let fieldStyle: React.CSSProperties | undefined = this.props.fieldStyle;
-        const labelStyle: React.CSSProperties = this.getLabelStyle();
-        let inputStyle: React.CSSProperties = this.props.inputStyle ?? {};
+        let fieldStyle: CSSProperties | undefined = this.props.fieldStyle;
+        const labelStyle: CSSProperties = this.getLabelStyle();
+        let inputStyle: CSSProperties = this.props.inputStyle ?? {};
         let cols: number | undefined;
         if (this.props.cols === "full") {
             cols = undefined;

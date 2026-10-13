@@ -1,6 +1,6 @@
 import {FormBase} from "../form";
 import {EntityRow} from "../../common/types";
-import React from "react";
+import React, {cloneElement} from "react";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
@@ -21,7 +21,7 @@ export const ToOneAssocButton = (props: {form: FormBase; assocField: string; ass
         // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
         const id = assocObject !== null ? assocObject[xEntityAssoc.idField] : null;
         // klonovanim elementu pridame atribut id
-        const assocForm = React.cloneElement(props.assocForm, {id: id}, props.assocForm.children);
+        const assocForm = cloneElement(props.assocForm, {id: id}, props.assocForm.children);
         (props.form.props as any).openForm(assocForm);
     }
 

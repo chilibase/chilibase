@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, CSSProperties, FocusEvent} from "react";
 import {Utils} from "../../utils/Utils";
 import {Editor, EditorTextChangeEvent} from "primereact/editor";
 import Quill from 'quill';
@@ -17,7 +17,7 @@ Quill.register(Font, true);
 
 const headerTemplate = () => {
     // poznamka - k tomuto layout-u sa este viazu css styly umiestnene v App.css
-    const styleMarginRight: React.CSSProperties = {marginRight: '0.7rem'};
+    const styleMarginRight: CSSProperties = {marginRight: '0.7rem'};
     return (
         <span className="ql-formats">
 
@@ -71,7 +71,7 @@ export interface RichTextInputProps {
     onChange: (value: string | null) => void;
     readOnly?: boolean;
     error?: string;
-    style?: React.CSSProperties;
+    style?: CSSProperties;
 }
 
 export const RichTextInput = (props: RichTextInputProps) => {
@@ -87,7 +87,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
         setEditorValue(e.htmlValue);
     }
 
-    const onBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    const onBlur = (e: FocusEvent<HTMLDivElement>) => {
         // optimalizacia - onChange volame len ak editorValueChanged === true
         if (editorValueChanged) {
             // TODO - bude vzdy onBlur volany az potom co bude setnuta editorValue? lebo ak nie tak treba hodnotu vytiahnut z "e"

@@ -1,4 +1,4 @@
-import React, {Component, ReactElement, RefObject} from "react";
+import React, {Component, ReactElement, RefObject, createRef, cloneElement} from "react";
 import {FormBase} from "../form";
 
 // helper
@@ -28,7 +28,7 @@ export class FormNavigator extends Component<FormNavigatorProps> {
             formElements: []
         };
 
-        this.xRootElemRef = React.createRef();
+        this.xRootElemRef = createRef();
 
         this.openForm = this.openForm.bind(this);
     }
@@ -42,7 +42,7 @@ export class FormNavigator extends Component<FormNavigatorProps> {
         const formElementsCloned: FormElement[] = this.state.formElements.slice();
 
         if (newFormElement !== null) {
-            formElementsCloned.push({elem: newFormElement, xElemRef: React.createRef()});
+            formElementsCloned.push({elem: newFormElement, xElemRef: createRef()});
         }
         else {
             // user stlacil cancel/back - vratime sa na predchadzajuci formular
@@ -108,7 +108,7 @@ export class FormNavigator extends Component<FormNavigatorProps> {
         const forms = formElements.map((formElement, index) => {
                 const displayed: boolean = (index === formElements.length - 1);
                 // klonovanim elementu pridame atribut openForm={this.openForm} (nemusime tento atribut pridavat pri vytvarani elementu)
-                const formElementCloned = React.cloneElement(formElement.elem as ReactElement<any>, {ref: formElement.xElemRef, openForm: this.openForm, displayed: displayed}/*, (formElement as any).children*/);
+                const formElementCloned = cloneElement(formElement.elem as ReactElement<any>, {ref: formElement.xElemRef, openForm: this.openForm, displayed: displayed}/*, (formElement as any).children*/);
                 // prvych n - 1 komponentov skryjeme cez display: "none" a az posledny vyrenderujeme naozaj (cez display: "block")
                 // TODO - do buducnosti - ak nechceme drzat stav componentu cez display: "none", staci vratit null (komponent vobec nevyrenderujeme)
                 const display: string = (displayed ? "block" : "none");

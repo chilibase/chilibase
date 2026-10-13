@@ -1,4 +1,4 @@
-import React from "react";
+import React, {CSSProperties} from "react";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {RichTextInput} from "./RichTextInput";
@@ -27,7 +27,7 @@ export class RichTextField extends ValueField<RichTextFieldProps> {
         this.onValueChangeBase(value, this.props.onChange);
     }
 
-    getLabelStyle(): React.CSSProperties {
+    getLabelStyle(): CSSProperties {
         return this.props.labelOnTop ? (this.props.labelStyle ?? {}) : super.getLabelStyle();
     }
 
@@ -35,7 +35,7 @@ export class RichTextField extends ValueField<RichTextFieldProps> {
 
         // TODO - neni to otestovane
 
-        let style: React.CSSProperties = this.props.inputStyle ?? {};
+        let style: CSSProperties = this.props.inputStyle ?? {};
         // defaultne pridame width:100%
         // ak nemame labelOnTop=true, musime odratat sirku labelu, inac sa label dostane nad input (koli flex-wrap: wrap)
         const widthValue: string = this.props.labelOnTop ? '100%' : `calc(100% - ${Utils.FIELD_LABEL_WIDTH})`;

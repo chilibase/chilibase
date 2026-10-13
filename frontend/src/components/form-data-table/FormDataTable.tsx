@@ -1,6 +1,6 @@
 ﻿import {FormBase, FormProps} from "../form";
 import {EntityRow} from "../../common/types";
-import React, {Component, ReactElement, ReactNode} from "react";
+import React, {Component, ReactElement, ReactNode, Children, CSSProperties, ComponentType} from "react";
 import {TableSelectField} from "../select-field/TableSelectField";
 import {
     DataTable,
@@ -152,7 +152,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
     }
 
     columnElements(): ReactElement[] {
-        return Utils.applyDefaultProps(React.Children.toArray(this.props.children) as ReactElement[]);
+        return Utils.applyDefaultProps(Children.toArray(this.props.children) as ReactElement[]);
     }
 
     getPathForColumn(columnProps: ColumnBaseProps): string {
@@ -608,7 +608,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             }
         }
 
-        let style: React.CSSProperties = {};
+        let style: CSSProperties = {};
         if (scrollWidth !== undefined) {
             style.width = scrollWidth;
         }
@@ -618,7 +618,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
 
         // pri prechode z Primereact 6.x na 9.x sa tableLayout zmenil z fixed na auto a nefungovalo nastavenie sirok stlpcov - docasne teda takto
-        let tableStyle: React.CSSProperties = {tableLayout: 'fixed'};
+        let tableStyle: CSSProperties = {tableLayout: 'fixed'};
         if (this.props.width !== undefined) {
             let width: string = this.props.width;
             if (!isNaN(Number(width))) { // if width is number
@@ -628,7 +628,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
 
         // pre lepsiu citatelnost vytvarame stlpce uz tu
-        const columnElemList: ReactElement[] = React.Children.map(
+        const columnElemList: ReactElement[] = Children.map(
             this.columnElements().filter((child: ReactElement) => Utils.xViewStatus((child as {props: ColumnBaseProps}).props.columnViewStatus) !== ViewStatus.Hidden),
             function (child) {
                 // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
@@ -731,7 +731,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                 // pre filterDisplay = "row" nechceme clear button, chceme setrit miesto
                 let showClearButton: boolean = thisLocal.props.filterDisplay === "menu";
 
-                let headerStyle: React.CSSProperties = {};
+                let headerStyle: CSSProperties = {};
                 if (width !== undefined) {
                     headerStyle = {width: width};
                 }
@@ -841,9 +841,9 @@ export interface AutocompleteColumnProps extends ColumnBaseProps {
     assocField: string;
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
-    SearchBrowse?: React.ComponentType<SearchBrowseProps>;
+    SearchBrowse?: ComponentType<SearchBrowseProps>;
     searchBrowseElement?: ReactElement;
-    AssocForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row
+    AssocForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
     filter?: TableFieldFilterProp;

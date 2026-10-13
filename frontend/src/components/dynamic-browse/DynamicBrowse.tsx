@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, cloneElement} from "react";
 import {SourceCodeLinkEntity} from "./SourceCodeLinkEntity";
 import {EditColumnDialog, EditColumnDialogValues} from "./EditColumnDialog";
 import * as _ from "lodash";
@@ -203,7 +203,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
             const entityMeta: Entity = UtilsMetadataCommon.getEntity(this.props.entity);
             const id = selectedRow[entityMeta.idField];
             // we add property id={selectedRow.<id>} into formElement
-            const formElementCloned = React.cloneElement(formElement, {id: id}, formElement.children);
+            const formElementCloned = cloneElement(formElement, {id: id}, formElement.children);
             // openForm pridavame automaticky v XFormNavigator3 pri renderovani komponentu
             (this.props as any).openForm(formElementCloned);
         }

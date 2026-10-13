@@ -1,4 +1,4 @@
-import React from "react";
+import React, {createRef} from "react";
 import {Component} from "react";
 import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
 import {FormBase} from "../form";
@@ -40,7 +40,7 @@ export class InputFileList extends Component<InputFileListProps> {
     constructor(props: InputFileListProps) {
         super(props);
 
-        this.fileUploadRef = React.createRef();
+        this.fileUploadRef = createRef();
 
         this.props = props;
         const xEntityForm: Entity = UtilsMetadataCommon.getEntity(props.form.getEntity());

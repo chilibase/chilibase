@@ -1,5 +1,5 @@
 import {InputText} from "primereact/inputtext";
-import React, {CSSProperties, useState} from "react";
+import React, {CSSProperties, useState, FocusEvent} from "react";
 import {intervalAsUI, intervalFromUI} from "../../common/UtilsConversions";
 import {IPostgresInterval} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
@@ -26,7 +26,7 @@ export const IntervalInput = (props: {
         setInputValueState(e.target.value);
     }
 
-    const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const onBlur = (e: FocusEvent<HTMLInputElement>) => {
         // optimalizacia - testujeme len ak inputChanged === true
         if (inputChanged) {
             // convert e.target.value (e.g. 10:29) into IPostgresInterval (e.g. {hours: 10, minutes: 29})

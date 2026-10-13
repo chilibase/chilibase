@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, CSSProperties, createRef, FocusEvent} from "react";
 import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
 import {Utils} from "../../utils/Utils";
 import {InputTextarea} from "primereact/inputtextarea";
@@ -19,7 +19,7 @@ export interface MultilineTextInputProps {
     autoResize?: boolean;
     readOnly?: boolean;
     error?: string;
-    style?: React.CSSProperties;
+    style?: CSSProperties;
     className?: string;
     maxLength?: number;
     tooltip?: string;
@@ -38,7 +38,7 @@ export class MultilineTextInput extends Component<MultilineTextInputProps> {
     constructor(props: MultilineTextInputProps) {
         super(props);
 
-        this.inputTextareaRef = React.createRef();
+        this.inputTextareaRef = createRef();
 
         this.state = {
             inputChanged: false,
@@ -53,7 +53,7 @@ export class MultilineTextInput extends Component<MultilineTextInputProps> {
         this.setState({inputChanged: true, inputValueState: e.target.value});
     }
 
-    onBlur(e: React.FocusEvent<HTMLTextAreaElement>) {
+    onBlur(e: FocusEvent<HTMLTextAreaElement>) {
         // optimalizacia - onChange volame len ak inputChanged === true
         if (this.state.inputChanged) {
             const value: string | null = stringFromUI(e.target.value);

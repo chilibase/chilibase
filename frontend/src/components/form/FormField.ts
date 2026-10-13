@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import {Component, CSSProperties} from "react";
 import {FormBase} from "./FormBase";
 import {FieldError} from "./FormErrors";
 import {EntityRow} from "../../common/types";
@@ -35,7 +35,7 @@ export interface FormFieldProps {
     placeholder?: string;
     desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat label a tooltip) - vytvoreny pre depaul
     readOnly?: ReadOnlyProp;
-    labelStyle?: React.CSSProperties;
+    labelStyle?: CSSProperties;
     onChange?: FieldOnChange;
     onlyInput?: boolean; // ak true, tak vyrenderuje len input element (nerenderuje <div className="field grid"> ani label)
 }
@@ -136,8 +136,8 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
         return label;
     }
 
-    getLabelStyle(): React.CSSProperties {
-        let labelStyle: React.CSSProperties = this.props.labelStyle ?? {};
+    getLabelStyle(): CSSProperties {
+        let labelStyle: CSSProperties = this.props.labelStyle ?? {};
         Utils.addCssPropIfNotExists(labelStyle, {width: Utils.FIELD_LABEL_WIDTH});
         return labelStyle;
     }

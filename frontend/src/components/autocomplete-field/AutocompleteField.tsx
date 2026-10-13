@@ -1,4 +1,4 @@
-import React, {ReactElement, ReactNode} from "react";
+import React, {ReactElement, ReactNode, ComponentType, CSSProperties} from "react";
 import {FilterProp, FormField, FormFieldProps} from "../form";
 import {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
@@ -13,9 +13,9 @@ export interface AutocompleteFieldProps extends FormFieldProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - autocomplete will run on <assoc2>)
     displayField: string | string[];
     itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
-    SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
+    SearchBrowse?: ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
-    AssocForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row
+    AssocForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     dropdownButtonEnabled?: boolean; // ak dame false, tak nezobrazi dropdown button (default je true), ale ak by sme nemali mat ziadny button tak ho (zatial) zobrazime readOnly aby bolo vidno ze mame autocomplete
     insertButtonTooltip?: string;
@@ -32,7 +32,7 @@ export interface AutocompleteFieldProps extends FormFieldProps {
     width?: string;
     scrollHeight?: string; // Maximum height of the suggestions panel.
     inputClassName?: string;
-    inputStyle?: React.CSSProperties;
+    inputStyle?: CSSProperties;
     setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
 }
 

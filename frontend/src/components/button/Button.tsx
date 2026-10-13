@@ -1,13 +1,13 @@
-import React from "react";
+import React, {CSSProperties, MouseEvent} from "react";
 import {Button as PrimeButton, ButtonProps} from "primereact/button";
 import {IconType} from "primereact/utils";
 
 export const Button = (props: {
     label?: string;
     icon?: IconType<ButtonProps>;
-    onClick: ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void);
+    onClick: ((event: MouseEvent<HTMLButtonElement>) => void);
     disabled?: boolean;
-    style?: React.CSSProperties;
+    style?: CSSProperties;
 }) => {
 
     // zatial iba pridany class x-button, aby sme vedeli nastavit margin "m-1" (0.25rem)

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, FocusEvent} from "react";
 import {Calendar, CalendarSelectEvent} from "primereact/calendar";
 import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, DateScale} from "../../common/UtilsConversions";
 import {Utils} from "../../utils/Utils";
@@ -50,7 +50,7 @@ export const DateInput = (props: {
         setInputValueState(undefined);
     }
 
-    const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const onBlur = (e: FocusEvent<HTMLInputElement>) => {
         if (inputChanged) {
             // poznamka: e.target.value aj inputValueState obsahuju tu istu string hodnotu
             const value: Date | null | undefined = dateFromUI(e.target.value, scale);

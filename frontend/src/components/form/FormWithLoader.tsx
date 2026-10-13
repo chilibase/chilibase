@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react';
+import React, {ReactElement, FC, ComponentType, useState, useEffect, cloneElement} from 'react';
 import {
     AssocListFunction,
     CreateObjectFunction,
@@ -18,13 +18,13 @@ import {EntityRow} from "../../common/types";
 
 // correct types:
 // "props: FormProps" - (props of the form component) - must have id (for detecting insert/update) and also must have loaderData (possible enhancement - id could be taken from loaderData)
-// "React.FC<FormProps>" (props of the returned enhanced component) - must have id and should omit loaderData (chatGPT suggested type React.FC<Omit<FormParam, 'loaderData'>>)
+// "FC<FormProps>" (props of the returned enhanced component) - must have id and should omit loaderData (chatGPT suggested type FC<Omit<FormParam, 'loaderData'>>)
 export function FormWithLoader<T = any>(
-    Form: React.ComponentType<FormProps> | undefined,
+    Form: ComponentType<FormProps> | undefined,
     formElement: ReactElement | undefined,
     entity: string, // entity of the form - better would be to take entity from form (if it is technically possible)
     operationType: OperationType.Insert | OperationType.Update
-): React.FC<FormWithLoaderProps> {
+): FC<FormWithLoaderProps> {
 
     // according to context, we look up some special static function on the form component, and we use the function to load data
     const FormType = Form ?? formElement?.type;
@@ -56,14 +56,14 @@ export function FormWithLoader<T = any>(
         }
     }
 
-    let EnhancedComponent: React.FC<FormWithLoaderProps>;
+    let EnhancedComponent: FC<FormWithLoaderProps>;
     if (createObject || loadObject) {
         EnhancedComponent = (props: FormWithLoaderProps) => {
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState<Error | null>(null);
-            const [data, setData] = React.useState<T | undefined>(undefined);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState<Error | null>(null);
+            const [data, setData] = useState<T | undefined>(undefined);
 
-            React.useEffect(() => {
+            useEffect(() => {
                 let cancelled = false;
 
                 setLoading(true);
@@ -104,7 +104,7 @@ export function FormWithLoader<T = any>(
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
-                return React.cloneElement(formElement as ReactElement<FormProps>, {
+                return cloneElement(formElement as ReactElement<FormProps>, {
                     ref: props.formBaseRef,
                     entityRow: data as EntityRow,
                     id: props.id,
@@ -125,7 +125,7 @@ export function FormWithLoader<T = any>(
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
-                return React.cloneElement(formElement as ReactElement<FormProps>, {
+                return cloneElement(formElement as ReactElement<FormProps>, {
                     ref: props.formBaseRef,
                     entityRow: undefined,
                     id: props.id,

@@ -1,11 +1,11 @@
-import React, {ReactNode} from "react";
+import React, {ReactNode, CSSProperties} from "react";
 import {FormRowCol} from "./FormRowCol";
 import {FormBase} from "../form";
 
 export interface FormRowProps {
     form?: FormBase;
-    labelStyle?: React.CSSProperties;
-    style?: React.CSSProperties; // prenesie sa na div
+    labelStyle?: CSSProperties;
+    style?: CSSProperties; // prenesie sa na div
     inline?: boolean; // if true, the children elements are aligned to the left (used to put more inputs into the row)
     children: ReactNode;
 }

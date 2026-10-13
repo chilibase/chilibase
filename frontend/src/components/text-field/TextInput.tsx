@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, CSSProperties, ChangeEvent, FocusEvent} from "react";
 import {
     stringAsUI,
     stringFromUI
@@ -18,7 +18,7 @@ export const TextInput = (props: {
     size?: string | number;
     placeholder?: string;
     className?: string;
-    style?: React.CSSProperties;
+    style?: CSSProperties;
     error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
 }) => {
 
@@ -28,7 +28,7 @@ export const TextInput = (props: {
     // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
     const [inputValueState, setInputValueState] = useState<string | undefined>(undefined);
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         // standardne prichadza z Calendar e.value - typ Date alebo null
         // typ Date prichadza ak uzivatel vyplnil validny datum, null (typeof e.value vracia "object") prichadza ak uzivatel vymazal datum
         // alebo je este datum nekompletny (uzivatel prave zadava datum)
@@ -41,7 +41,7 @@ export const TextInput = (props: {
         setInputValueState(e.target.value); // vzdycky string
     }
 
-    const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const onBlur = (e: FocusEvent<HTMLInputElement>) => {
         if (inputChanged) {
             // poznamka: e.target.value aj inputValueState obsahuju tu istu string hodnotu
             const value: string | null = stringFromUI(e.target.value);
