@@ -189,16 +189,14 @@ export interface LazyDataTableProps {
     formFooterHeight?: string; // pouziva sa (zatial) len pri deme - zadava sa sem vyska linkov na zdrojaky (SourceCodeLinkForm, SourceCodeLinkEntity) aby ich bolo vidno pri automatickom vypocte vysky tabulky
     shrinkWidth?: boolean; // default true - ak je true, nerozsiruje stlpce na viac ako je ich explicitna sirka (nevznikaju "siroke" tabulky na celu dlzku parent elementu)
     onResetTable?: () => void; // zavola sa pri kliknuti na button resetTable (Reset filter)
-    EditForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
+    EditForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEditRow)
     editFormElement?: ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
     onAddRow?: OnAddRowFn | AddRowButton[] | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
                                                         // array form (like appButtonsForRow) renders multiple add buttons instead of the standard "Add" button
-    onEdit?: ((selectedRow: any, openFormForUpdate: OpenFormForUpdate) => void) | false; // creates edit row button (or overrides default edit function used by editForm); if false, no edit row button is created
+    onEditRow?: ((selectedRow: any, openFormForUpdate: OpenFormForUpdate) => void) | false; // creates edit row button (or overrides default edit function used by editForm); if false, no edit row button is created
                                                             // function openFormForUpdate can be used to open form from the body of the onEditRow method (no need to implement the whole boilerplate for opening form, it iś shortcut back into the framework)
-        // -> TODO - rename to onEditRow
-    removeRow?: ((selectedRow: any) => Promise<boolean>) | boolean; // if removeRow is function or removeRow = true, then remove row button is created
-        // -> TODO - rename to onRemoveRow
-    onRemoveRow?: OnSaveOrCancelProp; // function called after removing row (post remove row) -> TODO - rename to postRemoveRow
+    onRemoveRow?: ((selectedRow: any) => Promise<boolean>) | boolean; // if onRemoveRow is function or onRemoveRow = true, then remove row button is created
+    postRemoveRow?: OnSaveOrCancelProp; // function called after removing row
     docTemplates?: true | ((entity: string) => Promise<XtDocTemplate[]>); // if true, doc template button is rendered; function param: function returning list of templates that can be used by user (for the case if we need project specific way of fetching templates)
     appButtonsForRow?: AppButtonForRow[]; // do funkcii tychto buttonov sa posiela vyselectovany row
     appButtons?: any; // vseobecne buttons (netreba im poslat vyselectovany row) - mozno by sa mali volat appButtonsGeneral
@@ -998,10 +996,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const editRow = (row: any) => {
-        if (typeof props.onEdit === 'function') {
-            props.onEdit(row, openFormForUpdate);
+        if (typeof props.onEditRow === 'function') {
+            props.onEditRow(row, openFormForUpdate);
         }
-        else if ((props.EditForm !== undefined || props.editFormElement !== undefined) && props.onEdit !== false) {
+        else if ((props.EditForm !== undefined || props.editFormElement !== undefined) && props.onEditRow !== false) {
             openFormForUpdate(row[dataKey]);
         }
     }
@@ -1038,18 +1036,18 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         //console.log("zavolany onClickRemoveRow");
 
         if (selectedRow !== null) {
-            if (props.removeRow instanceof Function) {
+            if (props.onRemoveRow instanceof Function) {
                 let reread = true;
                 try {
-                    reread = await props.removeRow(selectedRow);
+                    reread = await props.onRemoveRow(selectedRow);
                 }
                 catch (e) {
                     Utils.showErrorMessage(localeOption('removeRowFailed'), e);
                 }
                 if (reread) {
                     loadData();
-                    if (props.onRemoveRow) {
-                        props.onRemoveRow(selectedRow, OperationType.Remove);
+                    if (props.postRemoveRow) {
+                        props.postRemoveRow(selectedRow, OperationType.Remove);
                     }
                 }
             }
@@ -1063,8 +1061,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                         Utils.showErrorMessage(localeOption('removeRowFailed'), e);
                     }
                     loadData();
-                    if (props.onRemoveRow) {
-                        props.onRemoveRow(selectedRow, OperationType.Remove);
+                    if (props.postRemoveRow) {
+                        props.postRemoveRow(selectedRow, OperationType.Remove);
                     }
                 }
             }
@@ -1799,8 +1797,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             </div>
             <div className="flex justify-content-center">
                 {addRowButton}
-                {(props.onEdit !== false && (editFormExists || props.onEdit !== undefined)) && props.searchBrowseParams === undefined ? <Button key="editRow" icon="pi pi-pencil" label={localeOption('editRow')} onClick={onClickEditRow}/> : null}
-                {(props.removeRow !== false && (props.removeRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="removeRow" icon="pi pi-times" label={localeOption('removeRow')} onClick={onClickRemoveRow}/> : null}
+                {(props.onEditRow !== false && (editFormExists || props.onEditRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="editRow" icon="pi pi-pencil" label={localeOption('editRow')} onClick={onClickEditRow}/> : null}
+                {(props.onRemoveRow !== false && (props.onRemoveRow !== undefined)) && props.searchBrowseParams === undefined ? <Button key="removeRow" icon="pi pi-times" label={localeOption('removeRow')} onClick={onClickRemoveRow}/> : null}
                 {exportRows ? <Button key="exportRows" icon="pi pi-file-export" label={localeOption('exportRows')} onClick={onClickExport} /> : null}
                 {props.docTemplates && !isMobile && props.searchBrowseParams === undefined ? <DocTemplateButton key="docTemplates" entity={props.entity} rowId={selectedRow ? selectedRow[dataKey] : undefined} docTemplates={typeof props.docTemplates === 'function' ? props.docTemplates : undefined}/> : null}
                 {props.appButtonsForRow && props.searchBrowseParams === undefined ? props.appButtonsForRow.map((xAppButton: AppButtonForRow) => <Button key={xAppButton.key} icon={xAppButton.icon} label={xAppButton.label} onClick={() => onClickAppButtonForRow(xAppButton.onClick)} style={xAppButton.style}/>) : null}

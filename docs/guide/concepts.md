@@ -308,7 +308,7 @@ export const CarReservationBrowse = (props: SearchBrowseProps) => {
         rows={30}
         sortField="id desc"
         EditForm={CarReservationForm}
-        removeRow={true}
+        onRemoveRow={true}
         searchBrowseParams={props.searchBrowseParams}
       >
         <Column field="id" header="ID" width="5rem" />

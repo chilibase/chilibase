@@ -7,7 +7,7 @@ export const ParameterBrowse = (props: SearchBrowseProps & {customFilter?: Custo
 
     return (
         <LazyDataTable entity="Parameter" label="Parameters" sortField="id" rows={30} customFilter={props.customFilter}
-                       EditForm={ParameterForm} removeRow={true}
+                       EditForm={ParameterForm} onRemoveRow={true}
                        searchBrowseParams={props.searchBrowseParams}>
             <Column field="id" header="ID" width="8rem"/>
             <Column field="code" header="Code" width="16rem"/>

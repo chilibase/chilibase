@@ -241,7 +241,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
         }
         return (
             <div>
-                <LazyDataTable entity={browseMeta.entity} rows={browseMeta.rows ?? undefined} editMode={this.state.editMode} editModeHandlers={editModeHandlers} onEdit={this.onEdit} displayed={(this.props as any).displayed}>
+                <LazyDataTable entity={browseMeta.entity} rows={browseMeta.rows ?? undefined} editMode={this.state.editMode} editModeHandlers={editModeHandlers} onEditRow={this.onEdit} displayed={(this.props as any).displayed}>
                     {browseMeta.columnMetaList.map(function (columnMeta: ColumnMeta, index: number) {
                             return (<Column key={index} field={columnMeta.field} header={columnMeta.header} dropdownInFilter={columnMeta.dropdownInFilter} align={columnMeta.align as "center" | "left" | "right" | undefined} width={columnMeta.width}/>);
                         }

@@ -6,7 +6,7 @@ export const BrowseMetaBrowse = (props: SearchBrowseProps) => {
 
     return (
         <LazyDataTable entity="BrowseMeta" rows={15}
-                       EditForm={BrowseMetaForm} removeRow={true}
+                       EditForm={BrowseMetaForm} onRemoveRow={true}
                        searchBrowseParams={props.searchBrowseParams}>
             <Column field="id" header="ID"/>
             <Column field="entity" header="Entity" width="17rem"/>

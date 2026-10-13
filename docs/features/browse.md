@@ -47,7 +47,7 @@ export const UserBrowse = (props: SearchBrowseProps) => {
       label="Users"
       rows={30}
       EditForm={UserForm}
-      removeRow={onRemoveRow}
+      onRemoveRow={onRemoveRow}
       searchBrowseParams={props.searchBrowseParams}
     >
       <Column field="id" header="ID" />
@@ -76,8 +76,8 @@ A larger example (filters, associations, export) is [CarBrowse.tsx](https://gith
 | `autoFilter` | Filter immediately without the Filter button |
 | `fullTextSearch` | `false` / `true` (default columns) / `string[]` of fields |
 | `EditForm` / `editFormElement` | Form for insert and update |
-| `onAddRow` / `onEdit` | Override or disable add/edit (`false` hides the button) |
-| `removeRow` | `true` or async `(row) => boolean` — show remove |
+| `onAddRow` / `onEditRow` | Override or disable add/edit (`false` hides the button) |
+| `onRemoveRow` | `true` or async `(row) => boolean` — show remove |
 | `customFilter` | Server-side filter the user cannot change |
 | `optionalCustomFilters` | Named filters in a dropdown next to Filter / Clear |
 | `filters` | Initial / controlled PrimeReact filter meta |
