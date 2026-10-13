@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactElement} from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";
@@ -17,8 +17,8 @@ import {UtilsCommon} from "../../common/UtilsCommon";
 export interface SearchFieldProps extends FormFieldProps {
     assocField: string;
     displayField: string;
-    searchBrowse: JSX.Element;
-    assocForm?: JSX.Element;
+    searchBrowse: ReactElement;
+    assocForm?: ReactElement;
     filter?: FilterProp;
     size?: number;
     inputStyle?: React.CSSProperties;
@@ -151,7 +151,7 @@ export class SearchField extends FormField<SearchFieldProps> {
                     // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
                     const id = (assocObject !== null) ? assocObject[xEntityAssoc.idField] : null;
                     // klonovanim elementu pridame atribut id
-                    const assocForm = React.cloneElement(props.assocForm, {id: id}/*, props.assocForm.children*/);
+                    const assocForm = React.cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
                     (props.form.props as any).openForm(assocForm);
                 }
             }
@@ -198,7 +198,7 @@ export class SearchField extends FormField<SearchFieldProps> {
                 </div>
                 <Dialog className="x-dialog-without-header" visible={dialogOpened} /*style={{ width: '50vw' }}*/ onHide={onHide}>
                     {/* klonovanim elementu pridame atribut searchBrowseParams */}
-                    {React.cloneElement(props.searchBrowse, {searchBrowseParams: createSearchBrowseParams()}/*, props.searchBrowse.children*/)}
+                    {React.cloneElement(props.searchBrowse as ReactElement<any>, {searchBrowseParams: createSearchBrowseParams()}/*, props.searchBrowse.children*/)}
                 </Dialog>
             </div>
         );

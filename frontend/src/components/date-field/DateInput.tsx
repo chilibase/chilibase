@@ -12,9 +12,10 @@ export const DateInput = (props: {
     onChange: (value: Date | null) => void;
     readOnly?: boolean;
     error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
-    scale: DateScale;
+    scale?: DateScale;
     datetime?: boolean;
 }) => {
+    const scale = props.scale ?? DateScale.Date;
 
     // true, ak uzivatel typuje hodnotu
     // false, ak uz uzivatel dotypoval (zavolal sa onBlur) - hodnotu berieme "z hora" (z prop.value)
@@ -41,7 +42,7 @@ export const DateInput = (props: {
         //               tak vytvaralo Tue Feb 04 2025 01:00:00 GMT+0100 (Central European Standard Time)
         //               a potom nefungoval XUtilsCommon.dateEquals (cez date1.getTime() === date2.getTime())
         // aby bol onSelect aj onBlur jednotne, tak dame:
-        const value: Date | null | undefined = dateFromUI(dateAsUI(e.value as any, props.scale), props.scale); // e.value je vzdy Date
+        const value: Date | null | undefined = dateFromUI(dateAsUI(e.value as any, scale), scale); // e.value je vzdy Date
         props.onChange(value ?? null);
 
         // pre poriadok resetneme stav
@@ -52,7 +53,7 @@ export const DateInput = (props: {
     const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         if (inputChanged) {
             // poznamka: e.target.value aj inputValueState obsahuju tu istu string hodnotu
-            const value: Date | null | undefined = dateFromUI(e.target.value, props.scale);
+            const value: Date | null | undefined = dateFromUI(e.target.value, scale);
             props.onChange(value ?? null); // nekorektnu hodnotu reprezentovanu cez undefined budeme riesit akokeby user zadal null (field sa vyprazdni)
             setInputChanged(false);
             setInputValueState(undefined); // pre poriadok
@@ -93,12 +94,9 @@ export const DateInput = (props: {
     // konverzia (a volanie props.onChange) sa robi az pri onBlur
     return (
         <Calendar id={props.id} value={getInputValue()} onChange={onChange} disabled={props.readOnly} showIcon={true} showOnFocus={false}
-                  view={getView(props.scale)} dateFormat={dateFormatCalendar(props.scale)} keepInvalid={true} parseDateTime={(text: string) => text as any}
+                  view={getView(scale)} dateFormat={dateFormatCalendar(scale)} keepInvalid={true} parseDateTime={(text: string) => text as any}
                   showTime={datetime} showSeconds={datetime} inputClassName={datetime ? 'x-input-datetime' : 'x-input-date'}
                   onSelect={onSelect} onBlur={onBlur} {...Utils.createTooltipOrErrorProps(props.error)}/>
     );
 }
 
-DateInput.defaultProps = {
-    scale: DateScale.Date
-};

@@ -1,4 +1,4 @@
-import React from "react";
+import {ReactElement} from "react";
 import {numberAsUI, numberFromModel} from "../../common/UtilsConversions";
 
 // sem pride v buducnosti cely XFieldSetBase, zatial su tu skopirovane len niektore typy
@@ -89,7 +89,7 @@ export type XFieldPropValues = any | undefined;
 export interface XFieldProp {
     id: string;
     label: string;
-    fieldPropEdit?: JSX.Element; // fieldPropEdit je komponent na editaciu fieldProp, ma props typu XFieldPropEditProps
+    fieldPropEdit?: ReactElement; // fieldPropEdit je komponent na editaciu fieldProp, ma props typu XFieldPropEditProps
 }
 
 // specialny interface (api) pre custom komponent (nazyvany <Name>FieldPropEdit),

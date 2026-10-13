@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactElement} from 'react';
 import {
     AssocListFunction,
     CreateObjectFunction,
@@ -21,7 +21,7 @@ import {EntityRow} from "../../common/types";
 // "React.FC<FormProps>" (props of the returned enhanced component) - must have id and should omit loaderData (chatGPT suggested type React.FC<Omit<FormParam, 'loaderData'>>)
 export function FormWithLoader<T = any>(
     Form: React.ComponentType<FormProps> | undefined,
-    formElement: React.ReactElement | undefined,
+    formElement: ReactElement | undefined,
     entity: string, // entity of the form - better would be to take entity from form (if it is technically possible)
     operationType: OperationType.Insert | OperationType.Update
 ): React.FC<FormWithLoaderProps> {
@@ -104,7 +104,7 @@ export function FormWithLoader<T = any>(
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
-                return React.cloneElement(formElement!, {
+                return React.cloneElement(formElement as ReactElement<FormProps>, {
                     ref: props.formBaseRef,
                     entityRow: data as EntityRow,
                     id: props.id,
@@ -125,7 +125,7 @@ export function FormWithLoader<T = any>(
             }
             else {
                 // we use JSX element (not recommended way, but we can pass (custom) props at app level)
-                return React.cloneElement(formElement!, {
+                return React.cloneElement(formElement as ReactElement<FormProps>, {
                     ref: props.formBaseRef,
                     entityRow: undefined,
                     id: props.id,

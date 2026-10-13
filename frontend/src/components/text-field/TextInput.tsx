@@ -68,6 +68,3 @@ export const TextInput = (props: {
                    {...Utils.createTooltipOrErrorProps(props.error)} placeholder={props.placeholder}/>
     );
 }
-
-TextInput.defaultProps = {
-};

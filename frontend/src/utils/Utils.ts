@@ -10,7 +10,7 @@ import {
     ToManyAssocExportType
 } from "../common/ExportImportParam";
 import {ResponseError} from "./ResponseError";
-import React from "react";
+import React, {ReactElement} from "react";
 import {EnvVar} from "../components/env-vars/EnvVars";
 import {FieldError, FieldErrorMap} from "../components/form/FormErrors";
 import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
@@ -828,7 +828,7 @@ export class Utils {
     /**
      * @deprecated returns onSaveOrCancel method used when opening form from browse when using XFormNavigator (deprecated)
      */
-    static onSaveOrCancelNavigator(openForm: (newFormElement: JSX.Element | null) => void, xLazyDataTableRef: React.RefObject<LazyDataTableRef>): OnSaveOrCancelProp {
+    static onSaveOrCancelNavigator(openForm: (newFormElement: ReactElement | null) => void, xLazyDataTableRef: React.RefObject<LazyDataTableRef>): OnSaveOrCancelProp {
         return (object: any | null, objectChange: OperationType) => {
             // close form and display the previous form (it should be browse)
             openForm(null);
@@ -840,7 +840,7 @@ export class Utils {
     }
 
     // helper
-    // static createXFormParam(form?: React.ComponentType<XFormProps>, formElement?: React.ReactElement): XFormParam | undefined {
+    // static createXFormParam(form?: React.ComponentType<XFormProps>, formElement?: ReactElement): XFormParam | undefined {
     //     let xFormParam: XFormParam | undefined = undefined;
     //     if (form || formElement) {
     //         xFormParam = {Form: form, formElement};
@@ -856,5 +856,25 @@ export class Utils {
             entityRow = {version: 0};
         }
         return async (params?: Params) => (entityRow as T);
+    }
+
+    // from React 19 JSX runtime does not copy function-component defaultProps onto the element.
+    // for some child components (columns of LazyDataTable, FormDataTable) we still use static defaultProps
+    // using JavaScript destructuring defaults would be more standard, but it is complicated
+    static applyDefaultProps(elementList: ReactElement[]): ReactElement[] {
+        return elementList.map(element => {
+            const componentType = element.type as { defaultProps?: Record<string, unknown> };
+            const defaultProps = componentType?.defaultProps;
+            if (defaultProps == null) {
+                return element;
+            }
+            const props: Record<string, unknown> = {...element.props as Record<string, unknown>};
+            for (const key of Object.keys(defaultProps)) {
+                if (props[key] === undefined) {
+                    props[key] = defaultProps[key];
+                }
+            }
+            return {...element, props}
+        });
     }
 }

@@ -1,4 +1,4 @@
-import React, {forwardRef, ReactChild, useEffect, useImperativeHandle, useRef, useState} from 'react';
+import React, {forwardRef, ReactElement, ReactNode, useEffect, useImperativeHandle, useRef, useState} from 'react';
 import {
     DataTable, DataTableExpandedRows,
     DataTableFilterMeta,
@@ -74,13 +74,13 @@ export type OpenFormForInsert = (
     initValues?: object,
     onSaveOrCancel?: OnSaveOrCancelProp,
     Form?: React.ComponentType<FormProps>,
-    formElement?: React.ReactElement
+    formElement?: ReactElement
 ) => void;
 export type OpenFormForUpdate = (
     id: number,
     onSaveOrCancel?: OnSaveOrCancelProp,
     Form?: React.ComponentType<FormProps>,
-    formElement?: React.ReactElement
+    formElement?: ReactElement
 ) => void;
 
 // selectedRow is here in order to enable to copy some attributes from selected row into new row (selectedRow is null if no row is selected)
@@ -142,7 +142,7 @@ export interface EditModeHandlers {
  */
 export interface BrowseProps {
     displayed?: boolean;
-    openForm?: (newFormElement: JSX.Element | null) => void;
+    openForm?: (newFormElement: ReactElement | null) => void;
 }
 
 export interface SearchBrowseProps {
@@ -173,7 +173,7 @@ export interface LazyDataTableProps {
     label?: string;
     labelStyle?: React.CSSProperties; // used to override default style or add new style
     dataKey?: string;
-    rowExpansionTemplate?: (row: any, options: DataTableRowExpansionTemplate) => React.ReactNode;
+    rowExpansionTemplate?: (row: any, options: DataTableRowExpansionTemplate) => ReactNode;
     showExpandedRow?: (row: any, multilineSwitchValue: MultilineRenderType) => boolean;
     paginator?: boolean;
     rows?: number;
@@ -190,7 +190,7 @@ export interface LazyDataTableProps {
     shrinkWidth?: boolean; // default true - ak je true, nerozsiruje stlpce na viac ako je ich explicitna sirka (nevznikaju "siroke" tabulky na celu dlzku parent elementu)
     onResetTable?: () => void; // zavola sa pri kliknuti na button resetTable (Reset filter)
     EditForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEdit)
-    editFormElement?: React.ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
+    editFormElement?: ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
     onAddRow?: OnAddRowFn | AddRowButton[] | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
                                                         // array form (like appButtonsForRow) renders multiple add buttons instead of the standard "Add" button
     onEdit?: ((selectedRow: any, openFormForUpdate: OpenFormForUpdate) => void) | false; // creates edit row button (or overrides default edit function used by editForm); if false, no edit row button is created
@@ -215,9 +215,9 @@ export interface LazyDataTableProps {
     multilineSwitchFewLinesCount?: number; // max count of rendered lines for render type "fewLines" (default 2)
     // ak chceme mat pristup k stavu multilineSwitchu, treba vytiahnut "const [multilineSwitchValue, setMultilineSwitchValue] = useState<MultilineRenderType>(...);" do browse komponentu
     multilineSwitchValue?: [MultilineRenderType, React.Dispatch<React.SetStateAction<MultilineRenderType>>]; // TODO - specialny typ vytvor, napr. XuseState<boolean>
-    headerBodyTop?: React.ReactNode; // adds stuff above input for full text search and search buttons (used for mobile if there is not enaugh space in headerBodyLeft or headerBodyRight)
-    headerBodyLeft?: React.ReactNode; // adds stuff before input for full text search
-    headerBodyRight?: React.ReactNode; // prida sa hned za multilineSwitch, moze sa tu pridat napr. custom switch
+    headerBodyTop?: ReactNode; // adds stuff above input for full text search and search buttons (used for mobile if there is not enaugh space in headerBodyLeft or headerBodyRight)
+    headerBodyLeft?: ReactNode; // adds stuff before input for full text search
+    headerBodyRight?: ReactNode; // prida sa hned za multilineSwitch, moze sa tu pridat napr. custom switch
     searchBrowseParams?: SearchBrowseParams;
     width?: string; // neviem ako funguje (najme pri pouziti scrollWidth/scrollHeight), ani sa zatial nikde nepouziva
     rowClassName?: (data: any) => object | string | undefined;
@@ -231,7 +231,7 @@ export interface LazyDataTableProps {
      * now method reread() is exposed and supposed to be called in onSaveOrCancel of the form
      */
     displayed?: boolean;
-    children: ReactChild[];
+    children: ReactElement | ReactElement[];
 }
 
 export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
@@ -277,13 +277,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // must be here, is used in createFiltersInit()
     const xEntity: Entity = UtilsMetadataCommon.getEntity(props.entity);
+    const propsColumns: ReactElement[] = Utils.applyDefaultProps(React.Children.toArray(props.children) as ReactElement[]);
 
     const createAggregateItems = (): SimpleAggregateItem[] => {
 
         let aggregateItems: SimpleAggregateItem[] = [];
 
-        let columns = props.children;
-        for (let columnChild of columns) {
+        for (let columnChild of propsColumns) {
             const column = columnChild as ColumnType;
             if (column.props.aggregateType) {
                 aggregateItems.push({field: column.props.field, aggregateFunction: column.props.aggregateType});
@@ -307,8 +307,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
         // warning note: props.children are used to get props of Column whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
         //let columns = dataTableEl.current.props.children; - does not work
-        let columns = props.children;
-        for (let columChild of columns) {
+        for (let columChild of propsColumns) {
             const column = columChild as ColumnType;
             // in some situations, this would be suitable, but for dynamic hide/show columns it can cause crash
             // better place for initializing filters is probably creating columns - function(child)
@@ -412,7 +411,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const createInitColumnToggles = (): boolean[] => {
-        const columns: ColumnType[] = props.children as ColumnType[];
+        const columns: ColumnType[] = propsColumns as ColumnType[];
         return columns.map((column: ColumnType) => column.props.initColumnToggle !== false);
     }
 
@@ -829,7 +828,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
         const toggles: boolean[] = columnTogglesParam ?? columnToggles;
         const fields = [];
-        const columns: ColumnType[] = props.children as ColumnType[];
+        const columns: ColumnType[] = propsColumns as ColumnType[];
         for (let index = 0; index < columns.length; index++) {
             const column: ColumnType = columns[index];
             if (Utils.xViewStatus(column.props.columnViewStatus) === ViewStatus.Hidden) {
@@ -882,7 +881,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
         const exportColumns: ExportColumnParam[] = [];
         const columnsDataTable = dataTableEl.current.props.children;
-        const columnsLazyDataTable: ColumnType[] = props.children as ColumnType[];
+        const columnsLazyDataTable: ColumnType[] = propsColumns as ColumnType[];
         for (const columnDataTable of columnsDataTable) {
             // match by field - indexes may differ when some columns are hidden (columnViewStatus / columnToggles)
             const columnLazyDataTable: ColumnType | undefined = columnsLazyDataTable.find(
@@ -903,7 +902,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const getFieldSetIds = (): string[] => {
         const fieldSetIds = [];
         // warning note: props.children are used to get props of Column whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
-        const columns: ColumnType[] = props.children as ColumnType[];
+        const columns: ColumnType[] = propsColumns as ColumnType[];
         for (let column of columns) {
             if (column.props.fieldSetId) {
                 fieldSetIds.push(column.props.fieldSetId);
@@ -914,13 +913,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const hasTextFormatHtml = (): boolean => {
 
-        const columns: ColumnType[] = props.children as ColumnType[];
+        const columns: ColumnType[] = propsColumns as ColumnType[];
         return columns.some((column: ColumnType) => column.props.textFormat === "html");
     }
 
     const createColumnToggleDialogItems = (): ColumnToggleDialogItem[] => {
         const items: ColumnToggleDialogItem[] = [];
-        const columns: ColumnType[] = props.children as ColumnType[];
+        const columns: ColumnType[] = propsColumns as ColumnType[];
         for (let index = 0; index < columns.length; index++) {
             const column: ColumnType = columns[index];
             if (Utils.xViewStatus(column.props.columnViewStatus) === ViewStatus.Hidden) {
@@ -972,7 +971,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         initValues?: object,
         onSaveOrCancel?: OnSaveOrCancelProp,
         Form?: React.ComponentType<FormProps>,
-        formElement?: React.ReactElement
+        formElement?: ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
             throw `No form declared. LazyDataTable.EditForm/editFormElement is undefined and also Form/formElement in call of the method openFormForInsert is undefined.`;
@@ -1011,7 +1010,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         id: number,
         onSaveOrCancel?: OnSaveOrCancelProp,
         Form?: React.ComponentType<FormProps>,
-        formElement?: React.ReactElement
+        formElement?: ReactElement
     ): void => {
         if (props.EditForm === undefined && Form === undefined && props.editFormElement === undefined && formElement === undefined) {
             throw `No form declared. LazyDataTable.EditForm/editFormElement is undefined and also Form/formElement in call of the method openFormForUpdate is undefined.`;
@@ -1281,8 +1280,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
 
-    const valueAsUI = (value: any, xField: Field, textFormat: TextFormat | undefined, fieldSetId: string | undefined): React.ReactNode => {
-        let valueResult: React.ReactNode;
+    const valueAsUI = (value: any, xField: Field, textFormat: TextFormat | undefined, fieldSetId: string | undefined): ReactNode => {
+        let valueResult: ReactNode;
         if (xField.type === "boolean") {
             // TODO - efektivnejsie by bolo renderovat len prislusne ikonky
             valueResult = <TriStateCheckbox value={value} disabled={true}/>
@@ -1313,11 +1312,11 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return valueResult;
     }
 
-    const bodyTemplate = (columnProps: ColumnProps, rowData: any, xField: Field): React.ReactNode => {
-        let bodyValue: React.ReactNode;
+    const bodyTemplate = (columnProps: ColumnProps, rowData: any, xField: Field): ReactNode => {
+        let bodyValue: ReactNode;
         const rowDataValue: any | any[] = UtilsCommon.getValueOrValueListByPath(rowData, columnProps.field);
         if (Array.isArray(rowDataValue)) {
-            const elemList: React.ReactNode[] = rowDataValue.map((value: any) => valueAsUI(value, xField, columnProps.textFormat, columnProps.fieldSetId));
+            const elemList: ReactNode[] = rowDataValue.map((value: any) => valueAsUI(value, xField, columnProps.textFormat, columnProps.fieldSetId));
             bodyValue = <MultilineRenderer valueList={elemList} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
         }
         else {
@@ -1330,7 +1329,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     // in order that row expansion works like standard row, we wrap row expansion into div
-    const rowExpansionTemplate = (row: any, options: DataTableRowExpansionTemplate): React.ReactNode => {
+    const rowExpansionTemplate = (row: any, options: DataTableRowExpansionTemplate): ReactNode => {
         return (
             <div onClick={() => setSelectedRow(row)} onDoubleClick={() => onRowDoubleClickBase(row)}>
                 {props.rowExpansionTemplate!(row, options)}
@@ -1424,8 +1423,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // pouzivame paginatorLeft aj paginatorRight (aj prazdny) pouzivame, aby bol default paginator v strede (bez paginatorLeft je default paginator presunuty dolava a naopak)
     // sirku div-ov este nastavujeme v css na 10rem
-    let paginatorLeft: JSX.Element;
-    let paginatorRight: JSX.Element | undefined;
+    let paginatorLeft: ReactElement;
+    let paginatorRight: ReactElement | undefined;
     let pageLinkSize: number;
     if (!isMobile) {
         paginatorLeft = <div>{localeOption('totalRecords')}: {value.totalRecords}</div>;
@@ -1468,10 +1467,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     // for better readability we create the columns already here
-    const columnElemList: JSX.Element[] = React.Children.map(
+    const columnElemList: ReactElement[] = React.Children.map(
         // props.children are columns of LazyDataTable
         // the column is rendered (Primereact DataTable column created) if viewStatus is not hidden and the column is not off via column toggle
-        props.children.filter((child: React.ReactChild, index: number) => {
+        propsColumns.filter((child: ReactElement, index: number) => {
             const columnProps: ColumnProps = (child as {props: ColumnProps}).props;
             if (Utils.xViewStatus(columnProps.columnViewStatus) === ViewStatus.Hidden) {
                 return false;
@@ -1509,13 +1508,13 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
             // *********** filterElement ***********
             let betweenFilter: BetweenFilterProp = undefined;
-            let filterElement:  React.ReactNode | ((options: ColumnFilterElementTemplateOptions) => React.ReactNode) | null = null;
+            let filterElement:  ReactNode | ((options: ColumnFilterElementTemplateOptions) => ReactNode) | null = null;
             if (childColumn.props.filterElement !== undefined) {
                 // if we use matchModeLabel and this special match mode is chosen then we use custom filter element
                 // if we don't use matchModeLabel (undefined) then we use custom filter element always
                 if ((childColumn.props.filterElement.matchModeLabel && getFilterMatchMode(childColumn.props.field) === ExtendedFilterMatchMode.FILTER_ELEMENT)
                         || childColumn.props.filterElement.matchModeLabel === undefined) {
-                    filterElement = (options: ColumnFilterElementTemplateOptions): React.ReactNode => {
+                    filterElement = (options: ColumnFilterElementTemplateOptions): ReactNode => {
                         // compilator sa stazoval ze childColumn.props.filterElement moze byt undefined, preto som pridal "!"
                         return childColumn.props.filterElement!.element({getFilterItem: getFilterItem, setFilterItem: setFilterItem, options: options, autoFilter: childColumn.props.autoFilter});
                     };
@@ -1742,7 +1741,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
     );
 
-    let addRowButton: React.ReactNode = null;
+    let addRowButton: ReactNode = null;
     if (props.onAddRow !== false && props.searchBrowseParams === undefined) { // onAddRow is not off (false) and browse is not in search mode
         if (Array.isArray(props.onAddRow)) {
             // more add row buttons
@@ -1821,7 +1820,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     );
 });
 
-// property filterElement is of type function, this functions returns custom filter input (e.g. AutoComplete, type React.ReactNode),
+// property filterElement is of type function, this functions returns custom filter input (e.g. AutoComplete, type ReactNode),
 // setFilterItem is function that the custom filter input calls upon onChange - the function setFilterItem sets the selected filter value into "filters"
 // and from "filters" goes the value to lazy service
 // remark: this complicated way is used only to get filter value from custom filter input to "filters" in LazyDataTable
@@ -1831,7 +1830,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 export type GetFilterItem = (field: string) => DataTableFilterMetaData | DataTableOperatorFilterMetaData;
 export type SetFilterItem = (field: string, filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData, autoFilter: boolean) => void;
 export type FilterElementParams = {getFilterItem: GetFilterItem; setFilterItem: SetFilterItem; options: ColumnFilterElementTemplateOptions; autoFilter: boolean};
-export type FilterElementProp = {element: (params: FilterElementParams) => React.ReactNode; matchModeLabel?: string};
+export type FilterElementProp = {element: (params: FilterElementParams) => ReactNode; matchModeLabel?: string};
 
 export type AutoCompleteInFilterProps = {
     // copy of some props in XAutoComplete (?)
@@ -1842,12 +1841,12 @@ export type AutoCompleteInFilterProps = {
     // copy of some props in AutocompleteInput (?)
     lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     field?: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
-    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
+    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     inputClassName?: string;
     SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
-    searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
+    searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
     ValueForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
-    valueFormElement?: React.ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
+    valueFormElement?: ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
     minLength?: number; // Minimum number of characters to initiate a search (default 1)
     scrollHeight?: string; // Maximum height of the suggestions panel.
 };
@@ -1874,7 +1873,7 @@ export interface ColumnProps {
     filterElement?: FilterElementProp;
     className?: string; // wraps the content of the column cell with div element with this className (prop is not applied if prop body is used)
     style?: React.CSSProperties; // wraps the content of the column cell with div element with this style (prop is not applied if prop body is used)
-    body?: React.ReactNode | ((data: any, options: ColumnBodyOptions) => React.ReactNode); // the same type as type of property Column.body
+    body?: ReactNode | ((data: any, options: ColumnBodyOptions) => ReactNode); // the same type as type of property Column.body
 }
 
 export type ColumnType = {props: ColumnProps};

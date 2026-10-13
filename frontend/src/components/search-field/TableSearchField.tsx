@@ -1,5 +1,5 @@
 import {FormBase} from "../form";
-import React, {useRef, useState} from "react";
+import React, {ReactElement, useRef, useState} from "react";
 import {Utils} from "../../utils/Utils";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
@@ -8,7 +8,7 @@ import {SearchBrowseParams} from "../browse";
 import {TableFieldReadOnlyProp} from "../form-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
-export const TableSearchField = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: JSX.Element; assocForm?: JSX.Element; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
+export const TableSearchField = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: ReactElement; assocForm?: ReactElement; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {
 
     const inputTextRef = useRef<any>(null);
 
@@ -84,7 +84,7 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
                     // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
                     const id = (assocObject !== null && assocObject !== undefined) ? assocObject[xEntityAssoc.idField] : null;
                     // klonovanim elementu pridame atribut id
-                    const assocForm = React.cloneElement(props.assocForm, {id: id}/*, props.assocForm.children*/);
+                    const assocForm = React.cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
                     (props.form.props as any).openForm(assocForm);
                 }
             }
@@ -120,7 +120,7 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
             </div>
             <Dialog className="x-dialog-without-header" visible={dialogOpened} /*style={{ width: '50vw' }}*/ onHide={onHide}>
                 {/* klonovanim elementu pridame atribut searchBrowseParams */}
-                {React.cloneElement(props.searchBrowse,
+                {React.cloneElement(props.searchBrowse as ReactElement<any>,
                     {
                             searchBrowseParams : {
                                 onChoose: onChoose,

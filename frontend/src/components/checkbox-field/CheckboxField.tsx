@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactElement} from "react";
 import {ValueField, ValueFieldProps} from "../form/ValueField";
 import {CheckboxInput} from "./CheckboxInput";
 
@@ -29,7 +29,7 @@ export class CheckboxField extends ValueField<CheckboxFieldProps> {
     }
 
     render() {
-        let element: JSX.Element = <CheckboxInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
+        let element: ReactElement = <CheckboxInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange}
                                                   readOnly={this.isReadOnly()} isNotNull={this.isNotNull()}
                                                   tooltip={this.props.tooltip} error={this.getError()} style={this.props.inputStyle}/>;
 

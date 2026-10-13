@@ -53,7 +53,7 @@ export interface FormWithLoaderProps {
 // if both are undefined or both are defined - invalid state
 // export interface FormParam {
 //     Form?: React.ComponentType<FormProps>;
-//     formElement?: React.ReactElement;
+//     formElement?: ReactElement;
 // }
 
 // ********** types of static methods used on forms to load objects *********

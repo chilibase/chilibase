@@ -2,14 +2,11 @@ import React from "react";
 import {FormBase} from "./FormBase";
 import {localeOption} from "../locale/Locale";
 
-export const FormHeader = (props: {form?: FormBase; label: string; appendNewRow: boolean; style?: React.CSSProperties;}) => {
+export const FormHeader = (props: {form?: FormBase; label: string; appendNewRow?: boolean; style?: React.CSSProperties;}) => {
+    const appendNewRow = props.appendNewRow ?? true;
 
     return (
-        <div className="x-form-header" style={props.style}>{props.label + (props.appendNewRow && props.form?.isAddRow() ? " - " + localeOption('newRow') : "")}</div>
+        <div className="x-form-header" style={props.style}>{props.label + (appendNewRow && props.form?.isAddRow() ? " - " + localeOption('newRow') : "")}</div>
     );
 }
-
-FormHeader.defaultProps = {
-    appendNewRow: true
-};
 

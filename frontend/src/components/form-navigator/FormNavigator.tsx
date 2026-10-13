@@ -108,7 +108,7 @@ export class FormNavigator extends Component<FormNavigatorProps> {
         const forms = formElements.map((formElement, index) => {
                 const displayed: boolean = (index === formElements.length - 1);
                 // klonovanim elementu pridame atribut openForm={this.openForm} (nemusime tento atribut pridavat pri vytvarani elementu)
-                const formElementCloned = React.cloneElement(formElement.elem, {ref: formElement.xElemRef, openForm: this.openForm, displayed: displayed}/*, (formElement as any).children*/);
+                const formElementCloned = React.cloneElement(formElement.elem as ReactElement<any>, {ref: formElement.xElemRef, openForm: this.openForm, displayed: displayed}/*, (formElement as any).children*/);
                 // prvych n - 1 komponentov skryjeme cez display: "none" a az posledny vyrenderujeme naozaj (cez display: "block")
                 // TODO - do buducnosti - ak nechceme drzat stav componentu cez display: "none", staci vratit null (komponent vobec nevyrenderujeme)
                 const display: string = (displayed ? "block" : "none");

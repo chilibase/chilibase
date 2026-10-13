@@ -1,6 +1,6 @@
-import {FormBase, FormProps} from "../form";
+﻿import {FormBase, FormProps} from "../form";
 import {EntityRow} from "../../common/types";
-import React, {Component, ReactChild} from "react";
+import React, {Component, ReactElement, ReactNode} from "react";
 import {TableSelectField} from "../select-field/TableSelectField";
 import {
     DataTable,
@@ -80,7 +80,7 @@ export interface FormDataTableProps {
     removeRowLabel?: string;
     removeRowIcon?: IconType<ButtonProps>;
     width?: string;
-    children: ReactChild[];
+    children: ReactElement | ReactElement[];
 }
 
 export class FormDataTable extends Component<FormDataTableProps> {
@@ -142,13 +142,17 @@ export class FormDataTable extends Component<FormDataTableProps> {
         props.form.addFormDataTable(this);
 
         //props.form.addField(props.assocField + '.*FAKE*'); - vzdy mame aspon 1 field, nie je to potrebne
-        for (const child of props.children) {
+        for (const child of this.columnElements()) {
             const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
             if (childColumn.props.type !== "custom") {
                 const field = props.assocField + '.' + this.getPathForColumn(childColumn.props);
                 props.form.addField(field);
             }
         }
+    }
+
+    columnElements(): ReactElement[] {
+        return Utils.applyDefaultProps(React.Children.toArray(this.props.children) as ReactElement[]);
     }
 
     getPathForColumn(columnProps: ColumnBaseProps): string {
@@ -176,7 +180,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             return columnPropsMultilineText.field;
         }
         else {
-            throw "Unknown prop type = " + columnProps.type;
+            throw `FormDataTable.getPathForColumn - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
         }
     }
 
@@ -214,7 +218,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             readOnly = FormDataTable.isReadOnlyHeader(columnPropsMultilineText.field, columnProps.readOnly);
         }
         else {
-            throw "Unknown prop type = " + columnProps.type;
+            throw `FormDataTable.getHeader - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
         }
 
         let header = columnProps.header ?? field;
@@ -268,7 +272,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         const xEntity: Entity = UtilsMetadataCommon.getEntity(this.getEntity());
 
         // TODO - asi by bolo fajn si tieto field, xField niekam ulozit a iterovat ulozene hodnoty, pouziva sa to na viacerych miestach
-        for (const child of this.props.children) {
+        for (const child of this.columnElements()) {
             const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
             // zatial nepodporujeme filter pre custom stlpce
             if (childColumn.props.type !== "custom") {
@@ -457,7 +461,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             body = <TableMultilineTextField form={this.props.form} entity={this.getEntity()} field={columnPropsMultilineText.field} rows={columnPropsMultilineText.rows} autoResize={columnPropsMultilineText.autoResize} rowData={rowData} readOnly={readOnly}/>;
         }
         else {
-            throw "Unknown prop type = " + columnProps.type;
+            throw `FormDataTable.bodyTemplate - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
         }
 
         return body;
@@ -624,8 +628,8 @@ export class FormDataTable extends Component<FormDataTableProps> {
         }
 
         // pre lepsiu citatelnost vytvarame stlpce uz tu
-        const columnElemList: JSX.Element[] = React.Children.map(
-            this.props.children.filter((child: React.ReactChild) => Utils.xViewStatus((child as {props: ColumnBaseProps}).props.columnViewStatus) !== ViewStatus.Hidden),
+        const columnElemList: ReactElement[] = React.Children.map(
+            this.columnElements().filter((child: ReactElement) => Utils.xViewStatus((child as {props: ColumnBaseProps}).props.columnViewStatus) !== ViewStatus.Hidden),
             function (child) {
                 // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
                 // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
@@ -763,7 +767,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                 }
                 {/* cellMemo={false} - memoizing causes that SelectColumn does not rerender after fetching assoc rows, because row does not change during fetching assoc rows (fetching is called after first render) */}
                 <div className="flex justify-content-center">
-                    <DataTable ref={(el) => this.dt = el} value={valueList} dataKey={this.dataKey} paginator={paginator} rows={rows}
+                    <DataTable ref={(el) => { this.dt = el; }} value={valueList} dataKey={this.dataKey} paginator={paginator} rows={rows}
                                totalRecords={valueList.length}
                                filterDisplay={filterDisplay} filters={this.state.filters} onFilter={this.onFilter}
                                sortMode="multiple" removableSort={true} multiSortMeta={sortField !== undefined ? [{field: sortField, order: 1}] : undefined}
@@ -807,7 +811,7 @@ export type TableFieldFilterProp = CustomFilter | ((object: any, rowData: any) =
 export interface ColumnBaseProps {
     type: "inputSimple" | "dropdown" | "autoComplete" | "searchButton" | "textarea" | "custom";
     header?: any;
-    footer?: React.ReactNode;
+    footer?: ReactNode;
     readOnly?: TableFieldReadOnlyProp;
     dropdownInFilter?: boolean; // moze byt len na stlpcoch ktore zobrazuju asociavany atribut (dlzka path >= 2)
     showFilterMenu?: boolean;
@@ -836,11 +840,11 @@ export interface SelectColumnProps extends ColumnBaseProps {
 export interface AutocompleteColumnProps extends ColumnBaseProps {
     assocField: string;
     displayField: string | string[];
-    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
+    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     SearchBrowse?: React.ComponentType<SearchBrowseProps>;
-    searchBrowseElement?: React.ReactElement;
+    searchBrowseElement?: ReactElement;
     AssocForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row
-    assocFormElement?: React.ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
+    assocFormElement?: ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
     filter?: TableFieldFilterProp;
     sortField?: string | DataTableSortMeta[];
@@ -854,7 +858,7 @@ export interface AutocompleteColumnProps extends ColumnBaseProps {
 export interface SearchButtonColumnProps extends ColumnBaseProps {
     assocField: string;
     displayField: string;
-    searchBrowse: JSX.Element;
+    searchBrowse: ReactElement;
 }
 
 export interface MultilineTextColumnProps extends ColumnBaseProps {
@@ -865,7 +869,7 @@ export interface MultilineTextColumnProps extends ColumnBaseProps {
 
 // TODO - CustomColumnProps by nemal extendovat od ColumnBaseProps, niektore propertiesy nedavaju zmysel
 export interface CustomColumnProps extends ColumnBaseProps {
-    body: React.ReactNode | ((data: any, options: ColumnBodyOptions) => React.ReactNode); // the same type as type of property Column.body
+    body: ReactNode | ((data: any, options: ColumnBodyOptions) => ReactNode); // the same type as type of property Column.body
     field?: string; // koli pripadnemu sortovaniu/filtrovaniu
 }
 

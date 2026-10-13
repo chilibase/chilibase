@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import {FormBase} from "../form";
 import {Utils} from "../../utils/Utils";
 
@@ -13,31 +13,26 @@ export interface FormRowColProps {
     width?: string | "full"; // nastavi css property {width: <props.width>} na div (full nastavuje 100%)
     labelStyle?: React.CSSProperties;
     style?: React.CSSProperties; // prenesie sa na div
-    children: JSX.Element | JSX.Element[];
+    children: ReactNode;
 }
 
 export const FormRowCol = (props: FormRowColProps) => {
 
-    let childElemList: JSX.Element | JSX.Element[];
+    let childElemList: ReactNode;
     if (props.form || props.labelStyle) {
         // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
         // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
-        childElemList = React.Children.map(
-            props.children,
-            child => {
-                // chceli by sme klonovat len nase X* komponenty (napr. XInputText)
-                // ak vyklonujeme cudziu komponentu (napr. div), funguje, ale prida do nej property labelstyle=[object Object]
-                // child.type.name vracia nazov komponenty (napr. XInputText) ale ked sa vytvori optimalizovany build, uz to nefunguje (uz je tam napr. "t")
-                // takze zatial klonujeme vzdy
-
-                //if (child.type.name && child.type.name.startsWith("X")) {
-                    return React.cloneElement(child, {form: child.props.form ?? props.form, labelStyle: child.props.labelStyle ?? props.labelStyle});
-                //}
-                //else {
-                //    return child;
-                //}
+        childElemList = React.Children.map(props.children, child => {
+            // text and other non-elements are rendered as they are
+            if (!React.isValidElement<{form?: FormBase; labelStyle?: React.CSSProperties}>(child)) {
+                return child;
             }
-        );
+            // chceli by sme klonovat len nase X* komponenty (napr. XInputText)
+            // ak vyklonujeme cudziu komponentu (napr. div), funguje, ale prida do nej property labelstyle=[object Object]
+            // child.type.name vracia nazov komponenty (napr. XInputText) ale ked sa vytvori optimalizovany build, uz to nefunguje (uz je tam napr. "t")
+            // takze zatial klonujeme vzdy
+            return React.cloneElement(child, {form: child.props.form ?? props.form, labelStyle: child.props.labelStyle ?? props.labelStyle});
+        });
     }
     else {
         childElemList = props.children; // netreba klonovat - viac menej koli performance

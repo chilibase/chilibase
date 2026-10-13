@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {ReactElement, useState} from "react";
 import {MultilineRenderType} from "./LazyDataTable";
 import {Button} from "primereact/button";
 
@@ -6,14 +6,14 @@ export const HtmlRenderer = (props: {
     htmlValue: string | null; // product of Editor, e.g. <p>line 1</p><p>line 2</p><p>line 3</p>
     renderType: MultilineRenderType;
     fewLinesCount: number;
-}): JSX.Element => {
+}): ReactElement => {
 
     // used only for props.renderType === "fewLines"
     const [showAllLines, setShowAllLines] = useState<boolean>(false);
 
     let className: string;
     let htmlValue: string = props.htmlValue ?? "";
-    let buttonExpandCollapse: JSX.Element | null = null;
+    let buttonExpandCollapse: ReactElement | null = null;
     if (props.renderType === "singleLine") {
         className = "x-html-content-single-line";
     }

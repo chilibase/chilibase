@@ -1,29 +1,29 @@
-import React, {useState} from "react";
+import React, {ReactElement, ReactNode, useState} from "react";
 import {MultilineRenderType} from "./LazyDataTable";
 import {Button} from "primereact/button";
 
 export const MultilineRenderer = (props: {
-    valueList: React.ReactNode[];
+    valueList: ReactNode[];
     renderType: MultilineRenderType;
     fewLinesCount: number;
     multilineContent?: boolean;
-}): JSX.Element => {
+}): ReactElement => {
 
     // used only for props.renderType === "fewLines"
     const [showAllLines, setShowAllLines] = useState<boolean>(false);
 
-    let valueResult: JSX.Element; // musime vracat element, ak chceme XMultilineRenderer volat priamo cez jsx
+    let valueResult: ReactElement; // musime vracat element, ak chceme XMultilineRenderer volat priamo cez jsx
     if (props.renderType === "singleLine") {
         // TODO - joinovat elementy
         valueResult = <div>{props.valueList.join(", ")}</div>; // pouziva sa hlavne pre oneToMany asociacie
     }
     else {
-        let valueListLocal: React.ReactNode[] = props.valueList;
+        let valueListLocal: ReactNode[] = props.valueList;
         if (props.renderType === "fewLines" && !showAllLines) {
             valueListLocal = valueListLocal.slice(0, props.fewLinesCount);
         }
 
-        const elemList: React.ReactNode[] = valueListLocal.map((value: any, index: number) => <div key={index}>{value}</div>);
+        const elemList: ReactNode[] = valueListLocal.map((value: any, index: number) => <div key={index}>{value}</div>);
         if (props.renderType === "fewLines") {
             if (props.valueList.length > props.fewLinesCount) {
                 // prepiseme posledny element v zozname - pridame mu button

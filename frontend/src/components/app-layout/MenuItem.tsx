@@ -1,11 +1,11 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import {NavLink} from "react-router";
 
 // helper component
 
 export interface MenuItemProps {
     to: string;
-    label: React.ReactNode
+    label: ReactNode
 }
 
 export const MenuItem = (props: MenuItemProps) => {

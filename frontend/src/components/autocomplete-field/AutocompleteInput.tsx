@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, ReactElement, ReactNode} from "react";
 import {AutoComplete, AutoCompleteChangeEvent} from "primereact/autocomplete";
 import {SplitButton} from "primereact/splitbutton";
 import {OperationType, Query} from "../../utils/types";
@@ -41,12 +41,12 @@ export interface AutocompleteInputProps {
     suggestionsQuery?: Query; // musi byt zadany ak nie su zadane suggestions (poznamka: filter (a sortField?) sa posielaju do searchBrowse)
     lazyLoadMaxRows: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
     field: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
-    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => React.ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
+    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
     splitQueryValue: boolean; // ak true, tak splituje natypovanu hodnotu podla space a vsetky parcialne hodnoty sa musia vyskytovat v danom suggestion (default je true)
     SearchBrowse?: React.ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
-    searchBrowseElement?: React.ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
+    searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
     ValueForm?: React.ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
-    valueFormElement?: React.ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
+    valueFormElement?: ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
     idField?: string; // id field (nazov atributu) objektu z value/suggestions - je potrebny pri otvoreni formularu na editaciu, formular potrebuje id-cko na nacitanie/update zaznamu z DB
     addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
     onAddRow?: (inputValue: string) => void; // override handlera zaveseneho na "plus" buttone (otazka je ci nejakym sposobom nestrkat vytvoreny/ziskany row do tohto autocomplete - zatial nie)
@@ -629,21 +629,21 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         return inputValue;
     }
 
-    itemTemplate(suggestion: any, index: number): React.ReactNode {
+    itemTemplate(suggestion: any, index: number): ReactNode {
         return this.computeItemTemplate(suggestion, index, false);
     }
 
     // pouziva sa na vytvorenie hodnoty do inputu (vyselectovany zaznam) a tiez na pripadne sortovanie a filtrovanie na frontende (ak nepouzivame lazy nacitavanie)
     itemTemplateString(suggestion: any): string {
-        const itemValue: React.ReactNode = this.computeItemTemplate(suggestion, -1, true);
+        const itemValue: ReactNode = this.computeItemTemplate(suggestion, -1, true);
         if (typeof itemValue !== "string") {
             throw `AutocompleteInput: function of the property itemTemplate created non-string value for suggestion. Please create string value if parameter createStringValue = true.`;
         }
         return itemValue;
     }
 
-    computeItemTemplate(suggestion: any, index: number, createStringValue: boolean): React.ReactNode {
-        let itemTemplate: React.ReactNode;
+    computeItemTemplate(suggestion: any, index: number, createStringValue: boolean): ReactNode {
+        let itemTemplate: ReactNode;
         // osetrenie specialnej polozky ... dame sem, nech sa to nemusi inde riesit
         if (AutocompleteInput.isMoreSuggestions(suggestion)) {
             itemTemplate = suggestion;
@@ -687,7 +687,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
 
         const readOnly: boolean = this.props.readOnly ?? false;
 
-        let buttons: JSX.Element[];
+        let buttons: ReactElement[];
         if (!readOnly) {
             const createInsertItem: boolean = (this.props.addRowEnabled && (this.hasValueForm() || this.props.onAddRow !== undefined));
             // TODO - upratat koli split layuot-u (ak dropdownButtonEnabled = false tak moze vzniknut split button s jednym buttonom)
