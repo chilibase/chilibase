@@ -1,6 +1,6 @@
 import React from "react";
-import {MultilineRenderType} from "./LazyDataTable";
-import {SelectButton, SelectButtonChangeEvent} from "primereact/selectbutton";
+import type {MultilineRenderType} from "./LazyDataTable";
+import {SelectButton, type SelectButtonChangeEvent} from "primereact/selectbutton";
 import {Utils} from "../../utils/Utils";
 
 interface Option {

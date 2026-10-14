@@ -1,5 +1,5 @@
-import {CustomFilter} from "../common/FindParam";
-import {DataTableSortMeta} from "primereact/datatable";
+import type {CustomFilter} from "../common/FindParam";
+import type {DataTableSortMeta} from "primereact/datatable";
 
 // types used in frontend (separated from Utils.ts because Utils is reexported as XUtils)
 

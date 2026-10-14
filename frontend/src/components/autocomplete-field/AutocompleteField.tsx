@@ -1,13 +1,13 @@
-import React, {ReactElement, ReactNode, ComponentType, CSSProperties} from "react";
-import {FilterProp, FormField, FormFieldProps} from "../form";
-import {Assoc} from "../../common/EntityMetadata";
+import React, {type ReactElement, type ReactNode, type ComponentType, type CSSProperties} from "react";
+import {type FilterProp, FormField, type FormFieldProps} from "../form";
+import type {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
-import {AutocompleteInput, SuggestionsLoadProp} from "./AutocompleteInput";
-import {FieldError} from "../form/FormErrors";
-import {DataTableSortMeta} from "primereact/datatable";
+import {AutocompleteInput, type SuggestionsLoadProp} from "./AutocompleteInput";
+import type {FieldError} from "../form/FormErrors";
+import type {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {FormProps} from "../form";
-import {SearchBrowseProps} from "../lazy-data-table";
+import type {FormProps} from "../form";
+import type {SearchBrowseProps} from "../lazy-data-table";
 
 export interface AutocompleteFieldProps extends FormFieldProps {
     assocField: string; // can be also path (e.g. <assoc1>.<assoc2> - autocomplete will run on <assoc2>)

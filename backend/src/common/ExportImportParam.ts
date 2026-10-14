@@ -1,8 +1,8 @@
 // ExportType a LazyDataTableQueryParam sa pouzivaju v samostatnom servise ktory data streamuje
 // (na rozdiel od ResultType.AllRows ktory by sa ani nemal pouzivat - nemali by sa vsetky rows tahat na klienta v jednom velkom requeste)
-import {DataTableSortMeta} from "./PrimeFilterSortMeta.js";
-import {CustomFilterItem, ExtendedDataTableFilterMeta, FullTextSearch} from "./FindParam.js";
-import {TextFormat} from "./types.js";
+import type {DataTableSortMeta} from "./PrimeFilterSortMeta.js";
+import type {CustomFilterItem, ExtendedDataTableFilterMeta, FullTextSearch} from "./FindParam.js";
+import type {TextFormat} from "./types.js";
 
 // ************** export ***************
 

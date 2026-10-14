@@ -1,5 +1,5 @@
-import {DataTableFilterMetaData} from "primereact/datatable";
-import {FilterOrFunction} from "../../utils/types";
+import type {DataTableFilterMetaData} from "primereact/datatable";
+import type {FilterOrFunction} from "../../utils/types";
 
 // parametre ktore odovzdavame zo SearchButton do search table a dalej do LazyDataTable
 

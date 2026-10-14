@@ -1,8 +1,8 @@
-import {Entity, Field} from "./EntityMetadata.js";
+import type {Entity, Field} from "./EntityMetadata.js";
 import {UtilsMetadataCommon} from "./UtilsMetadataCommon.js";
 import {AsUIType, convertValue, dateAsYYYY_MM_DD, dateFormat, datetimeFormat} from "./UtilsConversions.js";
-import {CustomFilter, CustomFilterItem} from "./FindParam.js";
-import {DataTableSortMeta} from "./PrimeFilterSortMeta.js";
+import type {CustomFilter, CustomFilterItem} from "./FindParam.js";
+import type {DataTableSortMeta} from "./PrimeFilterSortMeta.js";
 
 // common types for frontend and backend
 

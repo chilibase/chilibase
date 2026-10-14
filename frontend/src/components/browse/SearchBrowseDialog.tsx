@@ -1,7 +1,7 @@
-import React, {ReactElement, ComponentType, cloneElement} from "react";
+import React, {type ReactElement, type ComponentType, cloneElement} from "react";
 import {Dialog} from "primereact/dialog";
-import {SearchBrowseParams} from "./SearchBrowseParams";
-import {SearchBrowseProps} from "../lazy-data-table";
+import type {SearchBrowseParams} from "./SearchBrowseParams";
+import type {SearchBrowseProps} from "../lazy-data-table";
 
 export interface SearchBrowseDialogState {
     opened: boolean;

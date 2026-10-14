@@ -1,20 +1,20 @@
-﻿import {FormBase, FormProps} from "../form";
-import {EntityRow} from "../../common/types";
-import React, {Component, ReactElement, ReactNode, Children, CSSProperties, ComponentType} from "react";
+﻿import {FormBase, type FormProps} from "../form";
+import type {EntityRow} from "../../common/types";
+import React, {Component, type ReactElement, type ReactNode, Children, type CSSProperties, type ComponentType} from "react";
 import {TableSelectField} from "../select-field/TableSelectField";
 import {
     DataTable,
-    DataTableFilterMeta,
-    DataTableFilterMetaData,
-    DataTableOperatorFilterMetaData, DataTableSortMeta
+    type DataTableFilterMeta,
+    type DataTableFilterMetaData,
+    type DataTableOperatorFilterMetaData, type DataTableSortMeta
 } from "primereact/datatable";
-import {Column as PrimeColumn, ColumnBodyOptions} from "primereact/column";
+import {Column as PrimeColumn, type ColumnBodyOptions} from "primereact/column";
 import {Button} from "../button";
 import {TableTextField} from "../text-field";
 import {TableSearchField} from "../search-field";
-import {Assoc, Entity, Field} from "../../common/EntityMetadata";
+import type {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
-import {OperationType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
+import {OperationType, ViewStatus, type ViewStatusOrBoolean} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {TableFilterSelectInput} from "../select-field/TableFilterSelectInput";
 import {TableNumberField} from "../number-field";
@@ -22,20 +22,20 @@ import {TableDateField} from "../date-field";
 import {TableCheckboxField} from "../checkbox-field";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {FilterMatchMode, FilterOperator} from "primereact/api";
-import {CustomFilter} from "../../common/FindParam";
+import type {CustomFilter} from "../../common/FindParam";
 import {TableAutocompleteField} from "../autocomplete-field";
 import {TableFormField} from "./TableFormField";
-import {FieldErrorMap} from "../form/FormErrors";
+import type {FieldErrorMap} from "../form/FormErrors";
 import {ButtonIconNarrow} from "../button";
-import {IconType} from "primereact/utils";
-import {ButtonProps} from "primereact/button";
+import type {IconType} from "primereact/utils";
+import type {ButtonProps} from "primereact/button";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {localeOption} from "../locale/Locale";
 import {TableIntervalField} from "../interval-field";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {SearchBrowseProps} from "../lazy-data-table";
+import type {SearchBrowseProps} from "../lazy-data-table";
 import {TableMultilineTextField} from "../multiline-text-field";
-import {SuggestionsLoadProp} from "../autocomplete-field";
+import type {SuggestionsLoadProp} from "../autocomplete-field";
 
 // typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
 export interface RowTechData {

@@ -1,5 +1,5 @@
-import React, {CSSProperties} from "react";
-import {ValueField, ValueFieldProps} from "../form/ValueField";
+import React, {type CSSProperties} from "react";
+import {ValueField, type ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {RichTextInput} from "./RichTextInput";
 

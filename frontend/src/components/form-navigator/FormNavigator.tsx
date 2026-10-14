@@ -1,4 +1,4 @@
-import React, {Component, ReactElement, RefObject, createRef, cloneElement} from "react";
+import React, {Component, type ReactElement, type RefObject, createRef, cloneElement} from "react";
 import {FormBase} from "../form";
 
 // helper

@@ -1,4 +1,4 @@
-import React, {ReactElement, ReactNode} from "react";
+import React, {type ReactElement, type ReactNode} from "react";
 import {Auth0Provider} from "./Auth0Provider";
 import {MSEntraIDProvider} from "./MSEntraIDProvider";
 import {AuthOffProvider} from "./AuthOffProvider";

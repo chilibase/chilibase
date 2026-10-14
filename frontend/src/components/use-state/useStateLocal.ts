@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction} from "react";
+import type {Dispatch, SetStateAction} from "react";
 import {useStateStorage} from "./useStateStorage";
 
 // TODO - initialState should be value | function returning T, and the function should be called in function "initialStateFunction"

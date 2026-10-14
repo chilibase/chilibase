@@ -1,4 +1,4 @@
-import React, {Component, CSSProperties, createRef, FocusEvent} from "react";
+import React, {Component, type CSSProperties, createRef, type FocusEvent} from "react";
 import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
 import {Utils} from "../../utils/Utils";
 import {InputTextarea} from "primereact/inputtextarea";

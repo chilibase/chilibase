@@ -1,5 +1,5 @@
 import React from "react";
-import {TableValueField, TableValueFieldProps} from "../form-data-table/TableValueField";
+import {TableValueField, type TableValueFieldProps} from "../form-data-table/TableValueField";
 import {CheckboxInput} from "./CheckboxInput";
 
 export interface TableCheckboxFieldProps extends TableValueFieldProps {

@@ -10,7 +10,7 @@ import {CheckboxField} from "../../components/checkbox-field";
 import {EnvVar, ViteAuth} from "../../components/env-vars/EnvVars";
 import {FormBaseModif} from "../../components/form";
 import {DateField} from "../../components/date-field";
-import {EntityRow} from "../../common/types";
+import type {EntityRow} from "../../common/types";
 import {FormHeader} from "../../components/form";
 import {ParameterForm} from "./ParameterForm";
 

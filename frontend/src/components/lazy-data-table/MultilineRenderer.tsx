@@ -1,5 +1,5 @@
-import React, {ReactElement, ReactNode, useState} from "react";
-import {MultilineRenderType} from "./LazyDataTable";
+import React, {type ReactElement, type ReactNode, useState} from "react";
+import type {MultilineRenderType} from "./LazyDataTable";
 import {Button} from "primereact/button";
 
 export const MultilineRenderer = (props: {

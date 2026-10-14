@@ -1,6 +1,6 @@
 import React from "react";
-import {Dropdown, DropdownChangeEvent} from "primereact/dropdown";
-import {OptionalCustomFilter} from "./LazyDataTable";
+import {Dropdown, type DropdownChangeEvent} from "primereact/dropdown";
+import type {OptionalCustomFilter} from "./LazyDataTable";
 
 // dropdown for optional custom filter (ocf)
 export const OcfDropdown = (props: {

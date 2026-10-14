@@ -1,9 +1,9 @@
 import React from "react";
-import {FilterProp, FormField, FormFieldProps} from "../form";
-import {Assoc} from "../../common/EntityMetadata";
+import {type FilterProp, FormField, type FormFieldProps} from "../form";
+import type {Assoc} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelectInput} from "./MultiSelectInput";
-import {DataTableSortMeta} from "primereact/datatable";
+import type {DataTableSortMeta} from "primereact/datatable";
 import {UtilsCommon} from "../../common/UtilsCommon";
 
 // works in one of these 2 modes:

@@ -1,5 +1,5 @@
-import {User} from "./user.entity";
-import {EnumValue} from "./enum-value.entity";
+import type {User} from "./user.entity";
+import type {EnumValue} from "./enum-value.entity";
 
 export interface EnumType {
     id: number;

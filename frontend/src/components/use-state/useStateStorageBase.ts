@@ -1,5 +1,5 @@
-import {Dispatch, SetStateAction, useState} from "react";
-import {StorageType} from "../../utils/types";
+import {type Dispatch, type SetStateAction, useState} from "react";
+import type {StorageType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 
 // this base version enables to use custom version of function that computes initialState

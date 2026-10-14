@@ -1,6 +1,6 @@
-import React, {CSSProperties} from "react";
-import {TriStateCheckbox, TriStateCheckboxChangeEvent} from "primereact/tristatecheckbox";
-import {Checkbox, CheckboxChangeEvent} from "primereact/checkbox";
+import React, {type CSSProperties} from "react";
+import {TriStateCheckbox, type TriStateCheckboxChangeEvent} from "primereact/tristatecheckbox";
+import {Checkbox, type CheckboxChangeEvent} from "primereact/checkbox";
 import {Utils} from "../../utils/Utils";
 
 export const CheckboxInput = (props: {

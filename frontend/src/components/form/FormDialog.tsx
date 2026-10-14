@@ -1,8 +1,8 @@
-import React, {ReactElement, useRef, ComponentType, FC} from "react";
+import React, {type ReactElement, useRef, type ComponentType, type FC} from "react";
 import {Dialog} from "primereact/dialog";
-import {FormBase, FormWithLoaderProps, OnSaveOrCancelProp} from "./FormBase";
+import {FormBase, type FormWithLoaderProps, type OnSaveOrCancelProp} from "./FormBase";
 import {OperationType} from "../../utils/types";
-import {FormProps} from "./FormBase";
+import type {FormProps} from "./FormBase";
 import {FormWithLoader} from "./FormWithLoader";
 
 export interface FormDialogState {

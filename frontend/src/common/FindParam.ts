@@ -1,9 +1,9 @@
-import {
+import type {
     DataTableFilterMetaData,
     DataTableOperatorFilterMetaData,
     DataTableSortMeta
 } from "primereact/datatable";
-import {Params} from "./UtilsCommon";
+import type {Params} from "./UtilsCommon";
 
 export enum ResultType {
     OnlyRowCount,

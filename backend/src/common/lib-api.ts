@@ -1,4 +1,4 @@
-import {User} from "../modules/administration/user.entity.js";
+import type {User} from "../modules/administration/user.entity.js";
 
 // misc api used in lib
 

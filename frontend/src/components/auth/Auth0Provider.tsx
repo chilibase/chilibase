@@ -1,9 +1,9 @@
-import React, {ReactNode, useState} from 'react';
+import React, {type ReactNode, useState} from 'react';
 import {Auth0Provider as Auth0Auth0Provider, useAuth0} from "@auth0/auth0-react";
 import { Utils } from '../../utils/Utils';
 import { EnvVar } from '../env-vars/EnvVars';
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
-import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
+import type {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {useAuthSession} from "./useAuthSession";
 

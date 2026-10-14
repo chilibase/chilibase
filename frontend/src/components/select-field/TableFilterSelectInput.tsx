@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import {Utils} from "../../utils/Utils";
 import {Dropdown} from "primereact/dropdown";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {Assoc} from "../../common/EntityMetadata";
+import type {Assoc} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {CustomFilter} from "../../common/FindParam";
+import type {CustomFilter} from "../../common/FindParam";
 
 // used in filter in LazyDataTable and in FormDataTable
 // does not use (for now) SelectInput, it is placed here because the functionality is similar to SelectInput

@@ -1,16 +1,16 @@
 import React, {createRef} from "react";
 import {Component} from "react";
-import {FileUpload, FileUploadHandlerEvent} from "primereact/fileupload";
+import {FileUpload, type FileUploadHandlerEvent} from "primereact/fileupload";
 import {FormBase} from "../form";
-import {Assoc, Entity} from "../../common/EntityMetadata";
+import type {Assoc, Entity} from "../../common/EntityMetadata";
 import {Utils} from "../../utils/Utils";
-import {EntityRow} from "../../common/types";
+import type {EntityRow} from "../../common/types";
 import {Button, ButtonIconNarrow} from "../button";
 import {numberAsUI} from "../../common/UtilsConversions";
 import {localeOption} from "../locale/Locale";
-import {FileJsonField} from "../../common/lib-api";
+import type {FileJsonField} from "../../common/lib-api";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {FileMeta} from "../../modules/administration/file-meta.entity";
+import type {FileMeta} from "../../modules/administration/file-meta.entity";
 
 export interface InputFileListProps {
     form: FormBase;

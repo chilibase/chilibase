@@ -1,6 +1,6 @@
 import React from "react";
 import {FormBaseModif, type FormProps} from "../../components/form";
-import {EntityRow} from "../../common/types";
+import type {EntityRow} from "../../common/types";
 import {NumberField} from "../../components/number-field";
 import {DateField} from "../../components/date-field";
 import {TextField} from "../../components/text-field";

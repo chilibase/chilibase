@@ -1,11 +1,11 @@
-import {Component, CSSProperties} from "react";
+import {Component, type CSSProperties} from "react";
 import {FormBase} from "./FormBase";
-import {FieldError} from "./FormErrors";
-import {EntityRow} from "../../common/types";
+import type {FieldError} from "./FormErrors";
+import type {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {CustomFilter} from "../../common/FindParam";
+import type {CustomFilter} from "../../common/FindParam";
 
 // event pre onChange metody na komponentoch formulara (XInputText, XAutoComplete, ...)
 // pouzivame event, aby sme v buducnosti vedeli pridat dalsie atributy do eventu ak bude treba

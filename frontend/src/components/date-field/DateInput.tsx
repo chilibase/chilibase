@@ -1,8 +1,8 @@
-import React, {useState, FocusEvent} from "react";
-import {Calendar, CalendarSelectEvent} from "primereact/calendar";
+import React, {useState, type FocusEvent} from "react";
+import {Calendar, type CalendarSelectEvent} from "primereact/calendar";
 import {dateAsUI, dateFormatCalendar, dateFromModel, dateFromUI, DateScale} from "../../common/UtilsConversions";
 import {Utils} from "../../utils/Utils";
-import {FormEvent} from "primereact/ts-helpers";
+import type {FormEvent} from "primereact/ts-helpers";
 
 // wrapper for Calendar component
 // TODO - nefunguje rezim datetime pre zapis - dorobit konverziu!

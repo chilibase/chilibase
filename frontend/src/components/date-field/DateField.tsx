@@ -1,6 +1,6 @@
 import React from "react";
 import {DateInput} from "./DateInput";
-import {ValueField, ValueFieldProps} from "../form/ValueField";
+import {ValueField, type ValueFieldProps} from "../form/ValueField";
 import {dateFromModel, DateScale} from "../../common/UtilsConversions";
 
 export interface DateFieldProps extends ValueFieldProps {

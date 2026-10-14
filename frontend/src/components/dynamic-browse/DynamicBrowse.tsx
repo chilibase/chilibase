@@ -1,12 +1,12 @@
 import React, {Component, cloneElement} from "react";
 import {SourceCodeLinkEntity} from "./SourceCodeLinkEntity";
-import {EditColumnDialog, EditColumnDialogValues} from "./EditColumnDialog";
+import {EditColumnDialog, type EditColumnDialogValues} from "./EditColumnDialog";
 import * as _ from "lodash";
-import {BrowseMeta, ColumnMeta} from "../../modules/administration";
+import type {BrowseMeta, ColumnMeta} from "../../modules/administration";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
-import {Entity} from "../../common/EntityMetadata";
+import type {Entity} from "../../common/EntityMetadata";
 import {Utils} from "../../utils/Utils";
-import {Column, EditModeHandlers, LazyDataTable} from "../lazy-data-table";
+import {Column, type EditModeHandlers, LazyDataTable} from "../lazy-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {UtilsCommon} from "../../common/UtilsCommon";
 

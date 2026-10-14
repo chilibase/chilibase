@@ -1,6 +1,6 @@
-import React, {useState, CSSProperties, FocusEvent} from "react";
+import React, {useState, type CSSProperties, type FocusEvent} from "react";
 import {Utils} from "../../utils/Utils";
-import {Editor, EditorTextChangeEvent} from "primereact/editor";
+import {Editor, type EditorTextChangeEvent} from "primereact/editor";
 import Quill from 'quill';
 
 // bez tohto kodu size options nefunguju

@@ -1,4 +1,4 @@
-import {ReactElement} from "react";
+import type {ReactElement} from "react";
 import {numberAsUI, numberFromModel} from "../../common/UtilsConversions";
 
 // sem pride v buducnosti cely XFieldSetBase, zatial su tu skopirovane len niektore typy

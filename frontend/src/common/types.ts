@@ -1,4 +1,4 @@
-import {BrowseMeta} from "../modules/administration";
+import type {BrowseMeta} from "../modules/administration";
 
 // type for entity row (entity instance)
 export type EntityRow = Record<string, any>;

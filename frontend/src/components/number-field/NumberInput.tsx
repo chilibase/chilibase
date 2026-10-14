@@ -1,5 +1,5 @@
-import React, {CSSProperties} from "react";
-import {InputNumber, InputNumberChangeEvent} from "primereact/inputnumber";
+import React, {type CSSProperties} from "react";
+import {InputNumber, type InputNumberChangeEvent} from "primereact/inputnumber";
 
 // wrapper for InputNumber component - zatial taky zjednoduseny, len na filter polozky pouzivame
 export const NumberInput = (props: {id?: string; value: number | null; onChange: (value: number | null) => void; readOnly?: boolean;

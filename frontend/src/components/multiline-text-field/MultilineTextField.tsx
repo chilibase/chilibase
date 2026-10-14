@@ -1,5 +1,5 @@
-import React, {CSSProperties, createRef} from "react";
-import {ValueField, ValueFieldProps} from "../form/ValueField";
+import React, {type CSSProperties, createRef} from "react";
+import {ValueField, type ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {MultilineTextInput} from "./MultilineTextInput";
 import {Tooltip} from "primereact/tooltip";

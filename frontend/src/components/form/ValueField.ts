@@ -1,6 +1,6 @@
-import {CSSProperties} from "react";
-import {FormField, FormFieldProps} from "./FormField";
-import {Field} from "../../common/EntityMetadata";
+import type {CSSProperties} from "react";
+import {FormField, type FormFieldProps} from "./FormField";
+import type {Field} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export interface ValueFieldProps extends FormFieldProps {

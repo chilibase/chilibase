@@ -1,5 +1,5 @@
 import {FormBase} from "../form";
-import {EntityRow} from "../../common/types";
+import type {EntityRow} from "../../common/types";
 import React, {cloneElement} from "react";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";

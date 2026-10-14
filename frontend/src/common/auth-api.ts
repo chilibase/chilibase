@@ -1,4 +1,4 @@
-import {User} from "../modules/administration/user.entity";
+import type {User} from "../modules/administration/user.entity";
 
 export interface LocalAuthLoginRequest {
     username: string;

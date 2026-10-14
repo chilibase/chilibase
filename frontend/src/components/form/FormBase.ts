@@ -1,14 +1,14 @@
-import {Component, Ref, ComponentType} from "react";
-import {EntityRow} from "../../common/types";
+import {Component, type Ref, type ComponentType} from "react";
+import type {EntityRow} from "../../common/types";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {FieldOnChange, FormField} from "./FormField";
-import {TableFieldOnChange, FormDataTable, RowTechData} from "../form-data-table";
-import {FieldErrorMap, FormErrorMap} from "./FormErrors";
-import {Params, UtilsCommon} from "../../common/UtilsCommon";
-import {Entity} from "../../common/EntityMetadata";
+import {type FieldOnChange, FormField} from "./FormField";
+import {type TableFieldOnChange, FormDataTable, type RowTechData} from "../form-data-table";
+import type {FieldErrorMap, FormErrorMap} from "./FormErrors";
+import {type Params, UtilsCommon} from "../../common/UtilsCommon";
+import type {Entity} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {FindRowByIdResponse, UnlockRowRequest} from "../../common/lib-api";
+import type {FindRowByIdResponse, UnlockRowRequest} from "../../common/lib-api";
 import {dateFromModel, datetimeAsUI} from "../../common/UtilsConversions";
 import {localeOption} from "../locale/Locale";
 

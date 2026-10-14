@@ -1,4 +1,4 @@
-import React, {ReactNode, useState} from 'react';
+import React, {type ReactNode, useState} from 'react';
 import {
     type IMsalContext, MsalProvider,
     useIsAuthenticated,
@@ -14,7 +14,7 @@ import {loginRequest, msalConfig} from "./msalConfig";
 import {Button} from "primereact/button";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {Utils} from "../../utils/Utils";
-import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
+import type {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {useAuthSession} from "./useAuthSession";
 

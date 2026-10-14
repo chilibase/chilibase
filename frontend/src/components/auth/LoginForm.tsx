@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";
-import {LocalAuthLoginRequest, LocalAuthLoginResponse, PostLoginRequest} from "../../common/auth-api";
+import type {LocalAuthLoginRequest, LocalAuthLoginResponse, PostLoginRequest} from "../../common/auth-api";
 import {ResponseError} from "../../utils/ResponseError";
 
 // is used by local auth

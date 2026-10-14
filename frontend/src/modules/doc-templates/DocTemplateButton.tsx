@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {Button as PrimeButton} from "primereact/button";
 import {SplitButton} from "primereact/splitbutton";
-import {MenuItem} from "primereact/menuitem";
-import {XtDocTemplate} from "./xt-doc-template.entity";
+import type {MenuItem} from "primereact/menuitem";
+import type {XtDocTemplate} from "./xt-doc-template.entity";
 import {Utils} from "../../utils/Utils";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {RunDocTemplateRequest} from "../../common/lib-api";
+import type {RunDocTemplateRequest} from "../../common/lib-api";
 import {localeOption} from "../../components/locale/Locale";
 
 // TODO - DocTemplateButton is missing endpoint 'xt-run-doc-template' for this moment (endpoint was not moved to backend lib)

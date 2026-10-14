@@ -1,7 +1,7 @@
-import {AuthSession} from "../components/auth/AuthSession";
-import {Entity, Field} from "../common/EntityMetadata";
+import type {AuthSession} from "../components/auth/AuthSession";
+import type {Entity, Field} from "../common/EntityMetadata";
 import {UtilsMetadata} from "./UtilsMetadata";
-import {Params, UtilsCommon} from "../common/UtilsCommon";
+import {type Params, UtilsCommon} from "../common/UtilsCommon";
 import {
     CsvDecimalFormat,
     CsvEncoding,
@@ -10,21 +10,21 @@ import {
     ToManyAssocExportType
 } from "../common/ExportImportParam";
 import {ResponseError} from "./ResponseError";
-import {ReactElement, CSSProperties, RefObject, ComponentType} from "react";
+import type {ReactElement, CSSProperties, RefObject, ComponentType} from "react";
 import {EnvVar} from "../components/env-vars/EnvVars";
-import {FieldError, FieldErrorMap} from "../components/form/FormErrors";
-import {FindParam, ResultType, CustomFilter} from "../common/FindParam";
-import {DataTableSortMeta} from "primereact/datatable";
-import {EntityRow} from "../common/types";
-import {TableFieldReadOnlyProp} from "../components/form-data-table";
+import type {FieldError, FieldErrorMap} from "../components/form/FormErrors";
+import {type FindParam, ResultType, type CustomFilter} from "../common/FindParam";
+import type {DataTableSortMeta} from "primereact/datatable";
+import type {EntityRow} from "../common/types";
+import type {TableFieldReadOnlyProp} from "../components/form-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
-import {SelectItem} from "primereact/selectitem";
+import type {SelectItem} from "primereact/selectitem";
 import {localeOption} from "../components/locale/Locale";
-import {LazyDataTableRef} from "../components/lazy-data-table";
-import {CreateObjectFunction, OnSaveOrCancelProp} from "../components/form";
+import type {LazyDataTableRef} from "../components/lazy-data-table";
+import type {CreateObjectFunction, OnSaveOrCancelProp} from "../components/form";
 import {initMsalConfig} from "../components/auth";
-import {FindRowByIdRequest, FindRowByIdResponse} from "../common/lib-api";
-import {OperationType, ViewStatus, ViewStatusOrBoolean, StorageType, GetEnvVarValue, FilterOrFunction} from "./types";
+import type {FindRowByIdRequest, FindRowByIdResponse} from "../common/lib-api";
+import {OperationType, ViewStatus, type ViewStatusOrBoolean, type StorageType, type GetEnvVarValue, type FilterOrFunction} from "./types";
 
 export class Utils {
 

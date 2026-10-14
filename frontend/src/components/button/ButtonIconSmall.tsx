@@ -1,7 +1,7 @@
-import React, {MouseEvent} from "react";
-import {Button as PrimeButton, ButtonProps} from "primereact/button";
+import React, {type MouseEvent} from "react";
+import {Button as PrimeButton, type ButtonProps} from "primereact/button";
 import {Utils} from "../../utils/Utils";
-import {IconType} from "primereact/utils";
+import type {IconType} from "primereact/utils";
 
 // button with icon (without label) - rename to ButtonSmall?
 export const ButtonIconSmall = (props: {icon: IconType<ButtonProps>; onClick: ((event: MouseEvent<HTMLButtonElement>) => void); disabled?: boolean; tooltip?: any; tooltipShowDelay?: number;}) => {

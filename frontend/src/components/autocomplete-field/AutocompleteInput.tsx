@@ -1,20 +1,20 @@
-import React, {Component, ReactElement, ReactNode, ComponentType, createRef, FocusEvent} from "react";
-import {AutoComplete, AutoCompleteChangeEvent} from "primereact/autocomplete";
+import React, {Component, type ReactElement, type ReactNode, type ComponentType, createRef, type FocusEvent} from "react";
+import {AutoComplete, type AutoCompleteChangeEvent} from "primereact/autocomplete";
 import {SplitButton} from "primereact/splitbutton";
-import {OperationType, Query} from "../../utils/types";
+import {OperationType, type Query} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {Button as PrimeButton} from "primereact/button";
-import {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
-import {SearchBrowseParams, SearchBrowseDialog, SearchBrowseDialogState} from "../browse";
-import {CustomFilter, LazyAutoCompleteSuggestionsRequest} from "../../common/FindParam";
-import {DataTableSortMeta} from "primereact/datatable";
-import {FindResult} from "../../common/FindResult";
+import type {MenuItem, MenuItemCommandEvent} from "primereact/menuitem";
+import {type SearchBrowseParams, SearchBrowseDialog, type SearchBrowseDialogState} from "../browse";
+import type {CustomFilter, LazyAutoCompleteSuggestionsRequest} from "../../common/FindParam";
+import type {DataTableSortMeta} from "primereact/datatable";
+import type {FindResult} from "../../common/FindResult";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {Entity} from "../../common/EntityMetadata";
+import type {Entity} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {FormDialog, FormDialogState} from "../form";
-import {FormProps} from "../form";
-import {SearchBrowseProps} from "../lazy-data-table";
+import {FormDialog, type FormDialogState} from "../form";
+import type {FormProps} from "../form";
+import type {SearchBrowseProps} from "../lazy-data-table";
 
 // helper
 interface ButtonItem {

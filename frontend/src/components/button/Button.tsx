@@ -1,6 +1,6 @@
-import React, {CSSProperties, MouseEvent} from "react";
-import {Button as PrimeButton, ButtonProps} from "primereact/button";
-import {IconType} from "primereact/utils";
+import React, {type CSSProperties, type MouseEvent} from "react";
+import {Button as PrimeButton, type ButtonProps} from "primereact/button";
+import type {IconType} from "primereact/utils";
 
 export const Button = (props: {
     label?: string;

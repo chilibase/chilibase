@@ -1,7 +1,7 @@
 import React from "react";
 import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
 import {InputText as PrimeInputText} from "primereact/inputtext";
-import {ValueField, ValueFieldProps} from "../form/ValueField";
+import {ValueField, type ValueFieldProps} from "../form/ValueField";
 import {Utils} from "../../utils/Utils";
 import {Tooltip} from "primereact/tooltip";
 

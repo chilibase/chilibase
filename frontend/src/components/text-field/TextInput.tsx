@@ -1,4 +1,4 @@
-import React, {useState, CSSProperties, ChangeEvent, FocusEvent} from "react";
+import React, {useState, type CSSProperties, type ChangeEvent, type FocusEvent} from "react";
 import {
     stringAsUI,
     stringFromUI

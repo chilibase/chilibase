@@ -1,9 +1,9 @@
 import React, {Component} from "react";
-import {Query} from "../../utils/types";
+import type {Query} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {DataTableSortMeta} from "primereact/datatable";
+import type {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {MultiSelect, MultiSelectChangeEvent} from "primereact/multiselect";
+import {MultiSelect, type MultiSelectChangeEvent} from "primereact/multiselect";
 
 // Base komponent pre MultiSelectField - podobna uroven ako AutocompleteInput, resp. SelectInput
 

@@ -1,12 +1,12 @@
 import {FormBase} from "../form";
-import {Component, CSSProperties} from "react";
-import {EntityRow} from "../../common/types";
+import {Component, type CSSProperties} from "react";
+import type {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {FieldError} from "../form/FormErrors";
-import {CustomFilter} from "../../common/FindParam";
-import {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
+import type {FieldError} from "../form/FormErrors";
+import type {CustomFilter} from "../../common/FindParam";
+import type {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
 
 export interface TableFormFieldProps {
     form: FormBase;

@@ -1,7 +1,7 @@
-import {XtDocTemplateFieldToJoin} from "./xt-doc-template-field-to-join.entity";
-import {User} from "../administration/user.entity";
-import {FileMeta} from "../administration/file-meta.entity";
-import {EnumValue} from "../administration/enum-value.entity";
+import type {XtDocTemplateFieldToJoin} from "./xt-doc-template-field-to-join.entity";
+import type {User} from "../administration/user.entity";
+import type {FileMeta} from "../administration/file-meta.entity";
+import type {EnumValue} from "../administration/enum-value.entity";
 
 export interface XtDocTemplate {
     id: number;

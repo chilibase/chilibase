@@ -1,6 +1,6 @@
 import React from 'react';
 import {Dialog} from "primereact/dialog";
-import {AuthSession} from "./AuthSession";
+import type {AuthSession} from "./AuthSession";
 import {LoginForm} from "./LoginForm";
 
 // is used by local auth

@@ -1,10 +1,10 @@
-import {Field} from "../../common/EntityMetadata";
+import type {Field} from "../../common/EntityMetadata";
 // WARNING - if you use import from index.ts (not from file TableFormField), app gives error during start:
 // Uncaught TypeError: Class extends value undefined is not a constructor or null
 // (probably XInputDT cannot be instantiated)
-import {TableFormField, TableFormFieldProps} from "./TableFormField";
+import {TableFormField, type TableFormFieldProps} from "./TableFormField";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {CSSProperties} from "react";
+import type {CSSProperties} from "react";
 
 export interface TableValueFieldProps extends TableFormFieldProps {
     field: string;

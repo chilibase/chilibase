@@ -1,4 +1,4 @@
-import {EnumType} from "./enum-type.entity";
+import type {EnumType} from "./enum-type.entity";
 
 export interface EnumValue {
     id: number;

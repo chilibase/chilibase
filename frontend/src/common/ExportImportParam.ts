@@ -1,8 +1,8 @@
 // ExportType a LazyDataTableQueryParam sa pouzivaju v samostatnom servise ktory data streamuje
 // (na rozdiel od ResultType.AllRows ktory by sa ani nemal pouzivat - nemali by sa vsetky rows tahat na klienta v jednom velkom requeste)
-import {DataTableSortMeta} from "primereact/datatable";
-import {CustomFilterItem, ExtendedDataTableFilterMeta, FullTextSearch} from "./FindParam";
-import {TextFormat} from "./types";
+import type {DataTableSortMeta} from "primereact/datatable";
+import type {CustomFilterItem, ExtendedDataTableFilterMeta, FullTextSearch} from "./FindParam";
+import type {TextFormat} from "./types";
 
 // ************** export ***************
 

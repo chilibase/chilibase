@@ -1,7 +1,7 @@
-import React, {MouseEvent} from "react";
-import {Button as PrimeButton, ButtonProps} from "primereact/button";
+import React, {type MouseEvent} from "react";
+import {Button as PrimeButton, type ButtonProps} from "primereact/button";
 import {Utils} from "../../utils/Utils";
-import {IconType} from "primereact/utils";
+import type {IconType} from "primereact/utils";
 
 // button s ikonkou, zuzeny na 1.5rem (21px), na mobile nezuzeny, defaultne s marginom "m-1" (0.25rem) (ako XButton), margin sa da vypnut (pouzivane pre editovatelnu tabulku)
 // zmyslom narrow buttonu je setrit miesto

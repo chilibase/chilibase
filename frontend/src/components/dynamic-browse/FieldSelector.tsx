@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {TreeTable} from "primereact/treetable";
 import {Column} from "primereact/column";
-import {Assoc, Entity} from "../../common/EntityMetadata";
-import {TreeNode} from "primereact/treenode";
+import type {Assoc, Entity} from "../../common/EntityMetadata";
+import type {TreeNode} from "primereact/treenode";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export const FieldSelector = (props: {entity: string; assocSelectable: boolean; selectionField?: string; onSelectionChange: (selectedField: string) => void;}) => {

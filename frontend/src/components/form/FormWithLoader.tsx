@@ -1,5 +1,5 @@
-import React, {ReactElement, FC, ComponentType, useState, useEffect, cloneElement} from 'react';
-import {
+import React, {type ReactElement, type FC, type ComponentType, useState, useEffect, cloneElement} from 'react';
+import type {
     AssocListFunction,
     CreateObjectFunction,
     FormProps,
@@ -8,9 +8,9 @@ import {
 } from "./FormBase";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {Params} from "../../common/UtilsCommon";
+import type {Params} from "../../common/UtilsCommon";
 import {EnvVar} from "../env-vars/EnvVars";
-import {EntityRow} from "../../common/types";
+import type {EntityRow} from "../../common/types";
 
 // HOC component - wraps form component (e.g. CarForm - either as component type or as JSX element (with custom props))
 // into enhanced component that renders/reads data

@@ -1,7 +1,7 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
-import {ValueField, ValueFieldProps} from "../form/ValueField";
+import {ValueField, type ValueFieldProps} from "../form/ValueField";
 
 export interface NumberFieldProps extends ValueFieldProps {
     size?: number;

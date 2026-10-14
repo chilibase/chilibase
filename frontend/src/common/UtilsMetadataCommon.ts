@@ -1,4 +1,4 @@
-import {Assoc, Entity, EntityMap, Field, RelationType} from "./EntityMetadata";
+import type {Assoc, Entity, EntityMap, Field, RelationType} from "./EntityMetadata";
 import {UtilsCommon} from "./UtilsCommon";
 
 /**

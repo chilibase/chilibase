@@ -1,8 +1,8 @@
-import {Entity, Field} from "./EntityMetadata";
+import type {Entity, Field} from "./EntityMetadata";
 import {UtilsMetadataCommon} from "./UtilsMetadataCommon";
 import {AsUIType, convertValue, dateAsYYYY_MM_DD, dateFormat, datetimeFormat} from "./UtilsConversions";
-import {CustomFilter, CustomFilterItem} from "./FindParam";
-import {DataTableSortMeta} from "primereact/datatable";
+import type {CustomFilter, CustomFilterItem} from "./FindParam";
+import type {DataTableSortMeta} from "primereact/datatable";
 
 // common types for frontend and backend
 

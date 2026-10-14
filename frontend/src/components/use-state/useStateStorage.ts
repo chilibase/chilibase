@@ -1,5 +1,5 @@
-import {Dispatch, SetStateAction} from "react";
-import {StorageType} from "../../utils/types";
+import type {Dispatch, SetStateAction} from "react";
+import type {StorageType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {useStateStorageBase} from "./useStateStorageBase";
 

@@ -1,5 +1,5 @@
-import React, {ReactElement} from "react";
-import {ValueField, ValueFieldProps} from "../form/ValueField";
+import React, {type ReactElement} from "react";
+import {ValueField, type ValueFieldProps} from "../form/ValueField";
 import {CheckboxInput} from "./CheckboxInput";
 
 export interface CheckboxFieldProps extends ValueFieldProps {

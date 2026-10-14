@@ -1,4 +1,4 @@
-import React, {CSSProperties} from "react";
+import React, {type CSSProperties} from "react";
 import {FormBase} from "./FormBase";
 import {localeOption} from "../locale/Locale";
 

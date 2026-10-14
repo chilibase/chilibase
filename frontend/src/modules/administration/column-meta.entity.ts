@@ -1,4 +1,4 @@
-import {BrowseMeta} from "./browse-meta.entity.js";
+import type {BrowseMeta} from "./browse-meta.entity.js";
 
 export interface ColumnMeta {
     id: number;

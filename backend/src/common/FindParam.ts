@@ -1,5 +1,5 @@
-import {DataTableFilterMetaData, DataTableOperatorFilterMetaData, DataTableSortMeta} from "./PrimeFilterSortMeta.js";
-import {Params} from "./UtilsCommon.js";
+import type {DataTableFilterMetaData, DataTableOperatorFilterMetaData, DataTableSortMeta} from "./PrimeFilterSortMeta.js";
+import type {Params} from "./UtilsCommon.js";
 
 export enum ResultType {
     OnlyRowCount,

@@ -1,4 +1,4 @@
-import {Assoc, Entity, EntityMap, Field, RelationType} from "./EntityMetadata.js";
+import type {Assoc, Entity, EntityMap, Field, RelationType} from "./EntityMetadata.js";
 import {UtilsCommon} from "./UtilsCommon.js";
 
 /**

@@ -1,5 +1,5 @@
 import React from "react";
-import {MenuItem} from "primereact/menuitem";
+import type {MenuItem} from "primereact/menuitem";
 import {Menubar as PrimeMenubar} from "primereact/menubar";
 import {Utils} from "../../utils/Utils";
 import {useAuthSession} from "../auth";

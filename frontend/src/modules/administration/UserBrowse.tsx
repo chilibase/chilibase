@@ -4,7 +4,7 @@ import {
     type SearchBrowseProps
 } from "../../components/lazy-data-table";
 import React from "react";
-import {User} from "./user.entity";
+import type {User} from "./user.entity";
 import {UserForm} from "./UserForm";
 import {Utils} from "../../utils/Utils";
 

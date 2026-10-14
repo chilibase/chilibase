@@ -1,12 +1,12 @@
-import React, {ReactElement, CSSProperties, createRef, cloneElement} from "react";
+import React, {type ReactElement, type CSSProperties, createRef, cloneElement} from "react";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Utils} from "../../utils/Utils";
 import {Dialog} from "primereact/dialog";
-import {FilterProp, FormField, FormFieldProps} from "../form";
-import {Assoc} from "../../common/EntityMetadata";
-import {CustomFilter} from "../../common/FindParam";
-import {SearchBrowseParams} from "../browse";
+import {type FilterProp, FormField, type FormFieldProps} from "../form";
+import type {Assoc} from "../../common/EntityMetadata";
+import type {CustomFilter} from "../../common/FindParam";
+import type {SearchBrowseParams} from "../browse";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {UtilsCommon} from "../../common/UtilsCommon";
 

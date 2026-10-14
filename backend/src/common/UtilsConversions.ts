@@ -1,7 +1,7 @@
 import {UtilsCommon} from "./UtilsCommon.js";
-import {Assoc, Entity, Field} from "./EntityMetadata.js";
+import type {Assoc, Entity, Field} from "./EntityMetadata.js";
 import {UtilsMetadataCommon} from "./UtilsMetadataCommon.js";
-import {IPostgresInterval} from "postgres-interval";
+import type {IPostgresInterval} from "postgres-interval";
 
 export function stringFromUI(stringValue: string): string | null {
     let value: string | null;

@@ -1,4 +1,4 @@
-import React, {ReactNode, CSSProperties, Children, isValidElement, cloneElement} from "react";
+import React, {type ReactNode, type CSSProperties, Children, isValidElement, cloneElement} from "react";
 import {FormBase} from "../form";
 import {Utils} from "../../utils/Utils";
 

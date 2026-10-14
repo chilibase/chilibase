@@ -1,7 +1,7 @@
 import React from "react";
 import {Column, LazyDataTable, type SearchBrowseProps} from "../../components/lazy-data-table";
 import {ParameterForm} from "./ParameterForm";
-import {CustomFilter} from "../../common/FindParam";
+import type {CustomFilter} from "../../common/FindParam";
 
 export const ParameterBrowse = (props: SearchBrowseProps & {customFilter?: CustomFilter}) => {
 

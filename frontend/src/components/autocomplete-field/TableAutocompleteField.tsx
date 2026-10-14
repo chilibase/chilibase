@@ -1,14 +1,14 @@
-import React, {ReactElement, ReactNode, ComponentType} from "react";
-import {TableFormField, TableFormFieldProps} from "../form-data-table";
-import {Assoc} from "../../common/EntityMetadata";
+import React, {type ReactElement, type ReactNode, type ComponentType} from "react";
+import {TableFormField, type TableFormFieldProps} from "../form-data-table";
+import type {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
-import {FieldError} from "../form/FormErrors";
-import {AutocompleteInput, SuggestionsLoadProp} from "./AutocompleteInput";
-import {TableFieldFilterProp} from "../form-data-table";
+import type {FieldError} from "../form/FormErrors";
+import {AutocompleteInput, type SuggestionsLoadProp} from "./AutocompleteInput";
+import type {TableFieldFilterProp} from "../form-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {DataTableSortMeta} from "primereact/datatable";
-import {FormProps} from "../form";
-import {SearchBrowseProps} from "../lazy-data-table";
+import type {DataTableSortMeta} from "primereact/datatable";
+import type {FormProps} from "../form";
+import type {SearchBrowseProps} from "../lazy-data-table";
 
 export interface TableAutocompleteFieldProps extends TableFormFieldProps {
     assocField: string;

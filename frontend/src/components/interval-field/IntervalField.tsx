@@ -1,6 +1,6 @@
-import React, {CSSProperties} from "react";
-import {ValueField, ValueFieldProps} from "../form/ValueField";
-import {IPostgresInterval} from "../../utils/types";
+import React, {type CSSProperties} from "react";
+import {ValueField, type ValueFieldProps} from "../form/ValueField";
+import type {IPostgresInterval} from "../../utils/types";
 import {IntervalInput} from "./IntervalInput";
 
 export interface IntervalFieldProps extends ValueFieldProps {

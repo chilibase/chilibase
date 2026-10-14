@@ -1,4 +1,4 @@
-import {ColumnMeta} from "./column-meta.entity.js";
+import type {ColumnMeta} from "./column-meta.entity.js";
 
 export interface BrowseMeta {
     id: number;

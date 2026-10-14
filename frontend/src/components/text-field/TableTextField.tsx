@@ -3,7 +3,7 @@ import React from "react";
 import {InputText} from "primereact/inputtext";
 import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {TableFieldReadOnlyProp} from "../form-data-table";
+import type {TableFieldReadOnlyProp} from "../form-data-table";
 import {Utils} from "../../utils/Utils";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 

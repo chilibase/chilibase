@@ -1,66 +1,66 @@
-import React, {forwardRef, ReactElement, ReactNode, useEffect, useImperativeHandle, useRef, useState, ComponentType, CSSProperties, Dispatch, SetStateAction, Children, useContext} from 'react';
+import React, {forwardRef, type ReactElement, type ReactNode, useEffect, useImperativeHandle, useRef, useState, type ComponentType, type CSSProperties, type Dispatch, type SetStateAction, Children, useContext} from 'react';
 import {
-    DataTable, DataTableExpandedRows,
-    DataTableFilterMeta,
-    DataTableFilterMetaData,
-    DataTableOperatorFilterMetaData, DataTableRowExpansionTemplate,
-    DataTableSortMeta, DataTableStateEvent, DataTableValueArray
+    DataTable, type DataTableExpandedRows,
+    type DataTableFilterMeta,
+    type DataTableFilterMetaData,
+    type DataTableOperatorFilterMetaData, type DataTableRowExpansionTemplate,
+    type DataTableSortMeta, type DataTableStateEvent, type DataTableValueArray
 } from 'primereact/datatable';
 import {
     Column as PrimeColumn,
-    ColumnBodyOptions,
-    ColumnFilterElementTemplateOptions,
-    ColumnFilterMatchModeChangeEvent,
-    ColumnFilterMatchModeOptions
+    type ColumnBodyOptions,
+    type ColumnFilterElementTemplateOptions,
+    type ColumnFilterMatchModeChangeEvent,
+    type ColumnFilterMatchModeOptions
 } from 'primereact/column';
 import {Button} from "../button";
-import {OperationType, StorageType, ViewStatus, ViewStatusOrBoolean} from "../../utils/types";
+import {OperationType, type StorageType, ViewStatus, type ViewStatusOrBoolean} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
-import {FieldFilter, SearchBrowseParams} from "../browse";
+import type {FieldFilter, SearchBrowseParams} from "../browse";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {TableFilterSelectInput} from "../select-field/TableFilterSelectInput";
-import {Assoc, Entity, Field} from "../../common/EntityMetadata";
+import type {Assoc, Entity, Field} from "../../common/EntityMetadata";
 import {AsUIType, convertValue, numberAsUI, numberFromModel} from "../../common/UtilsConversions";
-import {FindResult} from "../../common/FindResult";
+import type {FindResult} from "../../common/FindResult";
 import {
-    FindParam,
+    type FindParam,
     ResultType,
-    SimpleAggregateItem,
+    type SimpleAggregateItem,
     AggregateFunction,
-    CustomFilter,
-    CustomFilterItem,
-    FullTextSearch, ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode, ExtendedDataTableFilterMeta
+    type CustomFilter,
+    type CustomFilterItem,
+    type FullTextSearch, type ExtendedDataTableFilterMetaData, ExtendedFilterMatchMode, type ExtendedDataTableFilterMeta
 } from "../../common/FindParam";
 import {ButtonIconSmall} from "../button";
 import {TriStateCheckbox} from "primereact/tristatecheckbox";
 import {UtilsCommon} from "../../common/UtilsCommon";
-import {ExportColumnParam, LazyDataTableQueryParam} from "../../common/ExportImportParam";
-import {ExportParams, ExportRowsDialog, ExportRowsDialogState} from "./ExportRowsDialog";
-import PrimeReact, {APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
-import {FormProps, OnSaveOrCancelProp} from "../form";
+import type {ExportColumnParam, LazyDataTableQueryParam} from "../../common/ExportImportParam";
+import {type ExportParams, ExportRowsDialog, type ExportRowsDialogState} from "./ExportRowsDialog";
+import PrimeReact, {type APIOptions, FilterMatchMode, FilterOperator, PrimeReactContext} from "primereact/api";
+import type {FormProps, OnSaveOrCancelProp} from "../form";
 import {DateInput} from "../date-field";
 import {NumberInput} from "../number-field";
 import {primeLocaleOption, localeOption} from "../locale/Locale";
-import {FtsInput, FtsInputValue} from "./FtsInput";
+import {FtsInput, type FtsInputValue} from "./FtsInput";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
-import {IconType} from "primereact/utils";
-import {ButtonProps} from "primereact/button";
+import type {IconType} from "primereact/utils";
+import type {ButtonProps} from "primereact/button";
 import {Editor} from "primereact/editor";
 import {MultilineSwitch} from "./MultilineSwitch";
 import {MultilineRenderer} from "./MultilineRenderer";
 import {HtmlRenderer} from "./HtmlRenderer";
 import {OcfDropdown} from "./OcfDropdown";
-import {XFieldSetBase, XFieldSetMeta, XFieldXFieldMetaMap} from "../field-set/XFieldSetBase";
+import {XFieldSetBase, type XFieldSetMeta, type XFieldXFieldMetaMap} from "../field-set/XFieldSetBase";
 import {AutocompleteInput} from "../autocomplete-field";
 import {TextInput} from "../text-field";
 import {useStateStorage} from "../use-state/useStateStorage";
 import {useStateStorageBase} from "../use-state/useStateStorageBase";
 import * as _ from "lodash";
-import {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template.entity";
+import type {XtDocTemplate} from "../../modules/doc-templates/xt-doc-template.entity";
 import {DocTemplateButton} from "../../modules/doc-templates/DocTemplateButton";
-import {FormDialog, FormDialogState} from "../form";
-import {TextFormat} from '../../common';
-import {ColumnToggleDialog, ColumnToggleDialogItem} from "./ColumnToggleDialog";
+import {FormDialog, type FormDialogState} from "../form";
+import type {TextFormat} from '../../common';
+import {ColumnToggleDialog, type ColumnToggleDialogItem} from "./ColumnToggleDialog";
 
 // typ pouzivany len v LazyDataTable
 interface XFieldSetMaps {

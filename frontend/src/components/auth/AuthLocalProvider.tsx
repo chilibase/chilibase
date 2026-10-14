@@ -1,8 +1,8 @@
-import React, {ReactNode, useState} from 'react';
+import React, {type ReactNode, useState} from 'react';
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
 import {LoginForm} from "./LoginForm";
 import {Utils} from "../../utils/Utils";
-import {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
+import type {PostLoginRequest, PostLoginResponse} from "../../common/auth-api";
 import {UserNotFoundOrDisabledError} from "./UserNotFoundOrDisabledError";
 import {useAuthSession} from "./useAuthSession";
 
