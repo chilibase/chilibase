@@ -47,13 +47,12 @@ export const Auth0Provider = ({children}: {children: ReactNode;}) => {
     // redirect_uri je url-ka, na ktoru sa flow vrati po logine z auth0.com (musi byt uvedena v configuracii aplikacie na auth0.com vo fielde Allowed Callback URLs)
     // (poznamka: mohli by sme pouzivat window.location.origin + "/callback" a na "/callback" v router-i zavesit specialny komponent ktory by sa cez navigate() dostal na spravnu stranku)
     //console.log('redirect_uri = ' + window.location.origin + window.location.pathname);
-    // note: cacheLocation="localstorage" is also good but during developing, if new version si built, developer has to manually remove refresh token from local storage
     return (
         <Auth0Auth0Provider
             domain={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_DOMAIN)}
             clientId={Utils.getEnvVarValue(EnvVar.VITE_AUTH0_CLIENT_ID)}
             useRefreshTokens={true}
-            cacheLocation="memory"
+            cacheLocation="localstorage"
             authorizationParams={{redirect_uri: window.location.origin, audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)}}>
             <AppAuth0>
                 {children}
@@ -177,6 +176,7 @@ function AppAuth0({children}: {children: ReactNode;}) {
     }
     else {
         if (!isAuthenticated) {
+            //removeAuth0RefreshToken();
             // otvori Auth0 prihlasovaciu stranku
             // window.location.pathname obsahuje path cast z volanej url-ky (napr. "/cars")
             // pri volani callback uri (navrat z auth0 do app-ky) zjavne automaticky pouzije tento ulozeny path
