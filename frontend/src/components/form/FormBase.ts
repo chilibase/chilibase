@@ -3,7 +3,7 @@ import type {EntityRow} from "../../common/types";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {type FieldOnChange, FormField} from "./FormField";
-import {type TableFieldOnChange, FormDataTable, type RowTechData} from "../form-data-table";
+import {type TableFieldOnChange, DetailDataTable, type RowTechData} from "../detail-data-table";
 import type {FieldErrorMap, FormErrorMap} from "./FormErrors";
 import {type Params, UtilsCommon} from "../../common/UtilsCommon";
 import type {Entity} from "../../common/EntityMetadata";
@@ -102,12 +102,12 @@ export abstract class FormBase extends Component<FormProps> {
     // poznamka 2: " | any" sme pridali aby sme mohli do state zapisovat aj neperzistentne atributy typu "this.state.passwordNew"
 
     formFieldList: Array<FormField<any>>; // zoznam jednoduchych komponentov na formulari (vcetne Dropdown, SearchButton, ...)
-    formDataTableList: Array<FormDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
+    detailDataTableList: Array<DetailDataTable>; // zoznam detailovych tabuliek (obsahuju zoznam dalsich komponentov)
     assocToValidateList: Array<string>; // zoznam oneToMany asociacii, pre ktore sa zavola spracovanie vysledku validacie ktory je ulozny v rowTechData (pouzivane pre specialnu custom validaciu)
     assocToSortList: Array<{assoc: string; sortField: string;}>; // zoznam oneToMany asociacii, ktore po nacitani z DB zosortujeme podla daneho fieldu (zvycajne id)
 
     // special flag - application can set this flag if the form uses component TabView
-    // as a result, the width of components XFormScrollable and FormDataTable will be proper adjusted (the margin of TabPanel will be subtracted from 100vw)
+    // as a result, the width of components XFormScrollable and DetailDataTable will be proper adjusted (the margin of TabPanel will be subtracted from 100vw)
     // (it is important for mobile display)
     tabViewUsed: boolean;
 
@@ -152,7 +152,7 @@ export abstract class FormBase extends Component<FormProps> {
             errorMap: {}
         };
         this.formFieldList = [];
-        this.formDataTableList = [];
+        this.detailDataTableList = [];
         this.assocToValidateList = [];
         this.assocToSortList = [];
         this.tabViewUsed = false; // default
@@ -448,8 +448,8 @@ export abstract class FormBase extends Component<FormProps> {
         return undefined;
     }
 
-    addFormDataTable(formDataTable: FormDataTable) {
-        this.formDataTableList.push(formDataTable);
+    addDetailDataTable(detailDataTable: DetailDataTable) {
+        this.detailDataTableList.push(detailDataTable);
     }
 
     addAssocToValidate(oneToManyAssoc: string) {
@@ -556,9 +556,9 @@ export abstract class FormBase extends Component<FormProps> {
         let msg: string = Utils.getErrorMessages(fieldErrorMap);
 
         // este spracujeme editovatelne tabulky
-        for (const formDataTable of this.formDataTableList) {
-            //msg += formDataTable.getErrorMessages();
-            msg += this.getErrorMessagesForAssoc(formDataTable.props.assocField);
+        for (const detailDataTable of this.detailDataTableList) {
+            //msg += detailDataTable.getErrorMessages();
+            msg += this.getErrorMessagesForAssoc(detailDataTable.props.assocField);
         }
 
         // este spracujeme oneToMany asociacie, ktore boli explicitne uvedene, ze ich treba validovat
@@ -605,8 +605,8 @@ export abstract class FormBase extends Component<FormProps> {
                 fieldErrorMap[errorItem.field] = errorItem.fieldError;
             }
         }
-        for (const formDataTable of this.formDataTableList) {
-            formDataTable.validate();
+        for (const detailDataTable of this.detailDataTableList) {
+            detailDataTable.validate();
         }
         return fieldErrorMap;
     }

@@ -5,7 +5,7 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
 import type {SearchBrowseParams} from "../browse";
-import type {TableFieldReadOnlyProp} from "../form-data-table";
+import type {TableFieldReadOnlyProp} from "../detail-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export const TableSearchField = (props: {form: FormBase; entity: string; assocField: string; displayField: string, searchBrowse: ReactElement; assocForm?: ReactElement; rowData: any; readOnly?: TableFieldReadOnlyProp}) => {

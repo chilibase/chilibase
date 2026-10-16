@@ -2,7 +2,7 @@ import {FormBase, type FormProps} from "../../components/form";
 import {NumberField} from "../../components/number-field";
 import {TextField} from "../../components/text-field";
 import React from "react";
-import {Column, FormDataTable} from "../../components/form-data-table";
+import {Column, DetailDataTable} from "../../components/detail-data-table";
 import {FormFooter} from "../../components/form";
 
 export class BrowseMetaForm extends FormBase {
@@ -23,7 +23,7 @@ export class BrowseMetaForm extends FormBase {
                     </div>
                 </div>
                 <div className="x-viewport-width">
-                    <FormDataTable form={this} assocField="columnMetaList" label="Column list">
+                    <DetailDataTable form={this} assocField="columnMetaList" label="Column list">
                         <Column field="id" header="ID" readOnly={true}/>
                         <Column field="field" header="Field" width="17rem"/>
                         <Column field="header" header="Header" width="17rem"/>
@@ -31,7 +31,7 @@ export class BrowseMetaForm extends FormBase {
                         <Column field="dropdownInFilter" header="Dropdown in filter"/>
                         <Column field="width" header="Width"/>
                         <Column field="columnOrder" header="Column order"/>
-                    </FormDataTable>
+                    </DetailDataTable>
                 </div>
                 <FormFooter form={this}/>
             </div>

@@ -32,7 +32,7 @@ import { AutocompleteField } from '@chilibase/frontend/autocomplete-field'
 | `fields` | Extra associations to fetch with suggestions |
 | `dropdownButtonEnabled` | Show the dropdown button (default `true`) |
 
-There is also `AutocompleteInput` (no form binding) and `TableAutocompleteField` / `AutocompleteColumn` for `FormDataTable`.
+There is also `AutocompleteInput` (no form binding) and `TableAutocompleteField` / `AutocompleteColumn` for `DetailDataTable`.
 
 ## In a browse filter
 

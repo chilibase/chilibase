@@ -69,7 +69,7 @@
     "./dynamic-browse": "./lib/components/dynamic-browse/index.js",
     "./env-vars": "./lib/components/env-vars/index.js",
     "./form": "./lib/components/form/index.js",
-    "./form-data-table": "./lib/components/form-data-table/index.js",
+    "./detail-data-table": "./lib/components/detail-data-table/index.js",
     "./form-layout": "./lib/components/form-layout/index.js",
     "./form-navigator": "./lib/components/form-navigator/index.js",
     "./number-field": "./lib/components/number-field/index.js",

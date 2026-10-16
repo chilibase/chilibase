@@ -1,5 +1,5 @@
 import React from "react";
-import {TableValueField, type TableValueFieldProps} from "../form-data-table/TableValueField";
+import {TableValueField, type TableValueFieldProps} from "../detail-data-table/TableValueField";
 import {MultilineTextInput} from "./MultilineTextInput";
 
 export interface TableMultilineTextFieldProps extends TableValueFieldProps {

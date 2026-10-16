@@ -1,5 +1,5 @@
 import React from "react";
-import {TableValueField, type TableValueFieldProps} from "../form-data-table/TableValueField";
+import {TableValueField, type TableValueFieldProps} from "../detail-data-table/TableValueField";
 import {DateInput} from "./DateInput";
 import {dateFromModel} from "../../common/UtilsConversions";
 

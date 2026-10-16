@@ -1,10 +1,10 @@
 import React, {type ReactElement, type ReactNode, type ComponentType} from "react";
-import {TableFormField, type TableFormFieldProps} from "../form-data-table";
+import {TableFormField, type TableFormFieldProps} from "../detail-data-table";
 import type {Assoc} from "../../common/EntityMetadata";
 import {OperationType} from "../../utils/types";
 import type {FieldError} from "../form/FormErrors";
 import {AutocompleteInput, type SuggestionsLoadProp} from "./AutocompleteInput";
-import type {TableFieldFilterProp} from "../form-data-table";
+import type {TableFieldFilterProp} from "../detail-data-table";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import type {DataTableSortMeta} from "primereact/datatable";
 import type {FormProps} from "../form";

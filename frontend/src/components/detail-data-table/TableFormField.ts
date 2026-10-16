@@ -6,7 +6,7 @@ import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import type {FieldError} from "../form/FormErrors";
 import type {CustomFilter} from "../../common/FindParam";
-import type {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./FormDataTable";
+import type {TableFieldFilterProp, TableFieldOnChange, TableFieldReadOnlyProp} from "./DetailDataTable";
 
 export interface TableFormFieldProps {
     form: FormBase;
@@ -16,7 +16,7 @@ export interface TableFormFieldProps {
     onChange?: TableFieldOnChange;
     placeholder?: string; // poznamka: placeholder moze byt nastavovany aj cez property desc (ak pouzivame napr. XFormPanelList)
 
-    // props pouzivane ak vytvarame component s label-om (nie sme v FormDataTable, ale pouzivame napr. XFormPanelList)
+    // props pouzivane ak vytvarame component s label-om (nie sme v DetailDataTable, ale pouzivame napr. XFormPanelList)
     label?: string;
     tooltip?: string;
     desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat placeholder a tooltip pre label) - vytvoreny pre depaul
@@ -77,8 +77,8 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
             // if the length of field is 2 or more, then readOnly
             readOnly = true;
         }
-        // formReadOnlyBase is called on the level FormDataTable and XFormPanelList
-        // the reason is (probably) that in FormDataTable and XFormPanelList we know the assoc name whereas here in component we know only field name
+        // formReadOnlyBase is called on the level DetailDataTable and XFormPanelList
+        // the reason is (probably) that in DetailDataTable and XFormPanelList we know the assoc name whereas here in component we know only field name
         // (assoc name is param of formReadOnlyBase)
         // else if (this.props.form.formReadOnlyBase("xxx")) {
         //     readOnly = true;

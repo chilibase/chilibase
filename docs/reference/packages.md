@@ -28,7 +28,7 @@ Import from a subpath, not the package root:
 @chilibase/frontend/dynamic-browse
 @chilibase/frontend/env-vars
 @chilibase/frontend/form
-@chilibase/frontend/form-data-table
+@chilibase/frontend/detail-data-table
 @chilibase/frontend/form-layout
 @chilibase/frontend/form-navigator
 @chilibase/frontend/number-field

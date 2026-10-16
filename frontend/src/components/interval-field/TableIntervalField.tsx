@@ -1,7 +1,7 @@
 import React from "react";
 import {IntervalInput} from "./IntervalInput";
 import type {IPostgresInterval} from "../../utils/types";
-import {TableValueField, type TableValueFieldProps} from "../form-data-table/TableValueField";
+import {TableValueField, type TableValueFieldProps} from "../detail-data-table/TableValueField";
 
 export interface TableIntervalFieldProps extends TableValueFieldProps {
 }

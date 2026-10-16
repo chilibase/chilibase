@@ -1,7 +1,7 @@
 import React from "react";
 import {InputNumber} from "primereact/inputnumber";
 import {UtilsMetadata} from "../../utils/UtilsMetadata";
-import {TableValueField, type TableValueFieldProps} from "../form-data-table/TableValueField";
+import {TableValueField, type TableValueFieldProps} from "../detail-data-table/TableValueField";
 import {Utils} from "../../utils/Utils";
 
 export interface TableNumberFieldProps extends TableValueFieldProps {

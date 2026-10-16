@@ -6,7 +6,7 @@ import type {Assoc} from "../../common/EntityMetadata";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import type {CustomFilter} from "../../common/FindParam";
 
-// used in filter in LazyDataTable and in FormDataTable
+// used in filter in LazyDataTable and in DetailDataTable
 // does not use (for now) SelectInput, it is placed here because the functionality is similar to SelectInput
 export const TableFilterSelectInput = (props: {entity: string; path: string; value: any; onValueChange: (field: string, displayValue: any) => void; filter?: CustomFilter; sortField?: string;}) => {
 

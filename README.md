@@ -60,7 +60,7 @@ pnpx create-chilibase@0.3.3 <app-name> <db-name> <db-schema-name>
 - rich text field - editor based on library `quill`
 - for large forms, primereact component `TabView` can be used
 - supports master-detail (one-to-many associations)
-  * component FormDataTable enables editing of the detail rows in the table layout
+  * component DetailDataTable enables editing of the detail rows in the table layout
   * component FormPanelList enables custom layout of the inputs for detail row (*)
   * in the detail rows, also select (dropdown) and autocomplete components are supported
   * on the backend, saving detail rows is implemented

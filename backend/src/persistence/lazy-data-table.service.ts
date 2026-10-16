@@ -227,7 +227,7 @@ export class LazyDataTableService {
         return selectQueryBuilder.getOneOrFail();
     }
 
-    // sorts all oneToMany assocs with cascade (insert and update) by id - it is default sorting used by XFormDataTable2 on the frontend
+    // sorts all oneToMany assocs with cascade (insert and update) by id - it is default sorting used by DetailDataTable on the frontend
     // helper method to avoid explicit sorting, used usually after LazyDataTableService.findRowById
     sortCascadeAssocsByIdField(xEntity: Entity, row: any) {
         const assocOneToManyList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many"]).filter((assoc: Assoc) => assoc.isCascadeInsert && assoc.isCascadeUpdate);

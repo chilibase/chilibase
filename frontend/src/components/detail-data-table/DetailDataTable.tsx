@@ -37,7 +37,7 @@ import type {SearchBrowseProps} from "../lazy-data-table";
 import {TableMultilineTextField} from "../multiline-text-field";
 import type {SuggestionsLoadProp} from "../autocomplete-field";
 
-// typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v FormDataTable)
+// typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v DetailDataTable)
 export interface RowTechData {
     // zoznam komponentov na riadku tabulky (vcetne TableSelectField, TableSearchField, ...)
     // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
@@ -56,7 +56,7 @@ export interface DropdownOptionsMap {
 }
 
 // POZNAMKA: parameter width?: string; neviem ako funguje (najme pri pouziti scrollWidth/scrollHeight), ani sa zatial nikde nepouziva
-export interface FormDataTableProps {
+export interface DetailDataTableProps {
     form: FormBase;
     assocField: string;
     dataKey?: string;
@@ -83,7 +83,7 @@ export interface FormDataTableProps {
     children: ReactElement | ReactElement[];
 }
 
-export class FormDataTable extends Component<FormDataTableProps> {
+export class DetailDataTable extends Component<DetailDataTableProps> {
 
     public static defaultProps = {
         filterDisplay: "none",
@@ -101,7 +101,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         removeRowIcon: "pi pi-times"
     };
 
-    props: FormDataTableProps;
+    props: DetailDataTableProps;
     entity?: string;
     dataKey?: string;
     dt: any;
@@ -112,7 +112,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         filters: DataTableFilterMeta;
     };
 
-    constructor(props: FormDataTableProps) {
+    constructor(props: DetailDataTableProps) {
         super(props);
         this.props = props;
         this.dataKey = props.dataKey;
@@ -139,7 +139,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
         this.getDropdownFilterValue = this.getDropdownFilterValue.bind(this);
         this.bodyTemplate = this.bodyTemplate.bind(this);
 
-        props.form.addFormDataTable(this);
+        props.form.addDetailDataTable(this);
 
         //props.form.addField(props.assocField + '.*FAKE*'); - vzdy mame aspon 1 field, nie je to potrebne
         for (const child of this.columnElements()) {
@@ -180,7 +180,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             return columnPropsMultilineText.field;
         }
         else {
-            throw `FormDataTable.getPathForColumn - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
+            throw `DetailDataTable.getPathForColumn - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
         }
     }
 
@@ -192,33 +192,33 @@ export class FormDataTable extends Component<FormDataTableProps> {
         if (columnProps.type === "inputSimple") {
             const columnPropsInputSimple = (columnProps as ColumnProps);
             isNullable = xField.isNullable;
-            readOnly = FormDataTable.isReadOnlyHeader(columnPropsInputSimple.field, columnProps.readOnly);
+            readOnly = DetailDataTable.isReadOnlyHeader(columnPropsInputSimple.field, columnProps.readOnly);
         }
         else if (columnProps.type === "dropdown") {
             const columnPropsSelect = (columnProps as SelectColumnProps);
             const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsSelect.assocField);
             isNullable = xAssoc.isNullable;
-            readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
+            readOnly = DetailDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "autoComplete") {
             const columnPropsAutocomplete = (columnProps as AutocompleteColumnProps);
             const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsAutocomplete.assocField);
             isNullable = xAssoc.isNullable;
-            readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
+            readOnly = DetailDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "searchButton") {
             const columnPropsSearchButton = (columnProps as SearchButtonColumnProps);
             const xAssoc: Assoc = UtilsMetadataCommon.getAssocToOne(xEntity, columnPropsSearchButton.assocField);
             isNullable = xAssoc.isNullable;
-            readOnly = FormDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
+            readOnly = DetailDataTable.isReadOnlyHeader(undefined, columnProps.readOnly);
         }
         else if (columnProps.type === "textarea") {
             const columnPropsMultilineText = (columnProps as MultilineTextColumnProps);
             isNullable = xField.isNullable;
-            readOnly = FormDataTable.isReadOnlyHeader(columnPropsMultilineText.field, columnProps.readOnly);
+            readOnly = DetailDataTable.isReadOnlyHeader(columnPropsMultilineText.field, columnProps.readOnly);
         }
         else {
-            throw `FormDataTable.getHeader - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
+            throw `DetailDataTable.getHeader - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
         }
 
         let header = columnProps.header ?? field;
@@ -236,7 +236,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             // if the length of field is 2 or more, then readOnly
             isReadOnly = true;
         }
-            // formReadOnlyBase is called on the level FormDataTable
+            // formReadOnlyBase is called on the level DetailDataTable
             // else if (this.props.form.formReadOnlyBase("xxx")) {
             //     isReadOnly = true;
         // }
@@ -461,7 +461,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
             body = <TableMultilineTextField form={this.props.form} entity={this.getEntity()} field={columnPropsMultilineText.field} rows={columnPropsMultilineText.rows} autoResize={columnPropsMultilineText.autoResize} rowData={rowData} readOnly={readOnly}/>;
         }
         else {
-            throw `FormDataTable.bodyTemplate - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
+            throw `DetailDataTable.bodyTemplate - unknown prop type = ${columnProps.type}, header = ${columnProps.header}`;
         }
 
         return body;
@@ -667,7 +667,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                     const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
 
                     // *********** header ***********
-                    header = FormDataTable.getHeader(childColumnProps, xEntity, field, xField);
+                    header = DetailDataTable.getHeader(childColumnProps, xEntity, field, xField);
 
                     // *********** filterElement ***********
                     if (thisLocal.props.filterDisplay !== "none") {
@@ -772,7 +772,7 @@ export class FormDataTable extends Component<FormDataTableProps> {
                                filterDisplay={filterDisplay} filters={this.state.filters} onFilter={this.onFilter}
                                sortMode="multiple" removableSort={true} multiSortMeta={sortField !== undefined ? [{field: sortField, order: 1}] : undefined}
                                selectionMode="single" selection={this.state.selectedRow} onSelectionChange={this.onSelectionChange}
-                               className="p-datatable-sm x-form-datatable" resizableColumns columnResizeMode="expand" tableStyle={tableStyle}
+                               className="p-datatable-sm x-detail-datatable" resizableColumns columnResizeMode="expand" tableStyle={tableStyle}
                                scrollable={this.props.scrollable} scrollHeight={scrollHeight} style={style}
                                cellMemo={false}>
                         {columnElemList}

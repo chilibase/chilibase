@@ -110,17 +110,17 @@ async validate(entityRow: EntityRow): Promise<FormErrorMap> {
 }
 ```
 
-## Master-detail (`FormDataTable`)
+## Master-detail (`DetailDataTable`)
 
 One-to-many associations are edited as a table on the form. Backend save persists detail rows when the TypeORM relation has `cascade: ["insert", "update", "remove"]`.
 
 ```tsx
-import { FormDataTable, Column, SelectColumn } from '@chilibase/frontend/form-data-table'
+import { DetailDataTable, Column, SelectColumn } from '@chilibase/frontend/detail-data-table'
 
-<FormDataTable form={this} assocField="rideList" label="Rides">
+<DetailDataTable form={this} assocField="rideList" label="Rides">
   <Column field="date" header="Date" />
   <SelectColumn assocField="country" displayField="name" header="Country" />
-</FormDataTable>
+</DetailDataTable>
 ```
 
 Column kinds:

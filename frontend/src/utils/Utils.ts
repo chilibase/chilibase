@@ -16,7 +16,7 @@ import type {FieldError, FieldErrorMap} from "../components/form/FormErrors";
 import {type FindParam, ResultType, type CustomFilter} from "../common/FindParam";
 import type {DataTableSortMeta} from "primereact/datatable";
 import type {EntityRow} from "../common/types";
-import type {TableFieldReadOnlyProp} from "../components/form-data-table";
+import type {TableFieldReadOnlyProp} from "../components/detail-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import type {SelectItem} from "primereact/selectitem";
 import {localeOption} from "../components/locale/Locale";
@@ -488,8 +488,8 @@ export class Utils {
             // if the length of field is 2 or more, then readOnly
             isReadOnly = true;
         }
-            // formReadOnlyBase is called on the level FormDataTable and XFormPanelList
-            // the reason is (probably) that in FormDataTable and XFormPanelList we know the assoc name whereas here in component we know only field name
+            // formReadOnlyBase is called on the level DetailDataTable and XFormPanelList
+            // the reason is (probably) that in DetailDataTable and XFormPanelList we know the assoc name whereas here in component we know only field name
             // (assoc name is param of formReadOnlyBase)
             // else if (this.props.form.formReadOnlyBase("xxx")) {
             //     isReadOnly = true;
@@ -859,7 +859,7 @@ export class Utils {
     }
 
     // from React 19 JSX runtime does not copy function-component defaultProps onto the element.
-    // for some child components (columns of LazyDataTable, FormDataTable) we still use static defaultProps
+    // for some child components (columns of LazyDataTable, DetailDataTable) we still use static defaultProps
     // using JavaScript destructuring defaults would be more standard, but it is complicated
     static applyDefaultProps(elementList: ReactElement[]): ReactElement[] {
         return elementList.map(element => {
