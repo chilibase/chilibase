@@ -7,24 +7,24 @@ import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import type {CustomFilter} from "../../common/FindParam";
 
-// event pre onChange metody na komponentoch formulara (XInputText, XAutoComplete, ...)
-// pouzivame event, aby sme v buducnosti vedeli pridat dalsie atributy do eventu ak bude treba
-// assocObjectChange - info ci bol vybraty assoc object zmeneny v DB (pozri XAutoCompleteBase)
-// TODO - OperationType sem presunut
+// event for onChange methods on form components (XInputText, XAutoComplete, ...)
+// we use an event so that in the future we can add further attributes into the event if needed
+// assocObjectChange - info whether the selected assoc object was changed in the DB (see XAutoCompleteBase)
+// TODO - move OperationType here
 export interface FieldChangeEvent<ER = EntityRow> {
     entityRow: ER;
     assocObjectChange?: OperationType
 }
 
-// typ metody pre onChange - pouzil som FieldChangeEvent<any>, pri deklarovani onChange metody na komponente
-// sa da vdaka tomu pouzit (e: FieldChangeEvent<Dobrovolnik>) a kompilator sa nestazuje. Je to hack, mozno existuje krajsie riesenie
+// type of the method for onChange - I used FieldChangeEvent<any>, when declaring the onChange method on the component
+// it is possible thanks to that to use (e: FieldChangeEvent<Dobrovolnik>) and the compiler does not complain. It is a hack, maybe a nicer solution exists
 export type FieldOnChange = (e: FieldChangeEvent<any>) => void;
 
 export type ReadOnlyProp = boolean | ((object: any) => boolean);
 
-// typ property pre pridanie filtra na vyber associable rows - pouziva sa na assoc fieldoch (XAutoComplete, Dropdown, ...)
-// bud sa do property zapise priamo CustomFilter alebo sa vytvara funkcia ktora CustomFilter vrati (v tomto pripade moze CustomFilter zavisiet od aktualne editovaneho objektu "object")
-// pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo EntityRow)
+// type of the property for adding a filter for selecting associable rows - used on assoc fields (XAutoComplete, Dropdown, ...)
+// either CustomFilter is written directly into the property or a function is created that returns CustomFilter (in this case CustomFilter can depend on the currently edited object "object")
+// we use (for now) a parameter of type any so that on the form we can use a concrete type (or EntityRow)
 export type FilterProp = CustomFilter | ((object: any) => CustomFilter | undefined);
 
 export interface FormFieldProps {
@@ -33,17 +33,17 @@ export interface FormFieldProps {
     labelTooltip?: string; // tooltip for label (not implemented for every form component)
     tooltip?: string; // tooltip for input
     placeholder?: string;
-    desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat label a tooltip) - vytvoreny pre depaul
+    desc?: string; // special prop used as placeholder and tooltip for the label at once (so that we don't have to duplicate label and tooltip) - created for depaul
     readOnly?: ReadOnlyProp;
     labelStyle?: CSSProperties;
     onChange?: FieldOnChange;
-    onlyInput?: boolean; // ak true, tak vyrenderuje len input element (nerenderuje <div className="field grid"> ani label)
+    onlyInput?: boolean; // if true, it renders only the input element (it does not render <div className="field grid"> nor the label)
 }
 
 export abstract class FormField<P extends FormFieldProps> extends Component<P> {
 
-    private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (ci bol volany onChange); ak nebola zmena, tak nevolame aplikacny onChange z onBlur
-                                    // mali sme problem ze aplikacny onChange sa volal aj ked uzivatel iba klikol do inputu a odisiel z neho
+    private valueChanged: boolean; // flag whether the user changed the value in the input (whether onChange was called); if there was no change, we don't call the application onChange from onBlur
+                                    // we had a problem that the application onChange was called even when the user only clicked into the input and left it
 
     protected constructor(props: P) {
         super(props);
@@ -53,9 +53,9 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
         props.form.addFormField(this);
     }
 
-    // nazov fieldu, pod ktorym sa hodnota uklada do objektu form.state.object
-    // pri jednoduchych inputoch nazov fieldu (props.field), pri asociacnych inputoch nazov asociacie (props.assocField)
-    // pouziva sa aj ako id-cko fieldu pre errorMap pri validacii (form.state.errorMap)
+    // name of the field under which the value is stored into the object form.state.object
+    // for simple inputs the field name (props.field), for association inputs the association name (props.assocField)
+    // it is also used as the field id for errorMap during validation (form.state.errorMap)
     // must be overridden
     abstract getField(): string;
 
@@ -68,7 +68,7 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
         const entityRow: EntityRow | null = this.props.form.state.entityRow;
         if (entityRow !== null) {
             objectValue = UtilsCommon.getValueByPath(entityRow, this.getField());
-            //  pre istotu dame na null, null je standard
+            //  just to be sure we set it to null, null is the standard
             if (objectValue === undefined) {
                 objectValue = null;
             }
@@ -100,7 +100,7 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
             readOnly = this.props.readOnly;
         }
         else if (typeof this.props.readOnly === 'function') {
-            // TODO - tazko povedat ci niekedy bude entityRow === null (asi ano vid metodu getFilterBase)
+            // TODO - hard to say whether entityRow === null will ever happen (probably yes, see method getFilterBase)
             const entityRow: EntityRow = this.props.form.state.entityRow;
             if (entityRow) {
                 readOnly = this.props.readOnly(this.props.form.getEntityRow());
@@ -124,11 +124,11 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
         return readOnly;
     }
 
-    // ak je label undefined, label element sa nevykresli
+    // if label is undefined, the label element is not rendered
     getLabel(): string | undefined {
         let label: string | undefined = this.props.label;
         if (label !== undefined) {
-            // test na readOnly je tu hlavne koli tomu aby sme nemali * pri ID atribute, ktory sa pri inserte generuje az pri zapise do DB
+            // the readOnly test is here mainly so that we don't have * on the ID attribute, which on insert is generated only when writing to the DB
             if (this.isNotNull() && !this.isReadOnly()) {
                 label = Utils.markNotNull(label);
             }
@@ -144,14 +144,14 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
 
     // *********** validation support ************
 
-    // volane po kliknuti na Save
-    // vrati (field, FieldError) ak nezbehne "field validacia", ak zbehne, vrati undefined
+    // called after clicking Save
+    // returns (field, FieldError) if "field validation" does not pass, if it passes, returns undefined
     validate(): {field: string; fieldError: FieldError} | undefined {
-        // TODO - FILOZOFICKA OTAZKA - volat validaciu aj ked je field readOnly (this.isReadOnly() === true)? zatial dame ze hej...
+        // TODO - PHILOSOPHICAL QUESTION - call validation even when the field is readOnly (this.isReadOnly() === true)? for now let's say yes...
         const value: any = this.getValueFromObject();
-        // not null validacia + custom field validacia volana na onChange
+        // not null validation + custom field validation called on onChange
         let errorOnChange: string | undefined = this.validateOnChange(value);
-        // custom field validacia volana na onBlur (focus lost)
+        // custom field validation called on onBlur (focus lost)
         // TODO
         if (errorOnChange) {
             return {field: this.getField(), fieldError: {onChange: errorOnChange, fieldLabel: this.getLabel()}};
@@ -164,14 +164,14 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
         if (error) {
             return error;
         }
-        // custom field validacia volana na onChange
+        // custom field validation called on onChange
         // TODO
         return undefined;
     }
 
     validateNotNull(value: any): string | undefined {
-        // validacia by mala sediet s metodou getLabel(), kde sa pridava * , preto tu mame aj test !this.isReadOnly() - id fieldy pri inserte nechceme testovat
-        // otazka je ci nevypinat validaciu pre readOnly fieldy vzdy (aj ked napr. readOnly vznikne dynamicky)
+        // validation should match the method getLabel(), where * is added, that's why we also have the test !this.isReadOnly() here - we don't want to test id fields on insert
+        // the question is whether not to turn off validation for readOnly fields always (even when e.g. readOnly arises dynamically)
         if (this.isNotNull() && !this.isReadOnly() && value === null) {
             return "Field is required.";
         }
@@ -179,7 +179,7 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
     }
 
     /**
-     * @deprecated - nie je to pekne riesenie - do komponentu treba posielat error message (string) a nie props (asi ako v XAutoComplete)
+     * @deprecated - it is not a nice solution - an error message (string) should be sent into the component and not props (probably like in XAutoComplete)
      */
     getClassNameTooltip(): {} {
         const error = this.getError();
@@ -190,7 +190,7 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
         } : {};
     }
 
-    // vrati error message z form.state.errorMap
+    // returns the error message from form.state.errorMap
     getError(): string | undefined {
         const error: FieldError = this.props.form.state.errorMap[this.getField()];
         return error ? Utils.getErrorMessage(error) : undefined;
@@ -199,15 +199,15 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
     callOnChangeFromOnBlur() {
         if (this.valueChanged && this.props.onChange) {
             const entityRow: EntityRow = this.props.form.getEntityRow();
-            // developer v onChange nastavi atributy na entityRow-e
+            // the developer in onChange sets attributes on entityRow
             this.props.onChange({entityRow: entityRow});
-            // rovno zavolame form.setState({...}), nech to nemusi robit developer
+            // we call form.setState({...}) right away, so that the developer doesn't have to do it
             this.props.form.setStateForm();
-            this.valueChanged = false; // resetneme na false (dalsi onChange volame az ked user zmeni hodnotu)
+            this.valueChanged = false; // we reset it to false (we call the next onChange only when the user changes the value)
         }
     }
 
-    // len pre assoc fieldy sa pouziva
+    // used only for assoc fields
     getFilterBase(filter: FilterProp | undefined): CustomFilter | undefined {
         let customFilter: CustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
@@ -216,8 +216,8 @@ export abstract class FormField<P extends FormFieldProps> extends Component<P> {
         if (typeof filter === 'function') {
             //const entityRow: EntityRow = this.props.form.getEntityRow();
             const entityRow: EntityRow = this.props.form.state.entityRow;
-            // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii entityRow
-            // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre FormBase))
+            // for now we comment it out, so that it is called also for XAutoComplete (there we don't have entityRow available for now
+            // (componentDidMount for XAutoComplete is called sooner than componentDidMount for FormBase))
             //if (entityRow) {
                 customFilter = filter(entityRow);
             //}

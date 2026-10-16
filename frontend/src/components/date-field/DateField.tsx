@@ -21,7 +21,7 @@ export class DateField extends ValueField<DateFieldProps> {
     }
 
     onValueChange(value: Date | null) {
-        // z XCalendar prichadza value - typ Date alebo null
+        // from XCalendar comes value - type Date or null
         this.onValueChangeBase(value, this.props.onChange);
     }
 

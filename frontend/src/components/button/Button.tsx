@@ -10,7 +10,7 @@ export const Button = (props: {
     style?: CSSProperties;
 }) => {
 
-    // zatial iba pridany class x-button, aby sme vedeli nastavit margin "m-1" (0.25rem)
+    // for now only the class x-button is added, so that we can set margin "m-1" (0.25rem)
     return (
         <PrimeButton label={props.label} icon={props.icon} onClick={props.onClick} disabled={props.disabled} className="m-1" style={props.style}/>
     );

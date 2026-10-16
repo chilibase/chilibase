@@ -5,14 +5,14 @@ import {Utils} from "../../utils/Utils";
 import type {FormEvent} from "primereact/ts-helpers";
 
 // wrapper for Calendar component
-// TODO - nefunguje rezim datetime pre zapis - dorobit konverziu!
+// TODO - datetime mode for writing does not work - implement the conversion!
 
 export interface DateInputProps {
     id?: string;
     value: Date | null;
     onChange: (value: Date | null) => void;
     readOnly?: boolean;
-    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
+    error?: string; // error message, if we want to mark the field as invalid
     scale?: DateScale;
     datetime?: boolean;
 }
@@ -30,53 +30,53 @@ export const DateInput = (
         ...propsRest
     }
 
-    // true, ak uzivatel typuje hodnotu
-    // false, ak uz uzivatel dotypoval (zavolal sa onBlur) - hodnotu berieme "z hora" (z prop.value)
+    // true if the user is typing a value
+    // false if the user has finished typing (onBlur was called) - we take the value "from above" (from prop.value)
     const [inputChanged, setInputChanged] = useState<boolean>(false);
-    // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
+    // used only if inputChanged === true; the changed value in the input is stored here
     const [inputValueState, setInputValueState] = useState<string | undefined>(undefined);
 
     const onChange = (e: FormEvent<Date>) => {
-        // standardne prichadza z Calendar e.value - typ Date alebo null
-        // typ Date prichadza ak uzivatel vyplnil validny datum, null (typeof e.value vracia "object") prichadza ak uzivatel vymazal datum
-        // alebo je este datum nekompletny (uzivatel prave zadava datum)
-        // nastavili sme keepInvalid={true} -> bude chodit nevalidny string (typeof e.value vracia "string")
-        // naviac sme vypli parsovanie na datum (metoda parseDateTime), takze vzdy chodi "string" a konverziu robime v onBlur
+        // normally e.value comes from Calendar - type Date or null
+        // type Date comes if the user filled in a valid date, null (typeof e.value returns "object") comes if the user deleted the date
+        // or the date is still incomplete (the user is just entering the date)
+        // we set keepInvalid={true} -> an invalid string will come (typeof e.value returns "string")
+        // in addition we turned off parsing to a date (method parseDateTime), so "string" always comes and we do the conversion in onBlur
 
         setInputChanged(true);
-        setInputValueState(e.value as any); // vzdycky string
+        setInputValueState(e.value as any); // always a string
     }
 
     const onSelect = (e: CalendarSelectEvent) => {
-        // musime tu zavolat props.onChange lebo event select zavola aj onChange ale my umyselne v onChange nevolame props.onChange
-        // (cakame na event blur, ktory po selecte nepride)
-        //props.onChange(e.value as any); // vzdycky Date
-        // <- bolo takto ale vytvaralo Tue Feb 04 2025 00:00:00 GMT+0100 (Central European Standard Time) a cez onBlur (a ked prisiel string z DB)
-        //               tak vytvaralo Tue Feb 04 2025 01:00:00 GMT+0100 (Central European Standard Time)
-        //               a potom nefungoval XUtilsCommon.dateEquals (cez date1.getTime() === date2.getTime())
-        // aby bol onSelect aj onBlur jednotne, tak dame:
-        const value: Date | null | undefined = dateFromUI(dateAsUI(e.value as any, scale), scale); // e.value je vzdy Date
+        // we must call props.onChange here because the select event also calls onChange but we deliberately do not call props.onChange in onChange
+        // (we wait for the blur event, which does not come after select)
+        //props.onChange(e.value as any); // always Date
+        // <- it used to be like this but it created Tue Feb 04 2025 00:00:00 GMT+0100 (Central European Standard Time) and via onBlur (and when a string came from the DB)
+        //               it created Tue Feb 04 2025 01:00:00 GMT+0100 (Central European Standard Time)
+        //               and then XUtilsCommon.dateEquals did not work (via date1.getTime() === date2.getTime())
+        // so that onSelect and onBlur are consistent, we do:
+        const value: Date | null | undefined = dateFromUI(dateAsUI(e.value as any, scale), scale); // e.value is always Date
         props.onChange(value ?? null);
 
-        // pre poriadok resetneme stav
+        // for the sake of order we reset the state
         setInputChanged(false);
         setInputValueState(undefined);
     }
 
     const onBlur = (e: FocusEvent<HTMLInputElement>) => {
         if (inputChanged) {
-            // poznamka: e.target.value aj inputValueState obsahuju tu istu string hodnotu
+            // note: e.target.value and inputValueState contain the same string value
             const value: Date | null | undefined = dateFromUI(e.target.value, scale);
-            props.onChange(value ?? null); // nekorektnu hodnotu reprezentovanu cez undefined budeme riesit akokeby user zadal null (field sa vyprazdni)
+            props.onChange(value ?? null); // an incorrect value represented by undefined we will handle as if the user entered null (the field is cleared)
             setInputChanged(false);
-            setInputValueState(undefined); // pre poriadok
+            setInputValueState(undefined); // for the sake of order
         }
     }
 
     const getInputValue = (): any => {
         let inputValue: any;
         if (inputChanged) {
-            inputValue = inputValueState!; // vzdycky string
+            inputValue = inputValueState!; // always a string
         }
         else {
             inputValue = dateFromModel(props.value);
@@ -101,8 +101,8 @@ export const DateInput = (
         return view;
     }
 
-    // poznamka: parseDateTime nerobi ziadny parse, nechceme aby Calendar "rusil" uzivatela pri typovani datumu
-    // konverzia (a volanie props.onChange) sa robi az pri onBlur
+    // note: parseDateTime does not do any parse, we do not want Calendar to "disturb" the user while typing the date
+    // the conversion (and the call of props.onChange) is done only on onBlur
     return (
         <Calendar id={props.id} value={getInputValue()} onChange={onChange} disabled={props.readOnly} showIcon={true} showOnFocus={false}
                   view={getView(scale)} dateFormat={dateFormatCalendar(scale)} keepInvalid={true} parseDateTime={(text: string) => text as any}

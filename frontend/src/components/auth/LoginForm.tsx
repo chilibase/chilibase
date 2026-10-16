@@ -43,15 +43,15 @@ export const LoginForm = (props: {
         props.onLogin(username, xLocalAuthLoginResponse.accessToken);
 
         // if (xUserAuthenticationResponse.authenticationOk) {
-        //     //console.log("Autentifikacia uspesne zbehla");
+        //     //console.log("Authentication finished successfully");
         //     //console.log(xUserAuthenticationResponse.user);
         //     let customUser = undefined;
         //     if (props.customUserService) {
         //         customUser = await Utils.fetchOne(props.customUserService, {username: username}, {username: username, password: password});
         //     }
-        //     // zatial si ulozime len username/password (koli http basic autentifikacii)
+        //     // for now we store only username/password (because of http basic authentication)
         //     props.setXToken({username: username, password: password, user: customUser});
-        //     // metoda pouzivana v LoginDialog
+        //     // method used in LoginDialog
         //     if (props.onLogin) {
         //         props.onLogin();
         //     }

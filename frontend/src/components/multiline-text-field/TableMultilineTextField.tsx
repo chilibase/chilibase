@@ -23,7 +23,7 @@ export class TableMultilineTextField extends TableValueField<TableMultilineTextF
         this.onValueChangeBase(value, this.props.onChange);
     }
 
-    // pouzivame cols = undefined, sirka je urcena sirkou stlpca (width: 100%)
+    // we use cols = undefined, the width is determined by the column width (width: 100%)
     render() {
         return (
             <MultilineTextInput id={this.props.field} value={this.getValue()} onChange={this.onValueChange} readOnly={this.isReadOnly()}

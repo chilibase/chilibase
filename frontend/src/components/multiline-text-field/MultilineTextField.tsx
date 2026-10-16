@@ -6,10 +6,10 @@ import {Tooltip} from "primereact/tooltip";
 
 export interface MultilineTextFieldProps extends ValueFieldProps {
     rows?: number;
-    cols?: number | "full"; // full - maximalna sirka (width:100%)
+    cols?: number | "full"; // full - maximum width (width:100%)
     labelOnTop?: boolean;
     autoResize?: boolean;
-    fieldStyle?: CSSProperties; // zatial sem, mozno v buducnosti posunieme do superclass
+    fieldStyle?: CSSProperties; // for now here, maybe in the future we will move it to the superclass
 }
 
 export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
@@ -63,14 +63,14 @@ export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
         let cols: number | undefined;
         if (this.props.cols === "full") {
             cols = undefined;
-            // pridame width:100%
+            // we add width:100%
             //fieldStyle = {width: '100%'};
             let widthValue: string;
             if (this.labelOnTop) {
                 widthValue = '100%';
             }
             else {
-                // ak nemame labelOnTop=true, musime odratat sirku labelu, inac sa label dostane nad input (koli flex-wrap: wrap)
+                // if we do not have labelOnTop=true, we must subtract the label width, otherwise the label ends up above the input (because of flex-wrap: wrap)
                 const labelStyleWidth: string | number | undefined = labelStyle.width;
                 if (labelStyleWidth) {
                     widthValue = `calc(100% - ${labelStyleWidth})`;
@@ -82,9 +82,9 @@ export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
             Utils.addCssPropIfNotExists(inputStyle, {width: widthValue});
         }
         else {
-            // TODO - nastavenie cols nefunguje ak labelOnTop=true - vtedy je input roztiahnuty na 100%
-            // roztiahnutie na 100% sposobuje .x-inputtextarea-label-on-top {flex-direction: column;}
-            // aj tak sa asi vzdy bude pouzivat "full"
+            // TODO - setting cols does not work if labelOnTop=true - then the input is stretched to 100%
+            // stretching to 100% is caused by .x-inputtextarea-label-on-top {flex-direction: column;}
+            // anyway "full" will probably always be used
             cols = this.props.cols;
         }
 
@@ -94,7 +94,7 @@ export class MultilineTextField extends ValueField<MultilineTextFieldProps> {
         const {labelTooltip, labelElemId, inputTooltip} = this.getTooltipsAndLabelElemId(
             this.props.field, label, value, this.props.labelTooltip, this.props.tooltip, this.props.desc);
 
-        // MultilineTextField renderujeme az ked mame nacitany object, lebo inac pri autoResize sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu)
+        // we render MultilineTextField only when we have the object loaded, because otherwise on autoResize the correct size is not set for us (the value is not available on the first rendering)
         return (
             <div className={!this.labelOnTop ? 'field grid' : 'field grid x-inputtextarea-label-on-top'} style={fieldStyle}>
                 {label !== undefined ? <label id={labelElemId} htmlFor={this.props.field} className={!this.labelOnTop ? 'col-fixed' : undefined} style={labelStyle}>{label}</label> : null}

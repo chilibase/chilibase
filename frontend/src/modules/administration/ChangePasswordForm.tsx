@@ -38,7 +38,7 @@ export const ChangePasswordForm = () => {
     }
 
     return(
-        // autoComplete="new-password" - bez tohto chrome predplna user/password, ak si user da ulozit user/password (pre danu url)
+        // autoComplete="new-password" - without this chrome prefills user/password, if the user chooses to save user/password (for the given url)
         <div>
             <div className="x-form-row">
                 <div className="x-form-col">

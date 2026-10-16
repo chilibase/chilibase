@@ -56,7 +56,7 @@ export class LocalAuthService {
     }
 
     hashPassword(password: string): Promise<string> {
-        // standardne by mal byt saltOrRounds = 10, potom trva jeden vypocet asi 100 ms, co sa povazuje za dostatocne bezpecne proti utoku hrubou vypoctovou silou
+        // normally saltOrRounds should be 10, then one computation takes about 100 ms, which is considered sufficiently secure against a brute-force attack
         return bcrypt.hash(password, 10);
     }
 }

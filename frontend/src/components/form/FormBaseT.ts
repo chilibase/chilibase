@@ -1,6 +1,6 @@
 import {FormBase} from "./FormBase";
 
-// wrapper pre typ, nie je nutne tento wrapper pouzivat, da sa extendovat priamo od FormBase
+// wrapper for the type, it is not necessary to use this wrapper, it is possible to extend FormBase directly
 export abstract class FormBaseT<T> extends FormBase {
 
     getObject(): T {

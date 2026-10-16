@@ -35,12 +35,12 @@ export abstract class ValueField<P extends ValueFieldProps> extends FormField<P>
         ): {labelTooltip: string | undefined; labelElemId: string | undefined; inputTooltip: string | undefined} {
 
         if (value !== null) {
-            // nevidno placeholder, skusime ho umiestnit do tooltip-u
+            // the placeholder is not visible, we try to place it into the tooltip
             if (label !== undefined && labelTooltip === undefined) {
                 labelTooltip = desc;
             }
             else {
-                // nemame label alebo labelTooltip je obsadeny -> dame pripadny desc ako tooltip na input
+                // we don't have a label or labelTooltip is already used -> we put a possible desc as a tooltip on the input
                 if (inputTooltip === undefined) {
                     inputTooltip = desc;
                 }

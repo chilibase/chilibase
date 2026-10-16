@@ -44,8 +44,8 @@ export const DocTemplateButton = (props: {
 
         const xtRunDocTemplateRequest: RunDocTemplateRequest = {docTemplateId: xtDocTemplate.id, rowId: props.rowId!, user: Utils.getAuthSession()?.user};
 
-        // TODO - pridat id-cko do nazvu? alebo na XtDocTemplate vytvorit nejaky atribut pre nazov suboru vo forme Klient-{klient.meno}-{klient.priezvisko}.xlsx
-        // ale to by chcelo vytvorit ten nazov v service (po tom co bude nacitany row) a nejako ho dostat sem
+        // TODO - add the id into the name? or on XtDocTemplate create some attribute for the file name in the form Klient-{klient.meno}-{klient.priezvisko}.xlsx
+        // but that would require creating that name in the service (after the row is loaded) and somehow getting it here
         // TODO - endpoint 'xt-run-doc-template' was still not moved to backend lib (from project)
         Utils.downloadFile('xt-run-doc-template', xtRunDocTemplateRequest, xtDocTemplate.templateXFile.name);
     }

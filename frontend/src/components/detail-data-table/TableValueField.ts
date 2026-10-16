@@ -8,7 +8,7 @@ import type {CSSProperties} from "react";
 
 export interface TableValueFieldProps extends TableFormFieldProps {
     field: string;
-    inputStyle?: CSSProperties; // pridane koli label/desc funkcionalite ale mozno sa zide aj pri DT sposobe (pouziva sa v subclasses, napr. TableMultilineTextField)
+    inputStyle?: CSSProperties; // added because of the label/desc functionality but it may also come in handy for the DT way (used in subclasses, e.g. TableMultilineTextField)
 }
 
 // common superclass for simple fields (not assoc fields)

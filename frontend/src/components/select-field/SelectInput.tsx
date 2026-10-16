@@ -17,13 +17,13 @@ export interface SelectInputProps {
     filter?: CustomFilter;
 }
 
-// vseobecny SelectInput ktoreho parametrom je entity, zobrazuje zaznamy danej entity, po selectnuti vracia zaznam danej entity
-// ambicia je pouzivat ho vsade - vo formulari, vo filtroch, vo form tabulke, priamo aplikacnym programmerom
-// dalo by sa vyclenit este SelectInputBase, ktory by dostaval ako parameter options (bol by nezavisly od DB), zatial ho nerobime,
-// pravdepodobnost potreby SelectInputBase je nizka
-// do buducna sa planuje pouzit cache pre options (plnila by sa pri otvoreni XFormBase*) - dolezite je to hlavne pre dropdowny vo form tabulke (a tiez pre dynamicky filter vo formulari - objekt sa nacita neskor ako options)
-// tiez by bolo fajn podporovat dynamicky filter (vo formulari) - to by ale trebalo vytiahnut options do state formulara
-// otazka je ci nepouzivat vsade len XAutoComplete a upustit od Dropdown
+// general SelectInput whose parameter is entity, displays rows of the given entity, after selection returns a row of the given entity
+// the ambition is to use it everywhere - in the form, in filters, in the form table, directly by the application programmer
+// it would be possible to also extract SelectInputBase, which would receive options as a parameter (it would be independent of the DB), for now we do not make it,
+// the probability of needing SelectInputBase is low
+// in the future it is planned to use a cache for options (it would be filled when opening XFormBase*) - this is important mainly for dropdowns in the form table (and also for the dynamic filter in the form - the object is loaded later than the options)
+// it would also be nice to support a dynamic filter (in the form) - but that would require pulling options up into the form state
+// the question is whether to use only XAutoComplete everywhere and drop Dropdown
 export class SelectInput extends Component<SelectInputProps> {
 
     protected idField: string;
@@ -51,15 +51,15 @@ export class SelectInput extends Component<SelectInputProps> {
     async loadOptions() {
         let options: any[] = await Utils.fetchRows(this.props.entity, this.props.filter, this.props.sortField ?? this.props.displayField);
         if (this.props.isNotNull === undefined || !this.props.isNotNull) {
-            // pridame prazdnu polozku
-            options.splice(0, 0, {[this.idField]: null, [this.props.displayField]: ""}); // null polozka
+            // we add an empty item
+            options.splice(0, 0, {[this.idField]: null, [this.props.displayField]: ""}); // null item
         }
         this.setState({options: options});
     }
 
     onChange(e: DropdownChangeEvent) {
         let value: any | null;
-        // specialna null polozka id field null
+        // special null item, id field null
         if (e.value[this.idField] === null) {
             value = null;
         } else {
@@ -69,8 +69,8 @@ export class SelectInput extends Component<SelectInputProps> {
     }
 
     render() {
-        // TODO - mozno by nebolo od veci pouzivat InputText ak readOnly === true (chybala by len sipka (rozbalovac)) a dalo by sa copy-paste-ovat
-        // propertiesy na Dropdown-e: readOnly vyseduje, disabled znemoznuje vyber polozky
+        // TODO - it might not be a bad idea to use InputText if readOnly === true (only the arrow (expander) would be missing) and it would be possible to copy-paste
+        // properties on Dropdown: readOnly grays out, disabled makes selecting an item impossible
         return (
             <Dropdown id={this.props.id} options={this.state.options} optionLabel={this.props.displayField} dataKey={this.idField}
                       value={this.props.value} onChange={this.onChange}

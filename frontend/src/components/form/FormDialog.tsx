@@ -33,7 +33,7 @@ export const FormDialog = (props: {
         if (props.dialogState.opened) {
             const Form: ComponentType<FormProps> | undefined = props.dialogState.Form ?? props.Form;
             const formElement: ReactElement | undefined = props.dialogState.formElement ?? props.formElement;
-            //console.log(`********** volany FormDialog.createFormElem entity = ${props.entity} Form = ${Form?.name} id = ${props.dialogState.id}`);
+            //console.log(`********** called FormDialog.createFormElem entity = ${props.entity} Form = ${Form?.name} id = ${props.dialogState.id}`);
             if (Form || formElement) {
                 // wrap form component into component that first calls loader and after that renders the original form component
                 const FormWithLoaderComponent: FC<FormWithLoaderProps> = FormWithLoader(Form, formElement, props.entity, props.dialogState.id === undefined ? OperationType.Insert : OperationType.Update);

@@ -1,122 +1,122 @@
 import type {ReactElement} from "react";
 import {numberAsUI, numberFromModel} from "../../common/UtilsConversions";
 
-// sem pride v buducnosti cely XFieldSetBase, zatial su tu skopirovane len niektore typy
+// the whole XFieldSetBase will come here in the future, for now only some types are copied here
 
-// zodpoveda entite XFieldSetMeta
+// corresponds to the entity XFieldSetMeta
 export interface XFieldSetMeta {
     id?: number;
-    fieldSetId: string; // cez toto id bude field set referencovany v kode
+    fieldSetId: string; // the field set will be referenced in the code through this id
     //table: string;
-    xFieldMetaRoot: XFieldMeta; // root field (neda sa zmazat)
+    xFieldMetaRoot: XFieldMeta; // root field (cannot be deleted)
     modifDate: Date | null;
     modifUser: any | null;
     version: number;
 }
 
 export enum XFieldType {
-    rootField = "rootField", // specialny root field
-    fieldGroup = "fieldGroup", // obsahuje skupinku fieldov, nema DB stlpec (neperzistentny)
-    fieldGroupWithCheckbox = "fieldGroupWithCheckbox", // obsahuje skupinku fieldov, skupinka sa zobrazi ak je checkbox zaskrtnuty
-    checkbox = "checkbox", // klasicky dvojstavovy checkbox
-    checkboxNullable = "checkboxNullable", // trojstavovy checkbox true/false/null
+    rootField = "rootField", // special root field
+    fieldGroup = "fieldGroup", // contains a group of fields, has no DB column (non-persistent)
+    fieldGroupWithCheckbox = "fieldGroupWithCheckbox", // contains a group of fields, the group is displayed if the checkbox is checked
+    checkbox = "checkbox", // classic two-state checkbox
+    checkboxNullable = "checkboxNullable", // three-state checkbox true/false/null
     inputText = "inputText",
     inputDecimal = "inputDecimal"
 }
 
-// children layout sa da nastavit len na type, ktory ma children - rootField, fieldGroup
+// children layout can be set only on a type that has children - rootField, fieldGroup
 export enum XChildrenLayout {
-    column = "column",  // default - vyrenderuje children do stlpca
-    row = "row",        // vyrenderuje children do riadku
-    tabView = "tabView", // ma zmysel, ak su children typu fieldGroup (labely tychto children fieldGroup-ov budu pouzite ako labely jednotlivych tab-iek)
-    tabViewWithHeaderGroup = "tabViewWithHeaderGroup" // to iste co tabView ale prvy fieldGroup (0-ty tab) zobrazi nad tabView (aby bol vzdy pristupny)
+    column = "column",  // default - renders children into a column
+    row = "row",        // renders children into a row
+    tabView = "tabView", // makes sense if children are of type fieldGroup (labels of these children fieldGroups will be used as labels of the individual tabs)
+    tabViewWithHeaderGroup = "tabViewWithHeaderGroup" // the same as tabView but the first fieldGroup (0-th tab) is displayed above the tabView (so that it is always accessible)
 }
-// poznamka - tabView a tabViewWithHeaderGroup odignoruju bezne simple children - ak take budu existovat, zobrazi sa uzivatelovi warning pri nastaveni tabView
+// note - tabView and tabViewWithHeaderGroup ignore ordinary simple children - if such exist, a warning is shown to the user when setting tabView
 
-// pouzijeme len checkbox supressFieldGroupPanel
-// pouziva sa len pre typ fieldGroup a len v pripade ak dany fieldGroup nie je vyrenderovany v nejakej tab-ke (jeho parent ma nastaveny layout tabView*)
+// we will use only the checkbox supressFieldGroupPanel
+// used only for type fieldGroup and only in the case when the given fieldGroup is not rendered in some tab (its parent has layout tabView* set)
 // export enum XFieldGroupPanelViewStatus {
-//     show = "show",  // default - vyrenderuje Panel aj s labelom a vo vnutri panelu umiestni children
-//     hide = "hide"   // nerenderuje Panel, children umiestni do div elementu (label sa nepouzije) - pouziva sa na vytvorenie stlpcov v (parent) fieldGroup-e
+//     show = "show",  // default - renders the Panel together with the label and places children inside the panel
+//     hide = "hide"   // does not render the Panel, places children into a div element (the label is not used) - used to create columns in the (parent) fieldGroup
 // }
 
 export enum XFieldPropValuesFrom {
-    parent = "parent",  // field prop values preberame z parenta
-    this = "this"       // field prop values preberame z current fieldu
+    parent = "parent",  // we take field prop values from the parent
+    this = "this"       // we take field prop values from the current field
 }
 
 export interface XFieldMeta {
     type?: XFieldType;
-    childrenLayout?: XChildrenLayout; // pouziva sa len na type, ktory ma children - rootField, fieldGroup (default hodnota je "column")
-    width?: string; // hodnota napr. 10rem, pouziva sa hlavne ak childrenLayout = column
-    labelWidth?: string; // hodnota napr. 6rem, pouziva sa (zatial) len pre type = inputText (default nastaveny cez css je 100% - sposobi odsunutie/zarovanie inputu doprava)
-    inputWidth?: string; // hodnota napr. 4rem, pouziva sa (zatial) len pre type = inputText
-    suppressFieldGroupPanel?: true; // pouziva sa len pre typ fieldGroup a len v pripade ak dany fieldGroup nie je vyrenderovany v nejakej tab-ke (jeho parent ma nastaveny layout tabView*)
-                                    // ak true tak nerenderuje Panel, children umiestni do div elementu (label sa nepouzije) - pouziva sa na vytvorenie stlpcov v (parent) fieldGroup-e
-    field: string; // pouziva sa v kode a zaroven je to nazov stlpca - napr. obciansky_preukaz
-    label: string; // pouzije sa vo formulari ako label
-    tooltip?: string; // pouzije sa vo formulari ako tooltip
-    decimalProps?: {scale: number;}; // pouzivane pre inputDecimal (scale = pocet des. miest), mozno v buducnosti pridame precision (pocet cifier vcetne scale) a useGrouping
-    //notNull: boolean; // default false, notNull mozu byt len tie stlpce ktore su vzdy vyplnene (bud maju vyplnenu defaultValue alebo su vzdy viditelne (nemaju vyplnene dateFrom/dateTo))
-    //defaultValue: String; // toto je problem, musime to tu zapisat v UI formate!
+    childrenLayout?: XChildrenLayout; // used only on a type that has children - rootField, fieldGroup (the default value is "column")
+    width?: string; // value e.g. 10rem, used mainly if childrenLayout = column
+    labelWidth?: string; // value e.g. 6rem, used (for now) only for type = inputText (the default set via css is 100% - it causes shifting/aligning the input to the right)
+    inputWidth?: string; // value e.g. 4rem, used (for now) only for type = inputText
+    suppressFieldGroupPanel?: true; // used only for type fieldGroup and only in the case when the given fieldGroup is not rendered in some tab (its parent has layout tabView* set)
+                                    // if true then it does not render the Panel, it places children into a div element (the label is not used) - used to create columns in the (parent) fieldGroup
+    field: string; // used in the code and at the same time it is the column name - e.g. obciansky_preukaz
+    label: string; // used in the form as the label
+    tooltip?: string; // used in the form as the tooltip
+    decimalProps?: {scale: number;}; // used for inputDecimal (scale = number of decimal places), maybe in the future we will add precision (number of digits including scale) and useGrouping
+    //notNull: boolean; // default false, notNull can be only those columns that are always filled (either they have defaultValue filled or they are always visible (they don't have dateFrom/dateTo filled))
+    //defaultValue: String; // this is a problem, we have to write it here in the UI format!
     dateFrom?: Date;
     dateTo?: Date;
     xFieldMetaList?: XFieldMeta[];
-    fieldPropValuesMapForEdit?: XFieldPropValuesMapForEdit; // ak pouzijeme parameter "fieldProps", tak sem sa ukladaju hodnoty vykliknute v XEditFieldDialog
-    fieldPropValuesMapCached?: XFieldPropValuesMap; // to iste co fieldPropValuesMapForEdit ale je zohladneny aj pripadny valuesFrom === parent, neuklada sa do DB, vypocitava sa po nacitani z DB
-    xFieldMetaParentCached?: XFieldMeta; // pomocny atribut aby sme si zjednodusili kod a nemuseli vsade pretlacat parameter s parentom, neuklada sa do DB, vypocitava sa po nacitani z DB
+    fieldPropValuesMapForEdit?: XFieldPropValuesMapForEdit; // if we use the parameter "fieldProps", the values clicked in XEditFieldDialog are stored here
+    fieldPropValuesMapCached?: XFieldPropValuesMap; // the same as fieldPropValuesMapForEdit but a possible valuesFrom === parent is also taken into account, it is not saved into the DB, it is computed after loading from the DB
+    xFieldMetaParentCached?: XFieldMeta; // helper attribute so that we simplify the code and don't have to push a parameter with the parent everywhere, it is not saved into the DB, it is computed after loading from the DB
 }
 
 export interface XFieldPropValuesMapForEdit {
-    [field: string]: XFieldPropValuesForEdit; // id-cko je XFieldProp.id
+    [field: string]: XFieldPropValuesForEdit; // the id is XFieldProp.id
 }
 
 export interface XFieldPropValuesMap {
-    [field: string]: XFieldPropValues; // id-cko je XFieldProp.id
+    [field: string]: XFieldPropValues; // the id is XFieldProp.id
 }
 
 export interface XFieldPropValuesForEdit {
-    valuesFrom: XFieldPropValuesFrom; // hodnota dropdownu "Values from"
-    values?: XFieldPropValues; // ak valuesFrom = "this" tak tu su vykliknute items, inac je tu undefined (bez atributu values)
-    error?: string; // specialny atribut kam si odkladame chybu z autocomplete (iba pri editacii sa pouziva (po skonceni editacie je vzdy undefined))
+    valuesFrom: XFieldPropValuesFrom; // value of the dropdown "Values from"
+    values?: XFieldPropValues; // if valuesFrom = "this" then the clicked items are here, otherwise undefined is here (without the attribute values)
+    error?: string; // special attribute where we store the error from autocomplete (used only during editing (after editing ends it is always undefined))
 }
 
-// presny typ urcuje pouzity <Name>FieldPropEdit - moze tu byt boolean, number, object
+// the exact type is determined by the used <Name>FieldPropEdit - boolean, number, object can be here
 export type XFieldPropValues = any | undefined;
 
-// datova struktura na vytvorenie specifickych aplikacnych atributov zadavanych v XEditFieldDialog
-// pole instancii tejto struktury prichadza ako parameter fieldProps do komponentu XFieldSet
+// data structure for creating specific application attributes entered in XEditFieldDialog
+// an array of instances of this structure comes as the parameter fieldProps into the component XFieldSet
 export interface XFieldProp {
     id: string;
     label: string;
-    fieldPropEdit?: ReactElement; // fieldPropEdit je komponent na editaciu fieldProp, ma props typu XFieldPropEditProps
+    fieldPropEdit?: ReactElement; // fieldPropEdit is a component for editing fieldProp, it has props of type XFieldPropEditProps
 }
 
-// specialny interface (api) pre custom komponent (nazyvany <Name>FieldPropEdit),
-// vdaka tomuto interface sa v XEditFieldDialog zobrazi/zaintegruje custom component,
-// ktory sluzi na editaciu custom property (tato property moze mat lubovolnu strukturu (object literal))
-// (funguje to podobne ako napr. property searchBrowse v XAutoComplete - do property searchBrowse sa zapise browse component
-// a XAutoComplete pouziva tento browse component)
+// special interface (api) for a custom component (called <Name>FieldPropEdit),
+// thanks to this interface the custom component is displayed/integrated in XEditFieldDialog,
+// which serves for editing a custom property (this property can have an arbitrary structure (object literal))
+// (it works similarly to e.g. property searchBrowse in XAutoComplete - a browse component is written into property searchBrowse
+// and XAutoComplete uses this browse component)
 export interface XFieldPropEditProps {
     value?: XFieldPropValues;
     onChange?: (value: XFieldPropValues) => void;
     onErrorChange?: (error: (string | undefined)) => void;
 }
 
-// datova struktura do ktorej si zapisujeme hodnoty fieldov (struktura sa zapisuje do DB do stlpca <jsonField>)
+// data structure into which we write field values (the structure is written into the DB into the column <jsonField>)
 export interface XFieldSetValues {
     [field: string]: any;
 }
 
-// map sluziaci na rychle vyhladavanie XFieldMeta (hlavne pri renderovani klikaciek v browse)
+// map used for fast lookup of XFieldMeta (mainly when rendering the clickable controls in the browse)
 export type XFieldXFieldMetaMap = Map<string, XFieldMeta>;
 
-// zatial provizorne len na staticke metody
+// for now provisionally only for static methods
 export class XFieldSetBase {
 
-    // api metoda na vytvorenie Map instancie, ktora sluzi na rychle najdenie prislusneho XFieldMeta podla nazvu fieldu
-    // ak je zadany filterFromParent, tak vracia len children/subchildren/... fieldu s field = filterFromParent
-    // (filterFromParent je casto groupField)
+    // api method for creating a Map instance, which serves for quickly finding the corresponding XFieldMeta by the field name
+    // if filterFromParent is given, it returns only children/subchildren/... of the field with field = filterFromParent
+    // (filterFromParent is often a groupField)
     static createXFieldXFieldMetaMap(xFieldSetMeta: XFieldSetMeta, filterFromParent?: string): XFieldXFieldMetaMap {
 
         const xFieldXFieldMetaMap: XFieldXFieldMetaMap = new Map<string, XFieldMeta>();
@@ -124,10 +124,10 @@ export class XFieldSetBase {
         return xFieldXFieldMetaMap;
     }
 
-    // api metoda na vyrenderovanie field set atributu
-    // logicky patri do src/common/XUtilsConversions.ts a zisla by sa aj pri exporte do excelu ale XFieldXFieldMetaMap (a jeho "parent"-a XFieldSetBase) mame len na frontende
+    // api method for rendering a field set attribute
+    // logically it belongs into src/common/XUtilsConversions.ts and it would also be useful when exporting to excel but we have XFieldXFieldMetaMap (and its "parent" XFieldSetBase) only on the frontend
     static xFieldSetValuesAsUI(xFieldSetValues: XFieldSetValues, xFieldXFieldMetaMap: XFieldXFieldMetaMap): string {
-        // budeme mat vzdy spravne poradie? nebudeme... asi najjednoduchsie zosortovat tu "valueUIList" podla abecedy
+        // will we always have the correct order? we won't... probably the simplest is to sort "valueUIList" alphabetically here
         const valueUIList: string[] = [];
         for (const [field, value] of Object.entries(xFieldSetValues)) {
             const xFieldMeta: XFieldMeta | undefined = xFieldXFieldMetaMap.get(field);
@@ -135,8 +135,8 @@ export class XFieldSetBase {
                 valueUIList.push(XFieldSetBase.xFieldSetValueAsUI(xFieldMeta, value));
             }
             else {
-                // field bol z formulara odstraneny (nemalo by sa to takto pouzivat, skor by sa mala datumom ohranicit platnost fieldu)
-                // zobrazime v surovom stave
+                // the field was removed from the form (it should not be used this way, rather the validity of the field should be bounded by a date)
+                // we display it in the raw state
                 valueUIList.push(`${field}: ${typeof value === 'string' ? '"' + value + '"' : value}`);
             }
         }
@@ -155,7 +155,7 @@ export class XFieldSetBase {
             valueAsUI = `${xFieldMeta.label}: ${numberAsUI(numberFromModel(value), xFieldMeta.decimalProps?.scale)}`;
         }
         else {
-            // neznamy typ
+            // unknown type
             valueAsUI = `${xFieldMeta.label}: "${value}"`;
         }
         return valueAsUI;

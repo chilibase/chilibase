@@ -15,7 +15,7 @@ export class UtilsCommon {
 
     static newLine: string = '\n';
 
-    // TODO - toto by sme mohli doplnit o kontrolu ak programator urobil preklep
+    // TODO - we could add a check if the programmer made a typo
     static getValueByPath(object: any, path: string): any {
         const [field, restPath] = UtilsCommon.getFieldAndRestPath(path);
         if (restPath === null) {
@@ -23,18 +23,18 @@ export class UtilsCommon {
         }
         else {
             const assocObject = object[field];
-            // pri vytvarani noveho riadku - assocObject neni v novom objekte ani ako null (je undefined)
+            // when creating a new row - assocObject is not in the new object even as null (it is undefined)
             if (assocObject !== null && assocObject !== undefined) {
                 return UtilsCommon.getValueByPath(assocObject, restPath);
             }
             else {
-                return null; // asociovany objekt je null, aj hodnota atributu bude null
+                return null; // the associated object is null, the attribute value will also be null
             }
         }
     }
 
-    // vseobecnejsia verzia, ktora funguje aj pre *toMany asociacie
-    // TODO - toto by sme mohli doplnit o kontrolu ak programator urobil preklep
+    // a more general version that also works for *toMany associations
+    // TODO - we could add a check if the programmer made a typo
     static getValueOrValueListByPath(object: any, path: string): any | any[] {
         const [field, restPath] = UtilsCommon.getFieldAndRestPath(path);
         if (restPath === null) {
@@ -43,10 +43,10 @@ export class UtilsCommon {
         else {
             const assocObject = object[field];
             if (Array.isArray(assocObject)) {
-                // natrafili sme na pole (atribut "field" je *toMany asociacia), pozbierame hodnoty z pola
+                // we encountered an array (attribute "field" is a *toMany association), we collect the values from the array
                 const resultValueList: any[] = [];
                 for (const assocObjectItem of assocObject) {
-                    if (assocObjectItem !== null && assocObjectItem !== undefined) { // pre istotu, nemalo by nastat
+                    if (assocObjectItem !== null && assocObjectItem !== undefined) { // just in case, it should not happen
                         const itemValue: any | any[] = UtilsCommon.getValueOrValueListByPath(assocObjectItem, restPath);
                         if (Array.isArray(itemValue)) {
                             resultValueList.push(...itemValue);
@@ -62,12 +62,12 @@ export class UtilsCommon {
                 return resultValueList;
             }
             else {
-                // pri vytvarani noveho riadku - assocObject neni v novom objekte ani ako null (je undefined)
+                // when creating a new row - assocObject is not in the new object even as null (it is undefined)
                 if (assocObject !== null && assocObject !== undefined) {
                     return UtilsCommon.getValueOrValueListByPath(assocObject, restPath);
                 }
                 else {
-                    return null; // asociovany objekt je null, aj hodnota atributu bude null
+                    return null; // the associated object is null, the attribute value will also be null
                 }
             }
         }
@@ -155,8 +155,8 @@ export class UtilsCommon {
     }
 
     static createDisplayValueForField(object: any, xEntity: Entity | undefined, field: string): string {
-        // pouziva sa podobny algoritmus ako v XLazyDataTable - metoda bodyTemplate
-        // (ale nie je to take komplexne ako v XLazyDataTable - nevie renderovat napr. html (rich text))
+        // a similar algorithm is used as in XLazyDataTable - the bodyTemplate method
+        // (but it is not as complex as in XLazyDataTable - it cannot render e.g. html (rich text))
         const [prefix, fieldOnly]: [string | null, string] = UtilsCommon.getPrefixAndField(field);
         let xField: Field | undefined = undefined;
         if (xEntity) {
@@ -165,7 +165,7 @@ export class UtilsCommon {
         let displayValue: string;
         const valueOrValueList: any | any[] = UtilsCommon.getValueOrValueListByPath(object, fieldOnly);
         if (Array.isArray(valueOrValueList)) {
-            // zatial je zoznam hodnot OneToMany asociacie oddeleny " ", nedat zoznam napr. do zatvoriek [<zoznam>] ?
+            // for now the list of OneToMany association values is separated by " ", should the list be put e.g. into brackets [<list>] ?
             displayValue = "";
             for (const value of valueOrValueList) {
                 const valueAsUI: string = UtilsCommon.displayValueAsUI(prefix, value, xField);
@@ -186,11 +186,11 @@ export class UtilsCommon {
     static displayValueAsUI(prefix: string | null, value: any, xField: Field | undefined): string {
         let displayValue: string;
         if (xField) {
-            // null hodnoty konvertuje na ""
-            displayValue = convertValue(xField, value, true, AsUIType.Text); // Text - boolean sa konvertuje na ano/nie
+            // converts null values to ""
+            displayValue = convertValue(xField, value, true, AsUIType.Text); // Text - boolean is converted to yes/no
         }
         else {
-            // nemame entity, nevieme spravne konvertovat (ale casto nam staci aj takato jednoducha konverzia)
+            // we do not have the entity, we cannot convert correctly (but often such a simple conversion is enough for us)
             displayValue = (value !== null && value !== undefined) ? value.toString() : "";
         }
 
@@ -204,19 +204,19 @@ export class UtilsCommon {
 
     static objectAsJSON(value: any): string {
 
-        // sem treba dat nejaku pre nas vhodnu serializaciu
-        // zatial provizorne robene cez antipatern - modifikaciu prototype funcii primitivnych typov
-        // TODO - bud pouzit nejaky serializator alebo nakodit vlastnu rekurzivnu iteraciu objektov alebo pouzit druhy parameter v JSON.stringify - konvertovaciu funkciu
+        // some serialization suitable for us needs to be put here
+        // for now provisionally done via an antipattern - modification of prototype functions of primitive types
+        // TODO - either use some serializer or code our own recursive iteration of objects or use the second parameter in JSON.stringify - the conversion function
 
         const dateToJSONOriginal = Date.prototype.toJSON;
         Date.prototype.toJSON = function () {
-            // TODO - ak pre datetime nastavime vsetky zlozky casu na 00:00:00, tak sformatuje hodnotu ako datum a spravi chybu pri zapise do DB - zapise  1:00:00
+            // TODO - if for datetime we set all time components to 00:00:00, then it formats the value as a date and makes an error when writing to the DB - it writes  1:00:00
             let dateStr: string;
             if (this.getHours() === 0 && this.getMinutes() === 0 && this.getSeconds() === 0) {
                 dateStr = dateFormat(this, 'yyyy-MM-dd');
             }
             else {
-                // jedna sa o datetime
+                // it is a datetime
                 dateStr = datetimeFormat(this, 'yyyy-MM-dd HH:mm:ss');
             }
             return dateStr;
@@ -224,7 +224,7 @@ export class UtilsCommon {
 
         const json: string = JSON.stringify(value);
 
-        // vratime naspet povodnu funkciu
+        // we put back the original function
         Date.prototype.toJSON = dateToJSONOriginal;
 
         return json;
@@ -343,7 +343,7 @@ export class UtilsCommon {
 
     // ************* CustomFilter/CustomFilterItem/DataTableSortMeta **************
 
-    // pomocna metodka - aby sme nemuseli v kode vypisovat {where: <filter>, params: {}}
+    // helper method - so that we do not have to write {where: <filter>, params: {}} in the code
     static createCustomFilter(filter: string | undefined | null): CustomFilterItem | undefined {
         let customFilterItem: CustomFilterItem | undefined = undefined;
         if (filter) {
@@ -352,7 +352,7 @@ export class UtilsCommon {
         return customFilterItem;
     }
 
-    // pomocna metodka - konvertuje CustomFilter -> CustomFilterItem[]
+    // helper method - converts CustomFilter -> CustomFilterItem[]
     static createCustomFilterItems(customFilter: CustomFilter | undefined): CustomFilterItem[] | undefined {
         let customFilterItems: CustomFilterItem[] | undefined = undefined;
         if (customFilter) {
@@ -365,7 +365,7 @@ export class UtilsCommon {
         return customFilterItems;
     }
 
-    // pomocna metodka - konvertuje sortField -> DataTableSortMeta[]
+    // helper method - converts sortField -> DataTableSortMeta[]
     static createMultiSortMeta(sortField: string | DataTableSortMeta[] | undefined): DataTableSortMeta[] | undefined {
         let multiSortMeta: DataTableSortMeta[] | undefined = undefined;
         if (sortField) {
@@ -388,7 +388,7 @@ export class UtilsCommon {
         return multiSortMeta;
     }
 
-    // pomocna metodka
+    // helper method
     static filterAnd(...filters: (CustomFilter | undefined)[]): CustomFilterItem[] | undefined {
         let customFilterItemsResult: CustomFilterItem[] | undefined = undefined;
         if (filters.length > 0) {
@@ -403,8 +403,8 @@ export class UtilsCommon {
         return customFilterItemsResult;
     }
 
-    // pomocna metodka
-    // ak je idList prazdny, vytvori podmienku id IN (0) a nevrati ziadne zaznamy
+    // helper method
+    // if idList is empty, it creates the condition id IN (0) and does not return any records
     static filterIdIn(idField: string, idList: number[]): CustomFilter {
         return {where: `[${idField}] IN (:...idList)`, params: {"idList": idList.length > 0 ? idList : [0]}};
     }
@@ -455,8 +455,8 @@ export class UtilsCommon {
         else if (date1 !== null && date2 !== null) {
             // to avoid problems with time part, we use dateCompare
             result = (UtilsCommon.dateCompare(date1, date2) === 0);
-            // mali sme problem - funkcia dateFromModel() konvertovala string "2025-02-04" na Tue Feb 04 2025 01:00:00 GMT+0100 (Central European Standard Time)
-            // a XCalendar pri vykliknuti datumu vracal Tue Feb 04 2025 00:00:00 GMT+0100 (Central European Standard Time) -> opravili sme XCalendar
+            // we had a problem - the function dateFromModel() converted the string "2025-02-04" to Tue Feb 04 2025 01:00:00 GMT+0100 (Central European Standard Time)
+            // and XCalendar when clicking a date returned Tue Feb 04 2025 00:00:00 GMT+0100 (Central European Standard Time) -> we fixed XCalendar
             //result = date1.getFullYear() === date2.getFullYear()
             //    && date1.getMonth() === date2.getMonth()
             //    && date1.getDate() === date2.getDate();
@@ -534,16 +534,16 @@ export class UtilsCommon {
 
     // static today(): Date {
     //     const today = new Date();
-    //     // vynulujeme casovu zlozku
-    //     // poznamka: Date vzdy obsahuje aj casovu zlozku. Nase konverzne funkcie dateFromModel a dateFromUI pouzivaju konverziu new Date('YYYY-MM-DD')
-    //     // a tato konverzia vytvara datum s GMT/UTC/Z casom 00:00:00 (stredoeuropsky 00:01:00 - akokeby sme zadavali new Date('YYYY-MM-DDT00:00:00Z'))
-    //     //today.setHours(0, 0, 0, 0); // nastavi cas 00:00:00 v aktualnej timezone (stredoeuropsky 00:00:00, GMT 23:00:00)
-    //     // - potom nam nefunguje porovnavanie s datumami vytvorenymi cez funkcie dateFromModel a dateFromUI
+    //     // we zero out the time component
+    //     // note: Date always also contains a time component. Our conversion functions dateFromModel and dateFromUI use the conversion new Date('YYYY-MM-DD')
+    //     // and this conversion creates a date with GMT/UTC/Z time 00:00:00 (Central European 00:01:00 - as if we were entering new Date('YYYY-MM-DDT00:00:00Z'))
+    //     //today.setHours(0, 0, 0, 0); // sets the time 00:00:00 in the current timezone (Central European 00:00:00, GMT 23:00:00)
+    //     // - then comparison with dates created via the functions dateFromModel and dateFromUI does not work for us
     //     today.setUTCHours(0, 0, 0, 0);
     //     return today;
     // }
 
-    // oprava:
+    // fix:
     static today(): Date {
         return new Date(dateAsYYYY_MM_DD(new Date()));
     }
@@ -561,7 +561,7 @@ export class UtilsCommon {
         return month;
     }
 
-    // vrati true ak sa string sklada iba z cislic, moze mat + alebo - na zaciatku
+    // returns true if the string consists only of digits, it can have + or - at the beginning
     static isInt(stringValue: string): boolean {
         return /^[-+]?\d+$/.test(stringValue);
     }

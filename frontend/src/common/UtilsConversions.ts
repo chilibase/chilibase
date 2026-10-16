@@ -19,7 +19,7 @@ export function stringAsUI(value: string | null): string {
     return value !== null ? value : "";
 }
 
-// aby sme sa vyhli sql injection problemu - tam kde je problematicke pouzivat klasicke params
+// to avoid the sql injection problem - where it is problematic to use classic params
 export function stringAsDB(value: string | null): string {
     return value !== null ? `'${value.replaceAll("'", "''")}'` : "NULL";
 }
@@ -33,7 +33,7 @@ export function intFromUI(stringValue: string): number | null | undefined {
     }
     else {
         if (UtilsCommon.isInt(stringValue)) {
-            // 1234xxx vrati number 1234, preto sme spravili test isInt
+            // 1234xxx returns number 1234, therefore we made the isInt test
             value = parseInt(stringValue, 10);
             if (isNaN(value)) {
                 value = undefined;
@@ -55,8 +55,8 @@ export function numberAsUI(value: number | null, fractionDigits?: number): strin
     }
 }
 
-// v modeli na klientovi by mal byt vzdy number, teraz je tam niekedy string (z json-u zo servera) a niekedy number (z komponentu)
-// provizorne zatial takato konverzia
+// in the model on the client there should always be a number, now there is sometimes a string (from json from the server) and sometimes a number (from the component)
+// provisionally for now this kind of conversion
 export function numberFromModel(value: any): number | null {
     let numberValue: number | null = null;
     if (typeof value === 'string') {
@@ -68,7 +68,7 @@ export function numberFromModel(value: any): number | null {
     return numberValue;
 }
 
-// konvertuje hodnotu napr. 12.34
+// converts a value e.g. 12.34
 export function numberFromString(valueString: string): number | null {
     let numberValue: number | null = parseFloat(valueString);
     if (isNaN(numberValue)) {
@@ -77,7 +77,7 @@ export function numberFromString(valueString: string): number | null {
     return numberValue;
 }
 
-// upresnenie typu datumu - pouzivame typ number, lebo zneuzivame atribut scale v TypeORM na zadanie upresnenia
+// date type refinement - we use the number type, because we misuse the scale attribute in TypeORM to specify the refinement
 export enum DateScale {
     Date = 1, // dd.mm.yyyy (default)
     Month = 2, // mm.yyyy
@@ -85,8 +85,8 @@ export enum DateScale {
 }
 //export type XDateType = "month" | "year" | "date";
 
-// v modeli na klientovi by mal byt vzdy Date, teraz je tam niekedy string (z json-u zo servera) a niekedy Date (z komponentu)
-// provizorne zatial takato konverzia
+// in the model on the client there should always be a Date, now there is sometimes a string (from json from the server) and sometimes a Date (from the component)
+// provisionally for now this kind of conversion
 export function dateFromModel(value: any): Date | null {
     let dateValue: Date | null = null;
     if (typeof value === 'string') {
@@ -106,7 +106,7 @@ export function dateFromUI(valueString: string, dateScale: DateScale = DateScale
         valueDate = null;
     }
     else {
-        // null znamena nezadane (doplni sa podla aktualneho datumu), undefined znamena zadana nekorektna hodnota
+        // null means not entered (it is filled in according to the current date), undefined means an incorrect value was entered
         let day: number | null | undefined;
         let month: number | null | undefined = null;
         let year: number | null | undefined = null;
@@ -152,15 +152,15 @@ export function dateFromUI(valueString: string, dateScale: DateScale = DateScale
             throw "Unimplemented dateScale = " + dateScale;
         }
 
-        // doplnime mesiac a rok ak uzivatel nezadal (ak mame undefined, tak umyselne nedoplname)
+        // we fill in the month and year if the user did not enter them (if we have undefined, we deliberately do not fill them in)
         if (month === null) {
-            month = UtilsCommon.today().getMonth() + 1; // o 1 mesiac viac (januar je 0)
+            month = UtilsCommon.today().getMonth() + 1; // 1 month more (January is 0)
         }
         if (year === null) {
             year = UtilsCommon.today().getFullYear();
         }
 
-        // ak day alebo month alebo year zostal undefined, tak user zadal nekorektnu hodnotu - vratime undefined
+        // if day or month or year remained undefined, then the user entered an incorrect value - we return undefined
         if (day && month && year) {
             let monthStr: string = month.toString();
             if (monthStr.length < 2) {
@@ -172,7 +172,7 @@ export function dateFromUI(valueString: string, dateScale: DateScale = DateScale
             }
             valueDate = new Date(`${year}-${monthStr}-${dayStr}`);
             if (isNaN(valueDate as any)) {
-                // ak je nekorektny datum (napr. 2024-13-01)
+                // if the date is incorrect (e.g. 2024-13-01)
                 valueDate = undefined;
             }
         }
@@ -190,7 +190,7 @@ export function dateAsUI(value: Date | null, dateScale: DateScale = DateScale.Da
     }
 }
 
-// specialna funkcia - konvertuje Date na string YYYY-MM-DD
+// special function - converts Date to string YYYY-MM-DD
 export function dateAsYYYY_MM_DD(date: Date): string {
     return dateFormat(date, 'yyyy-MM-dd');
 }
@@ -248,21 +248,21 @@ export function datetimeFormat(date: Date, format: string): string {
     return value;
 }
 
-// provizorne zatial takato konverzia
+// provisionally for now this kind of conversion
 export function timeFromModel(value: any): Date | null {
     let timeValue: Date | null = null;
     if (typeof value === 'string') {
-        // ak prichadza cas priamo z databazy, pride '19:30:00'
-        // ak prichadza reloadnuty objekt (napr. cez webservis x-save-row), pride '2021-06-07 19:30:00'
+        // if the time comes directly from the database, '19:30:00' arrives
+        // if a reloaded object arrives (e.g. via the webservice x-save-row), '2021-06-07 19:30:00' arrives
         let rowDataCasStr = value;
         if (rowDataCasStr.length < 10) {
-            // mame '19:30:00' -> pridame hociaky rok aby sme skonvertovali na validny Date
+            // we have '19:30:00' -> we add any year so that we convert it to a valid Date
             rowDataCasStr = '1970-01-01 ' + rowDataCasStr;
         }
-        // na safari nefunguje konverzia new Date('2021-06-07 19:30:00') - vrati NaN
-        // preto string prehodime na '2021-06-07T19:30:00+01:00'
-        // 19:30:00 je cas z timezony Central Europe (taka je nastavena na nodejs)), preto oznacime tento cas touto timezonou
-        // (spravne riesenie je posielat time cez json vzdy vo formate '2021-06-07T18:30:00Z', v tomto formate chodia aj datetime atributy)
+        // on safari the conversion new Date('2021-06-07 19:30:00') does not work - it returns NaN
+        // therefore we change the string to '2021-06-07T19:30:00+01:00'
+        // 19:30:00 is a time from the Central Europe timezone (that one is set on nodejs)), therefore we mark this time with this timezone
+        // (the correct solution is to always send time via json in the format '2021-06-07T18:30:00Z', datetime attributes also come in this format)
         rowDataCasStr = rowDataCasStr.replace(' ', 'T');
         if (!rowDataCasStr.endsWith('Z') && rowDataCasStr.indexOf('+') === -1) {
             rowDataCasStr += '+01:00'; // Central Europe timezone
@@ -379,9 +379,9 @@ export function booleanAsUIText(value: boolean | null): string {
 }
 
 export enum AsUIType {
-    Form = 1, // formulare - boolean sa ponecha, neskor sa konvertuje na Checkbox
-    Text = 2,  // reporty - boolean sa konvertuje na ano/nie
-    Excel = 3  // excel - nie vsetko konvertujeme do string-u, vecsinou zostavame pri typoch number, Date
+    Form = 1, // forms - boolean is kept, later it is converted to Checkbox
+    Text = 2,  // reports - boolean is converted to yes/no
+    Excel = 3  // excel - we do not convert everything into a string, mostly we stay with the types number, Date
 }
 
 /**
@@ -402,7 +402,7 @@ export function convertObject(entity: string, object: any, fromModel: boolean, a
             object[field] = convertValue(xField, value, fromModel, asUI);
         }
         else {
-            // nenasli sme medzi fieldami, skusime hladat assoc
+            // we did not find it among the fields, we will try to look for assoc
             const xAssoc: Assoc | undefined = UtilsMetadataCommon.getAssocBase(xEntity, field);
             if (xAssoc) {
                 if (value) {
@@ -454,26 +454,26 @@ export function convertValueBase(fieldType: string, scale: number | undefined, v
         }
     }
     else if (fieldType === "interval") {
-        // konverziu z modelu (json objekt-u) netreba
+        // conversion from the model (json object) is not needed
         if (asUI) {
             value = intervalAsUI(value);
         }
     }
     else if (fieldType === "boolean") {
-        // konverziu z modelu (json objekt-u) netreba
-        // pre AsUIType.Form ponechame typ boolean (spracujeme neskor)
+        // conversion from the model (json object) is not needed
+        // for AsUIType.Form we keep the boolean type (we will process it later)
         if (asUI === AsUIType.Text || asUI === AsUIType.Excel) {
             value = booleanAsUIText(value);
         }
     }
     else if (fieldType === "jsonb") {
-        // konverziu z modelu (json objekt-u) netreba
+        // conversion from the model (json object) is not needed
         if (asUI) {
             value = UtilsCommon.objectAsJSON(value);
         }
     }
     else {
-        // vsetko ostatne
+        // everything else
         if (asUI && asUI !== AsUIType.Excel) {
             value = (value !== null && value !== undefined) ? value.toString() : "";
         }

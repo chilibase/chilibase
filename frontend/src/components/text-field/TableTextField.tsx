@@ -13,21 +13,21 @@ export const TableTextField = (props: {form: FormBase; entity: string; field: st
 
     const onValueChange = (field: string, rowData: any, newValue: any) => {
 
-        // zmenime hodnotu v modeli (odtial sa hodnota cita)
+        // we change the value in the model (the value is read from there)
         rowData[field] = stringFromUI(newValue);
-        // kedze "rowData" je sucastou "props.form.state.object", tak nam staci zavolat setState({object: object}), aby sa zmena prejavila
+        // since "rowData" is part of "props.form.state.object", it is enough to call setState({object: object}) for the change to show up
         props.form.onObjectDataChange();
     }
 
     let fieldValue = "";
-    // test na undefined je tu koli insertu noveho riadku
+    // the test for undefined is here because of insert of a new row
     if (props.rowData !== undefined && props.rowData !== null) {
         let rowDataValue = UtilsCommon.getValueByPath(props.rowData, props.field);
-        //  pri inserte noveho riadku su (zatial) vsetky fieldy undefined, dame na null, null je standard
+        // on insert of a new row all fields are (for now) undefined, we set them to null, null is the standard
         if (rowDataValue === undefined) {
             rowDataValue = null;
         }
-        // konvertovat null hodnotu na "" (vo funkcii stringAsUI) je dolezite aby sa prejavila zmena na null v modeli (a tiez aby korektne pridal novy riadok)
+        // converting a null value to "" (in the function stringAsUI) is important so that the change to null in the model shows up (and also so that it correctly adds a new row)
         fieldValue = stringAsUI(rowDataValue);
     }
 

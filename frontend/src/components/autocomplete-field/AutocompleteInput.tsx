@@ -34,23 +34,23 @@ export type SuggestionsLoadType = "suggestions" | SuggestionsLoadProp;
 
 export interface AutocompleteInputProps {
     value: any;
-    onChange: (object: any, objectChange: OperationType) => void; // odovzda vybraty objekt, ak bol vybraty objekt zmeneny cez dialog (aj v DB), tak vrati objectChange !== OperationType.None
-    suggestions?: any[]; // ak su priamo zadane suggestions, nepouziva sa suggestionsLoad a suggestionsQuery (vynimka je ak mame aj searchBrowse, vtedy do searchBrowse posleme filter (aj sortField?))
-    suggestionsEntity?: string; // ak su priamo zadane suggestions, nepouziva sa suggestionsLoad a suggestionsQuery a entity mozme zadat tu - entity je potrebna na vyhladanie XField-ov (tie su potrebne na konverziu hodnoty atributu "field" do string-u); ak entitu nezadame, tak sa napr. zle skonvertuju datumy (iba cez toString)
-    suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default) a suggestionsQuery (ten musi byt zadany)
-    suggestionsQuery?: Query; // musi byt zadany ak nie su zadane suggestions (poznamka: filter (a sortField?) sa posielaju do searchBrowse)
-    lazyLoadMaxRows: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
-    field: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
-    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
-    splitQueryValue: boolean; // ak true, tak splituje natypovanu hodnotu podla space a vsetky parcialne hodnoty sa musia vyskytovat v danom suggestion (default je true)
+    onChange: (object: any, objectChange: OperationType) => void; // passes the selected object; if the selected object was changed through the dialog (also in the DB), it returns objectChange !== OperationType.None
+    suggestions?: any[]; // if suggestions are provided directly, suggestionsLoad and suggestionsQuery are not used (exception: if we also have searchBrowse, then we send the filter (and sortField?) into searchBrowse)
+    suggestionsEntity?: string; // if suggestions are provided directly, suggestionsLoad and suggestionsQuery are not used and the entity can be specified here - the entity is needed to look up XFields (those are needed to convert the value of attribute "field" into a string); if we do not specify the entity, dates for example are converted incorrectly (only via toString)
+    suggestionsLoad?: SuggestionsLoadProp; // if we do not have suggestions, we use suggestionsLoad (or its default) and suggestionsQuery (that one must be specified)
+    suggestionsQuery?: Query; // must be specified if suggestions are not provided (note: filter (and sortField?) are sent into searchBrowse)
+    lazyLoadMaxRows: number; // max number of rows loaded when suggestionsLoad = lazy
+    field: string | string[]; // field displayed in the input (one of the fields of the object from value/suggestions)
+    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // used when we need some custom format for items (the defaultValue function computes the default format)
+    splitQueryValue: boolean; // if true, splits the typed value by space and all partial values must occur in the given suggestion (default is true)
     SearchBrowse?: ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
     ValueForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row; if ValueForm is undefined, autocomplete is not editable
     valueFormElement?: ReactElement; // element version of ValueForm (for the case if additional (custom) props are needed)
-    idField?: string; // id field (nazov atributu) objektu z value/suggestions - je potrebny pri otvoreni formularu na editaciu, formular potrebuje id-cko na nacitanie/update zaznamu z DB
-    addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
-    onAddRow?: (inputValue: string) => void; // override handlera zaveseneho na "plus" buttone (otazka je ci nejakym sposobom nestrkat vytvoreny/ziskany row do tohto autocomplete - zatial nie)
-    dropdownButtonEnabled: boolean; // ak dame false, tak nezobrazi dropdown button (default je true), ale ak by sme nemali mat ziadny button tak ho (zatial) zobrazime readOnly aby bolo vidno ze mame autocomplete
+    idField?: string; // id field (attribute name) of the object from value/suggestions - needed when opening the form for editing; the form needs the id to load/update the row from the DB
+    addRowEnabled: boolean; // if set to false, the insert button is not shown even when "valueForm" is available (default is true)
+    onAddRow?: (inputValue: string) => void; // override of the handler attached to the "plus" button (the question is whether to somehow push the created/obtained row into this autocomplete - not for now)
+    dropdownButtonEnabled: boolean; // if set to false, the dropdown button is not shown (default is true), but if we would have no button at all then we (for now) show it readOnly so it is visible that we have an autocomplete
     insertButtonTooltip?: string;
     updateButtonTooltip?: string;
     searchButtonTooltip?: string;
@@ -61,9 +61,9 @@ export interface AutocompleteInputProps {
     scrollHeight?: string; // Maximum height of the suggestions panel.
     inputClassName?: string;
     readOnly?: boolean;
-    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny (pozor! netreba sem davat error z onErrorCahnge, ten si riesi AutocompleteInput sam)
-    onErrorChange: (error: string | undefined) => void; // "vystup" pre validacnu chybu ktoru "ohlasi" AutocompleteInput; chyba by mala byt ohlasena vzdy ked this.state.inputChanged = true (a nemame focus na inpute)
-    setFocusOnCreate?: boolean; // ak je true, nastavi focus do inputu po vytvoreni komponentu
+    error?: string; // error message, if we want to mark the field as invalid (warning! do not put the error from onErrorCahnge here, AutocompleteInput handles that itself)
+    onErrorChange: (error: string | undefined) => void; // "output" for the validation error that AutocompleteInput "reports"; the error should be reported whenever this.state.inputChanged = true (and the input does not have focus)
+    setFocusOnCreate?: boolean; // if true, sets focus into the input after the component is created
 }
 
 export class AutocompleteInput extends Component<AutocompleteInputProps> {
@@ -84,22 +84,22 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
     autoCompleteInputRef: any;
 
     state: {
-        inputChanged: boolean; // priznak, ci uzivatel typovanim zmenil hodnotu v inpute
-        inputValueState: string | undefined; // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
-        notValid: boolean; // true, ak je autocomplete v nekonzistentom stave - user napisal do inputu nieco, na zaklade coho nevieme vybrat existujucu hodnotu
-                            // (natypovanej hodnote zodpovedaju 2 a viac poloziek alebo ziadna polozka) a uzivatel odisiel z inputu
-                            // ak je true, input je cerveny
-                            // zmena je hlasena cez onErrorChange parentovi, parent by mal zabezpecit, ze ak mame nejaky nevalidny autocomplete, formular sa neda sejvnut na stacenie Save
-        suggestions: any[] | undefined; // pouzivane ak suggestionsLoad = eager alebo onSearchStart, nepouzivane ak mame this.props.suggestions alebo suggestionsLoad = lazy
+        inputChanged: boolean; // flag whether the user changed the value in the input by typing
+        inputValueState: string | undefined; // used only if inputChanged === true; the changed value in the input is stored here
+        notValid: boolean; // true if the autocomplete is in an inconsistent state - the user typed something into the input based on which we cannot select an existing value
+                            // (the typed value matches 2 or more items or no item) and the user left the input
+                            // if true, the input is red
+                            // the change is reported via onErrorChange to the parent; the parent should ensure that if we have some invalid autocomplete, the form cannot be saved on pressing Save
+        suggestions: any[] | undefined; // used if suggestionsLoad = eager or onSearchStart, not used if we have this.props.suggestions or suggestionsLoad = lazy
         filteredSuggestions: any[] | undefined;
         formDialogState: FormDialogState;
         searchBrowseDialogState: SearchBrowseDialogState;
     };
 
-    suggestionsLoadedForOSS: boolean; // pomocny priznak - zapisujeme si sem, ci sme uz zavolali loadSuggestions ak pouzivame suggestionsLoad = onSearchStart
-    wasOnChangeCalled: boolean; // pomocny priznak - oprava bug-u, ked sa onChange zavolal 2-krat
-                                // - raz z onBlur - ak uzivatel typovanim "vybral" prave jeden zaznam do suggestions dropdown-u
-                                // a druhy raz z onSelect ked uzivatel klikol na tento jeden "vybraty" zaznam
+    suggestionsLoadedForOSS: boolean; // helper flag - we record here whether we have already called loadSuggestions if we use suggestionsLoad = onSearchStart
+    wasOnChangeCalled: boolean; // helper flag - bug fix for when onChange was called twice
+                                // - once from onBlur - if the user by typing "selected" exactly one row into the suggestions dropdown
+                                // and a second time from onSelect when the user clicked this one "selected" row
 
     xEntity: Entity | undefined;
 
@@ -209,9 +209,9 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
     getSortField(): string | DataTableSortMeta[] | undefined {
         let sortField: string | DataTableSortMeta[] | undefined = this.props.suggestionsQuery!.sortField;
         if (!sortField) {
-            // len pri ne-lazy pouzivame ako default sort prvy displayField
-            // pri lazy to spomaluje selecty v pripade ze klauzula LIMIT vyrazne obmedzi vysledny zoznam suggestions
-            // pri lazy zosortujeme na frontende v AutocompleteInput
+            // only for non-lazy we use the first displayField as the default sort
+            // for lazy it slows down selects in the case that the LIMIT clause significantly restricts the resulting suggestions list
+            // for lazy we sort on the frontend in AutocompleteInput
             if (this.getSuggestionsLoadType() !== "lazy") {
                 sortField = this.getFirstField();
             }
@@ -233,12 +233,12 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
             else if (suggestionsLoadType === "onSearchStart") {
                 if (!this.suggestionsLoadedForOSS) {
                     suggestions = await this.fetchSuggestions();
-                    // ulozime si
+                    // we store it
                     this.setState({suggestions: suggestions});
-                    this.suggestionsLoadedForOSS = true; // ak user dalej typuje, nechceme znova nacitavat suggestions
+                    this.suggestionsLoadedForOSS = true; // if the user keeps typing, we do not want to load suggestions again
                 }
                 else {
-                    // uz mame nacitane
+                    // already loaded
                     suggestions = this.state.suggestions!;
                 }
             }
@@ -246,23 +246,23 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
                 throw 'Unexpected error - unknown xSuggestionsLoadType';
             }
             if (!event.query.trim().length) {
-                // input je prazdny - volanie sem nastane ak user otvori dropdown cez dropdown button
+                // input is empty - the call here happens if the user opens the dropdown via the dropdown button
                 filteredSuggestions = [...suggestions];
             }
             else {
                 const queryNormalized = Utils.normalizeString(event.query);
-                // ak mame viac hodnot oddelenych space-om, tak kazda hodnota sa musi vyskytovat zvlast
-                // (podobny princip ako pri lazy, resp. full text search - pozri backend lazyAutoCompleteSuggestions resp. XMainQueryData.createFtsWhereItem)
+                // if we have multiple values separated by space, each value must occur separately
+                // (similar principle as for lazy, or full text search - see backend lazyAutoCompleteSuggestions or XMainQueryData.createFtsWhereItem)
                 let queryNormalizedList: string[];
                 if (this.props.splitQueryValue) {
-                    queryNormalizedList = queryNormalized.split(' ').filter((value: string) => value !== ''); // nechceme pripadne prazdne retazce ''
+                    queryNormalizedList = queryNormalized.split(' ').filter((value: string) => value !== ''); // we do not want possible empty strings ''
                 }
                 else {
-                    queryNormalizedList = [queryNormalized]; // nesplitujeme
+                    queryNormalizedList = [queryNormalized]; // we do not split
                 }
                 filteredSuggestions = suggestions.filter((suggestion) => {
                     const fieldValue: string = this.itemTemplateString(suggestion);
-                    // specialna null polozka (prazdny objekt) - test dame az za test fieldValue na undefined - koli performance
+                    // special null item (empty object) - we put the test after the fieldValue === undefined test - for performance
                     if (fieldValue === undefined && Object.keys(suggestion).length === 0) {
                         return false;
                     }
@@ -283,17 +283,17 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         else {
             // ************* lazy ***************
 
-            // na backendev  SELECT-e pouzijeme klauzulu LIMIT <maxRows + 1>
-            // ak najdeme menej ako <maxRows + 1> zaznamov tak vieme ze sme nasli vsetky
-            // ak najdeme presne <maxRows + 1> zaznamov, tak na konci zobrazime uzivatelovi specialnu polozku "..."
-            // ktora ho upozorni ze existuju aj dalsie zaznamy splnujuce podmienku
-            // pikoska - ak je query je velmi siroke (select by bez LIMIT <maxRows + 1> vratil mnoho zaznamov),
-            // tak je takyto select velmi lacny (niekolko ms) - staci totiz najst prvych napr. 20 zaznamov splnujucich podmienku, t.j. netreba robit full-table scan
-            // to ale plati len v pripade ze nepouzijeme ORDER BY - pri pouziti ORDER BY urobi full-table scan (vyfiltruje) a nasledne zosortuje
-            // toto sa da obist specialnym selectom:
+            // in the backend SELECT we use the clause LIMIT <maxRows + 1>
+            // if we find fewer than <maxRows + 1> rows then we know we found all of them
+            // if we find exactly <maxRows + 1> rows, at the end we show the user a special item "..."
+            // which warns them that there are more rows matching the condition
+            // quirk - if the query is very broad (the select without LIMIT <maxRows + 1> would return many rows),
+            // such a select is very cheap (a few ms) - it is enough to find the first e.g. 20 rows matching the condition, i.e. no full-table scan is needed
+            // but that holds only if we do not use ORDER BY - when using ORDER BY it does a full-table scan (filters) and then sorts
+            // this can be avoided with a special select:
             // select t.* from (select t0.* from table t0 order by t0.<attr1>) t where <full-text-condition> limit 20
-            // (najprv zosortuje a az potom filtruje prvych 20 zaznamov - predpoklad je ze nad t0.<attr1> mame index aby rychlo sortoval)
-            // tento specialny select mozme v buducnosti dorobit (na backende) ak chceme podporovat (rychle) sortovanie v DB pre autocomplete
+            // (first sorts and only then filters the first 20 rows - the assumption is that we have an index on t0.<attr1> so it sorts quickly)
+            // we can add this special select in the future (on the backend) if we want to support (fast) sorting in the DB for autocomplete
 
             if (!this.props.suggestionsQuery) {
                 throw `AutocompleteInput.loadSuggestions: unexpected error - prop suggestionsQuery is undefined`;
@@ -309,15 +309,15 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
             };
             const findResult: FindResult = await Utils.fetchOne('x-lazy-auto-complete-suggestions', suggestionsRequest);
             filteredSuggestions = findResult.rowList!;
-            // ak sme nesortovali v DB (co je draha operacia) tak zosortujeme teraz
-            // (itemTemplateString sa vola duplicitne ale pre tych cca 20 zaznamov je to ok)
+            // if we did not sort in the DB (which is an expensive operation) then we sort now
+            // (itemTemplateString is called twice but for those approx. 20 rows it is ok)
             if (this.props.suggestionsQuery.sortField === undefined) {
                 filteredSuggestions = UtilsCommon.arraySort(filteredSuggestions, this.itemTemplateString);
             }
-            // ak mame o 1 zaznam viac ako je lazyLoadMaxRows, zmenime posledny zaznam na ...
-            // TODO - lepsie by bolo posledny zaznam vyhodit a popisok ... zobrazit do footer-a (odpadnu problemy z pripadnou selekciou pseudozaznamu ...)
+            // if we have 1 row more than lazyLoadMaxRows, we change the last row to ...
+            // TODO - it would be better to drop the last row and show the label ... in the footer (problems with possible selection of the pseudo-row would go away)
             if (filteredSuggestions.length > this.props.lazyLoadMaxRows) {
-                filteredSuggestions[filteredSuggestions.length - 1] = AutocompleteInput.valueMoreSuggestions; // zatial priamo string
+                filteredSuggestions[filteredSuggestions.length - 1] = AutocompleteInput.valueMoreSuggestions; // for now directly a string
             }
         }
 
@@ -327,18 +327,18 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
     onChange(e: AutoCompleteChangeEvent) {
         if (typeof e.value === 'string' && !AutocompleteInput.isMoreSuggestions(e.value)) {
             this.setState({inputChanged: true, inputValueState: e.value});
-            this.wasOnChangeCalled = false; // reset na default hodnotu
+            this.wasOnChangeCalled = false; // reset to the default value
         }
     }
 
     onSelect(e: any) {
-        // nevolame this.setObjectValue ak uz bol zavolany z onBlur
+        // we do not call this.setObjectValue if it was already called from onBlur
         if (!this.wasOnChangeCalled) {
-            // nedovolime vybrat specialny zaznam ...
+            // we do not allow selecting the special row ...
             if (!AutocompleteInput.isMoreSuggestions(e.value)) {
                 this.setObjectValue(e.value, OperationType.None);
-                // ak sme na mobile, nechceme aby sa otvorila klavesnica mobilu, preto zavolame removeFocus
-                // pouzivame setTimeout, priame volanie nefungovalo
+                // if we are on mobile, we do not want the mobile keyboard to open, therefore we call removeFocus
+                // we use setTimeout, a direct call did not work
                 if (Utils.isMobile()) {
                     setTimeout(() => {
                         this.removeFocusFromInput();
@@ -349,60 +349,60 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
     }
 
     onBlur(e: FocusEvent<HTMLInputElement>) {
-        // optimalizacia - testujeme len ak inputChanged === true
+        // optimization - we test only if inputChanged === true
         if (this.state.inputChanged) {
             if (e.target.value === '') {
-                this.setObjectValue(null, OperationType.None); // prazdny retazec znamena null hodnotu
+                this.setObjectValue(null, OperationType.None); // an empty string means a null value
             } else {
 
-                // skusime ci filteredSuggestions nemaju prave jeden element
+                // we try whether filteredSuggestions have exactly one element
                 const filteredSuggestions = this.state.filteredSuggestions;
                 if (filteredSuggestions && filteredSuggestions.length === 1) {
                     this.setObjectValue(filteredSuggestions[0], OperationType.None);
-                    // ak bol tento this.setObjectValue vyvolany klikom do suggestions dropdown-u,
-                    // tak bude este nasledne zavolany onSelect a tam chceme zamedzit volaniu this.setObjectValue,
-                    // preto nastavujeme tento priznak
-                    // priznak vratime naspet na false ak uzivatel zacne cokolvek robit s autocomplete (zacne don typovat alebo klikne na dropdown)
+                    // if this this.setObjectValue was triggered by a click into the suggestions dropdown,
+                    // onSelect will still be called afterwards and there we want to prevent calling this.setObjectValue,
+                    // therefore we set this flag
+                    // we set the flag back to false if the user starts doing anything with the autocomplete (starts typing into it or clicks the dropdown)
                     this.wasOnChangeCalled = true;
                 }
                 else {
-                    // tu by sme mohli skusit vyratat vysledok pre filteredSuggestions este raz, mozno este vypocet filteredSuggestions nedobehol
-                    // mohli by sme: zobrazit vsetky povolene hodnoty (v dialogu/v dropdown liste), zobrazit nejaky alert
+                    // here we could try to compute the result for filteredSuggestions once more, maybe the filteredSuggestions computation has not finished yet
+                    // we could: show all allowed values (in a dialog/in the dropdown list), show some alert
 
                     //alert("invalid value");
 
-                    // radi by sme stopli dalsie event-y (napr. stlacenie buttonu, ktore vyvolalo stratu focus-u), ale nezafungovalo nam to
+                    // we would like to stop further events (e.g. pressing a button that caused the loss of focus), but it did not work for us
                     //e.preventDefault();
                     //e.stopPropagation();
 
-                    // nefunguje ani toto
+                    // this does not work either
                     //console.log('stop propagation');
                     //console.log(e);
                     //e.nativeEvent.stopImmediatePropagation();
                     //e.preventDefault();
 
-                    // zobrazime dropdown list aby sme usera upovedomili ze ma vybrat nejaku hodnotu
-                    // toto neni moc prakticke ak mame vela poloziek v dropdown-e - lepsi by bol asi confirm, ci pridat novu polozku do DB
-                    // zrusil som, lebo pri vybere z dropdownu kliknutim sa vola tento onBlur (este pred onSelect), zobrazi sa iny dropdown ako vidi uzivatel a vyberie sa z neho ina polozka ako je ta na ktoru klikol user
+                    // we show the dropdown list to let the user know they should select some value
+                    // this is not very practical if we have many items in the dropdown - a confirm whether to add a new item to the DB would probably be better
+                    // I removed it, because when selecting from the dropdown by click this onBlur is called (still before onSelect), a different dropdown is shown than the user sees and a different item is selected than the one the user clicked
                     //this.autoCompleteRef.current.onDropdownClick();
 
-                    // vratime focus do inputu
-                    // obycajne setnutie focusu nefunguje, treba v setnut focus v samostatnom evente
-                    // TODO - aj nejaky stop event skusit
-                    //console.log('onBlur - setujem timeout');
+                    // we return focus to the input
+                    // an ordinary setting of focus does not work, focus has to be set in a separate event
+                    // TODO - also try some stop event
+                    //console.log('onBlur - setting timeout');
                     //setTimeout(() => {this.onBlurInvalidInput();}, 100);
 
-                    // najnovsi sposob
-                    // TODO - problem - ak zapisem nejake znaky a vyselektujem nejaky zaznam tak vznikne cerveny preblik (az nasledny onSelect zrusi state.notValid = true)
-                    // zial neviem odlisit event sposobeny selektnutim zaznamu a event sposobeny kliknutim niekam vedla
+                    // newest approach
+                    // TODO - problem - if I type some characters and select some row, a red flash occurs (only the subsequent onSelect clears state.notValid = true)
+                    // unfortunately I cannot distinguish an event caused by selecting a row and an event caused by clicking somewhere beside
                     //console.log(e);
-                    this.setState({notValid: true}); // ocervenime input
-                    this.props.onErrorChange(this.createErrorMessage()); // ohlasime nevalidnost parentovi
+                    this.setState({notValid: true}); // we make the input red
+                    this.props.onErrorChange(this.createErrorMessage()); // we report invalidity to the parent
                 }
             }
         }
-        // odchadzame z inputu, zresetujeme priznak - ak zacne user pracovat s autocomplete-om, nacitaju sa suggestions z DB (ak mame suggestionsLoad = onSearchStart)
-        // suggestions chceme nacitat, lebo user moze zmenit iny atribut ktory ovplyvnuje filter autocomplete-u -> chceme novy zoznam suggestions
+        // we are leaving the input, we reset the flag - if the user starts working with the autocomplete, suggestions are loaded from the DB (if we have suggestionsLoad = onSearchStart)
+        // we want to load suggestions, because the user may change another attribute that affects the autocomplete filter -> we want a new suggestions list
         this.suggestionsLoadedForOSS = false;
     }
 
@@ -412,22 +412,22 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
 
 /*
     onBlurInvalidInput() {
-        // ak uzivatel vyvolal onBlur kliknutim na polozku dropdown list-u, tak sa v priebehu 100 ms (oneskorenie volania onBlurInvalidInput()) zavolal onSelect,
-        // zmenil sa inputChanged a netreba nic riesit
+        // if the user triggered onBlur by clicking an item of the dropdown list, then within 100 ms (the delay of calling onBlurInvalidInput()) onSelect was called,
+        // inputChanged changed and nothing needs to be handled
         if (this.state.inputChanged) {
-            console.log('onBlurInvalidInput - idem otvorit confirm');
+            console.log('onBlurInvalidInput - going to open confirm');
             if (window.confirm(`Value "${this.state.inputValueState}" was not found among valid values, create new valid value?`)) {
-                // otvorime dialog na insert
+                // we open the dialog for insert
                 this.formDialogObjectId = undefined;
-                // TODO - pridat ako novu prop metodu ktora bude vracat bude mat parameter this.state.inputValueState a vrati object
-                // ak bude tato metoda undefined, tak zostane tato povodna funkcionalita
+                // TODO - add as a new prop a method that will have parameter this.state.inputValueState and will return an object
+                // if this method is undefined, this original functionality will remain
                 this.formDialogInitValuesForInsert = {};
                 this.formDialogInitValuesForInsert[this.props.field] = this.state.inputValueState;
                 this.setState({formDialogOpened: true});
             }
             else {
-                // vratime focus do inputu, je tam nevalidna hodnota
-                console.log('onBlurInvalidInput - idem vratit focus');
+                // we return focus to the input, there is an invalid value there
+                console.log('onBlurInvalidInput - going to return focus');
                 this.setFocusToInput();
             }
         }
@@ -435,7 +435,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
 */
 
     setFocusToInput() {
-        //this.autoCompleteRef.current.focus(); bolo toto kedysi
+        //this.autoCompleteRef.current.focus(); this used to be here
         this.autoCompleteInputRef.current.focus();
     }
 
@@ -446,25 +446,25 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
     setObjectValue(object: any, objectChange: OperationType) {
         this.setState({inputChanged: false, notValid: false});
         this.props.onChange(object, objectChange);
-        this.props.onErrorChange(undefined); // uz nie sme v nevalidnom stave
+        this.props.onErrorChange(undefined); // we are no longer in an invalid state
     }
 
     formDialogOnSaveOrCancel(object: any | null, objectChange: OperationType) {
         if (object !== null) {
-            // ak bol save, treba tento novy object pouzit
+            // if it was a save, this new object needs to be used
             this.setObjectValue(object, objectChange);
-            // ak pouzivame zoznam this.state.suggestions, tak ho rereadneme
-            // poznamka: ak pouzivame this.props.suggestions z parenta, tak si musi zoznam rereadnut parent!
+            // if we use the list this.state.suggestions, we reread it
+            // note: if we use this.props.suggestions from the parent, the parent must reread the list itself!
             if (objectChange !== OperationType.None) {
-                // zmenil sa zaznam dobrovolnika v DB
-                // zatial len refreshneme z DB
-                // ak by bol reqest pomaly, mozme pri inserte (nove id) / update (existujuce id) upravit zoznam a usetrime tym request do DB
+                // the volunteer row changed in the DB
+                // for now we only refresh from the DB
+                // if the request were slow, on insert (new id) / update (existing id) we can adjust the list and thereby save a request to the DB
                 this.loadSuggestions();
             }
-            // treba upravit this.state.filteredSuggestions? setli sme novy objekt, panel so suggestions by mal byt zavrety - TODO - overit
+            // do we need to adjust this.state.filteredSuggestions? we set a new object, the suggestions panel should be closed - TODO - verify
         }
         else {
-            // bol cancel, vratime focus do inputu ak treba
+            // it was cancel, we return focus to the input if needed
             if (this.state.inputChanged) {
                 this.setFocusToInput();
             }
@@ -476,14 +476,14 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
     searchDialogOnChoose(chosenRow: any) {
         const searchBrowseDialogState: SearchBrowseDialogState = {opened: false};
         this.setState({searchBrowseDialogState: searchBrowseDialogState});
-        // zapiseme vybraty row do objektu
+        // we write the selected row into the object
         this.setObjectValue(chosenRow, OperationType.None);
     }
 
     searchDialogOnHide() {
         const searchBrowseDialogState: SearchBrowseDialogState = {opened: false};
         this.setState({searchBrowseDialogState: searchBrowseDialogState});
-        // ak mame v inpute neplatnu hodnotu, vratime kurzor na input
+        // if we have an invalid value in the input, we return the cursor to the input
         if (this.state.inputChanged) {
             this.setFocusToInput();
         }
@@ -497,8 +497,8 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
                 tooltip: !Utils.isMobile() ? this.props.insertButtonTooltip : undefined,
                 command: (e: any) => {
                     if (this.props.onAddRow) {
-                        // mame custom handler pre "plus" button
-                        // ak mame nevalidnu hodnotu, tak ju odovzdame (snaha o user friendly) - TODO - ak nie sme v nevalidnom stave
+                        // we have a custom handler for the "plus" button
+                        // if we have an invalid value, we pass it (an attempt to be user friendly) - TODO - if we are not in an invalid state
                         let inputValue: string = "";
                         if (this.state.inputChanged) {
                             inputValue = this.state.inputValueState!;
@@ -506,9 +506,9 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
                         this.props.onAddRow(inputValue);
                     }
                     else {
-                        // otvorime dialog na insert
+                        // we open the dialog for insert
                         const initValues: any = {};
-                        // ak mame nevalidnu hodnotu, tak ju predplnime (snaha o user friendly)
+                        // if we have an invalid value, we prefill it (an attempt to be user friendly)
                         if (this.state.inputChanged) {
                             initValues[this.getFirstField()] = this.state.inputValueState;
                         }
@@ -542,7 +542,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
                     }
                 }
             });
-        // remove nebudeme podporovat, je technicky problematicky - nemozme vymazat zaznam z DB koli FK constraintu
+        // we will not support remove, it is technically problematic - we cannot delete the row from the DB because of the FK constraint
         // {
         //     icon: 'pi pi-times',
         //     command: (e: any) => {
@@ -573,14 +573,14 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
             {
                 icon: 'pi pi-chevron-down',
                 command: (e: any) => {
-                    // zobrazi cely suggestions list, zide sa ak chceme vidiet vsetky moznosti
-                    // neprakticke ak mame vela poloziek v suggestions list
+                    // shows the whole suggestions list, useful if we want to see all options
+                    // impractical if we have many items in the suggestions list
 
-                    // krasne zobrazi cely objekt!
-                    // this.autoCompleteRef.current je element <AutoComplete .../>, ktory vytvarame v render metode
+                    // nicely displays the whole object!
+                    // this.autoCompleteRef.current is the element <AutoComplete .../>, which we create in the render method
                     //console.log(this.autoCompleteRef.current);
 
-                    // otvori dropdown (search je metoda popisana v API, volanie sme skopcili zo zdrojakov primereact)
+                    // opens the dropdown (search is a method described in the API, we copied the call from the primereact sources)
                     // if (this.props.onSearchStart) {
                     //     this.props.onSearchStart(() => this.finishSearchStart(e));
                     // }
@@ -592,17 +592,17 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
 
     onOpenDropdown(e: any) {
         this.openDropdown(e);
-        this.suggestionsLoadedForOSS = false; // user mohol vyplnit nieco co meni filter a ide znova pracovat s autocomplete, nacitame suggestions znova (suggestionsLoad = onSearchStart)
-        this.wasOnChangeCalled = false; // reset na default hodnotu
+        this.suggestionsLoadedForOSS = false; // the user may have filled in something that changes the filter and is going to work with the autocomplete again, we load suggestions again (suggestionsLoad = onSearchStart)
+        this.wasOnChangeCalled = false; // reset to the default value
     }
 
     openDropdown(e: any) {
-        // otvori dropdown (search je metoda popisana v API, volanie sme skopcili zo zdrojakov primereact)
+        // opens the dropdown (search is a method described in the API, we copied the call from the primereact sources)
         this.autoCompleteRef.current.search(e, '', 'dropdown');
     }
 
     onEditAssocValue() {
-        // otvorime dialog na update
+        // we open the dialog for update
         if (this.props.idField === undefined) {
             throw "AutocompleteInput: property valueForm is defined but property idField is also needed for form editation.";
         }
@@ -615,13 +615,13 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         this.setState({formDialogState: formDialogState});
     }
 
-    // vracia objekt (ak inputChanged === false) alebo string (ak inputChanged === true)
+    // returns an object (if inputChanged === false) or a string (if inputChanged === true)
     computeInputValue(): any {
         let inputValue;
         if (!this.state.inputChanged) {
-            // poznamka: ak object === null tak treba do inputu zapisovat prazdny retazec, ak by sme pouzili null, neprejavila by sa zmena v modeli na null
+            // note: if object === null then an empty string must be written into the input; if we used null, the change in the model to null would not show up
             const object = this.props.value;
-            inputValue = (object !== null) ? this.computeItemTemplate(object, -1, true) : ""; // TODO - je "" ok?
+            inputValue = (object !== null) ? this.computeItemTemplate(object, -1, true) : ""; // TODO - is "" ok?
         }
         else {
             inputValue = this.state.inputValueState;
@@ -633,7 +633,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         return this.computeItemTemplate(suggestion, index, false);
     }
 
-    // pouziva sa na vytvorenie hodnoty do inputu (vyselectovany zaznam) a tiez na pripadne sortovanie a filtrovanie na frontende (ak nepouzivame lazy nacitavanie)
+    // used to create the value for the input (the selected row) and also for possible sorting and filtering on the frontend (if we do not use lazy loading)
     itemTemplateString(suggestion: any): string {
         const itemValue: ReactNode = this.computeItemTemplate(suggestion, -1, true);
         if (typeof itemValue !== "string") {
@@ -644,7 +644,7 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
 
     computeItemTemplate(suggestion: any, index: number, createStringValue: boolean): ReactNode {
         let itemTemplate: ReactNode;
-        // osetrenie specialnej polozky ... dame sem, nech sa to nemusi inde riesit
+        // handling of the special item ... we put it here so it does not have to be handled elsewhere
         if (AutocompleteInput.isMoreSuggestions(suggestion)) {
             itemTemplate = suggestion;
         }
@@ -669,12 +669,12 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         return displayValue;
     }
 
-    // vrati true ak sa jedna o specialny typ AutocompleteInput.valueMoreSuggestions
+    // returns true if it is the special type AutocompleteInput.valueMoreSuggestions
     static isMoreSuggestions(suggestion: any): boolean {
         return typeof suggestion === "string" && suggestion === AutocompleteInput.valueMoreSuggestions;
     }
 
-    // takto cez metodku, mozno sa metodka vola len ked sa otvori dialog a usetrime nieco...
+    // this way via a method, maybe the method is called only when the dialog opens and we save something...
     createSearchBrowseParams(): SearchBrowseParams {
         return {
             onChoose: this.searchDialogOnChoose,
@@ -690,9 +690,9 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
         let buttons: ReactElement[];
         if (!readOnly) {
             const createInsertItem: boolean = (this.props.addRowEnabled && (this.hasValueForm() || this.props.onAddRow !== undefined));
-            // TODO - upratat koli split layuot-u (ak dropdownButtonEnabled = false tak moze vzniknut split button s jednym buttonom)
+            // TODO - clean up because of the split layout (if dropdownButtonEnabled = false a split button with a single button can arise)
             if (createInsertItem || this.hasValueForm() || this.hasSearchBrowse()) {
-                // mame searchBrowse alebo CRUD operacie, potrebujeme viac buttonov alebo SplitButton
+                // we have searchBrowse or CRUD operations, we need more buttons or a SplitButton
                 const buttonItems: ButtonItem[] = [];
 
                 if (createInsertItem) {
@@ -717,19 +717,19 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
                 }
                 else {
                     // buttonsLayout === "splitButton"
-                    // tooltip-y by trebalo pridat...
+                    // tooltips should be added...
                     const splitButtonItems: MenuItem[] = buttonItems.map<MenuItem>((value: ButtonItem) => {return {icon: value.icon, command: value.command}});
                     buttons = [<SplitButton model={splitButtonItems} className={'x-splitbutton-only-dropdown' + Utils.mobileCssSuffix()} menuClassName={'x-splitbutton-only-dropdown-menu' + Utils.mobileCssSuffix()} disabled={readOnly}/>];
                 }
             }
             else {
-                // mame len 1 operaciu - dame jednoduchy button
+                // we have only 1 operation - we use a simple button
                 buttons = [<PrimeButton icon="pi pi-chevron-down" onClick={(e: any) => this.onOpenDropdown(e)} className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={!this.props.dropdownButtonEnabled}/>];
             }
         }
         else {
             // readOnly
-            // ak mame valueForm a mame asociovany objekt, umoznime editovat asociovany objekt
+            // if we have valueForm and we have an associated object, we allow editing the associated object
             if (this.hasValueForm() && this.props.value !== null) {
                 buttons = [<PrimeButton icon="pi pi-pencil"
                                         tooltip={!Utils.isMobile() ? this.props.updateButtonTooltip : undefined}
@@ -737,31 +737,31 @@ export class AutocompleteInput extends Component<AutocompleteInputProps> {
                                         onClick={(e: any) => this.onEditAssocValue()} className={'x-dropdownbutton' + Utils.mobileCssSuffix()}/>];
             }
             else {
-                // dame disablovany button (z estetickych dovodov, zachovame sirku)
+                // we use a disabled button (for aesthetic reasons, we keep the width)
                 buttons = [<PrimeButton icon="pi pi-chevron-down" className={'x-dropdownbutton' + Utils.mobileCssSuffix()} disabled={true}/>];
             }
         }
 
-        // vypocitame inputValue
+        // we compute inputValue
         const inputValue = this.computeInputValue();
 
         let error: string | undefined;
         if (this.state.notValid) {
-            // ak je v nevalidnom stave, tak ma tato chybova hlaska prednost pred ostatnymi (ak nahodou su)
+            // if it is in an invalid state, this error message takes precedence over the others (if there happen to be any)
             error = this.createErrorMessage();
         }
         else {
             error = this.props.error;
         }
 
-        // formgroup-inline lepi SplitButton na autocomplete a zarovna jeho vysku
+        // formgroup-inline sticks the SplitButton to the autocomplete and aligns its height
         return (
             <div className="x-auto-complete-base" style={{width: this.props.width, maxWidth: this.props.maxWidth}}>
                 <AutoComplete value={inputValue} suggestions={this.state.filteredSuggestions} completeMethod={this.completeMethod} itemTemplate={this.itemTemplate}
                               onChange={this.onChange} onSelect={this.onSelect} onBlur={this.onBlur} minLength={this.props.minLength} scrollHeight={this.props.scrollHeight}
                               ref={this.autoCompleteRef} inputRef={this.autoCompleteInputRef} readOnly={readOnly} disabled={readOnly} {...Utils.createTooltipOrErrorProps(error)} inputClassName={this.props.inputClassName}
                               showEmptyMessage={true}/>
-                {...buttons}{/* ked tu bolo len {buttons} bez ..., tak vypisoval hlasku Warning: Each child in a list should have a unique "key" prop. */}
+                {...buttons}{/* when there was only {buttons} without ..., it printed the message Warning: Each child in a list should have a unique "key" prop. */}
                 {this.hasValueForm() ?
                     <FormDialog key="dialog-form" dialogState={this.state.formDialogState} Form={this.props.ValueForm} formElement={this.props.valueFormElement} entity={this.xEntity!.name}/>
                     : undefined}

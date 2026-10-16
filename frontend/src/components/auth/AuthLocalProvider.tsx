@@ -37,12 +37,12 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
     // 'x-post-login' request can be united with 'x-local-auth-login' request in the LoginForm
     const setAuthSessionAndDoPostLogin = async (username: string, accessToken: string) => {
 
-        // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
+        // I do not know if this is the ideal place to set the getAccessToken method, for now we put it here
         setSession({accessToken: accessToken});
 
-        // zavolame x-post-login
-        // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
-        // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
+        // we call x-post-login
+        // - we check whether the user is written in the DB (this can be bypassed - TODO - deal with it)
+        // - we synchronize changes (for the case that e.g. Meno, Priezvisko changed) - TODO
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: username};
@@ -64,16 +64,16 @@ function AppAuthLocal({children}: {children: ReactNode;}) {
         }
 
         if (xPostLoginResponse.user === undefined) {
-            // nenasli sme usera v DB
+            // we did not find the user in the DB
             alert(`User account "${username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
-            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            // we use a custom exception that we catch later (a nicer solution than returning true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
         if (!xPostLoginResponse.user.enabled) {
-            // user je disablovany
+            // the user is disabled
             alert(`User account "${username}" is not enabled. Ask admin to enable user account.`);
-            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            // we use a custom exception that we catch later (a nicer solution than returning true/false)
             throw new UserNotFoundOrDisabledError();
         }
 

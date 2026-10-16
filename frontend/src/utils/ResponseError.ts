@@ -1,4 +1,4 @@
-// tento error pouzivame ak http request vrati http kod <> 2xx
+// we use this error if an http request returns an http code <> 2xx
 export interface ResponseErrorBody {
     statusCode: number;
     message: string;

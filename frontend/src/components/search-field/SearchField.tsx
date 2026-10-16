@@ -10,9 +10,9 @@ import type {SearchBrowseParams} from "../browse";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {UtilsCommon} from "../../common/UtilsCommon";
 
-// faast-ovsky zoombutton - ked user zapise nieco do inputu a odide - ak sa najde presne 1 zaznam tak nastavi, ak sa najde viac zaznamov tak otvori searchBrowse
-// nepouziva sa (uz) na ziadnom projekte (bol kedysi pouzity na BudgetLineForm), asi nam staci AutocompleteField
-// TODO - ak sa to ma pouzivat, tak zmenit searchBrowse a assocForm (pouzivane pri readOnly) na SearchBrowse/searchBrowseElement a AssocForm/assocFormElement a nepouzivat FormNavigator
+// faast-style zoom button - when the user writes something into the input and leaves - if exactly 1 row is found it sets it, if more rows are found it opens searchBrowse
+// it is (no longer) used on any project (it was once used on BudgetLineForm), AutocompleteField is probably enough for us
+// TODO - if it is to be used, change searchBrowse and assocForm (used for readOnly) to SearchBrowse/searchBrowseElement and AssocForm/assocFormElement and do not use FormNavigator
 
 export interface SearchFieldProps extends FormFieldProps {
     assocField: string;
@@ -31,8 +31,8 @@ export class SearchField extends FormField<SearchFieldProps> {
     inputTextRef: any;
 
     state: {
-        inputChanged: boolean; // priznak, ci uzivatel typovanim zmenil hodnotu v inpute
-        inputValueState: any; // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
+        inputChanged: boolean; // flag whether the user changed the value in the input by typing
+        inputValueState: any; // used only if inputChanged === true; the changed value in the input is stored here
         dialogOpened: boolean;
     };
 
@@ -42,7 +42,7 @@ export class SearchField extends FormField<SearchFieldProps> {
         this.xAssoc = UtilsMetadataCommon.getAssocToOne(UtilsMetadataCommon.getEntity(props.form.getEntity()), props.assocField);
 
         this.inputTextRef = createRef();
-        // POVODNY KOD
+        // ORIGINAL CODE
         //this.overlayPanelEl = createRef();
 
         this.state = {
@@ -68,7 +68,7 @@ export class SearchField extends FormField<SearchFieldProps> {
         const xEntityAssoc = UtilsMetadataCommon.getEntity(this.xAssoc.entityName);
         const xDisplayField = UtilsMetadataCommon.getFieldByPath(xEntityAssoc, props.displayField);
 
-        // tu boli hook-y kedysi...
+        // hooks used to be here...
         const inputChanged: boolean = this.state.inputChanged;
         const setInputChanged = (inputChanged: boolean) => {this.setState({inputChanged: inputChanged});}
 
@@ -81,8 +81,8 @@ export class SearchField extends FormField<SearchFieldProps> {
         const computeInputValue = (): any => {
             let inputValue;
             if (!inputChanged) {
-                // TODO - pridat cez generikum typ fieldu (ak sa da)
-                // poznamka: ak assocObject === null tak treba do inputu zapisovat prazdny retazec, ak by sme pouzili null, neprejavila by sa zmena v modeli na null
+                // TODO - add the field type via a generic (if possible)
+                // note: if assocObject === null then an empty string must be written into the input; if we used null, the change in the model to null would not show up
                 const assocObject = this.getValueFromObject();
                 inputValue = (assocObject !== null) ? assocObject[props.displayField] : "";
             }
@@ -100,12 +100,12 @@ export class SearchField extends FormField<SearchFieldProps> {
         }
 
         const onInputBlur = async (e: any) => {
-            // optimalizacia - testujeme len ak inputChanged === true
+            // optimization - we test only if inputChanged === true
             if (inputChanged) {
-                //console.log('onBlur = ' + e.target.value + ' - ideme testovat');
-                // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (x-find-rows-for-assoc)
+                //console.log('onBlur = ' + e.target.value + ' - going to test');
+                // TODO - maybe it is better to find out the entity behind the association already on the client - for now like this (x-find-rows-for-assoc)
                 if (e.target.value === '' || e.target.value === undefined || e.target.value === null) {
-                    setValueToModel(null); // prazdny retazec znamena null hodnotu
+                    setValueToModel(null); // an empty string means a null value
                 } else {
                     // deprecated code
                     // const rows: any[] = await Utils.fetchMany('x-find-rows-for-assoc', {
@@ -118,15 +118,15 @@ export class SearchField extends FormField<SearchFieldProps> {
                     const customFilter: CustomFilter | undefined = this.getFilterBase(this.props.filter);
                     const rows: any[] = await Utils.fetchRows(this.xAssoc.entityName, UtilsCommon.filterAnd(displayFieldFilter, customFilter));
                     if (rows.length === 0) {
-                        // POVODNY KOD
+                        // ORIGINAL CODE
                         //overlayPanelEl.current.toggle(e);
                         setDialogOpened(true);
                     } else if (rows.length === 1) {
-                        // nastavime najdeny row
+                        // we set the found row
                         setValueToModel(rows[0]);
                         setInputChanged(false);
                     } else {
-                        // POVODNY KOD
+                        // ORIGINAL CODE
                         //overlayPanelEl.current.toggle(e);
                         setDialogOpened(true);
                     }
@@ -140,17 +140,17 @@ export class SearchField extends FormField<SearchFieldProps> {
         }
 
         const onClickSearch = (e: any) => {
-            //console.log("zavolany onClickSearch");
+            //console.log("onClickSearch called");
             if (!this.isReadOnly()) {
                 setDialogOpened(true);
-                // POVODNY KOD
+                // ORIGINAL CODE
                 //overlayPanelEl.current.toggle(e);
             } else {
                 if (props.assocForm !== undefined) {
                     const assocObject = this.getValueFromObject();
-                    // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
+                    // QUESTION - obtain the id directly from the root object? but then it has to be added to the root object
                     const id = (assocObject !== null) ? assocObject[xEntityAssoc.idField] : null;
-                    // klonovanim elementu pridame atribut id
+                    // by cloning the element we add the attribute id
                     const assocForm = cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
                     (props.form.props as any).openForm(assocForm);
                 }
@@ -158,24 +158,24 @@ export class SearchField extends FormField<SearchFieldProps> {
         }
 
         const onChoose = (chosenRow: any) => {
-            //console.log("zavolany onChoose");
-            // zavrieme search dialog
-            // POVODNY KOD
+            //console.log("onChoose called");
+            // we close the search dialog
+            // ORIGINAL CODE
             //overlayPanelEl.current.hide();
             setDialogOpened(false);
-            // zapiseme vybraty row do objektu
+            // we write the selected row into the object
             setValueToModel(chosenRow);
         }
 
         const onHide = () => {
             setDialogOpened(false);
-            // ak mame v inpute neplatnu hodnotu, musime vratit kurzor na input
+            // if we have an invalid value in the input, we must return the cursor to the input
             if (inputChanged) {
                 this.inputTextRef.current.focus();
             }
         }
 
-        // takto cez metodku, mozno sa metodka vola len ked sa otvori dialog a usetrime nieco...
+        // this way via a method, maybe the method is called only when the dialog opens and we save something...
         const createSearchBrowseParams = (): SearchBrowseParams => {
             return {
                 onChoose: onChoose,
@@ -184,7 +184,7 @@ export class SearchField extends FormField<SearchFieldProps> {
             };
         }
 
-        // vypocitame inputValue
+        // we compute inputValue
         const inputValue = computeInputValue();
 
         return (
@@ -197,7 +197,7 @@ export class SearchField extends FormField<SearchFieldProps> {
                     <Button icon="pi pi-search" onClick={onClickSearch}/>
                 </div>
                 <Dialog className="x-dialog-without-header" visible={dialogOpened} /*style={{ width: '50vw' }}*/ onHide={onHide}>
-                    {/* klonovanim elementu pridame atribut searchBrowseParams */}
+                    {/* by cloning the element we add the attribute searchBrowseParams */}
                     {cloneElement(props.searchBrowse as ReactElement<any>, {searchBrowseParams: createSearchBrowseParams()}/*, props.searchBrowse.children*/)}
                 </Dialog>
             </div>

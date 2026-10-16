@@ -12,8 +12,8 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
 
     const inputTextRef = useRef<any>(null);
 
-    const [inputChanged, setInputChanged] = useState(false); // priznak, ci uzivatel typovanim zmenil hodnotu v inpute
-    const [inputValueState, setInputValueState] = useState<any>(null); // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
+    const [inputChanged, setInputChanged] = useState(false); // flag whether the user changed the value in the input by typing
+    const [inputValueState, setInputValueState] = useState<any>(null); // used only if inputChanged === true; the changed value in the input is stored here
 
     const [dialogOpened, setDialogOpened] = useState(false);
 
@@ -21,8 +21,8 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
         let inputValue = null;
         if (!inputChanged) {
             if (props.rowData !== null) {
-                // TODO - pridat cez generikum typ fieldu (ak sa da)
-                // poznamka: ak assocObject === null tak treba do inputu zapisovat prazdny retazec, ak by sme pouzili null, neprejavila by sa zmena v modeli na null
+                // TODO - add the field type via a generic (if possible)
+                // note: if assocObject === null then an empty string must be written into the input; if we used null, the change in the model to null would not show up
                 const assocObject = props.rowData[props.assocField];
                 inputValue = (assocObject !== null && assocObject !== undefined) ? assocObject[props.displayField] : "";
             }
@@ -39,20 +39,20 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
     }
 
     const onInputBlur = async (e: any) => {
-        // optimalizacia - testujeme len ak inputChanged === true
+        // optimization - we test only if inputChanged === true
         if (inputChanged) {
-            //console.log('onBlur = ' + e.target.value + ' - ideme testovat');
+            //console.log('onBlur = ' + e.target.value + ' - going to test');
             if (e.target.value === '') {
-                setValueToModel(null); // prazdny retazec znamena null hodnotu
+                setValueToModel(null); // an empty string means a null value
             }
             else {
-                // TODO - mozno je lepsie uz na klientovi zistit entitu za asociaciou - zatial takto (x-find-rows-for-assoc)
+                // TODO - maybe it is better to find out the entity behind the association already on the client - for now like this (x-find-rows-for-assoc)
                 const rows: any[] = await Utils.fetchMany('x-find-rows-for-assoc', {entity: props.entity, assocField: props.assocField, displayField: props.displayField, filter: e.target.value});
                 if (rows.length === 0) {
                     setDialogOpened(true);
                 }
                 else if (rows.length === 1) {
-                    // nastavime najdeny row
+                    // we set the found row
                     setValueToModel(rows[0]);
                 }
                 else {
@@ -63,15 +63,15 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
     }
 
     const setValueToModel = (row: any) => {
-        // zmenime hodnotu v modeli (odtial sa hodnota cita)
+        // we change the value in the model (the value is read from there)
         props.rowData[props.assocField] = row;
-        // kedze "rowData" je sucastou "props.form.state.object", tak nam staci zavolat setState({object: object}), aby sa zmena prejavila
+        // since "rowData" is part of "props.form.state.object", it is enough to call setState({object: object}) for the change to show up
         props.form.onObjectDataChange();
         setInputChanged(false);
     }
 
     const onClickSearch = (e: any) => {
-        //console.log("zavolany onClickSearch");
+        //console.log("onClickSearch called");
         if (!readOnly) {
             setDialogOpened(true);
         }
@@ -81,9 +81,9 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
                 const xEntityAssoc = UtilsMetadataCommon.getEntityForAssocToOne(xEntity, props.assocField)
                 if (props.rowData !== null) {
                     const assocObject = props.rowData[props.assocField];
-                    // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
+                    // QUESTION - obtain the id directly from the root object? but then it has to be added to the root object
                     const id = (assocObject !== null && assocObject !== undefined) ? assocObject[xEntityAssoc.idField] : null;
-                    // klonovanim elementu pridame atribut id
+                    // by cloning the element we add the attribute id
                     const assocForm = cloneElement(props.assocForm as ReactElement<any>, {id: id}/*, props.assocForm.children*/);
                     (props.form.props as any).openForm(assocForm);
                 }
@@ -92,22 +92,22 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
     }
 
     const onChoose = (chosenRow: any) => {
-        //console.log("zavolany onChoose");
-        // zavrieme search dialog
+        //console.log("onChoose called");
+        // we close the search dialog
         setDialogOpened(false);
-        // zapiseme vybraty row do objektu
+        // we write the selected row into the object
         setValueToModel(chosenRow);
     }
 
     const onHide = () => {
         setDialogOpened(false);
-        // ak mame v inpute neplatnu hodnotu, musime vratit kurzor na input
+        // if we have an invalid value in the input, we must return the cursor to the input
         if (inputChanged) {
             inputTextRef.current.focus();
         }
     }
 
-    // vypocitame inputValue
+    // we compute inputValue
     const inputValue = computeInputValue();
 
     const readOnly: boolean = Utils.isReadOnlyTableField(undefined, props.readOnly, props.form.state.entityRow, props.rowData);
@@ -119,13 +119,13 @@ export const TableSearchField = (props: {form: FormBase; entity: string; assocFi
                 <Button icon="pi pi-search" onClick={onClickSearch} />
             </div>
             <Dialog className="x-dialog-without-header" visible={dialogOpened} /*style={{ width: '50vw' }}*/ onHide={onHide}>
-                {/* klonovanim elementu pridame atribut searchBrowseParams */}
+                {/* by cloning the element we add the attribute searchBrowseParams */}
                 {cloneElement(props.searchBrowse as ReactElement<any>,
                     {
                             searchBrowseParams : {
                                 onChoose: onChoose,
                                 displayFieldFilter: (inputChanged ? {field: props.displayField, constraint: {value: inputValueState, matchMode: "contains"}} : undefined),
-                                customFilter: undefined // TODO - dorobit
+                                customFilter: undefined // TODO - implement
                             } satisfies SearchBrowseParams
                         }/*, props.searchBrowse.children*/)}
             </Dialog>

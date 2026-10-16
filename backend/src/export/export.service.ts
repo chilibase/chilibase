@@ -7,29 +7,29 @@ import {RawSqlResultsToEntityTransformer} from "typeorm/query-builder/transforme
 import {TextFormat} from "../common/types.js";
 import {ToManyAssocExportType} from "../common/ExportImportParam.js";
 
-// struktury pouzivane pre export do excelu a do csv
+// structures used for export to excel and to csv
 
-// typ fieldu - ide ako parameter do funkcie convertValue
-// mal by sa pouzivat ako typ pre XField.type namiesto string-u ale v sucasnosti moze ist do XField.type hocico, takze zatial len tu pouzivame
+// field type - it goes as a parameter into the convertValue function
+// it should be used as the type for XField.type instead of string, but currently anything can go into XField.type, so for now we use it only here
 
 export type FieldType = "string" | "decimal" | "date" | "datetime" | "interval" | "boolean";
 
 export interface ExportColumn {
     header: string;
     field: string | ((row: any) => any);
-    type?: FieldType; // explicitne zadany typ - pouziva sa, ak nemame metadatovy XField
+    type?: FieldType; // explicitly specified type - used if we do not have a metadata XField
     textFormat?: TextFormat; // text format (multiline/html) - used for texts (type string)
     width?: number;
 }
 
 export abstract class ExportService {
 
-    // funkcia pouzivana v ExportExcelService a ExportCsvService
+    // function used in ExportExcelService and ExportCsvService
     exportRow(columns: ExportColumn[], toManyAssocExportType: ToManyAssocExportType, fieldsToDuplicateValues: string[] | undefined, entityMetadata: Entity | undefined, row: any): Array<Array<any>> {
 
-        // vytvarany excel/csv row je tvoreny stlpcami - standardne ma stlpec presne 1 hodnotu,
-        // ak sa vsak jedna o field dotahovany cez one-to-many asociaciu, ma dany stlpec vsetky hodnoty dotiahnute cez danu asociaciu (moze byt aj 0 hodnot)
-        // dlzku najdlhsieho stlpca si zapiseme do "maxColumnIndex"
+        // the created excel/csv row is made up of columns - normally a column has exactly 1 value,
+        // but if it is a field loaded through a one-to-many association, that column has all values loaded through that association (it can also be 0 values)
+        // we write the length of the longest column into "maxColumnIndex"
         const columnList: Array<any[]> = new Array<any[]>(columns.length);
         let maxColumnLength: number = 1;
         for (const [columnIndex, exportColumn] of columns.entries()) {
@@ -40,14 +40,14 @@ export abstract class ExportService {
             if (typeof exportColumn.field === 'function') {
                 value = exportColumn.field(row);
             } else {
-                // mame field - exportColumn.field je typu string
-                // ak nemame explicitny typ a mame zadanu entitu, skusime najst typ v metadatach
+                // we have a field - exportColumn.field is of type string
+                // if we do not have an explicit type and we have an entity specified, we try to find the type in the metadata
                 if (!fieldType) {
                     if (entityMetadata) {
                         const field: Field | undefined = UtilsMetadataCommon.getFieldByPathBase(entityMetadata, exportColumn.field);
                         if (field) {
                             fieldType = field.type;
-                            scale = field.scale; // pouzivane pri decimal a date
+                            scale = field.scale; // used for decimal and date
                         }
                     }
                 }
@@ -61,14 +61,14 @@ export abstract class ExportService {
                 columnValues = value;
 
                 if (toManyAssocExportType === ToManyAssocExportType.Singleline || toManyAssocExportType === ToManyAssocExportType.Multiline) {
-                    // zlucime vsetky hodnoty do jednej string hodnoty
+                    // we merge all values into one string value
                     if (fieldType) {
-                        // TODO - ak nemame k dispozicii metadata, tak nam moze chybat scale
-                        //  - ak s tym bude problem, treba dorobit zadavanie scale explicitne (podobne ako sa zadava fieldType)
+                        // TODO - if we do not have metadata available, scale may be missing
+                        //  - if that becomes a problem, we need to add specifying scale explicitly (similarly to how fieldType is specified)
                         columnValues = columnValues.map((value: any) => convertValueBase(fieldType, scale, value, true, AsUIType.Text));
                     }
                     else {
-                        // nepozname typ, neni dobre takto to pouzivat, vzdy by mal byt zadany typ
+                        // we do not know the type, it is not good to use it this way, the type should always be specified
                         columnValues = columnValues.map((value: any) => (value !== null && value !== undefined) ? value.toString() : "");
                     }
                     // columnValues is string array, we can join the values
@@ -78,7 +78,7 @@ export abstract class ExportService {
                     columnValuesProcessed = true;
                 }
             } else {
-                columnValues = [value]; // stlpec s jednou hodnotou v prvom riadku
+                columnValues = [value]; // column with one value in the first row
             }
 
             if (!columnValuesProcessed) {
@@ -91,14 +91,14 @@ export abstract class ExportService {
                 maxColumnLength = columnValues.length;
             }
 
-            // skonvertujeme hodnoty, ak je to potrebne
+            // we convert the values if needed
             //columnValues = this.convertValues(columnValues, xFieldList[index], csvWriter);
 
-            // ulozime si stlpec do pola stlpcov
+            // we store the column into the array of columns
             columnList[columnIndex] = columnValues;
         }
 
-        // "matrix" mame hotovy, vytvorime riadky
+        // the "matrix" is ready, we create the rows
         const resultRowList: Array<Array<any>> = new Array<Array<any>>(maxColumnLength);
         for (let rowIndex: number = 0; rowIndex < maxColumnLength; rowIndex++) {
             const rowValues: Array<any> = new Array<any>(columns.length);
@@ -108,10 +108,10 @@ export abstract class ExportService {
                     csvValue = columnValues[rowIndex];
                 }
                 else {
-                    csvValue = ""; // prazdna bunka (default)
+                    csvValue = ""; // empty cell (default)
 
-                    // ak mame zadane stlpce, v ktorych chceme duplikovat hodnoty, tak zduplikujeme hodnotu z prveho riadku (master zaznam)
-                    // (nemalo by sa jednat o toMany stlpce)
+                    // if we have specified columns in which we want to duplicate values, we duplicate the value from the first row (master record)
+                    // (they should not be toMany columns)
                     if (fieldsToDuplicateValues) {
                         const field: string | ((row: any) => any) = columns[index].field;
                         if (typeof field === 'string') {
@@ -125,15 +125,15 @@ export abstract class ExportService {
                 }
                 rowValues[index] = csvValue;
             }
-            // a zapiseme riadok
+            // and we write the row
             resultRowList[rowIndex] = rowValues;
         }
         return resultRowList;
     }
 
-    // ak bude treba, presunut do XUtils
+    // if needed, move to XUtils
     protected transformToEntity(data: any, selectQueryBuilder: SelectQueryBuilder<unknown>): any {
-        // pozor, tato transformacia vracia niektore decimaly (napr. Car.price) ako string, to asi nie je standard
+        // warning, this transformation returns some decimals (e.g. Car.price) as string, that is probably not standard
         const transformer = new RawSqlResultsToEntityTransformer(selectQueryBuilder.expressionMap, selectQueryBuilder.connection.driver, []);
         const entityList: any[] = transformer.transform([data], selectQueryBuilder.expressionMap.mainAlias!);
         return entityList[0];

@@ -46,28 +46,28 @@ export class PersistenceController {
 
     @Post('x-lazy-data-table-export-excel')
     async lazyDataTableExportExcel(@Body() body: ExportExcelParam): Promise<StreamableFile> {
-        // pri exceli zatial nepouzivame stream-y, mozno v buducnosti dorobime (lib-ka exceljs stream-y podporuje)
+        // for Excel we do not use streams yet, maybe we will add it in the future (the exceljs library supports streams)
         return await this.lazyDataTableService.exportExcel(body);
     }
 
     @Post('x-lazy-data-table-export-csv')
     async lazyDataTableExportCsv(@Body() body: ExportCsvParam, @Res() res: Response) {
-        // toto je pouzitie express-u (nizsia vrstva ako nestjs) - Response je z express-u
-        // viac na https://docs.nestjs.com/controllers#getting-up-and-running
-        // je potrebne menezovat response explicitne
+        // this is a use of express (a lower layer than nestjs) - Response is from express
+        // more at https://docs.nestjs.com/controllers#getting-up-and-running
+        // it is necessary to manage the response explicitly
 
-        // response menezujeme explicitne, lebo chceme data do responsu streamovat
-        // kod je spraveny podla:
+        // we manage the response explicitly because we want to stream data into the response
+        // the code is based on:
         // https://medium.com/developers-arena/streams-piping-and-their-error-handling-in-nodejs-c3fd818530b6
-        // netusim, ci sa tym nepreplni pamet... zostane metoda write stat ak klient neodobera data?
+        // I do not know whether this will overflow memory... will the write method hang if the client does not consume the data?
 
-        // metoda export zapisuje do "res"
+        // the export method writes into "res"
         await this.lazyDataTableService.exportCsv(body, res);
     }
 
     @Post('x-lazy-data-table-export-json')
     async lazyDataTableExportJson(@Body() body: ExportJsonParam, @Res() res: Response) {
-        // podobne ako pri lazyDataTableExportCsv podporujeme stream-y
+        // similarly to lazyDataTableExportCsv we support streams
         await this.lazyDataTableService.exportJson(body, res);
     }
 

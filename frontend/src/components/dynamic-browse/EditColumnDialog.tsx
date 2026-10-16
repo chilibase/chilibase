@@ -21,8 +21,8 @@ export const EditColumnDialog = (props: {dialogOpened: boolean; addColumn: boole
     const [dropdownInFilter, setDropdownInFilter] = useState(notNullValues.dropdownInFilter);
     const [dropdownInFilterReadOnly, setDropdownInFilterReadOnly] = useState(true);
 
-    // bez tejto metody by nefungovala inicializacia stavu podla "props.editColumnDialogValues" pri opetovnom otvarani dialogu
-    // asi to neni moc pekny sposob ale nechce sa mi posuvat stav do vyssej komponenty, zatial nechame takto
+    // without this method, initialization of the state according to "props.editColumnDialogValues" would not work when opening the dialog again
+    // this is probably not a very nice way but I do not feel like moving the state to a higher component, for now we leave it like this
     const onShow = () => {
 
         setField(notNullValues.field);
@@ -79,7 +79,7 @@ export const EditColumnDialog = (props: {dialogOpened: boolean; addColumn: boole
         buttonLabel = "Modify column";
     }
 
-    // poznamka: renderovanie vnutornych komponentov Dialogu sa zavola az po otvoreni dialogu
+    // note: rendering of the inner components of the Dialog is called only after the dialog is opened
     return (
         <Dialog visible={props.dialogOpened} onShow={onShow} onHide={() => props.onHideDialog(null)}>
             {fieldElement}

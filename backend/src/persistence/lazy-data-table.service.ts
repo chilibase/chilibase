@@ -46,7 +46,7 @@ export class LazyDataTableService {
     async findRows(findParam : FindParam): Promise<FindResult> {
         //console.log("LazyDataTableService.findRows findParam = " + JSON.stringify(findParam));
 
-        // TODO - optimalizacia - leftJoin-y sa mozu nahradit za join-y, ak je ManyToOne asociacia not null (join-y su rychlejsie ako leftJoin-y)
+        // TODO - optimization - leftJoins can be replaced with joins if the ManyToOne association is not null (joins are faster than leftJoins)
 
         this.createDefaultFieldsForFullTextSearch(findParam.fullTextSearch, findParam.fields);
         const mainQueryData: MainQueryData = new MainQueryData(this.entityMetadataService, findParam.entity, "t", findParam.filters, findParam.fullTextSearch, findParam.customFilterItems);
@@ -56,9 +56,9 @@ export class LazyDataTableService {
         if (findParam.resultType === ResultType.OnlyRowCount || findParam.resultType === ResultType.RowCountAndPagedRows) {
             //const xEntity: XEntity = this.entityMetadataService.getEntity(findParam.entity);
             const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.entity.name, mainQueryData.rootAlias);
-            // povodne tu bol COUNT(1) ale koli where podmienkam na OneToMany asociaciach sme zmenili na COUNT(DISTINCT t0.id)
-            // da sa zoptimalizovat, ze COUNT(DISTINCT t0.id) sa bude pouzivat len v pripade ze je pouzita where podmienka na OneToMany asociacii
-            // (ale potom to treba nejako detekovat, zatial dame vzdy COUNT(DISTINCT t0.id))
+            // originally there was COUNT(1) here but because of where conditions on OneToMany associations we changed it to COUNT(DISTINCT t0.id)
+            // it can be optimized so that COUNT(DISTINCT t0.id) is used only when a where condition on a OneToMany association is used
+            // (but then it has to be detected somehow, for now we always use COUNT(DISTINCT t0.id))
             //selectQueryBuilder.select(`COUNT(DISTINCT ${rootAlias}.${xEntity.idField})`, "count");
             selectQueryBuilder.select(`COUNT(1)`, "count");
             // aggregate fields
@@ -67,16 +67,16 @@ export class LazyDataTableService {
                     const [queryData, fieldNew]: [QueryData, string] = mainQueryData.getQueryForPathField(aggregateItem.field);
                     const dbField: string = queryData.getFieldFromPathField(fieldNew);
                     if (queryData.isMainQueryData()) {
-                        // ako alias pouzivame aggregateItem.field, moze mat aj "." (napr. assoc1.field1), DB to zvlada ak sa pouziju `assoc1.field1`, mozno to bude treba prerobit
+                        // we use aggregateItem.field as the alias, it can also contain "." (e.g. assoc1.field1), the DB handles it if `assoc1.field1` is used, maybe it will have to be reworked
                         selectQueryBuilder.addSelect(`${aggregateItem.aggregateFunction}(${dbField})`, aggregateItem.field);
                     }
                     else {
-                        // vytvorime subquery, pre kazdy field samostatne, ak by sme to chceli efektivnejsie, museli by sme urobit samostatny select
-                        // ale tomuto samostatnemu selectu by sme museli komplikovane pridavat where podmienky z main query
+                        // we create a subquery, separately for each field; if we wanted it more efficiently, we would have to make a separate select
+                        // but we would have to add the where conditions from the main query to this separate select in a complicated way
                         const subQueryData: SubQueryData = queryData as SubQueryData;
                         const selectSubQueryBuilder: SelectQueryBuilder<unknown> = subQueryData.createQueryBuilder(selectQueryBuilder, `${aggregateItem.aggregateFunction}(${dbField})`);
-                        // alias obsahuje "." !
-                        // tu uz druhykrat pouzivame agregacnu funkciu - pre SUM, MIN, MAX je to ok, ale pri AVG to ovplyvni vysledok!
+                        // the alias contains "." !
+                        // here we already use the aggregate function for the second time - for SUM, MIN, MAX it is ok, but for AVG it affects the result!
                         selectQueryBuilder.addSelect(`${aggregateItem.aggregateFunction}(${selectSubQueryBuilder.getQuery()})`, aggregateItem.field);
                     }
                 }
@@ -89,26 +89,26 @@ export class LazyDataTableService {
                 selectQueryBuilder.where(mainQueryData.where, mainQueryData.params);
             }
             else {
-                selectQueryBuilder.where("1 = 1");// aby zafungovalo pripadne pridanie selectQueryBuilder.andWhereExists
+                selectQueryBuilder.where("1 = 1");// so that a possible addition of selectQueryBuilder.andWhereExists works
             }
 
             for (const [assocOneToMany, subQueryData] of mainQueryData.assocSubQueryDataMap.entries()) {
-                // pridame podmienku EXISTS (subquery)
-                // EXISTS pridame len vtedy ak vyplnenim nejakej polozky vo filtri (alebo cez custom filter) vznikla nejaka where podmienka
-                // (subquery moze vzniknut aj napr. cez SUM stlpca na OneToMany asociacii, vtedy ale EXISTS nechceme, lebo hlavny select funguje cez LEFT JOIN,
-                // vybera aj zaznamy ktore nemaju detail a my chceme aby COUNT naratal presne tolko zaznamov, kolko vracia hlavny select)
+                // we add the EXISTS (subquery) condition
+                // we add EXISTS only if filling in some item in the filter (or through a custom filter) created some where condition
+                // (a subquery can also arise e.g. through SUM of a column on a OneToMany association, but then we do not want EXISTS, because the main select works through LEFT JOIN,
+                // it also selects records that have no detail and we want COUNT to count exactly as many records as the main select returns)
                 if (subQueryData.where !== "") {
                     const selectSubQueryBuilder: SelectQueryBuilder<unknown> = subQueryData.createQueryBuilder(selectQueryBuilder, `1`);
                     selectQueryBuilder.andWhereExists(selectSubQueryBuilder);
                 }
             }
 
-            // pridame pripadne where podmienky pre full-text search
-            // k existujucej where podmienke cez AND pridame:
+            // we add possible where conditions for full-text search
+            // to the existing where condition we add through AND:
             // (<main-query full-text cond> OR EXISTS <sub-query-1 full-text cond> OR EXISTS <sub-query-2 full-text cond> OR ...)
-            // -> a tuto celu podmienku pridame (cez AND) tolkokrat kolko mame hodnot z inputu pre full-text search
-            // (t.j. ak mame na vstupe "Janko Mrkvicka", tak jedna where podmienka bude pre "Janko" a druha pre "Mrkvicka" a budu spojene cez AND)
-            // param selectQueryBuilder = bude vytvarat EXISTS podmienky pre subqueries
+            // -> and we add this whole condition (through AND) as many times as we have values from the input for full-text search
+            // (i.e. if we have "Janko Mrkvicka" on the input, one where condition will be for "Janko" and the other for "Mrkvicka" and they will be joined through AND)
+            // param selectQueryBuilder = will create EXISTS conditions for subqueries
             const ftsWhereItem: string | "" = mainQueryData.createFtsWhereItem(selectQueryBuilder);
             if (ftsWhereItem !== "") {
                 selectQueryBuilder.andWhere(`(${ftsWhereItem})`);
@@ -148,15 +148,15 @@ export class LazyDataTableService {
         return findResult;
     }
 
-    // metoda hlavne na zjednotenie spolocneho kodu
-    // TODO - nema ist do MainQueryData? mal by ale potom aj vytvraranie query builder pre COUNT/SUM select by malo ist do MainQueryData, zatial nechame
+    // method mainly to unify the common code
+    // TODO - should it not go into MainQueryData? it should, but then creating the query builder for the COUNT/SUM select should also go into MainQueryData, for now we leave it
     // for using in transaction, pass param manager, otherwise pass manager = null
     createQueryBuilderFromMainQuery(manager: EntityManager, mainQueryData: MainQueryData): SelectQueryBuilder<unknown> {
 
-        // TODO - selectovat len stlpce ktore treba - nepodarilo sa, viac v TODO.txt
-        // TODO - tabulky pridane pri vytvoreni mainQueryData.orderByItems nemusime selectovat, staci ich joinovat, ale koli jednoduchosti ich tiez selectujeme
-        // TODO - podobne aj tabulky pridane cez custom filter alebo cez full-text search ktory obsahuje ine stlpce ako su v browse - tie tiez nepotrebujeme selectovat,
-        // t.j. netreba volat leftJoinAndSelect(field, alias), staci volat leftJoin(field, alias) - chcelo by to okrem alias-u si zapisovat aj ci treba aj select (boolean hodnotu)
+        // TODO - select only the columns that are needed - it did not work out, more in TODO.txt
+        // TODO - tables added when creating mainQueryData.orderByItems do not have to be selected, it is enough to join them, but for simplicity we select them too
+        // TODO - similarly also tables added through a custom filter or through full-text search that contains columns other than those in the browse - those we also do not need to select,
+        // i.e. there is no need to call leftJoinAndSelect(field, alias), it is enough to call leftJoin(field, alias) - besides the alias we would also want to record whether a select is needed (a boolean value)
         // original code (before use manager/transaction) (there are some differences between using repository and not using repository)
         //const selectQueryBuilder: SelectQueryBuilder<unknown> = this.dataSource.createQueryBuilder(mainQueryData.entity.name, mainQueryData.rootAlias);
         const repository: Repository<unknown> = manager ? manager.getRepository(mainQueryData.entity.name) : this.dataSource.getRepository(mainQueryData.entity.name);
@@ -165,7 +165,7 @@ export class LazyDataTableService {
         for (const [field, alias] of mainQueryData.assocAliasMap.entries()) {
             selectQueryBuilder.leftJoinAndSelect(field, alias);
         }
-        // najoinujeme aj tabulky pridane cez oneToMany asociacie (lebo mozno potrebujeme nacitat fieldy z tychto tabuliek)
+        // we also join tables added through oneToMany associations (because we may need to load fields from these tables)
         let where: string = mainQueryData.where;
         let params: {} = mainQueryData.params;
         for (const [assocOneToMany, subQueryData] of mainQueryData.assocSubQueryDataMap.entries()) {
@@ -174,10 +174,10 @@ export class LazyDataTableService {
                 selectQueryBuilder.leftJoinAndSelect(field, alias);
             }
             where = QueryData.whereItemAnd(where, subQueryData.where);
-            params = {...params, ...subQueryData.params}; // TODO - nedojde k prepisaniu params? ak ano, druha hodnota prepise tu predchadzajucu
+            params = {...params, ...subQueryData.params}; // TODO - will params get overwritten? if yes, the second value overwrites the previous one
         }
 
-        // param undefined = nechceme EXISTS, chceme klasicke where podmienky
+        // param undefined = we do not want EXISTS, we want classic where conditions
         where = QueryData.whereItemAnd(where, mainQueryData.createFtsWhereItem(undefined));
 
         if (where !== "") {
@@ -188,8 +188,8 @@ export class LazyDataTableService {
         return selectQueryBuilder;
     }
 
-    // docasne sem dame findRowById, lebo pouzivame podobne joinovanie ako pri citani dat pre lazy tabulky
-    // (v buducnosti mozme viac zjednotit s lazy tabulkou)
+    // temporarily we put findRowById here, because we use similar joining as when reading data for lazy tables
+    // (in the future we can unify it more with the lazy table)
     async findRowById(findRowRequest: FindRowByIdRequest): Promise<FindRowByIdResponse> {
         // we use transaction only by locking (we spare the commands START TRANSACTION and COMMIT when we don't use transaction)
         if (findRowRequest.lockDate) {
@@ -209,7 +209,7 @@ export class LazyDataTableService {
             // row is not locked (or we do lock overwrite), put the lock
             rowForUpdate.lockDate = findRowRequest.lockDate;
             rowForUpdate.lockUser = findRowRequest.lockUser;
-            await manager.getRepository(findRowRequest.entity).save(rowForUpdate); // zatial dame save, lebo update inkrementuje version atribut (version ale pojde prec)
+            await manager.getRepository(findRowRequest.entity).save(rowForUpdate); // for now we use save, because update increments the version attribute (version will go away though)
             lockAcquired = true;
         }
 
@@ -241,9 +241,9 @@ export class LazyDataTableService {
         }
     }
 
-    // ************** podpora pre export ******************
+    // ************** support for export ******************
 
-    // poznamka: ak by sa tieto funkcie (alebo ich cast) dali presunut do export servisov, bolo by fajn...
+    // note: if these functions (or part of them) could be moved into the export services, it would be nice...
 
     async exportExcel(exportExcelParam: ExportExcelParam): Promise<StreamableFile> {
 
@@ -298,7 +298,7 @@ export class LazyDataTableService {
 
         const headerCharset: string = "UTF-8";
         res.setHeader(`Content-Type`, `application/json; charset=${headerCharset}`);
-        res.charset = headerCharset; // default encoding, pouziva sa pravdepodobne ak neni setnuty charset v 'Content-Type' (pozri riadok vyssie)
+        res.charset = headerCharset; // default encoding, it is probably used if charset is not set in 'Content-Type' (see the line above)
 
         const [selectQueryBuilder, existsToManyAssoc]: [SelectQueryBuilder<unknown>, boolean] = this.createSelectQueryBuilder(exportJsonParam.queryParam);
         if (existsToManyAssoc) {
@@ -321,12 +321,12 @@ export class LazyDataTableService {
     private createDefaultFieldsForFullTextSearch(fullTextSearch: FullTextSearch | undefined, fields: string[] | undefined) {
         if (fullTextSearch) {
             if (!fullTextSearch.fields) {
-                fullTextSearch.fields = fields; // ako default stlpce pouzijeme stlpce browsu
+                fullTextSearch.fields = fields; // as default columns we use the browse columns
             }
         }
     }
 
-    // ************** podpora pre autocomplete ******************
+    // ************** support for autocomplete ******************
 
     async lazyAutoCompleteSuggestions(suggestionsRequest: LazyAutoCompleteSuggestionsRequest): Promise<FindResult> {
 
@@ -343,7 +343,7 @@ export class LazyDataTableService {
         return await this.findRows(findParamRows);
     }
 
-/*  stary nepouzivany sposob - ma vzdy 2 drahe selecty (cca 200 ms na tabulke klientov kazdy select):
+/*  old unused way - it always has 2 expensive selects (about 200 ms on the clients table for each select):
     async lazyAutoCompleteSuggestionsOld(suggestionsRequest: XLazyAutoCompleteSuggestionsRequest): Promise<FindResult> {
 
         const findParamCount: FindParam = {
@@ -367,7 +367,7 @@ export class LazyDataTableService {
         return findResult;
     }
 */
-    // ************** fetch rows - zodpoveda metode XUtils.fetchRows na frontend-e ******************
+    // ************** fetch rows - corresponds to the method XUtils.fetchRows on the frontend ******************
 
     async fetchRows(entity: string, customFilterItems?: CustomFilterItem[] | undefined, multiSortMeta?: DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
         const findParam: FindParam = {resultType: ResultType.AllRows, entity: entity, customFilterItems: customFilterItems, multiSortMeta: multiSortMeta, fields: fields};
@@ -376,30 +376,30 @@ export class LazyDataTableService {
     }
 
 
-    // ************** stary nepouzivany export ******************
+    // ************** old unused export ******************
 /*
     private async exportCsv(exportParam: ExportParam, res: Response) {
 
         const selectQueryBuilder: SelectQueryBuilder<unknown> = this.createSelectQueryBuilder(exportParam.queryParam);
         const readStream: ReadStream = await selectQueryBuilder.stream();
 
-        // potrebujeme zoznam xField-ov, aby sme vedeli urcit typ fieldu
+        // we need the list of xFields so that we can determine the field type
         const xFieldList: XField[] = [];
         const xEntity = this.entityMetadataService.getEntity(exportParam.queryParam.entity);
         for (const field of exportParam.queryParam.fields) {
             xFieldList.push(this.entityMetadataService.getFieldByPath(xEntity, field));
         }
 
-        const headerCharset: string = ExportCsvService.getHeaderCharset(exportParam.csvParam.csvEncoding); // napr. UTF-8, windows-1250
-        const iconvCharset: CsvEncoding = exportParam.csvParam.csvEncoding; // napr. utf-8, win1250
+        const headerCharset: string = ExportCsvService.getHeaderCharset(exportParam.csvParam.csvEncoding); // e.g. UTF-8, windows-1250
+        const iconvCharset: CsvEncoding = exportParam.csvParam.csvEncoding; // e.g. utf-8, win1250
 
         res.setHeader("Content-Type", `text/csv; charset=${headerCharset}`);
-        res.charset = headerCharset; // default encoding - pravdepodobne setne tuto hodnotu do charset=<res.charset> v header-i "Content-Type"
-        // ak neni atribut charset definovany explicitne - TODO - odskusat
+        res.charset = headerCharset; // default encoding - it probably sets this value into charset=<res.charset> in the "Content-Type" header
+        // if the charset attribute is not defined explicitly - TODO - try it out
 
         if (exportParam.csvParam.useHeaderLine) {
             const csvRow: string = this.createHeaderLineOld(exportParam.csvParam);
-            res.write(iconv.encode(csvRow, iconvCharset)); // neviem ci toto je idealny sposob ako pouzivat iconv, ale funguje...
+            res.write(iconv.encode(csvRow, iconvCharset)); // I do not know if this is the ideal way to use iconv, but it works...
         }
 
         readStream.on('data', data => {
@@ -423,16 +423,16 @@ export class LazyDataTableService {
             let valueStr: string;
             if (value !== null && value !== undefined) {
                 if (value instanceof Date) {
-                    // TODO - ak pre datetime nastavime vsetky zlozky casu na 00:00:00, tak sformatuje hodnotu ako datum a spravi chybu pri zapise do DB - zapise  1:00:00
+                    // TODO - if for datetime we set all time components to 00:00:00, it formats the value as a date and causes an error when writing to the DB - it writes 1:00:00
                     if (value.getHours() === 0 && value.getMinutes() === 0 && value.getSeconds() === 0) {
                         valueStr = dateFormat(value, 'yyyy-mm-dd');
                     }
                     else {
-                        // jedna sa o datetime
+                        // it is a datetime
                         valueStr = dateFormat(value, 'yyyy-mm-dd HH:MM:ss');
                     }
                 }
-                // niektore decimal hodnoty neprichadzaju ako number (typeof value nie je 'number' ale 'string') preto pouzijeme xField
+                // some decimal values do not arrive as number (typeof value is not 'number' but 'string'), therefore we use xField
                 else if (xField.type === "decimal") {
                     if (csvParam.csvDecimalFormat === CsvDecimalFormat.Comma) {
                         valueStr = value.toString().replace('.', ','); // 123456,78
@@ -476,13 +476,13 @@ export class LazyDataTableService {
     }
 
     private processCsvItemOld(valueStr: string, csvSeparator: string): string {
-        // moj stary Excel 2010 nechcel nacitavat subor ktory obsahoval v bunke retazec ID
+        // my old Excel 2010 refused to load a file that contained the string ID in a cell
         if (valueStr === "ID") {
             valueStr = '"' + valueStr + '"';
         }
         else {
-            valueStr = valueStr.replace(/"/g, '""'); // ekvivalent pre regexp /"/g je: new RegExp('"', 'g')
-            // aj tu pouzivam XUtils.csvSeparator
+            valueStr = valueStr.replace(/"/g, '""'); // the equivalent for the regexp /"/g is: new RegExp('"', 'g')
+            // here too I use XUtils.csvSeparator
             if (valueStr.search(new RegExp(`("|${csvSeparator}|\n)`, 'g')) >= 0) {
                 valueStr = '"' + valueStr + '"';
             }

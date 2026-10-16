@@ -30,15 +30,15 @@ function AppAuthOff({children}: {children: ReactNode;}) {
         try {
             await getAndSetAccessToken();
             await fetchAndSetXMetadata();
-            // vsetko zbehlo, app-ka je inicializovana
+            // everything went through, the app is initialized
             setInitialized(true);
         }
         catch (err) {
             if (err instanceof UserNotFoundOrDisabledError) {
-                // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
+                // e.g. a gmail user who is not listed in the DB signed in
             }
             else {
-                // ak bola ina chyba, aplikacia spadne
+                // if there was another error, the application crashes
                 throw err;
             }
         }
@@ -46,12 +46,12 @@ function AppAuthOff({children}: {children: ReactNode;}) {
 
     const getAndSetAccessToken = async () => {
 
-        // TODO - provizorne
-        // Utils.getAccessToken() vyhadzuje chybu ak je accessToken null
-        // x-post-login potrebuje accessToken, preto ho uz tu setneme
+        // TODO - provisional
+        // Utils.getAccessToken() throws an error if accessToken is null
+        // x-post-login needs accessToken, therefore we set it already here
         setSession({accessToken: 'dummy'});
 
-        // zavolame x-post-login
+        // we call x-post-login
         const username: string = Utils.getEnvVarValue(EnvVar.VITE_AUTH_OFF_USERNAME);
         let xPostLoginResponse: PostLoginResponse;
         try {
@@ -74,21 +74,21 @@ function AppAuthOff({children}: {children: ReactNode;}) {
         }
 
         if (xPostLoginResponse.user === undefined) {
-            // nenasli sme usera v DB
+            // we did not find the user in the DB
             alert(`User account "${username}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
-            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            // we use a custom exception that we catch later (a nicer solution than returning true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
         if (!xPostLoginResponse.user.enabled) {
-            // user je disablovany
+            // the user is disabled
             alert(`User account "${username}" is not enabled. Ask admin to enable user account.`);
-            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            // we use a custom exception that we catch later (a nicer solution than returning true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
-        // ulozime si usera do access token-u - zatial take provizorne, user sa pouziva v preSave na setnutie vytvoril_id
-        // TODO - tu provizorne accessToken: 'dummy', bolo accessToken: undefined
+        // we store the user into the access token - for now provisional like this, the user is used in preSave to set vytvoril_id
+        // TODO - here provisionally accessToken: 'dummy', it used to be accessToken: undefined
         setSession({accessToken: 'dummy', user: xPostLoginResponse.user, logout: logout});
         setLoggedIn(true);
     }

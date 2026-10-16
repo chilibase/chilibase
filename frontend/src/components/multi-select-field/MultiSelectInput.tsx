@@ -5,20 +5,20 @@ import type {DataTableSortMeta} from "primereact/datatable";
 import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 import {MultiSelect, type MultiSelectChangeEvent} from "primereact/multiselect";
 
-// Base komponent pre MultiSelectField - podobna uroven ako AutocompleteInput, resp. SelectInput
+// Base component for MultiSelectField - a similar level as AutocompleteInput, or SelectInput
 
 export interface MultiSelectInputProps {
     value: any[];
     onChange: (value: any[]) => void;
-    //options?: any[]; // ak su priamo zadane options, nepouziva sa optionsQuery (TODO - toto neviem ci potrebujeme, da sa priamo pouzit MultiSelect v tomto pripade)
-    optionsQuery?: Query; // musi byt zadany ak nie su zadane options
-    displayField: string; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/options), moze byt aj path (napr. <assoc>.<field>)
-    //idField?: string; // id field (nazov atributu) objektu z value/suggestions - pouziva sa ak mame zadane priamo options (pri optionsQuery ziskame idField podla entity)
+    //options?: any[]; // if options are provided directly, optionsQuery is not used (TODO - I do not know if we need this, MultiSelect can be used directly in this case)
+    optionsQuery?: Query; // must be specified if options are not provided
+    displayField: string; // field displayed in the input (one of the fields of the object from value/options), can also be a path (e.g. <assoc>.<field>)
+    //idField?: string; // id field (attribute name) of the object from value/suggestions - used if we have options provided directly (with optionsQuery we obtain idField according to the entity)
     maxSelectedLabels?: number;
     width?: string; // (still not implemented)
     scrollHeight?: string; // Maximum height of the options panel. (still not implemented)
     readOnly?: boolean;
-    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
+    error?: string; // error message, if we want to mark the field as invalid
 }
 
 export class MultiSelectInput extends Component<MultiSelectInputProps> {
@@ -66,14 +66,14 @@ export class MultiSelectInput extends Component<MultiSelectInputProps> {
     getSortField(): string | DataTableSortMeta[] | undefined {
         let sortField: string | DataTableSortMeta[] | undefined = this.props.optionsQuery!.sortField;
         if (!sortField) {
-            // ako default pouzivame displayField
+            // as the default we use displayField
             sortField = this.props.displayField;
         }
         return sortField;
     }
 
     render() {
-        // propertiesy na Dropdown-e: readOnly vyseduje, disabled znemoznuje vyber polozky
+        // properties on Dropdown: readOnly grays out, disabled makes selecting an item impossible
         return (
             <MultiSelect options={this.state.options} optionLabel={this.props.displayField} dataKey={this.idField}
                          maxSelectedLabels={this.props.maxSelectedLabels} display="chip"

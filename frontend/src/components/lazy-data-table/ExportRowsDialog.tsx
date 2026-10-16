@@ -21,13 +21,13 @@ import {Utils} from "../../utils/Utils";
 import {numberAsUI} from "../../common/UtilsConversions";
 import {localeOption} from "../locale/Locale";
 
-// parametre pre dialog
+// parameters for the dialog
 export interface ExportParams {
-    rowCount: number; // parameter pre dialog
-    existsToManyAssoc: boolean; // parameter pre dialog - ak true, zobrazi option "Detail rows export"
-    queryParam: LazyDataTableQueryParam | any; // parametre specificke pre konkretny export (zvycajne hodnoty filtra)
+    rowCount: number; // parameter for the dialog
+    existsToManyAssoc: boolean; // parameter for the dialog - if true, shows the option "Detail rows export"
+    queryParam: LazyDataTableQueryParam | any; // parameters specific to the particular export (usually filter values)
     columns: ExportColumnParam[];
-    fieldsToDuplicateValues?: string[]; // pouziva sa pri exporte do excelu a csv
+    fieldsToDuplicateValues?: string[]; // used when exporting to excel and csv
     fileName: string; // fileName without extension
 }
 
@@ -49,7 +49,7 @@ export const ExportRowsDialog = (props: {
     const [decimalFormat, setDecimalFormat] = useState(CsvDecimalFormat.Comma);
     const [csvEncoding, setCsvEncoding] = useState(CsvEncoding.Win1250);
 
-    // bez tejto metody by pri opetovnom otvoreni dialogu ponechal povodne hodnoty
+    // without this method, reopening the dialog would keep the original values
     const onShow = () => {
 
         setExportType(ExportType.Excel);
@@ -70,15 +70,15 @@ export const ExportRowsDialog = (props: {
 
     const onExport = async () => {
 
-        // export vykoname az po zatvoreni dialogu - moze dlho trvat a pobezi asynchronne (user zatial moze pracovat s aplikaciou)
+        // we perform the export only after closing the dialog - it can take a long time and will run asynchronously (the user can keep working with the application for now)
 
-        // zavrieme dialog
+        // we close the dialog
         props.hideDialog();
-        // TODO - pridat nejake koliesko, pripadne progress bar
+        // TODO - add some spinner, or a progress bar
 
         const exportParams: ExportParams = props.dialogState.exportParams!;
 
-        // samotny export
+        // the export itself
         let apiPath: string;
         let requestPayload: any;
         if (exportType === ExportType.Excel) {
@@ -162,7 +162,7 @@ export const ExportRowsDialog = (props: {
         }
     }
 
-    // poznamka: renderovanie vnutornych komponentov Dialogu sa zavola az po otvoreni dialogu
+    // note: rendering of the inner components of the Dialog is called only after the dialog is opened
     return (
         <Dialog visible={props.dialogState.dialogOpened} onShow={onShow} onHide={() => props.hideDialog()}>
             {props.dialogState.exportParams?.rowCount ?

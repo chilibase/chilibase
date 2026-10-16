@@ -43,7 +43,7 @@ export class MainQueryData extends QueryData {
     addFilters(filters: ExtendedDataTableFilterMeta | undefined) {
         if (filters) {
             for (const [filterField, filterValue] of Object.entries(filters)) {
-                // test this.isFilterValueNotNull je tu hlavne na to aby sa nevytvarali zbytocne join-y pri SELECT COUNT(1)
+                // the test this.isFilterValueNotNull is here mainly so that unnecessary joins are not created for SELECT COUNT(1)
                 if (this.isFilterValueNotNull(filterValue)) {
                     if (!('operator' in filterValue) && (filterValue as ExtendedDataTableFilterMetaData).customFilterItems) {
                         // for simple condition, if there is customFilterItems (used when autocomplete is used), we use customFilterItems
@@ -73,10 +73,10 @@ export class MainQueryData extends QueryData {
 
     addCustomFilterItems(customFilterItems: CustomFilterItem[] | undefined) {
         if (customFilterItems) {
-            // kedze fieldy v custom filtri mozu patrit do rozlicnych queries (mozu byt pouzite OneToMany asociacie),
-            // mame tu specialnu podporu pre custom filtre zlozene z viacerych items
-            // musi byt splnena podmienka, ze vsetky fieldy v danom item patria do jednej query
-            // (vsetky fieldy su z main query (ziadna OneToMany asociacia) alebo vsetky fieldy pouzivaju tu istu OneToMany asociaciu)
+            // because fields in the custom filter can belong to various queries (OneToMany associations can be used),
+            // we have special support here for custom filters composed of multiple items
+            // the condition must be met that all fields in the given item belong to one query
+            // (all fields are from the main query (no OneToMany association) or all fields use the same OneToMany association)
             for (const customFilterItem of customFilterItems) {
                 this.addCustomFilterItem(customFilterItem);
             }
@@ -84,17 +84,17 @@ export class MainQueryData extends QueryData {
     }
 
     addSelectItems(fields: string[] | undefined) {
-        // TODO - ked sa budu this.selectFields pouzivat, treba nacitat defaultny zoznam "fields" z entity
-        // this.selectFields sa sice momentalne nepouzivaju ale dolezite je ze sa joinuju pripadne asociovane tabulky (plni sa this.assocAliasMap)
+        // TODO - when this.selectFields start being used, the default list of "fields" has to be loaded from the entity
+        // this.selectFields are not used at the moment but it is important that associated tables get joined (this.assocAliasMap is filled)
         if (fields) {
             for (const field of fields) {
                 const [queryData, fieldNew]: [QueryData, string] = this.getQueryForPathField(field);
                 const dbField: string = queryData.getFieldFromPathField(fieldNew);
-                // path "<asociacia>.*FAKE*" sa pouziva ak chceme nacitat asociaciu a nemame konkretny field ktory chceme nacitat
-                // momentalne sa pouziva len v XToOneAssocButton
+                // the path "<association>.*FAKE*" is used if we want to load an association and we do not have a specific field that we want to load
+                // currently it is used only in XToOneAssocButton
                 if (!dbField.endsWith('*FAKE*')) {
-                    // poznamka2: je v poriadku ze do MainQueryData.selectItems zapisujeme aj pripadne fieldy zo subquery
-                    // - subquery sa joinuje k hlavnemu select-u, vezba fieldu na prislusnu tabulku je vyriesena cez alias
+                    // note2: it is fine that we also write possible fields from the subquery into MainQueryData.selectItems
+                    // - the subquery is joined to the main select, the binding of the field to the corresponding table is resolved through the alias
                     this.selectItems.push(dbField);
                 }
             }
@@ -106,10 +106,10 @@ export class MainQueryData extends QueryData {
             for (const sortMeta of multiSortMeta) {
                 const [queryData, fieldNew]: [QueryData, string] = this.getQueryForPathField(sortMeta.field);
                 const dbField: string = queryData.getFieldFromPathField(fieldNew);
-                // tuto je velmi zvlastne ze sa dbField zapisuje do map-u ale funguje to zevraj na takom principe ze javascript
-                // si pamata poradie zapisu do this.orderByItems a v tom istom poradi tento map aj iteruje pri pouziti this.orderByItems
-                // poznamka2: je v poriadku ze do MainQueryData.orderByItems zapisujeme aj pripadne fieldy zo subquery
-                // - subquery sa joinuje k hlavnemu select-u, vezba fieldu na prislusnu tabulku je vyriesena cez alias
+                // it is very strange here that dbField is written into a map but it apparently works on the principle that javascript
+                // remembers the order of writing into this.orderByItems and iterates this map in the same order when this.orderByItems is used
+                // note2: it is fine that we also write possible fields from the subquery into MainQueryData.orderByItems
+                // - the subquery is joined to the main select, the binding of the field to the corresponding table is resolved through the alias
                 this.orderByItems[dbField] = (sortMeta.order === 1 ? "ASC" : "DESC");
             }
         }
@@ -167,7 +167,7 @@ export class MainQueryData extends QueryData {
     }
 
     getQueryForPathField(pathField: string): [QueryData, string] {
-        // ak mame OneToMany asociaciu, vytvorime/pouzijeme subquery
+        // if we have a OneToMany association, we create/use a subquery
         const [field, restPath]: [string, string | null] = UtilsCommon.getFieldAndRestPath(pathField);
         if (restPath !== null) {
             const assoc: Assoc = this.entityMetadataService.getAssoc(this.entity, field);
@@ -206,26 +206,26 @@ export class MainQueryData extends QueryData {
             let ftsSeparator: string;
             if (this.fullTextSearch.splitValue) {
                 if (ftsValueFromParam.trim() === '') {
-                    ftsValueList = [ftsValueFromParam]; // podporujeme aj hladanie napr. troch medzier '   ' - chceme to?
+                    ftsValueList = [ftsValueFromParam]; // we also support searching e.g. three spaces '   ' - do we want that?
                 }
                 else {
-                    ftsValueList = ftsValueFromParam.split(' ').filter((value: string) => value !== ''); // nechceme pripadne prazdne retazce ''
+                    ftsValueList = ftsValueFromParam.split(' ').filter((value: string) => value !== ''); // we do not want possible empty strings ''
                 }
-                ftsSeparator = QueryData.ftsSeparator; // separator | - hlavne koli pripadnym startsWith, startsEnd, equals operatorom
+                ftsSeparator = QueryData.ftsSeparator; // separator | - mainly because of possible startsWith, startsEnd, equals operators
             }
             else {
                 ftsValueList = [ftsValueFromParam]; // no split by space
-                ftsSeparator = " "; // ak by sme medzi stlpcami nepouzili space, tak by pri zadani dvoch a viac hodnot netrafilo hodnotu vytvorenu z dvoch (a viac) stlpcov
+                ftsSeparator = " "; // if we did not use a space between columns, then when entering two or more values it would not hit a value created from two (or more) columns
             }
             for (const ftsValue of ftsValueList) {
-                // vezmeme podmienku z main query
+                // we take the condition from the main query
                 let ftsWhereForValue: string | "" = this.createFtsWhereItemForQuery(ftsValue, ftsSeparator);
-                // vezmeme podmienky zo subqueries
+                // we take the conditions from the subqueries
                 for (const [assocOneToMany, subQueryData] of this.assocSubQueryDataMap.entries()) {
                     ftsWhereForValue = QueryData.whereItemOr(ftsWhereForValue, subQueryData.createFtsWhereItemForSubQuery(mainQueryBuilderForExistsSubQueries, ftsValue, ftsSeparator));
                 }
                 if (ftsWhereForValue !== "") {
-                    ftsWhereForValue = `(${ftsWhereForValue})`; // pripadne OR-y uzatvorkujeme
+                    ftsWhereForValue = `(${ftsWhereForValue})`; // we parenthesize possible ORs
                 }
                 ftsWhere = QueryData.whereItemAnd(ftsWhere, ftsWhereForValue);
             }

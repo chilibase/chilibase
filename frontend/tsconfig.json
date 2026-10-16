@@ -1,4 +1,4 @@
-/* vytvorene podla XDevReactWebApp a https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c */
+/* created based on XDevReactWebApp and https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c */
 {
   "compilerOptions": {
     "target": "ES2020",

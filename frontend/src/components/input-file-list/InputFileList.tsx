@@ -64,12 +64,12 @@ export class InputFileList extends Component<InputFileListProps> {
         const endpoint: string = this.props.saveDest === 'fileSystem' ? 'x-upload-file-into-file-system' : 'x-upload-file-into-db';
 
         for (const file of event.files) {
-            // skontrolujeme velkost - robime to tuto, lebo ked nastavime maxFileSize na komponente FileUpload, tak prilis velky subor sem do handlera ani neposle
+            // we check the size - we do it here, because when we set maxFileSize on the FileUpload component, a too large file is not even sent here into the handler
             if (this.props.maxFileSize !== undefined && file.size > this.props.maxFileSize) {
                 alert(localeOption('fileUploadSizeToBig', {fileName: file.name, fileSize: InputFileList.sizeInMB(file.size), maxFileSize: InputFileList.sizeInMB(this.props.maxFileSize)}))
-                continue; // ideme na dalsi subor
+                continue; // we go to the next file
             }
-            // uploadneme subor na server, insertne sa tam zaznam FileMeta a tento insertnuty zaznam pride sem a zapiseme ho do zoznamu form.object.<assocField>
+            // we upload the file to the server, a FileMeta row is inserted there and this inserted row comes here and we write it into the list form.object.<assocField>
             const jsonFieldValue: FileJsonField = {
                 filename: file.name,
                 subdir: this.props.subdir,
@@ -82,8 +82,8 @@ export class InputFileList extends Component<InputFileListProps> {
             }
             catch (e) {
                 Utils.showErrorMessage(localeOption('fileUploadFailed', {fileName: file.name}), e);
-                this.fileUploadRef.current.clear(); // vyprazdnime hidden input, nech moze user znova zadat subory
-                return; // prerusime upload tohto a dalsich suborov
+                this.fileUploadRef.current.clear(); // we empty the hidden input, so the user can enter files again
+                return; // we abort the upload of this and further files
             }
 
             const newFileItem: any = {};
@@ -91,13 +91,13 @@ export class InputFileList extends Component<InputFileListProps> {
             this.props.form.onTableAddRow(this.props.assocField, newFileItem, this.idField);
         }
 
-        // vymaze zaznamy v event.files (hidden input type="file"), sposobi ze tlacitko "+Pridat" otvori dialog na vyber suborov
+        // deletes the entries in event.files (hidden input type="file"), causes the "+Pridat" button to open the dialog for selecting files
         this.fileUploadRef.current.clear();
     }
 
     static sizeInMB(size: number): string {
         const sizeInMB = size / (10 ** 6);
-        return numberAsUI(sizeInMB, 2) + ' MB'; // zobrazime 2 desatinky
+        return numberAsUI(sizeInMB, 2) + ' MB'; // we display 2 decimal places
     }
 
     async onDownloadFile(fileMeta: FileMeta) {
@@ -105,8 +105,8 @@ export class InputFileList extends Component<InputFileListProps> {
     }
 
     async onRemoveFile(fileItem: any) {
-        // poznamka: nemozme zmazat zaznam na backend-e, lebo ak user ukonci editaciu formulara tlacitkom Cancel (alebo odide uplne prec),
-        // tak musime mat v databaze zachovany povodny stav dat/suborov
+        // note: we cannot delete the row on the backend, because if the user ends the form editing with the Cancel button (or leaves completely),
+        // we must keep the original state of data/files in the database
         this.props.form.onTableRemoveRow(this.props.assocField, fileItem);
     }
 
@@ -120,8 +120,8 @@ export class InputFileList extends Component<InputFileListProps> {
         let elemList: any[] = [];
         for (const fileItem of fileItemList) {
             const fileMeta: FileMeta = fileItem[this.fileMetaField];
-            // p-inputgroup uklada child elementy do riadku (display:flex)
-            // TODO - pouzit XButtonIconSmall pre button na mazanie - problem je ze tam nevieme (narychlo) dat class m-1
+            // p-inputgroup puts child elements into a row (display:flex)
+            // TODO - use XButtonIconSmall for the delete button - the problem is that we cannot (quickly) put class m-1 there
             elemList.push(
                 <div key={fileItem[this.idField].toString()} className="p-inputgroup p-mb-1">
                     <Button label={fileMeta.name} onClick={() => this.onDownloadFile(fileMeta)}/>
@@ -130,7 +130,7 @@ export class InputFileList extends Component<InputFileListProps> {
             );
         }
 
-        // vrchny div uklada child elementy pod seba (standardny display:block), zarovnane su dolava
+        // the top div puts child elements one under another (standard display:block), they are aligned to the left
         return (
             <div>
                 <label>{label}</label>

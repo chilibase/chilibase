@@ -37,17 +37,17 @@ import type {SearchBrowseProps} from "../lazy-data-table";
 import {TableMultilineTextField} from "../multiline-text-field";
 import type {SuggestionsLoadProp} from "../autocomplete-field";
 
-// typ pre technicky field row.__x_rowTechData (row je item zoznamu editovaneho v DetailDataTable)
+// type for the technical field row.__x_rowTechData (row is an item of the list edited in DetailDataTable)
 export interface RowTechData {
-    // zoznam komponentov na riadku tabulky (vcetne TableSelectField, TableSearchField, ...)
-    // po kliknuti na Save formulara sa iteruje tento zoznam a vola sa validacia pre kazdy komponent (input)
-    // TODO - nebude to vadit react-u napr. koli performance? tento zoznam bude sucastou form.state.object, co nie je uplne idealne
-    // (vyhoda ulozenia zoznamu do __x_rowTechData je to ze tento zoznam automaticky vznika a zanika pri inserte/delete noveho riadku
+    // list of components on the table row (including TableSelectField, TableSearchField, ...)
+    // after clicking Save of the form this list is iterated and validation is called for each component (input)
+    // TODO - won't this bother react e.g. because of performance? this list will be part of form.state.object, which is not entirely ideal
+    // (the advantage of storing the list in __x_rowTechData is that this list automatically appears and disappears on insert/delete of a new row
     tableFormFieldList: Array<TableFormField<any>>;
-    // zoznam validacnych chyb (to iste co form.state.errorMap na XFormBase.ts pre hlavny objekt formularu)
-    // chyby sem zapisuje automaticka validacia a pripadna custom validacia
-    // chyby sa zobrazia (vycervenenie + tooltip) vo formulari zavolanim this.setState({object: this.state.object});
-    // chyby sa renderuju (vycervenenie + tooltip) v komponentoch tak ze komponent cita chyby z tohto errorMap
+    // list of validation errors (the same as form.state.errorMap in XFormBase.ts for the main object of the form)
+    // automatic validation and possible custom validation write errors here
+    // errors are displayed (turning red + tooltip) in the form by calling this.setState({object: this.state.object});
+    // errors are rendered (turning red + tooltip) in the components by the component reading errors from this errorMap
     errorMap: FieldErrorMap;
 }
 
@@ -55,7 +55,7 @@ export interface DropdownOptionsMap {
     [assocField: string]: any[];
 }
 
-// POZNAMKA: parameter width?: string; neviem ako funguje (najme pri pouziti scrollWidth/scrollHeight), ani sa zatial nikde nepouziva
+// NOTE: parameter width?: string; I don't know how it works (especially when using scrollWidth/scrollHeight), and it is not used anywhere for now
 export interface DetailDataTableProps {
     form: FormBase;
     assocField: string;
@@ -65,16 +65,16 @@ export interface DetailDataTableProps {
     filterDisplay: "menu" | "row" | "none";
     sortable: boolean;
     sortField: string;
-    scrollable: boolean; // default true, ak je false, tak je scrollovanie vypnute (scrollWidth/scrollHeight/formFooterHeight su ignorovane)
-    scrollWidth?: string; // default 100%, hodnota "none" vypne horizontalne scrollovanie
-    scrollHeight?: string; // default '200vh', hodnota "none" vypne vertikalne scrollovanie (ale lepsie je nechat '200vh')
-    shrinkWidth: boolean; // default true - ak je true, nerozsiruje stlpce na viac ako je ich explicitna sirka (nevznikaju "siroke" tabulky na celu dlzku parent elementu)
+    scrollable: boolean; // default true, if it is false, scrolling is turned off (scrollWidth/scrollHeight/formFooterHeight are ignored)
+    scrollWidth?: string; // default 100%, the value "none" turns off horizontal scrolling
+    scrollHeight?: string; // default '200vh', the value "none" turns off vertical scrolling (but it is better to leave '200vh')
+    shrinkWidth: boolean; // default true - if true, it does not widen columns beyond their explicit width ("wide" tables across the whole length of the parent element do not arise)
     label?: string;
     readOnly?: boolean;
     showAddRemoveButtons?: boolean;
     onClickAddRow?: () => void;
     onClickRemoveRow?: (row: any) => void;
-    removeButtonInRow: boolean; // default true, ak je true, na koniec kazdeho row-u sa zobrazi button X na remove (user nemusi selectovat row aby vykonal remove)
+    removeButtonInRow: boolean; // default true, if true, a button X for remove is displayed at the end of each row (the user does not have to select the row in order to perform remove)
     addRowLabel?: string;
     addRowIcon?: IconType<ButtonProps>;
     removeRowLabel?: string;
@@ -90,10 +90,10 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         sortable: false,
         sortField: "idFieldOnUpdate",
         scrollable: true,
-        //scrollWidth: '100%', // nefungovalo dobre - hodnota '100%' zapne horizontalne scrollovanie, ak je tabulka sirsia ako parent element (a ten by mal byt max 100vw) (hodnota 'auto' (podobna ako '100%') nefunguje dobre)
-        scrollWidth: 'viewport', // zapne horizontalne scrollovanie, ak je tabulka sirsia ako display (dolezite pre mobil)
-        scrollHeight: '200vh', // ak by sme dali 'none' (do DataTable by islo undefined), tak nam nezarovnava header a body (v body chyba disablovany vertikalny scrollbar),
-                                // tym ze pouzivame 200vh (max-height pre body), tak realne scrollovanie sa zapne az pri velmi vela riadkoch
+        //scrollWidth: '100%', // did not work well - the value '100%' turns on horizontal scrolling if the table is wider than the parent element (and that should be max 100vw) (the value 'auto' (similar to '100%') does not work well)
+        scrollWidth: 'viewport', // turns on horizontal scrolling if the table is wider than the display (important for mobile)
+        scrollHeight: '200vh', // if we set 'none' (undefined would go into DataTable), then the header and body are not aligned (the body is missing a disabled vertical scrollbar),
+                                // by using 200vh (max-height for the body), real scrolling turns on only with a very large number of rows
         shrinkWidth: true,
         showAddRemoveButtons: true,
         removeButtonInRow: true,
@@ -141,9 +141,9 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
 
         props.form.addDetailDataTable(this);
 
-        //props.form.addField(props.assocField + '.*FAKE*'); - vzdy mame aspon 1 field, nie je to potrebne
+        //props.form.addField(props.assocField + '.*FAKE*'); - we always have at least 1 field, it is not needed
         for (const child of this.columnElements()) {
-            const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
+            const childColumn = child as {props: ColumnBaseProps}; // I couldn't do it more nicely...
             if (childColumn.props.type !== "custom") {
                 const field = props.assocField + '.' + this.getPathForColumn(childColumn.props);
                 props.form.addField(field);
@@ -185,8 +185,8 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
     }
 
     static getHeader(columnProps: ColumnBaseProps, xEntity: Entity, field: string, xField: Field): string {
-        // poznamky - parametre field a xField by sme mohli vyratavat na zaklade columnProps ale kedze ich uz mame, setrime performance a neduplikujeme vypocet
-        // nie je to tu uplne idealne nakodene, ale je to pomerne prehladne
+        // notes - we could compute the parameters field and xField based on columnProps but since we already have them, we save performance and don't duplicate the computation
+        // it is not coded entirely ideally here, but it is fairly clear
         let isNullable: boolean = true;
         let readOnly: boolean = false;
         if (columnProps.type === "inputSimple") {
@@ -271,14 +271,14 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
 
         const xEntity: Entity = UtilsMetadataCommon.getEntity(this.getEntity());
 
-        // TODO - asi by bolo fajn si tieto field, xField niekam ulozit a iterovat ulozene hodnoty, pouziva sa to na viacerych miestach
+        // TODO - it would probably be nice to store these field, xField somewhere and iterate the stored values, it is used in several places
         for (const child of this.columnElements()) {
-            const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
-            // zatial nepodporujeme filter pre custom stlpce
+            const childColumn = child as {props: ColumnBaseProps}; // I couldn't do it more nicely...
+            // for now we don't support a filter for custom columns
             if (childColumn.props.type !== "custom") {
                 const field: string | undefined = this.getPathForColumn(childColumn.props);
                 const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
-                // TODO column.props.dropdownInFilter - pre "menu" by bolo fajn mat zoznam "enumov"
+                // TODO column.props.dropdownInFilter - for "menu" it would be nice to have a list of "enums"
                 const filterMatchMode: FilterMatchMode = this.getFilterMatchMode(xField);
                 let filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData;
                 if (this.props.filterDisplay === "menu") {
@@ -305,7 +305,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         if (xField.type === "string" || xField.type === "jsonb") {
             filterMatchMode = FilterMatchMode.CONTAINS;
         }
-        // zatial vsetky ostatne EQUALS
+        // for now all the others EQUALS
         else if (xField.type === "decimal" || xField.type === "number" || xField.type === "interval" || xField.type === "date" || xField.type === "datetime" || xField.type === "boolean") {
             filterMatchMode = FilterMatchMode.EQUALS;
         }
@@ -317,7 +317,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
     }
 
     onSelectionChange(event: any): void {
-        //console.log("zavolany onSelectionChange");
+        //console.log("called onSelectionChange");
         //console.log(event.value);
 
         this.setState({selectedRow: event.value});
@@ -329,21 +329,21 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
 
     onFilter(event: any) {
 
-        //console.log("zavolany onFilter - this.state.filters = " + JSON.stringify(this.state.filters));
-        //console.log("zavolany onFilter - event.filters = " + JSON.stringify(event.filters));
+        //console.log("called onFilter - this.state.filters = " + JSON.stringify(this.state.filters));
+        //console.log("called onFilter - event.filters = " + JSON.stringify(event.filters));
 
-        // tymto zavolanim sa zapise znak zapisany klavesnicou do inputu filtra (ak prikaz zakomentujeme, input filtra zostane prazdny)
+        // by this call the character typed on the keyboard is written into the filter input (if we comment out the command, the filter input stays empty)
         this.setState({filters: event.filters});
     }
 
     onCheckboxFilterChange(field: string, checkboxValue: boolean | null) {
-        // TODO - treba vyklonovat?
+        // TODO - need to clone?
         const filtersCloned: DataTableFilterMeta = {...this.state.filters};
         if (checkboxValue !== null) {
             filtersCloned[field] = {value: checkboxValue ? "true" : "false", matchMode: FilterMatchMode.EQUALS};
         }
         else {
-            // pouzivatel zrusil hodnotu vo filtri (vybral prazdny stav v checkboxe), zrusime polozku z filtra
+            // the user cleared the value in the filter (selected the empty state in the checkbox), we remove the item from the filter
             //delete filtersCloned[field];
             filtersCloned[field] = {value: null, matchMode: FilterMatchMode.EQUALS};
         }
@@ -365,13 +365,13 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
     }
 
     onDropdownFilterChange(field: string, displayValue: any) {
-        // TODO - treba vyklonovat?
+        // TODO - need to clone?
         const filtersCloned: DataTableFilterMeta = {...this.state.filters};
         if (displayValue !== Utils.dropdownEmptyOptionValue) {
             filtersCloned[field] = {value: displayValue, matchMode: FilterMatchMode.EQUALS};
         }
         else {
-            // pouzivatel zrusil hodnotu vo filtri (vybral prazdny riadok), zrusime polozku z filtra
+            // the user cleared the value in the filter (selected an empty row), we remove the item from the filter
             //delete filtersCloned[field];
             filtersCloned[field] = {value: null, matchMode: FilterMatchMode.EQUALS};
         }
@@ -389,13 +389,13 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         return dropdownValue;
     }
 
-/*  pravdepodobne zombie
+/*  probably a zombie
     onBodyValueChange (field: string, rowData: any, newValue: any) {
         //console.log("onBodyValueChange");
 
-        // zmenime hodnotu v modeli (odtial sa hodnota cita)
+        // we change the value in the model (the value is read from there)
         rowData[field] = newValue;
-        // kedze "rowData" je sucastou "props.form.state.object", tak nam staci zavolat setState({object: object}), aby sa zmena prejavila
+        // since "rowData" is part of "props.form.state.object", it is enough to call setState({object: object}) for the change to show up
         this.props.form.onObjectDataChange();
     }
 */
@@ -431,7 +431,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
                 body = <TableCheckboxField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly} onChange={columnPropsInputSimple.onChange}/>;
             }
             else {
-                // xField.type === "string", pripadne ine jednoduche typy
+                // xField.type === "string", or other simple types
                 body = <TableTextField form={this.props.form} entity={this.getEntity()} field={columnPropsInputSimple.field} rowData={rowData} readOnly={readOnly}/>;
             }
         }
@@ -499,7 +499,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
     }
 
     validate() {
-        // zvalidujeme vsetky rows a pripadne chyby zapiseme do specialneho fieldu __x_rowTechData
+        // we validate all rows and write possible errors into the special field __x_rowTechData
         const entityRow: EntityRow = this.props.form.getEntityRow();
         const rowList: any[] = entityRow[this.props.assocField];
         for (const row of rowList) {
@@ -508,7 +508,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
             for (const tableFormField of rowTechData.tableFormFieldList) {
                 const errorItem = tableFormField.validate();
                 if (errorItem) {
-                    //console.log("Mame field = " + errorItem.field);
+                    //console.log("We have field = " + errorItem.field);
                     fieldErrorMap[errorItem.field] = errorItem.fieldError;
                 }
             }
@@ -527,7 +527,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
     //     return msg;
     // }
 
-    // TODO - velmi podobna funkcia ako FormField.isReadOnly() - zjednotit ak sa da
+    // TODO - a function very similar to FormField.isReadOnly() - unify if possible
     isReadOnly(): boolean {
 
         let readOnly: boolean;
@@ -541,7 +541,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         }
         // TODO
         // else if (typeof this.props.readOnly === 'function') {
-        //     // TODO - tazko povedat ci niekedy bude object === null (asi ano vid metodu getFilterBase)
+        //     // TODO - hard to say whether object === null will ever happen (probably yes, see method getFilterBase)
         //     const entityRow: EntityRow = this.props.form.state.entityRow;
         //     if (object) {
         //         readOnly = this.props.readOnly(this.props.form.getEntityRow());
@@ -574,7 +574,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         const filterDisplay: "menu" | "row" | undefined = this.props.filterDisplay !== "none" ? this.props.filterDisplay : undefined;
         let sortField: string | undefined = this.props.sortField;
         if (sortField === "idFieldOnUpdate") {
-            // default sortovanie - ak mame insert tak nesortujeme (drzime poradie v akom user zaznam vytvoril), ak mame update tak podla id zosortujeme (nech je to zobrazene vzdy rovnako)
+            // default sorting - if we have insert we don't sort (we keep the order in which the user created the record), if we have update we sort by id (so that it is always displayed the same way)
             sortField = (this.props.form.isAddRow() ? undefined : xEntity.idField);
         }
         else if (sortField === "none") {
@@ -582,21 +582,21 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         }
         const readOnly = this.isReadOnly();
 
-        // v bloku function (child) nejde pouzit priamo this, thisLocal uz ide pouzit
+        // in the function (child) block this cannot be used directly, thisLocal can be used
         const thisLocal = this;
 
         const entityRow: EntityRow | null = this.props.form.state.entityRow;
         const valueList = entityRow !== null ? entityRow[this.props.assocField] : [];
 
-        let scrollWidth: string | undefined = undefined; // vypnute horizontalne scrollovanie
-        let scrollHeight: string | undefined = undefined; // vypnute vertikalne scrollovanie
+        let scrollWidth: string | undefined = undefined; // horizontal scrolling turned off
+        let scrollHeight: string | undefined = undefined; // vertical scrolling turned off
 
         if (this.props.scrollable) {
             if (this.props.scrollWidth !== "none") {
                 scrollWidth = this.props.scrollWidth;
                 if (scrollWidth === "viewport") {
-                    let marginsWidth: number = Utils.isMobile() ? 1.2 : 2.2; // desktop - povodne bolo 1.4rem (20px okraje) namiesto 2.2 ale pri vela stlpcoch vznikal horizontalny scrollbar
-                                                                            // mobil - padding 0.5rem body element, ale este bola tabulka moc siroka, tak sme dali 1.2
+                    let marginsWidth: number = Utils.isMobile() ? 1.2 : 2.2; // desktop - originally it was 1.4rem (20px margins) instead of 2.2 but with many columns a horizontal scrollbar appeared
+                                                                            // mobile - padding 0.5rem of the body element, but the table was still too wide, so we set 1.2
                     if (this.props.form.isTabViewUsed()) {
                         marginsWidth += 1; // TabPanel has padding 0.5rem (in css file) -> 1rem both margins
                     }
@@ -614,10 +614,10 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         }
 
         if (this.props.shrinkWidth) {
-            style.maxWidth = 'min-content'; // ak nic nedame (nechame auto), tak (v pripade ak nebudeme mat horizontalny scrollbar) natiahne tabulku na celu sirku stranky, co nechceme
+            style.maxWidth = 'min-content'; // if we don't set anything (leave auto), then (in case we don't have a horizontal scrollbar) it stretches the table to the full page width, which we don't want
         }
 
-        // pri prechode z Primereact 6.x na 9.x sa tableLayout zmenil z fixed na auto a nefungovalo nastavenie sirok stlpcov - docasne teda takto
+        // when moving from Primereact 6.x to 9.x, tableLayout changed from fixed to auto and setting column widths stopped working - temporarily like this
         let tableStyle: CSSProperties = {tableLayout: 'fixed'};
         if (this.props.width !== undefined) {
             let width: string = this.props.width;
@@ -627,14 +627,14 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
             tableStyle = {...tableStyle, width: width};
         }
 
-        // pre lepsiu citatelnost vytvarame stlpce uz tu
+        // for better readability we create the columns already here
         const columnElemList: ReactElement[] = Children.map(
             this.columnElements().filter((child: ReactElement) => Utils.xViewStatus((child as {props: ColumnBaseProps}).props.columnViewStatus) !== ViewStatus.Hidden),
             function (child) {
-                // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
-                // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
-                // (vzdy musime robit manipulacie so stlpcom, lebo potrebujeme pridat filter={true} sortable={true}
-                const childColumn = child as {props: ColumnBaseProps}; // nevedel som to krajsie...
+                // if we want to change a child element, we need to either create a new one or clone it
+                // an example is at https://soshace.com/building-react-components-using-children-props-and-context-api/
+                // (we always have to manipulate the column, because we need to add filter={true} sortable={true}
+                const childColumn = child as {props: ColumnBaseProps}; // I couldn't do it more nicely...
                 const childColumnProps = childColumn.props;
 
                 let fieldParam: string | undefined;
@@ -646,7 +646,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
                 let body;
 
                 if (childColumnProps.type === "custom") {
-                    // len jednoduche hodnoty, zatial nebude takmer ziadna podpora
+                    // only simple values, for now there will be almost no support
                     const columnPropsCustom = (childColumnProps as CustomColumnProps);
                     fieldParam = columnPropsCustom.field;
                     header = columnPropsCustom.header;
@@ -657,13 +657,13 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
                     body = columnPropsCustom.body;
                 }
                 else {
-                    // fieldy ktore su v modeli (existuje xField)
+                    // fields that are in the model (xField exists)
 
-                    // je dolezite, aby field obsahoval cely path az po zobrazovany atribut, lebo podla neho sa vykonava filtrovanie a sortovanie
-                    // (aj ked, da sa to prebit na stlpcoch (na elemente Column), su na to atributy)
+                    // it is important that field contains the whole path up to the displayed attribute, because filtering and sorting are performed according to it
+                    // (although it can be overridden on the columns (on the Column element), there are attributes for that)
                     const field: string = thisLocal.getPathForColumn(childColumnProps);
 
-                    // TODO - toto by sa mohlo vytiahnut vyssie, aj v bodyTemplate sa vola metoda UtilsMetadata.getXFieldByPath
+                    // TODO - this could be pulled higher, the method UtilsMetadata.getXFieldByPath is also called in bodyTemplate
                     const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
 
                     // *********** header ***********
@@ -707,12 +707,12 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
 
                     // *********** align ***********
                     align = undefined; // default undefined (left)
-                    // do buducna
+                    // for the future
                     // if (childColumnProps.align !== undefined) {
                     //     align = childColumnProps.align;
                     // }
                     // else {
-                    // decimal defaultne zarovnavame doprava
+                    // by default we align decimal to the right
                     // if (xField.type === "decimal") {
                     //     align = "right";
                     // }
@@ -728,7 +728,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
                 }
 
                 // *********** showClearButton ***********
-                // pre filterDisplay = "row" nechceme clear button, chceme setrit miesto
+                // for filterDisplay = "row" we don't want a clear button, we want to save space
                 let showClearButton: boolean = thisLocal.props.filterDisplay === "menu";
 
                 let headerStyle: CSSProperties = {};
@@ -744,7 +744,7 @@ export class DetailDataTable extends Component<DetailDataTableProps> {
         );
 
         if (this.props.showAddRemoveButtons && this.props.removeButtonInRow) {
-            // je dolezite nastavit sirku header-a, lebo inac ma stlpec sirku 0 a nevidno ho
+            // it is important to set the header width, otherwise the column has width 0 and it is not visible
             columnElemList.push(<PrimeColumn key="removeButton" headerStyle={{width: '2rem'}} body={(rowData: any) => <ButtonIconNarrow icon="pi pi-times" onClick={() => this.removeRow(rowData)} disabled={readOnly} addMargin={false}/>}/>);
         }
 
@@ -801,11 +801,11 @@ export type TableFieldOnChange = (e: TableFieldChangeEvent<any, any>) => void;
 
 export type TableFieldReadOnlyProp = boolean | ((object: any, tableRow: any) => boolean);
 
-// do buducna (kedze object mame vo formulari pristupny cez this.state.object, tak nepotrebujeme nutne pouzivat funkciu, vystacime si priamo s hodnotou)
+// for the future (since we have object accessible in the form via this.state.object, we don't necessarily need to use a function, we can get by directly with the value)
 //export type FormColumnViewStatusProp = ViewStatusOrBoolean | ((object: any) => ViewStatusOrBoolean);
 
-// typ property pre vytvorenie filtra na assoc fieldoch (XAutoComplete, Dropdown, ...)
-// pouzivame (zatial) parameter typu any aby sme na formulari vedeli pouzit konkretny typ (alebo EntityRow)
+// type of the property for creating a filter on assoc fields (XAutoComplete, Dropdown, ...)
+// we use (for now) a parameter of type any so that on the form we can use a concrete type (or EntityRow)
 export type TableFieldFilterProp = CustomFilter | ((object: any, rowData: any) => CustomFilter | undefined);
 
 export interface ColumnBaseProps {
@@ -813,7 +813,7 @@ export interface ColumnBaseProps {
     header?: any;
     footer?: ReactNode;
     readOnly?: TableFieldReadOnlyProp;
-    dropdownInFilter?: boolean; // moze byt len na stlpcoch ktore zobrazuju asociavany atribut (dlzka path >= 2)
+    dropdownInFilter?: boolean; // can be only on columns that display an associated attribute (path length >= 2)
     showFilterMenu?: boolean;
     width?: string; // for example 150px or 10rem or 10% (value 10 means 10rem)
     onChange?: TableFieldOnChange;
@@ -840,19 +840,19 @@ export interface SelectColumnProps extends ColumnBaseProps {
 export interface AutocompleteColumnProps extends ColumnBaseProps {
     assocField: string;
     displayField: string | string[];
-    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
+    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // used if we need some custom format of items (function defaultValue computes the default format)
     SearchBrowse?: ComponentType<SearchBrowseProps>;
     searchBrowseElement?: ReactElement;
     AssocForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
-    addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
+    addRowEnabled: boolean; // if we set false, it does not display the insert button even when we have "valueForm" available (default is true)
     filter?: TableFieldFilterProp;
     sortField?: string | DataTableSortMeta[];
-    fields?: string[]; // ak chceme pri citani suggestions nacitat aj asociovane objekty
+    fields?: string[]; // if we want to also load associated objects when reading suggestions
     scrollHeight?: string; // Maximum height of the suggestions panel.
-    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu (pozri poznamky v TableAutocompleteField)
-    suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, pouzijeme suggestionsLoad (resp. jeho default)
-    lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
+    suggestions?: any[]; // if we want to override suggestions obtained via the association (see the notes in TableAutocompleteField)
+    suggestionsLoad?: SuggestionsLoadProp; // if we don't have suggestions, we use suggestionsLoad (or its default)
+    lazyLoadMaxRows?: number; // max number of records that we load when suggestionsLoad = lazy
 }
 
 export interface SearchButtonColumnProps extends ColumnBaseProps {
@@ -867,14 +867,14 @@ export interface MultilineTextColumnProps extends ColumnBaseProps {
     autoResize?: boolean;
 }
 
-// TODO - CustomColumnProps by nemal extendovat od ColumnBaseProps, niektore propertiesy nedavaju zmysel
+// TODO - CustomColumnProps should not extend ColumnBaseProps, some properties don't make sense
 export interface CustomColumnProps extends ColumnBaseProps {
     body: ReactNode | ((data: any, options: ColumnBodyOptions) => ReactNode); // the same type as type of property Column.body
-    field?: string; // koli pripadnemu sortovaniu/filtrovaniu
+    field?: string; // for possible sorting/filtering
 }
 
 export const Column = (props: ColumnProps) => {
-    // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
+    // it doesn't matter that we return nothing here, we can read field and header and we would throw away the rest anyway because we create a new element
     return (null);
 }
 
@@ -884,7 +884,7 @@ Column.defaultProps = {
 };
 
 export const SelectColumn = (props: SelectColumnProps) => {
-    // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
+    // it doesn't matter that we return nothing here, we can read field and header and we would throw away the rest anyway because we create a new element
     return (null);
 }
 
@@ -894,7 +894,7 @@ SelectColumn.defaultProps = {
 };
 
 export const AutocompleteColumn = (props: AutocompleteColumnProps) => {
-    // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
+    // it doesn't matter that we return nothing here, we can read field and header and we would throw away the rest anyway because we create a new element
     return (null);
 }
 
@@ -905,7 +905,7 @@ AutocompleteColumn.defaultProps = {
 };
 
 export const SearchButtonColumn = (props: SearchButtonColumnProps) => {
-    // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
+    // it doesn't matter that we return nothing here, we can read field and header and we would throw away the rest anyway because we create a new element
     return (null);
 }
 
@@ -915,7 +915,7 @@ SearchButtonColumn.defaultProps = {
 };
 
 export const MultilineTextColumn = (props: MultilineTextColumnProps) => {
-    // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
+    // it doesn't matter that we return nothing here, we can read field and header and we would throw away the rest anyway because we create a new element
     return (null);
 }
 
@@ -927,7 +927,7 @@ MultilineTextColumn.defaultProps = {
 };
 
 export const CustomColumn = (props: CustomColumnProps) => {
-    // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
+    // it doesn't matter that we return nothing here, we can read field and header and we would throw away the rest anyway because we create a new element
     return (null);
 }
 

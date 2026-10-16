@@ -21,7 +21,7 @@ CREATE TABLE <schema>.x_user (
 --ALTER TABLE <schema>.x_user ADD CONSTRAINT x_user_x_user FOREIGN KEY (modif_x_user_id) REFERENCES <schema>.x_user (id_x_user);
 --CREATE INDEX x_user_x_user_idx ON depaul.x_user (modif_x_user_id);
 
--- postgresql vytvori defaultne nazvy constraintov a indexov (ak nespecifikujeme nazvy explicitne)
+-- postgresql creates default constraint and index names (if we do not specify the names explicitly)
 ALTER TABLE <schema>.x_user ADD UNIQUE (username);
 ALTER TABLE <schema>.x_user ADD FOREIGN KEY (modif_x_user_id) REFERENCES <schema>.x_user (id);
 CREATE INDEX ON <schema>.x_user (modif_x_user_id);

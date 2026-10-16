@@ -24,9 +24,9 @@ export const CheckboxInput = (props: {
         if (typeof e.value !== 'string') {
             newValue = e.value ?? null;
         }
-        // pri klikani na TriStateCheckbox prichadza v newValue cyklicky: true -> false -> null
-        // ak mame not null atribut, tak pri null hodnote skocime rovno na true
-        // TODO - pouzijeme, ked zrusime Checkbox a nechame len TriStateCheckbox
+        // when clicking TriStateCheckbox, newValue comes cyclically: true -> false -> null
+        // if we have a not null attribute, on a null value we jump straight to true
+        // TODO - we will use it when we remove Checkbox and keep only TriStateCheckbox
         // if (props.isNotNull) {
         //     if (newValue === null) {
         //         newValue = true;
@@ -36,8 +36,8 @@ export const CheckboxInput = (props: {
     }
 
     return (
-        // pre not null atributy pouzijeme standardny checkbox aby sme pre false mali prazdny biely checkbox
-        // TODO - pomenit ikonky na TriStateCheckbox aby to pekne sedelo, potom mozme zrusit Checkbox
+        // for not null attributes we use a standard checkbox so that for false we have an empty white checkbox
+        // TODO - change the icons on TriStateCheckbox so that it fits nicely, then we can remove Checkbox
         props.isNotNull ?
             <Checkbox id={props.id} checked={props.value ?? false} onChange={checkboxOnChange}
                       disabled={props.readOnly} style={props.style} {...Utils.createTooltipOrErrorProps(props.error, props.tooltip)}/>

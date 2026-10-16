@@ -2,12 +2,12 @@ import type {Assoc, Entity, EntityMap, Field, RelationType} from "./EntityMetada
 import {UtilsCommon} from "./UtilsCommon.js";
 
 /**
- * spolocna funkcionalita pre entity metadata vyuzivana na frontend-e aj backend-e
- * vznikla na zaklade EntityMetadataService
- * tato funkcionalita by este mohla ist do tried Entity, Field
+ * common functionality for entity metadata used on the frontend and on the backend
+ * originated based on EntityMetadataService
+ * this functionality could still go into the Entity, Field classes
  */
 export class UtilsMetadataCommon {
-    // nacachovane metadata (setuju sa v zavolanim UtilsMetadataCommon.setEntityMap)
+    // cached metadata (they are set by calling UtilsMetadataCommon.setEntityMap)
     private static entityMap: EntityMap;
 
     static getEntityMap(): EntityMap | undefined {
@@ -30,7 +30,7 @@ export class UtilsMetadataCommon {
     }
 
     static getFieldBase(xEntity: Entity, field: string): Field | undefined {
-        // TODO - pozor, vo fieldMap su aj asociacie, trebalo by zmenit vytvaranie metadat tak aby tam tie asociacie neboli
+        // TODO - caution, fieldMap also contains associations, metadata creation should be changed so that those associations are not there
         return xEntity.fieldMap[field];
     }
 
@@ -150,7 +150,7 @@ export class UtilsMetadataCommon {
     static getFieldList(xEntity: Entity): Field[] {
         const xFieldList: Field[] = [];
         for (const [key, xField] of Object.entries(xEntity.fieldMap)) {
-            // assoc fieldy sa nachadzaju aj v xEntity.fieldMap ako typ number (netusim preco), preto ich vyfiltrujeme
+            // assoc fields are also present in xEntity.fieldMap as type number (I do not know why), therefore we filter them out
             if (xEntity.assocMap[xField.name] === undefined) {
                 xFieldList.push(xField);
             }

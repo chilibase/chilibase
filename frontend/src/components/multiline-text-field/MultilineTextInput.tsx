@@ -3,12 +3,12 @@ import {stringAsUI, stringFromUI} from "../../common/UtilsConversions";
 import {Utils} from "../../utils/Utils";
 import {InputTextarea} from "primereact/inputtextarea";
 
-// koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
-// pri velkych formularoch je totiz volanie zmeny stavu this.setState({object: this.state.object, errorMap: this.state.errorMap}); pomale
+// for optimization - it writes the typed text into its own state variable and calls onChange only from onBlur
+// in large forms the call of the state change this.setState({object: this.state.object, errorMap: this.state.errorMap}); is namely slow
 
-// poznamka: MultilineTextInput sme prerobili z functional component na class component, lebo sme potrebovali funkciu autoResize(),
-// ktoru je mozne volat z parent componentov cez ref (functional component neumoznuje poskytovat ref, lebo nema instanciu
-// (ref sa da len forwardovat cez forwardRef, co je komplikovane ak chceme mat aj funkciu autoResize()))
+// note: we reworked MultilineTextInput from a functional component to a class component, because we needed the function autoResize(),
+// which can be called from parent components via ref (a functional component does not allow providing a ref, because it has no instance
+// (a ref can only be forwarded via forwardRef, which is complicated if we also want to have the function autoResize()))
 
 export interface MultilineTextInputProps {
     id?: string;
@@ -31,8 +31,8 @@ export class MultilineTextInput extends Component<MultilineTextInputProps> {
     inputTextareaRef: any;
 
     state: {
-        inputChanged: boolean; // priznak, ci uzivatel typovanim zmenil hodnotu v inpute
-        inputValueState: string | undefined; // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
+        inputChanged: boolean; // flag whether the user changed the value in the input by typing
+        inputValueState: string | undefined; // used only if inputChanged === true; the changed value in the input is stored here
     };
 
     constructor(props: MultilineTextInputProps) {
@@ -54,11 +54,11 @@ export class MultilineTextInput extends Component<MultilineTextInputProps> {
     }
 
     onBlur(e: FocusEvent<HTMLTextAreaElement>) {
-        // optimalizacia - onChange volame len ak inputChanged === true
+        // optimization - we call onChange only if inputChanged === true
         if (this.state.inputChanged) {
             const value: string | null = stringFromUI(e.target.value);
             this.props.onChange(value);
-            // pre poriadok nastavujeme inputValueState na undefined
+            // for the sake of order we set inputValueState to undefined
             this.setState({inputChanged: false, inputValueState: undefined});
         }
     }

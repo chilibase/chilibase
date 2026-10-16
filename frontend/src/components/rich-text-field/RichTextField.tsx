@@ -33,16 +33,16 @@ export class RichTextField extends ValueField<RichTextFieldProps> {
 
     render() {
 
-        // TODO - neni to otestovane
+        // TODO - it is not tested
 
         let style: CSSProperties = this.props.inputStyle ?? {};
-        // defaultne pridame width:100%
-        // ak nemame labelOnTop=true, musime odratat sirku labelu, inac sa label dostane nad input (koli flex-wrap: wrap)
+        // by default we add width:100%
+        // if we do not have labelOnTop=true, we must subtract the label width, otherwise the label ends up above the input (because of flex-wrap: wrap)
         const widthValue: string = this.props.labelOnTop ? '100%' : `calc(100% - ${Utils.FIELD_LABEL_WIDTH})`;
         Utils.addCssPropIfNotExists(style, {width: widthValue});
 
-        // x-editor-label-on-top - nastavuje orientation: column, aby boli label a RichTextInput pod sebou (robene podla MultilineTextField)
-        // RichTextInput renderujeme az ked mame nacitany object, lebo inac sa nam nenastavi spravna velkost (hodnota nie je k dispozicii pri prvom renderingu) (robene podla MultilineTextField)
+        // x-editor-label-on-top - sets orientation: column, so that the label and RichTextInput are one under the other (done according to MultilineTextField)
+        // we render RichTextInput only when we have the object loaded, because otherwise the correct size is not set for us (the value is not available on the first rendering) (done according to MultilineTextField)
         return (
             <div className={!this.props.labelOnTop ? 'field grid' : 'field grid x-editor-label-on-top'}>
                 <label htmlFor={this.props.field} className={!this.props.labelOnTop ? 'col-fixed' : undefined} style={this.getLabelStyle()}>{this.getLabel()}</label>

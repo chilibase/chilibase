@@ -19,24 +19,24 @@ export class NumberField extends ValueField<NumberFieldProps> {
     getValue(): number | undefined {
         let value: number | undefined = undefined;
         const objectValue: string | number | null = this.getValueFromObject();
-        // tuto zatial hack, mal by prist number
+        // here a hack for now, a number should arrive
         if (typeof objectValue === 'string') {
             value = parseFloat(objectValue);
         }
         else if (typeof objectValue === 'number') {
             value = objectValue;
         }
-        // value zostalo undefined ak nebol vykonany ziaden if (konvertujeme null -> undefined) - InputNumber pozaduje undefined, nechce null
+        // value stayed undefined if no if was executed (we convert null -> undefined) - InputNumber requires undefined, it does not want null
         return value;
     }
 
     onValueChange(e: any) {
-        // z InputNumber prichadza e.value - typ number alebo null
+        // from InputNumber comes e.value - type number or null
         this.onValueChangeBase(e.value);
     }
 
-    // nedame do onChange inputu, lebo by sa nas onChange volal po kazdej zmene pismenka
-    // ak bude treba, mozme este dorobit metodu "onChange2", ktora sa bude volat po kazdej zmene pismenka (asi iba do XInputText)
+    // we do not put it into the input's onChange, because our onChange would be called after every character change
+    // if needed, we can still add a method "onChange2", which will be called after every character change (probably only into XInputText)
     onBlur(e: any) {
         this.callOnChangeFromOnBlur();
     }

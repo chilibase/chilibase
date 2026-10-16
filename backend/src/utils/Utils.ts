@@ -6,7 +6,7 @@ import {LocaleOptions} from "../locale/Locale.js";
 
 export class Utils {
 
-    // token pouzivany pre public stranky (napr. XLoginForm), meno/heslo natvrdo (lepsie ako nic)
+    // token used for public pages (e.g. XLoginForm), username/password hardcoded (better than nothing)
     //static xTokenPublic = {username: "xPublicUser", password: "xPublicUserPassword123"};
 
     /**

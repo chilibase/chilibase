@@ -7,10 +7,10 @@ import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export const FieldSelector = (props: {entity: string; assocSelectable: boolean; selectionField?: string; onSelectionChange: (selectedField: string) => void;}) => {
 
-    // poznamka: treeNodeList by sme mohli vypocitavat priamo, ale ked pouzijeme useState/useEffect tak sa createTreeNodeList zavola len raz pri vytvoreni komponentu
+    // note: we could compute treeNodeList directly, but when we use useState/useEffect, createTreeNodeList is called only once when the component is created
     const [treeNodeList, setTreeNodeList] = useState<TreeNode[]>([]);
 
-    // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
+    // parameter [] ensures that the method is called only after the first rendering (and not after every state change (calling setSomething()))
     useEffect(() => {
         setTreeNodeList(createTreeNodeList(props.entity, ""));
     },[]); // eslint-disable-line react-hooks/exhaustive-deps

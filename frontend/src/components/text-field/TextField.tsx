@@ -19,7 +19,7 @@ export class TextField extends ValueField<TextFieldProps> {
     }
 
     getValue(): string {
-        // konvertovat null hodnotu na "" (vo funkcii stringAsUI) je dolezite aby sa prejavila zmena na null v modeli
+        // converting a null value to "" (in the function stringAsUI) is important so that the change to null in the model shows up
         const value: string | null = this.getValueFromObject();
         return stringAsUI(value);
     }
@@ -29,8 +29,8 @@ export class TextField extends ValueField<TextFieldProps> {
         this.onValueChangeBase(value);
     }
 
-    // nedame do onChange inputu, lebo by sa nas onChange volal po kazdej zmene pismenka
-    // ak bude treba, mozme este dorobit metodu "onChange2", ktora sa bude volat po kazdej zmene pismenka (asi iba do XInputText)
+    // we do not put it into the input's onChange, because our onChange would be called after every character change
+    // if needed, we can still add a method "onChange2", which will be called after every character change (probably only into XInputText)
     onBlur(e: any) {
         this.callOnChangeFromOnBlur();
     }

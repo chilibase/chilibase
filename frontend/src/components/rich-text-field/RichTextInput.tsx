@@ -3,7 +3,7 @@ import {Utils} from "../../utils/Utils";
 import {Editor, type EditorTextChangeEvent} from "primereact/editor";
 import Quill from 'quill';
 
-// bez tohto kodu size options nefunguju
+// without this code the size options do not work
 const Size: any = Quill.import('attributors/style/size');
 Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '24px', '32px', '48px'];
 Quill.register(Size, true);
@@ -16,7 +16,7 @@ Font.whitelist = [
 Quill.register(Font, true);
 
 const headerTemplate = () => {
-    // poznamka - k tomuto layout-u sa este viazu css styly umiestnene v App.css
+    // note - css styles placed in App.css are also tied to this layout
     const styleMarginRight: CSSProperties = {marginRight: '0.7rem'};
     return (
         <span className="ql-formats">
@@ -63,8 +63,8 @@ const headerTemplate = () => {
     );
 };
 
-// koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
-// pri velkych formularoch je totiz volanie zmeny stavu this.setState({object: this.state.object, errorMap: this.state.errorMap}); pomale
+// for optimization - it writes the typed text into its own state variable and calls onChange only from onBlur
+// in large forms the call of the state change this.setState({object: this.state.object, errorMap: this.state.errorMap}); is namely slow
 export interface RichTextInputProps {
     id?: string;
     value: string | null;
@@ -76,10 +76,10 @@ export interface RichTextInputProps {
 
 export const RichTextInput = (props: RichTextInputProps) => {
 
-    // true, ak uzivatel typuje hodnotu
-    // false, ak bol zavolany onBlur
+    // true if the user is typing a value
+    // false if onBlur was called
     const [editorValueChanged, setEditorValueChanged] = useState<boolean>(false);
-    // pouzivane, len ak editorValueChanged === true, je tu zapisana zmenena hodnota v editore
+    // used only if editorValueChanged === true; the changed value in the editor is stored here
     const [editorValue, setEditorValue] = useState<string | null>(null);
 
     const onTextChange = (e: EditorTextChangeEvent) => {
@@ -88,13 +88,13 @@ export const RichTextInput = (props: RichTextInputProps) => {
     }
 
     const onBlur = (e: FocusEvent<HTMLDivElement>) => {
-        // optimalizacia - onChange volame len ak editorValueChanged === true
+        // optimization - we call onChange only if editorValueChanged === true
         if (editorValueChanged) {
-            // TODO - bude vzdy onBlur volany az potom co bude setnuta editorValue? lebo ak nie tak treba hodnotu vytiahnut z "e"
+            // TODO - will onBlur always be called only after editorValue has been set? because if not then the value has to be taken from "e"
             //const htmlValue: string | null = e.target.??;
             props.onChange(editorValue);
             setEditorValueChanged(false);
-            setEditorValue(null); // pre poriadok
+            setEditorValue(null); // for the sake of order
         }
     }
 
@@ -106,7 +106,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
         else {
             htmlValue = props.value;
         }
-        return htmlValue !== null ? htmlValue : undefined; // value v primereact Editor nechce null, chce undefined
+        return htmlValue !== null ? htmlValue : undefined; // value in primereact Editor does not want null, it wants undefined
     }
 
     return (

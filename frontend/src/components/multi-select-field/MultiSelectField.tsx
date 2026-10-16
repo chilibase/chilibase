@@ -18,7 +18,7 @@ export interface MultiSelectFieldProps extends FormFieldProps {
     displayField: string; // field of option row
     filter?: FilterProp; // filter for option rows
     sortField?: string | DataTableSortMeta[]; // sortField for option rows
-    fields?: string[]; // ak chceme pri citani options nacitat aj asociovane objekty
+    fields?: string[]; // if we want to also load associated objects when reading options
     width?: string;
     scrollHeight?: string; // Maximum height of the suggestions panel.
 }

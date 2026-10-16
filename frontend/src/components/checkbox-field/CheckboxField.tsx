@@ -3,8 +3,8 @@ import {ValueField, type ValueFieldProps} from "../form/ValueField";
 import {CheckboxInput} from "./CheckboxInput";
 
 export interface CheckboxFieldProps extends ValueFieldProps {
-    // aby sme vedeli zobrazit dvojstavovy checkbox aj ked v DB mame null stlpec
-    // zatial len sem mozno v buducnosti dame na vsetky komponenty
+    // so that we can display a two-state checkbox even when we have a null column in the DB
+    // for now only here, maybe in the future we will put it on all components
     isNotNull?: boolean;
 }
 
@@ -34,7 +34,7 @@ export class CheckboxField extends ValueField<CheckboxFieldProps> {
                                                   tooltip={this.props.tooltip} error={this.getError()} style={this.props.inputStyle}/>;
 
         if (!this.props.onlyInput) {
-            const label: string | undefined = this.props.label; // nepridavame * ani ak je atribut not null (kedze sa pouziva jednoduchy checkbox, nie je mozne zadat null hodnotu)
+            const label: string | undefined = this.props.label; // we do not add * even if the attribute is not null (since a simple checkbox is used, it is not possible to enter a null value)
             element =   <div className="field grid">
                             {label !== undefined ? <label htmlFor={this.props.field} className="col-fixed" style={this.getLabelStyle()}>{label}</label> : null}
                             {element}

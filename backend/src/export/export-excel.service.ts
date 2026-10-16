@@ -64,7 +64,7 @@ export class ExportExcelService extends ExportService {
         }
 
         for (const row of rows) {
-            //convertObject(entity, row, true, AsUIType.Text); // pomeni row!
+            //convertObject(entity, row, true, AsUIType.Text); // mutates row!
             const resultRowList: Array<Array<any>> = this.exportRow(columns, toManyAssocExportType, fieldsToDuplicateValues, entityMetadata, row);
             for (const resultRow of resultRowList) {
                 const excelRow: ExcelJS.Row = worksheet.addRow(resultRow);
@@ -122,7 +122,7 @@ export class ExportExcelService extends ExportService {
             cell.fill = {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: {argb: 'FFCCECFF'} // toto je svetlomodra background farba, absolutne netusim preco je zapisana vo fgColor
+                fgColor: {argb: 'FFCCECFF'} // this is a light-blue background color, I have absolutely no idea why it is written in fgColor
             }
         });
     }
@@ -138,7 +138,7 @@ export class ExportExcelService extends ExportService {
     private computeWidth(header: string): number | undefined {
         let width: number | undefined = undefined;
         if (header.length > 0) {
-            width = header.length * 1 + 1; // zatial takto jednoducho
+            width = header.length * 1 + 1; // for now this simply
         }
         return width;
     }

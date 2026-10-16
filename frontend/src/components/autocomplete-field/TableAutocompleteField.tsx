@@ -13,25 +13,25 @@ import type {SearchBrowseProps} from "../lazy-data-table";
 export interface TableAutocompleteFieldProps extends TableFormFieldProps {
     assocField: string;
     displayField: string | string[];
-    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
+    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // used when we need some custom format for items (the defaultValue function computes the default format)
     SearchBrowse?: ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
     AssocForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row
     assocFormElement?: ReactElement; // element version of AssocForm (for the case if additional (custom) props are needed)
-    dropdownButtonEnabled?: boolean; // ak dame false, tak nezobrazi dropdown button (default je true), ale ak by sme nemali mat ziadny button tak ho (zatial) zobrazime readOnly aby bolo vidno ze mame autocomplete
-    suggestions?: any[]; // ak chceme overridnut suggestions ziskavane cez asociaciu
-                        // poznamka: treba zabezpecit volanie setState, ak overridneme suggestions
-                        // poznamka2: ak sa zmeni asociovany objekt cez "assocForm",
-                        // tak treba nejako zabezpecit aby sa zmenili data aj v tychto overridnutych suggestions
-                        // (pozri AutocompleteInput.formDialogOnSaveOrCancel)
-    suggestionsLoad?: SuggestionsLoadProp; // ak nemame suggestions, tak suggestionsLoad (resp. jeho default) urcuje ako sa nacitaju suggestions
-    lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
+    dropdownButtonEnabled?: boolean; // if set to false, the dropdown button is not shown (default is true), but if we would have no button at all then we (for now) show it readOnly so it is visible that we have an autocomplete
+    suggestions?: any[]; // if we want to override suggestions obtained through the association
+                        // note: we need to ensure setState is called if we override suggestions
+                        // note2: if the associated object changes through "assocForm",
+                        // we need to somehow ensure that the data in these overridden suggestions change as well
+                        // (see AutocompleteInput.formDialogOnSaveOrCancel)
+    suggestionsLoad?: SuggestionsLoadProp; // if we do not have suggestions, then suggestionsLoad (or its default) determines how suggestions are loaded
+    lazyLoadMaxRows?: number; // max number of rows loaded when suggestionsLoad = lazy
     splitQueryValue?: boolean;
-    addRowEnabled: boolean; // ak dame false, tak nezobrazi insert button ani ked mame k dispozicii "valueForm" (default je true)
+    addRowEnabled: boolean; // if set to false, the insert button is not shown even when "valueForm" is available (default is true)
     minLength?: number; // Minimum number of characters to initiate a search (default 1)
     filter?: TableFieldFilterProp;
     sortField?: string | DataTableSortMeta[];
-    fields?: string[]; // ak chceme pri citani suggestions nacitat aj asociovane objekty
+    fields?: string[]; // if we want to also load associated objects when reading suggestions
     scrollHeight?: string; // Maximum height of the suggestions panel.
     inputClassName?: string;
 }
@@ -39,7 +39,7 @@ export interface TableAutocompleteFieldProps extends TableFormFieldProps {
 export class TableAutocompleteField extends TableFormField<TableAutocompleteFieldProps> {
 
     protected xAssoc: Assoc;
-    protected errorInInput: string | undefined; // sem si odkladame info o nevalidnosti AutocompleteInput (nevalidnost treba kontrolovat na stlacenie Save)
+    protected errorInInput: string | undefined; // we store here info about invalidity of AutocompleteInput (invalidity needs to be checked on pressing Save)
 
     constructor(props: TableAutocompleteFieldProps) {
         super(props);
@@ -72,17 +72,17 @@ export class TableAutocompleteField extends TableFormField<TableAutocompleteFiel
     }
 
     onErrorChangeAutocompleteInput(error: string | undefined) {
-        this.errorInInput = error; // odlozime si error
+        this.errorInInput = error; // we store the error
     }
 
     // overrides method in FormField
     validate(): {field: string; fieldError: FieldError} | undefined {
         if (this.errorInInput) {
-            // error message dame na onChange, mohli by sme aj na onSet (predtym onBlur), je to jedno viac-menej
+            // we put the error message on onChange, we could also put it on onSet (previously onBlur), it is more or less the same
             // TODO - fieldLabel
             return {field: this.getField(), fieldError: {onChange: this.errorInInput, fieldLabel: undefined}};
         }
-        // zavolame povodnu metodu
+        // we call the original method
         return super.validate();
     }
 
@@ -93,7 +93,7 @@ export class TableAutocompleteField extends TableFormField<TableAutocompleteFiel
         // TODO - size
         //const size = this.props.size ?? xDisplayField.length;
 
-        // div className="col" nam zabezpeci aby AutocompleteInput nezaberal celu dlzku grid-u (ma nastaveny width=100% vdaka "formgroup-inline")
+        // div className="col" ensures that AutocompleteInput does not take the whole length of the grid (it has width=100% set thanks to "formgroup-inline")
         return (
             <AutocompleteInput value={this.getValue()} onChange={this.onChangeAutocompleteInput}
                                field={this.props.displayField} itemTemplate={this.props.itemTemplate}

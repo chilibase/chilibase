@@ -4,7 +4,7 @@ import {intervalAsUI, intervalFromUI} from "../../common/UtilsConversions";
 import type {IPostgresInterval} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 
-// zatial podporuje len hours a minutes - TODO - pridat aj seconds, ale cez nejaky prepinac
+// for now it supports only hours and minutes - TODO - add seconds too, but through some switch
 export const IntervalInput = (props: {
     id?: string;
     value: IPostgresInterval | null;
@@ -14,10 +14,10 @@ export const IntervalInput = (props: {
     style?: CSSProperties | undefined;
 }) => {
 
-    // true, ak uzivatel typuje hodnotu ale hodnota sa este neda skonvertovat na korektny interval (este nevieme vytvorit IPostgresInterval)
-    // false, ak uz mame v inpute korektnu hodnotu - vtedy zavolame props.onChange a posleme mu IPostgresInterval
+    // true if the user is typing a value but the value cannot yet be converted to a correct interval (we cannot create IPostgresInterval yet)
+    // false if we already have a correct value in the input - then we call props.onChange and send it IPostgresInterval
     const [inputChanged, setInputChanged] = useState<boolean>(false);
-    // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
+    // used only if inputChanged === true; the changed value in the input is stored here
     const [inputValueState, setInputValueState] = useState<string | undefined>(undefined);
 
     const onChange = (e: any) => {
@@ -27,17 +27,17 @@ export const IntervalInput = (props: {
     }
 
     const onBlur = (e: FocusEvent<HTMLInputElement>) => {
-        // optimalizacia - testujeme len ak inputChanged === true
+        // optimization - we test only if inputChanged === true
         if (inputChanged) {
             // convert e.target.value (e.g. 10:29) into IPostgresInterval (e.g. {hours: 10, minutes: 29})
             let valueInterval: IPostgresInterval | null | undefined = intervalFromUI(e.target.value);
             if (valueInterval === undefined) {
-                // user odisiel z inputu a nechal tam nevalidnu hodnotu - zapiseme hodnotu null, nech nemusime kontrolovat field pri validacii
+                // the user left the input and left an invalid value there - we write the value null, so we do not have to check the field during validation
                 valueInterval = null;
             }
             props.onChange(valueInterval);
             setInputChanged(false);
-            setInputValueState(undefined); // pre poriadok
+            setInputValueState(undefined); // for the sake of order
         }
     }
 

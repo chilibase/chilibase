@@ -62,7 +62,7 @@ import {FormDialog, type FormDialogState} from "../form";
 import type {TextFormat} from '../../common';
 import {ColumnToggleDialog, type ColumnToggleDialogItem} from "./ColumnToggleDialog";
 
-// typ pouzivany len v LazyDataTable
+// type used only in LazyDataTable
 interface XFieldSetMaps {
     [field: string]: XFieldXFieldMetaMap;
 }
@@ -130,12 +130,12 @@ export interface EditModeHandlers {
     onMoveColumnRight: (field: string) => void;
 }
 
-// specialne propertiesy ktore su k dispozicii v komponentach <entity>Browse
-// displayed a openForm pridava XFormNavigator3
-// searchBrowseParams pridava choose button
-// propertiesy displayed a searchBrowseParams sa (manualne) prenasaju do LazyDataTable (cisto technicke zalezitosti)
-// property openForm sa pouziva na otvorenie dalsieho "podformulara", velmi casto <entity>Form (odtial sa potom zavolanim openForm(null) vraciame naspet do <entity>Browse)
-// ak chceme pouzit ten isty <entity>Browse ako klasicky Browse aj ako SearchBrowse, treba pouzit typ (props: BrowseProps & SearchBrowseProps) - zjednotenie propertiesov
+// special properties that are available in the <entity>Browse components
+// displayed and openForm are added by XFormNavigator3
+// searchBrowseParams adds the choose button
+// properties displayed and searchBrowseParams are (manually) transferred into LazyDataTable (purely technical matters)
+// property openForm is used to open a further "subform", very often <entity>Form (from there we then return back to <entity>Browse by calling openForm(null))
+// if we want to use the same <entity>Browse both as a classic Browse and as a SearchBrowse, we need to use the type (props: BrowseProps & SearchBrowseProps) - union of the properties
 
 /**
  * @deprecated was used to send props displayed and openForm to *Browse when using XFormNavigator (deprecated)
@@ -178,17 +178,17 @@ export interface LazyDataTableProps {
     paginator?: boolean;
     rows?: number;
     filterDisplay?: "menu" | "row";
-    betweenFilter?: BetweenFilterProp; // umiestnenie inputov od do: "row" - vedla seba, "column" - pod sebou; plati pre vsetky stlpce typu date/datetime/decimal/number ak nemaju definovany svoj betweenFilter
+    betweenFilter?: BetweenFilterProp; // placement of the from-to inputs: "row" - next to each other, "column" - one under the other; applies to all columns of type date/datetime/decimal/number if they don't have their own betweenFilter defined
     autoFilter?: boolean; // if true, filtering starts immediately after setting filter value (button Filter is not used/rendered) (default false)
     showFilterButtons?: boolean; // if true, Filter/Clear filter buttons are rendered (default true)
     showColumnToggleButton?: boolean; // if true, column toggle button is rendered (default true) (for mobile the button can take too much space)
     showExportRows?: boolean; // true - export button rendered, false - export button not rendered, undefined (default) - Export button rendered only on desktop (not on mobile)
-    scrollable?: boolean; // default true, ak je false, tak je scrollovanie vypnute (scrollWidth/scrollHeight/formFooterHeight su ignorovane)
-    scrollWidth?: string; // hodnota "none" vypne horizontalne scrollovanie
-    scrollHeight?: string; // hodnota "none" vypne vertikalne scrollovanie
-    formFooterHeight?: string; // pouziva sa (zatial) len pri deme - zadava sa sem vyska linkov na zdrojaky (SourceCodeLinkForm, SourceCodeLinkEntity) aby ich bolo vidno pri automatickom vypocte vysky tabulky
-    shrinkWidth?: boolean; // default true - ak je true, nerozsiruje stlpce na viac ako je ich explicitna sirka (nevznikaju "siroke" tabulky na celu dlzku parent elementu)
-    onResetTable?: () => void; // zavola sa pri kliknuti na button resetTable (Reset filter)
+    scrollable?: boolean; // default true, if it is false, scrolling is turned off (scrollWidth/scrollHeight/formFooterHeight are ignored)
+    scrollWidth?: string; // the value "none" turns off horizontal scrolling
+    scrollHeight?: string; // the value "none" turns off vertical scrolling
+    formFooterHeight?: string; // used (for now) only in the demo - the height of the links to the sources (SourceCodeLinkForm, SourceCodeLinkEntity) is entered here so that they are visible during automatic calculation of the table height
+    shrinkWidth?: boolean; // default true - if true, it does not widen columns beyond their explicit width ("wide" tables across the whole length of the parent element do not arise)
+    onResetTable?: () => void; // called when clicking the button resetTable (Reset filter)
     EditForm?: ComponentType<FormProps>; // form for editing of the selected row and for adding new row; using this prop creates add row button and edit row button (if they are not suppressed by props onAddRow or onEditRow)
     editFormElement?: ReactElement; // element version of editForm (for the case if additional (custom) props are needed)
     onAddRow?: OnAddRowFn | AddRowButton[] | false; // creates add row button (or overrides default add row function used by editForm); if false, no add row button is created
@@ -198,30 +198,30 @@ export interface LazyDataTableProps {
     onRemoveRow?: ((selectedRow: any) => Promise<boolean>) | boolean; // if onRemoveRow is function or onRemoveRow = true, then remove row button is created
     postRemoveRow?: OnSaveOrCancelProp; // function called after removing row
     docTemplates?: true | ((entity: string) => Promise<XtDocTemplate[]>); // if true, doc template button is rendered; function param: function returning list of templates that can be used by user (for the case if we need project specific way of fetching templates)
-    appButtonsForRow?: AppButtonForRow[]; // do funkcii tychto buttonov sa posiela vyselectovany row
-    appButtons?: any; // vseobecne buttons (netreba im poslat vyselectovany row) - mozno by sa mali volat appButtonsGeneral
-    filters?: DataTableFilterMeta; // pouzivatelsky filter
-    customFilter?: CustomFilter; // (programatorsky) filter ktory sa aplikuje na zobrazovane data (uzivatel ho nedokaze zmenit)
-    optionalCustomFilters?: OptionalCustomFilter[]; // programatorom predpripravene filtre, user si moze vybrat predpripraveny filter v dropdown-e vedla Filter/Clear buttonov
+    appButtonsForRow?: AppButtonForRow[]; // the selected row is sent into the functions of these buttons
+    appButtons?: any; // general buttons (no need to send them the selected row) - maybe they should be called appButtonsGeneral
+    filters?: DataTableFilterMeta; // user filter
+    customFilter?: CustomFilter; // (programmatic) filter that is applied to the displayed data (the user cannot change it)
+    optionalCustomFilters?: OptionalCustomFilter[]; // filters prepared by the programmer, the user can choose a prepared filter in the dropdown next to the Filter/Clear buttons
     sortField?: string | DataTableSortMeta[];
-    fullTextSearch?: boolean | string[]; // false - nemame full-text search, true - mame full-text search na default stlpcoch, string[] - full-text search na danych stlpcoch
+    fullTextSearch?: boolean | string[]; // false - we don't have full-text search, true - we have full-text search on the default columns, string[] - full-text search on the given columns
     fullTextSearchWidth?: string; // width of the full text search input (sometimes we need to save the space on mobile)
-    fields?: string[]; // ak chceme nacitat aj asociovane objekty mimo tych ktore sa nacitavaju koli niektoremu zo stlpcov
+    fields?: string[]; // if we want to also load associated objects besides those that are loaded because of some of the columns
     assocsToSort?: AssocToSort[]; // oneToMany assocs for sorting detail rows of after fetching data from backend (only first level assocs are supported, only default asc order supported)
-    multilineSwitch?: boolean; // default false, ak true tak zobrazi switch, ktorym sa da vypnut zobrazenie viacriadkovych textov v sirokom riadku
+    multilineSwitch?: boolean; // default false, if true it displays a switch with which the display of multiline texts in a wide row can be turned off
     multilineSwitchInitValue?: MultilineRenderType; // default "allLines"
     multilineSwitchFewLinesCount?: number; // max count of rendered lines for render type "fewLines" (default 2)
-    // ak chceme mat pristup k stavu multilineSwitchu, treba vytiahnut "const [multilineSwitchValue, setMultilineSwitchValue] = useState<MultilineRenderType>(...);" do browse komponentu
-    multilineSwitchValue?: [MultilineRenderType, Dispatch<SetStateAction<MultilineRenderType>>]; // TODO - specialny typ vytvor, napr. XuseState<boolean>
+    // if we want to have access to the state of the multilineSwitch, we need to pull "const [multilineSwitchValue, setMultilineSwitchValue] = useState<MultilineRenderType>(...);" into the browse component
+    multilineSwitchValue?: [MultilineRenderType, Dispatch<SetStateAction<MultilineRenderType>>]; // TODO - create a special type, e.g. XuseState<boolean>
     headerBodyTop?: ReactNode; // adds stuff above input for full text search and search buttons (used for mobile if there is not enaugh space in headerBodyLeft or headerBodyRight)
     headerBodyLeft?: ReactNode; // adds stuff before input for full text search
-    headerBodyRight?: ReactNode; // prida sa hned za multilineSwitch, moze sa tu pridat napr. custom switch
+    headerBodyRight?: ReactNode; // it is added right after multilineSwitch, e.g. a custom switch can be added here
     searchBrowseParams?: SearchBrowseParams;
-    width?: string; // neviem ako funguje (najme pri pouziti scrollWidth/scrollHeight), ani sa zatial nikde nepouziva
+    width?: string; // I don't know how it works (especially when using scrollWidth/scrollHeight), and it is not used anywhere for now
     rowClassName?: (data: any) => object | string | undefined;
-    exportFieldsToDuplicateValues?: string[]; // zoznam fieldov (stlpcov), hodnoty v tychto stlpcoch sa budu duplikovat v pripade ak je row viacriadkovy koli toMany asociaciam
-                                            // krajsie by bolo priamo tieto stlpce oznacit nejakou {true} properties ale nechce sa mi do toho tolko investovat
-                                            // je to koli nejakym kontingencnym tabulkam v exceli ktore to potrebuju
+    exportFieldsToDuplicateValues?: string[]; // list of fields (columns), values in these columns will be duplicated in case the row is multiline because of toMany associations
+                                            // it would be nicer to mark these columns directly with some {true} property but I don't want to invest that much into it
+                                            // it is because of some contingency tables in excel that need it
     editMode?: boolean;
     editModeHandlers?: EditModeHandlers;
     /**
@@ -246,8 +246,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         multilineSwitchInitValue = "allLines",
         multilineSwitchFewLinesCount = 2,
         scrollable = true,
-        scrollWidth = 'viewport', // nastavi sirku tabulky na (100vw - nieco) (ak bude obsah sirsi, zapne horizontalny scrollbar)
-        scrollHeight = 'viewport', // nastavi vysku tabulky na (100vh - nieco) (ak bude obsah vecsi, zapne vertikalny scrollbar)
+        scrollWidth = 'viewport', // sets the table width to (100vw - something) (if the content is wider, it turns on a horizontal scrollbar)
+        scrollHeight = 'viewport', // sets the table height to (100vh - something) (if the content is taller, it turns on a vertical scrollbar)
         shrinkWidth = true,
         ...propsRest
     },
@@ -312,7 +312,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             //if (Utils.xViewStatus(xLazyColumn.props.columnViewStatus) !== ViewStatus.Hidden) {
                 const field: string = column.props.field;
                 const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, field);
-                // TODO column.props.dropdownInFilter - pre "menu" by bolo fajn mat zoznam "enumov"
+                // TODO column.props.dropdownInFilter - for "menu" it would be nice to have a list of "enums"
                 const filterMatchMode: FilterMatchMode = getInitFilterMatchMode(column.props, xField);
                 filtersInit[field] = createFilterItem(props.filterDisplay!, {value: null, matchMode: filterMatchMode});
             //}
@@ -341,7 +341,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         else if (xField.type === "string" || xField.type === "jsonb") {
             filterMatchMode = FilterMatchMode.CONTAINS;
         }
-        // zatial vsetky ostatne EQUALS
+        // for now all the others EQUALS
         else if (xField.type === "decimal" || xField.type === "number" || xField.type === "interval" || xField.type === "date" || xField.type === "datetime" || xField.type === "boolean") {
             filterMatchMode = FilterMatchMode.EQUALS;
         }
@@ -432,21 +432,21 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         Utils.removeValueFromStorage(props.stateStorage!, getStateKey(StateKeySuffix.pagingFirst));
     }
 
-    // premenne platne pre cely component (obdoba member premennych v class-e)
+    // variables valid for the whole component (analogous to member variables in a class)
     const primeReactContext: APIOptions = useContext(PrimeReactContext); // probably does not work and deprecated PrimeReact.filterMatchModeOptions is used
     const dataTableEl = useRef<any>(null);
     let customFilterItems: CustomFilterItem[] | undefined = UtilsCommon.createCustomFilterItems(props.customFilter);
     if (props.searchBrowseParams !== undefined) {
-        // ak mame props.searchBrowseParams.customFilterFunction, pridame filter
+        // if we have props.searchBrowseParams.customFilterFunction, we add a filter
         if (props.searchBrowseParams.customFilter) {
             customFilterItems = UtilsCommon.filterAnd(customFilterItems, Utils.evalFilter(props.searchBrowseParams.customFilter));
         }
     }
     let aggregateItems: SimpleAggregateItem[] = createAggregateItems();
 
-    // ak mame fieldSet stlpce (stlpce ktore maju zadany fieldSetId a zobrazuju hodnoty podla fieldSet-u),
-    // tak sem nacitame mapy umoznujuce ziskanie labelov zakliknutych field-ov
-    // poznamka: uz by sa zislo mat vytvorene objekty (instancie) pre stlpce a do nich zapisovat pripadny XFieldSetMap, filter (teraz je vo "filters")
+    // if we have fieldSet columns (columns that have fieldSetId set and display values according to the fieldSet),
+    // we load here maps that make it possible to get labels of the checked fields
+    // note: it would already be useful to have objects (instances) created for the columns and write a possible XFieldSetMap, filter into them (now it is in "filters")
     const [xFieldSetMaps, setXFieldSetMaps] = useState<XFieldSetMaps>({});
 
     const [value, setValue] = useState<FindResult>({rowList: [], totalRecords: 0, aggregateValues: []});
@@ -467,7 +467,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
         return filtersInit;
     }
-    const [filters, setFilters] = useStateStorageBase<DataTableFilterMeta>(props.stateStorage!, getStateKey(StateKeySuffix.filters), filtersInitialStateFunction); // filtrovanie na "controlled manner" (moze sa sem nainicializovat nejaka hodnota)
+    const [filters, setFilters] = useStateStorageBase<DataTableFilterMeta>(props.stateStorage!, getStateKey(StateKeySuffix.filters), filtersInitialStateFunction); // filtering in a "controlled manner" (some value can be initialized here)
     const matchModeChangeFieldRef = useRef<string | null>(null);
     const initFtsInputValue: FtsInputValue | undefined = props.fullTextSearch ? createInitFtsInputValue() : undefined;
     const [ftsInputValue, setFtsInputValue] = useStateStorage<FtsInputValue | undefined>(props.stateStorage!, getStateKey(StateKeySuffix.ftsInputValue), initFtsInputValue);
@@ -479,18 +479,18 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     /**
      * @deprecated was used to reread data after save/cancel of the form when using XFormNavigator (deprecated)
      */
-    const [dataLoaded, setDataLoaded] = useState<boolean>(false); // priznak kde si zapiseme, ci uz sme nacitali data
+    const [dataLoaded, setDataLoaded] = useState<boolean>(false); // flag where we write whether we have already loaded the data
     const [exportRowsDialogState, setExportRowsDialogState] = useState<ExportRowsDialogState>({dialogOpened: false});
-    //const [exportRowsDialogRowCount, setExportRowsDialogRowCount] = useState<number>(); // param pre dialog
-    const [filtersAfterFiltering, setFiltersAfterFiltering] = useState<DataTableFilterMeta>(filters); // sem si odkladame stav filtra po kliknuti na button Filter (chceme exportovat presne to co vidno vyfiltrovane)
-    const [ftsInputValueAfterFiltering, setFtsInputValueAfterFiltering] = useState<FtsInputValue | undefined>(ftsInputValue); // tak isto ako filtersAfterFiltering
-    const [optionalCustomFilterAfterFiltering, setOptionalCustomFilterAfterFiltering] = useState<OptionalCustomFilter | undefined>(optionalCustomFilter); // tak isto ako filtersAfterFiltering
+    //const [exportRowsDialogRowCount, setExportRowsDialogRowCount] = useState<number>(); // param for the dialog
+    const [filtersAfterFiltering, setFiltersAfterFiltering] = useState<DataTableFilterMeta>(filters); // here we store the filter state after clicking the button Filter (we want to export exactly what is visible filtered)
+    const [ftsInputValueAfterFiltering, setFtsInputValueAfterFiltering] = useState<FtsInputValue | undefined>(ftsInputValue); // the same as filtersAfterFiltering
+    const [optionalCustomFilterAfterFiltering, setOptionalCustomFilterAfterFiltering] = useState<OptionalCustomFilter | undefined>(optionalCustomFilter); // the same as filtersAfterFiltering
     const [formDialogState, setFormDialogState] = useState<FormDialogState>({opened: false});
     const [columnToggleDialogOpened, setColumnToggleDialogOpened] = useState<boolean>(false);
 
-    // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
+    // the parameter [] ensures that the method is called only after the first rendering (and not after every state change (calling setSomething()))
     useEffect(() => {
-        // jednoduchy sposob - nepouzivame parameter props.displayed a priznak dataLoaded
+        // simple way - we don't use the parameter props.displayed and the flag dataLoaded
         if (props.displayed === undefined) {
             loadData();
             //console.log("LazyDataTable - data loaded (simple)");
@@ -498,7 +498,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     },[]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        // sposob pozivany pri XFormNavigator (potrebujeme refreshnut data pri navrate z formulara)
+        // way used with XFormNavigator (we need to refresh the data when returning from the form)
         if (props.displayed !== undefined) {
             if (props.displayed) {
                 if (!dataLoaded) {
@@ -508,7 +508,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 }
             }
             else {
-                // dataTable je skryta - ked sa na nu vratime, chceme mat priznak dataLoaded nastaveny na false, aby sme videli cerstve data
+                // the dataTable is hidden - when we return to it, we want the flag dataLoaded set to false, so that we see fresh data
                 if (dataLoaded) {
                     setDataLoaded(false);
                 }
@@ -521,16 +521,16 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         setupExpandedRows: () => setupExpandedRows(value, multilineSwitchValue)
     }));
 
-    // TODO - preco je to tu? presunut dole ak sa da...
+    // TODO - why is it here? move it down if possible...
     const dataKey = props.dataKey !== undefined ? props.dataKey : UtilsMetadataCommon.getEntity(props.entity).idField;
 
     const onPage = async (event: any) => {
 
-        //console.log("zavolany onPage");
+        //console.log("called onPage");
 
         setFirst(event.first);
         const findParam: FindParam = createFindParam();
-        findParam.first = event.first; // prepiseme first, lebo je tam stara hodnota (volanie setFirst nezmeni first hned)
+        findParam.first = event.first; // we overwrite first, because the old value is there (calling setFirst does not change first immediately)
         loadDataBase(findParam);
     }
 
@@ -593,7 +593,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             // clone needed if there was change, otherwise react does not show the change
             filtersNew = {...filtersNew};
         }
-        // tymto zavolanim sa zapise znak zapisany klavesnicou do inputu filtra (ak prikaz zakomentujeme, input filtra zostane prazdny)
+        // by this call the character typed on the keyboard is written into the filter input (if we comment out the command, the filter input stays empty)
         setFilters(filtersNew);
         removePagingFromStorage();
         loadDataBaseIfAutoFilter(filtersNew, false); // TODO - pass value Column.props.autoFilter here
@@ -601,33 +601,33 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const onSort = (event: any) => {
 
-        //console.log("zavolany onSort - this.state.multiSortMeta = " + JSON.stringify(multiSortMeta));
-        //console.log("zavolany onSort - event.multiSortMeta = " + JSON.stringify(event.multiSortMeta));
+        //console.log("called onSort - this.state.multiSortMeta = " + JSON.stringify(multiSortMeta));
+        //console.log("called onSort - event.multiSortMeta = " + JSON.stringify(event.multiSortMeta));
 
         setMultiSortMeta(event.multiSortMeta);
         const findParam: FindParam = createFindParam();
-        findParam.multiSortMeta = event.multiSortMeta; // prepiseme multiSortMeta, lebo je tam stara hodnota (volanie setMultiSortMeta nezmeni multiSortMeta hned)
+        findParam.multiSortMeta = event.multiSortMeta; // we overwrite multiSortMeta, because the old value is there (calling setMultiSortMeta does not change multiSortMeta immediately)
         loadDataBase(findParam);
     }
 
     const loadDataBaseIfAutoFilter = (filters: ExtendedDataTableFilterMeta, fieldAutoFilter: boolean) => {
         if (props.autoFilter || fieldAutoFilter) {
             const findParam: FindParam = createFindParam();
-            findParam.filters = filters; // prepiseme filters, lebo je tam stara hodnota
+            findParam.filters = filters; // we overwrite filters, because the old value is there
             loadDataBase(findParam);
         }
     }
 
     const onClickFilter = () => {
 
-        //console.log("zavolany onClickFilter");
+        //console.log("called onClickFilter");
 
         loadData();
     };
 
-/*  povodna metoda, ktora iba vycistila filter
+/*  original method, which only cleared the filter
     const onClickClearFilter = () => {
-        // najjednoduchsi sposob - pomeni aj pripadne nastavene matchMode hodnoty
+        // the simplest way - it also changes possibly set matchMode values
         let filtersInit: DataTableFilterMeta = createFiltersInit();
         setFilters(filtersInit);
 
@@ -695,7 +695,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const loadData = async () => {
-        // pre poriadok zaserializujeme obidve operacie (aj ked teoreticky by to malo fungovat aj bez serializovania)
+        // for good measure we serialize both operations (even though theoretically it should work without serializing too)
         await loadXFieldSetMaps();
         await loadDataBase(createFindParam());
     }
@@ -734,7 +734,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const loadDataBase = async (findParam: FindParam) => {
-        //console.log("zavolany loadDataBase - startIndex = " + findParam.first + ", endIndex = " + ((findParam.first ?? 0) + (findParam.rows ?? 0)) + ", filters = " + JSON.stringify(findParam.filters) + ", multiSortMeta = " + JSON.stringify(findParam.multiSortMeta) + ", fields = " + JSON.stringify(findParam.fields));
+        //console.log("called loadDataBase - startIndex = " + findParam.first + ", endIndex = " + ((findParam.first ?? 0) + (findParam.rows ?? 0)) + ", filters = " + JSON.stringify(findParam.filters) + ", multiSortMeta = " + JSON.stringify(findParam.multiSortMeta) + ", fields = " + JSON.stringify(findParam.fields));
         setLoading(true);
         const findResult = await findByFilter(findParam);
         sortAssocsToSort(findResult);
@@ -743,7 +743,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         setLoading(false);
         // save table state into session/local
         //saveTableState(findParam); <- old solution, state is saved immediately after change of some filter field, sorting, etc.
-        // odlozime si filter hodnoty pre pripadny export (maybe simple cloning is enough, but to be sure we use deep)
+        // we store the filter values for a possible export (maybe simple cloning is enough, but to be sure we use deep)
         setFiltersAfterFiltering(_.cloneDeep(filters));
         setFtsInputValueAfterFiltering(ftsInputValue ? {...ftsInputValue} : undefined);
         setOptionalCustomFilterAfterFiltering(optionalCustomFilter ? _.cloneDeep(optionalCustomFilter) : undefined);
@@ -788,7 +788,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const findByFilter = async (findParam: FindParam) : Promise<FindResult> => {
 
-        // vysledok je typu FindResult
+        // the result is of type FindResult
         const findResult: FindResult = await Utils.fetchOne('x-lazy-data-table-find-rows', findParam);
         findResult.totalRecords = parseInt(findResult.totalRecords as any as string);
         return findResult;
@@ -847,21 +847,21 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     // const getHeaders = (): string[] => {
     //
-    //     // krasne zobrazi cely objekt!
+    //     // nicely displays the whole object!
     //     //console.log(dataTableEl.current);
     //
     //     let headers = [];
     //     let columns = dataTableEl.current.props.children;
     //     for (let column of columns) {
-    //         // pozor! headers tahame z primereact DataTable a napr. pri editacii nemusi byt v atribute header string
+    //         // warning! we pull headers from primereact DataTable and e.g. during editing the header attribute may not be a string
     //         headers.push(column.props.header);
     //     }
     //     return headers;
     // }
 
     // const getWidths = (): string[] => {
-    //     // vrati sirky stlpcov napr. ['7.75rem', '20rem', '8.5rem', '8.5rem', '6rem']
-    //     // nevracia aktualne sirky stlpcov (po manualnom rozsireni) ale tie ktore boli nastavene/vypocitane v kode
+    //     // returns column widths e.g. ['7.75rem', '20rem', '8.5rem', '8.5rem', '6rem']
+    //     // does not return the current column widths (after manual widening) but those that were set/computed in the code
     //     let widths = [];
     //     let columns = dataTableEl.current.props.children;
     //     for (let column of columns) {
@@ -872,7 +872,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const createExportColumns = (): ExportColumnParam[] => {
 
-        // krasne zobrazi cely objekt!
+        // nicely displays the whole object!
         //console.log(dataTableEl.current);
 
         // warning note: props.children are used to get props of XLazyColumn whereas dataTableEl.current.props.children are used to get props of Primereact DataTable
@@ -886,7 +886,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 (column: ColumnType) => column.props.field === columnDataTable.props.field
             );
             exportColumns.push({
-                // pozor! headers tahame z primereact DataTable a napr. pri editacii nemusi byt v atribute header string
+                // warning! we pull headers from primereact DataTable and e.g. during editing the header attribute may not be a string
                 header: columnDataTable.props.header,
                 // returns the width of the column e.g. '7.75rem', '20rem', '125px'
                 // does not return the current widths (after manual extending by user) but those widths that were set/computed in source code
@@ -932,14 +932,14 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const onSelectionChange = (event: any) => {
-        //console.log("zavolany onSelectionChange");
+        //console.log("called onSelectionChange");
         //console.log(event.value);
 
         setSelectedRow(event.value);
     }
 
     const onRowDoubleClick = (event: any) => {
-        //console.log("zavolany onRowDoubleClick");
+        //console.log("called onRowDoubleClick");
         //console.log(event.data);
 
         onRowDoubleClickBase(event.data);
@@ -955,7 +955,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const onClickAddRow = () => {
-        //console.log("zavolany onClickAddRow");
+        //console.log("called onClickAddRow");
 
         if (typeof props.onAddRow === 'function') {
             props.onAddRow(selectedRow, filters, openFormForInsert);
@@ -985,7 +985,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const onClickEditRow = () => {
-        //console.log("zavolany onClickEditRow");
+        //console.log("called onClickEditRow");
 
         if (selectedRow !== null) {
             editRow(selectedRow);
@@ -1033,7 +1033,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const onClickRemoveRow = async () => {
-        //console.log("zavolany onClickRemoveRow");
+        //console.log("called onClickRemoveRow");
 
         if (selectedRow !== null) {
             if (props.onRemoveRow instanceof Function) {
@@ -1054,7 +1054,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             else {
                 if (window.confirm(localeOption('removeRowConfirm'))) {
                     try {
-                        // poznamka: vdaka await bude loadData() bezat az po dobehnuti requestu removeRow
+                        // note: thanks to await, loadData() will run only after the removeRow request finishes
                         await Utils.removeRow(props.entity, selectedRow);
                     }
                     catch (e) {
@@ -1084,10 +1084,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     const onClickExport = async () => {
 
-        // exportujeme zaznamy zodpovedajuce filtru
-        // najprv zistime pocet zaznamov
+        // we export records matching the filter
+        // first we find out the number of records
         const findParam: FindParam = createFindParamUsingAfterFiltering();
-        //setLoading(true); - iba co preblikuje, netreba nam
+        //setLoading(true); - it only flickers, we don't need it
         const findResult = await findByFilter(findParam);
         //setLoading(false);
 
@@ -1135,7 +1135,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const onClickChoose = () => {
-        //console.log("zavolany onClickChoose");
+        //console.log("called onClickChoose");
 
         if (selectedRow !== null) {
             if (props.searchBrowseParams !== undefined) {
@@ -1147,8 +1147,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
     }
 
-    // ****** dropdown vo filtri ********
-    // pouziva sa len pre simple filtrovanie (filterDisplay="row")
+    // ****** dropdown in the filter ********
+    // used only for simple filtering (filterDisplay="row")
 
     const onDropdownFilterChange = (field: string, displayValue: any, fieldAutoFilter: boolean) => {
         const filterValue: any | null = displayValue !== Utils.dropdownEmptyOptionValue ? displayValue : null;
@@ -1160,36 +1160,36 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         return filterValue !== null ? filterValue : Utils.dropdownEmptyOptionValue;
     }
 
-    // ****** vseobecne metodky pre set/get do/z filtra ********
-    // zatial funguje len pre simple filtrovanie (filterDisplay="row")
+    // ****** general methods for set/get into/from the filter ********
+    // for now it works only for simple filtering (filterDisplay="row")
 
-    // vseobecna specialna metodka pouzvana pri custom filtri (Column.filterElement)
-    // nepodarilo sa posunut autoFilter takym sposobom aby app programmer nemusel autoFilter nastavovat
+    // general special method used for a custom filter (Column.filterElement)
+    // I didn't manage to pass autoFilter in such a way that the app programmer wouldn't have to set autoFilter
     const setFilterItem: SetFilterItem = (field: string, filterItem: DataTableFilterMetaData | DataTableOperatorFilterMetaData, autoFilter: boolean) => {
         filters[field] = filterItem;
-        // neskusal som, ci treba aj toto klonovat ale pravdepodobne hej
+        // I didn't try whether this also needs to be cloned but probably yes
         const filtersCloned: DataTableFilterMeta = {...filters};
         setFilters(filtersCloned);
         removePagingFromStorage();
         loadDataBaseIfAutoFilter(filtersCloned, autoFilter);
     }
 
-    // vseobecna specialna metodka pouzvana pri custom filtri (Column.filterElement)
+    // general special method used for a custom filter (Column.filterElement)
     const getFilterItem = (field: string): DataTableFilterMetaData | DataTableOperatorFilterMetaData => {
         return filters[field];
     }
 
-    // vseobecna metodka - nastavi hodnotu do filtra
-    // ak je matchMode === undefined, tak zachova povodnu hodnotu matchMode
+    // general method - sets a value into the filter
+    // if matchMode === undefined, it keeps the original matchMode value
     const setFilterValue = (field: string, value: any | null, matchMode: any | undefined, customFilterItems: CustomFilterItem[] | undefined, fieldAutoFilter: boolean) => {
 
-        const filterValue: ExtendedDataTableFilterMetaData = filters[field] as ExtendedDataTableFilterMetaData; // funguje len pre filterDisplay="row"
+        const filterValue: ExtendedDataTableFilterMetaData = filters[field] as ExtendedDataTableFilterMetaData; // works only for filterDisplay="row"
         filterValue.value = value;
         if (matchMode !== undefined) {
             filterValue.matchMode = matchMode;
         }
         filterValue.customFilterItems = customFilterItems;
-        // treba klonovat, inac react nezobrazi zmenenu hodnotu
+        // need to clone, otherwise react will not show the changed value
         const filtersCloned: DataTableFilterMeta = {...filters};
         setFilters(filtersCloned);
         // we had problem when page was set to e.g. 3 (more than 1), after setting some filter value that caused that only 1 page should be returned
@@ -1198,24 +1198,24 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         loadDataBaseIfAutoFilter(filtersCloned, fieldAutoFilter);
     }
 
-    // vseobecna metodka - precita hodnotu z filtra (vrati napr. typ Date | null)
+    // general method - reads a value from the filter (returns e.g. type Date | null)
     const getFilterValue = (field: string) : any | null => {
-        const filterValue: DataTableFilterMetaData = filters[field] as DataTableFilterMetaData; // funguje len pre filterDisplay="row"
+        const filterValue: DataTableFilterMetaData = filters[field] as DataTableFilterMetaData; // works only for filterDisplay="row"
         return filterValue.value;
     }
 
-    // vseobecna metodka - vrati nastaveny match mode
+    // general method - returns the set match mode
     const getFilterMatchMode = (field: string) : any => {
-        const filterValue: DataTableFilterMetaData = filters[field] as DataTableFilterMetaData; // funguje len pre filterDisplay="row"
+        const filterValue: DataTableFilterMetaData = filters[field] as DataTableFilterMetaData; // works only for filterDisplay="row"
         return filterValue.matchMode;
     }
 
-    // ****** vseobecne metodky pre set/get do/z filtra - pre betweenFilter ********
-    // do DataTableFilterMetaData.value ulozime dvojprvkove pole [value1, value2]
-    // na backende spracujeme toto dvojprvkove pole
+    // ****** general methods for set/get into/from the filter - for betweenFilter ********
+    // into DataTableFilterMetaData.value we store a two-element array [value1, value2]
+    // on the backend we process this two-element array
 
     const setFilterValue1 = (field: string, value: any | null, fieldAutoFilter: boolean) => {
-        // na zaciatku (po inicializacii lazy table) je filterValue = null
+        // at the beginning (after lazy table initialization) filterValue = null
         let filterValue: any[2] | null = getFilterValue(field);
         if (filterValue !== null) {
             filterValue[0] = value;
@@ -1227,7 +1227,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     const setFilterValue2 = (field: string, value: any | null, fieldAutoFilter: boolean) => {
-        // na zaciatku (po inicializacii lazy table) je filterValue = null
+        // at the beginning (after lazy table initialization) filterValue = null
         let filterValue: any[2] | null = getFilterValue(field);
         if (filterValue !== null) {
             filterValue[1] = value;
@@ -1281,12 +1281,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     const valueAsUI = (value: any, xField: Field, textFormat: TextFormat | undefined, fieldSetId: string | undefined): ReactNode => {
         let valueResult: ReactNode;
         if (xField.type === "boolean") {
-            // TODO - efektivnejsie by bolo renderovat len prislusne ikonky
+            // TODO - it would be more efficient to render only the corresponding icons
             valueResult = <TriStateCheckbox value={value} disabled={true}/>
         }
         else if (xField.type === "jsonb" && fieldSetId) {
-            // zatial sem dame; este by sme mohli dat hlbsie do convertValue/convertValueBase (aby fungovalo aj pre excel) ale tam je problem ze nemame k dispozicii "xFieldSetMaps"
-            // poznamka: krajsie by bolo brat fieldSetId z xField ale to by sme museli vytvorit decorator na backend-e...
+            // for now we put it here; we could also put it deeper into convertValue/convertValueBase (so that it works for excel too) but there is a problem that we don't have "xFieldSetMaps" available
+            // note: it would be nicer to take fieldSetId from xField but we would have to create a decorator on the backend...
             valueResult = <div className={multilineSwitchValue === "fewLines" || multilineSwitchValue === "allLines" ? "x-multiline-content" : undefined}>{XFieldSetBase.xFieldSetValuesAsUI(value, xFieldSetMaps[fieldSetId])}</div>;
         }
         else {
@@ -1295,10 +1295,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 valueResult = <HtmlRenderer htmlValue={value} renderType={multilineSwitchValue} fewLinesCount={props.multilineSwitchFewLinesCount!}/>;
             }
             else {
-                // ine typy - convertValue vrati string
-                // mame zapnutu konverziu fromModel, lebo z json-u nam prichadzaju objekty typu string (napr. pri datumoch)
+                // other types - convertValue returns a string
+                // we have fromModel conversion turned on, because objects of type string come to us from json (e.g. for dates)
                 valueResult = convertValue(xField, value, true, AsUIType.Form);
-                // ak mame viacriadkovy text a multilineSwitch nastaveny na viac ako 1 riadok (defaultne je nastaveny na "allLines") pouzijeme MultilineRenderer
+                // if we have multiline text and multilineSwitch set to more than 1 line (by default it is set to "allLines") we use MultilineRenderer
                 if (textFormat === "multiline" && multilineSwitchValue !== "singleLine") {
                     if (xField.type === "string" && typeof valueResult === "string" && valueResult) {
                         const lines: string[] = valueResult.split(UtilsCommon.newLine);
@@ -1335,58 +1335,58 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         );
     };
 
-    // ak mame scrollWidth/scrollHeight = viewport (default), vyratame scrollWidth/scrollHeight tak aby tabulka "sadla" do okna (viewport-u)
+    // if we have scrollWidth/scrollHeight = viewport (default), we calculate scrollWidth/scrollHeight so that the table "fits" into the window (viewport)
 
     const isMobile: boolean = Utils.isMobile();
 
-    let scrollWidthLocal: string | undefined = undefined; // vypnute horizontalne scrollovanie
-    let scrollHeightLocal: string | undefined = undefined; // vypnute vertikalne scrollovanie
+    let scrollWidthLocal: string | undefined = undefined; // horizontal scrolling turned off
+    let scrollHeightLocal: string | undefined = undefined; // vertical scrolling turned off
 
     if (props.scrollable) {
         if (props.scrollWidth !== "none") {
             scrollWidthLocal = props.scrollWidth;
             if (scrollWidthLocal === "viewport") {
-                scrollWidthLocal = `calc(100vw - ${isMobile ? 1 : 2.2}rem)`; // desktop - povodne bolo 1.4rem (20px okraje) namiesto 2.2 ale pri vela stlpcoch vznikal horizontalny scrollbar
-                                                                        // mobil - padding 0.5rem body element
+                scrollWidthLocal = `calc(100vw - ${isMobile ? 1 : 2.2}rem)`; // desktop - originally it was 1.4rem (20px margins) instead of 2.2 but with many columns a horizontal scrollbar appeared
+                                                                        // mobile - padding 0.5rem of the body element
             }
         }
 
         if (props.scrollHeight !== "none") {
             scrollHeightLocal = props.scrollHeight;
             if (scrollHeightLocal === "viewport") {
-                // vypocet je priblizny, robeny na mobil, desktop bude mat mozno iny
+                // the calculation is approximate, made for mobile, desktop may have a different one
                 //const headerHeight = Utils.toPX0('12.7rem');
                 //let footerHeight = Utils.toPX0('3.7rem') + Utils.toPX0('3rem'); // table footer (paging) + buttons Add row, Edit, ...
-                // na desktope mi nechce odpocitat vysku taskbar-u od window.screen.availHeight, tak to poriesime takymto hack-om:
+                // on desktop it doesn't want to subtract the taskbar height from window.screen.availHeight, so we solve it with this hack:
                 // if (!Utils.isMobile()) {
-                //     footerHeight += Utils.toPX0('6rem'); // priblizna vyska taskbaru (ak mam 2 rady buttonov)
+                //     footerHeight += Utils.toPX0('6rem'); // approximate taskbar height (if I have 2 rows of buttons)
                 // }
                 let viewHeight: string;
                 let headerFooterHeight: number;
                 if (props.searchBrowseParams === undefined) {
-                    // sme v standardnom formulari
+                    // we are in a standard form
                     viewHeight = '100vh';
-                    // experimentalne zistena vyska header/footer
-                    // da sa vyratat ako vysku body (celej stranky) - vyska div-u ktory sa scrolluje (div na ktorom je style="max-height: calc(100vh - 266.42px);)
-                    // (treba odratat vysku paginatora a formFooterHeight (lebo tie sa odratavaju nizsie))
+                    // experimentally determined height of header/footer
+                    // it can be calculated as the height of the body (the whole page) - the height of the div that is scrolled (the div that has style="max-height: calc(100vh - 266.42px);)
+                    // (need to subtract the paginator height and formFooterHeight (because those are subtracted below))
                     headerFooterHeight = Utils.toPX0('10.89rem');
                 }
                 else {
-                    // sme v dialogu
+                    // we are in a dialog
                     if (isMobile) {
-                        viewHeight = '98vh'; // .p-dialog pre mobil ma max-height: 98%
-                        headerFooterHeight = Utils.toPX0('12.03rem'); // rucne zratane
+                        viewHeight = '98vh'; // .p-dialog for mobile has max-height: 98%
+                        headerFooterHeight = Utils.toPX0('12.03rem'); // counted manually
                     }
                     else {
-                        viewHeight = '90vh'; // .p-dialog pre desktop ma max-height: 90%
-                        headerFooterHeight = Utils.toPX0('13.03rem'); // rucne zratane (desktop ma vecsi margin dole na dialogu)
+                        viewHeight = '90vh'; // .p-dialog for desktop has max-height: 90%
+                        headerFooterHeight = Utils.toPX0('13.03rem'); // counted manually (desktop has a bigger margin at the bottom of the dialog)
                     }
                 }
-                // pridame vysku paging-u, ak treba
+                // we add the paging height, if needed
                 if (props.paginator) {
                     headerFooterHeight += Utils.toPX0('3.71rem');
                 }
-                // este pridame vysku linkov na zdrojaky, ak treba
+                // we also add the height of the source links, if needed
                 if (props.formFooterHeight !== undefined) {
                     headerFooterHeight += Utils.toPX0(Utils.processGridBreakpoints(props.formFooterHeight));
                 }
@@ -1401,10 +1401,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
     }
 
     if (props.shrinkWidth) {
-        style.maxWidth = 'min-content'; // ak nic nedame (nechame auto), tak (v pripade ak nebudeme mat horizontalny scrollbar) natiahne tabulku na celu sirku stranky, co nechceme
+        style.maxWidth = 'min-content'; // if we don't set anything (leave auto), then (in case we don't have a horizontal scrollbar) it stretches the table to the full page width, which we don't want
     }
 
-    // pri prechode z Primereact 6.x na 9.x sa tableLayout zmenil z fixed na auto a nefungovalo nastavenie sirok stlpcov - docasne teda takto
+    // when moving from Primereact 6.x to 9.x, tableLayout changed from fixed to auto and setting column widths stopped working - temporarily like this
     let tableStyle: CSSProperties = {tableLayout: 'fixed'};
     if (props.width !== undefined) {
         let width: string = props.width;
@@ -1419,8 +1419,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         throw "LazyDataTable: for props.editMode = true/false, props.editModeHandlers must be defined.";
     }
 
-    // pouzivame paginatorLeft aj paginatorRight (aj prazdny) pouzivame, aby bol default paginator v strede (bez paginatorLeft je default paginator presunuty dolava a naopak)
-    // sirku div-ov este nastavujeme v css na 10rem
+    // we use both paginatorLeft and paginatorRight (even an empty one), so that the default paginator is in the center (without paginatorLeft the default paginator is shifted to the left and vice versa)
+    // we also set the width of the divs in css to 10rem
     let paginatorLeft: ReactElement;
     let paginatorRight: ReactElement | undefined;
     let pageLinkSize: number;
@@ -1442,7 +1442,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         // else - editMode is undefined - browse is not editable
     }
     else {
-        // na mobile setrime miesto
+        // on mobile we save space
         paginatorLeft = <div style={{minWidth: '3rem'}}>{value.totalRecords}</div>;
         paginatorRight = <div style={{minWidth: '3rem'}}/>;
         pageLinkSize = 3;
@@ -1452,15 +1452,15 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
 
     let exportRows: boolean;
     if (props.searchBrowseParams !== undefined) {
-        // export pre search button-y zatial vypneme
+        // for now we turn off export for search buttons
         exportRows = false;
     }
     else if (props.showExportRows !== undefined) {
-        // mame explicitne definovane ci ano alebo nie
+        // we have explicitly defined whether yes or no
         exportRows = props.showExportRows;
     }
     else {
-        // len na desktope zobrazime
+        // we display it only on desktop
         exportRows = !isMobile;
     }
 
@@ -1477,10 +1477,10 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             return columnToggles[index] !== false;
         }),
         function(child) {
-            // ak chceme zmenit child element, tak treba bud vytvorit novy alebo vyklonovat
-            // priklad je na https://soshace.com/building-react-components-using-children-props-and-context-api/
-            // (vzdy musime robit manipulacie so stlpcom, lebo potrebujeme pridat filter={true} sortable={true}
-            const childColumn = child as any as {props: ColumnProps}; // nevedel som to krajsie...
+            // if we want to change a child element, we need to either create a new one or clone it
+            // an example is at https://soshace.com/building-react-components-using-children-props-and-context-api/
+            // (we always have to manipulate the column, because we need to add filter={true} sortable={true}
+            const childColumn = child as any as {props: ColumnProps}; // I couldn't do it more nicely...
             const xField: Field = UtilsMetadataCommon.getFieldByPath(xEntity, childColumn.props.field);
 
             // *********** header ***********
@@ -1513,7 +1513,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 if ((childColumn.props.filterElement.matchModeLabel && getFilterMatchMode(childColumn.props.field) === ExtendedFilterMatchMode.FILTER_ELEMENT)
                         || childColumn.props.filterElement.matchModeLabel === undefined) {
                     filterElement = (options: ColumnFilterElementTemplateOptions): ReactNode => {
-                        // compilator sa stazoval ze childColumn.props.filterElement moze byt undefined, preto som pridal "!"
+                        // the compiler complained that childColumn.props.filterElement can be undefined, that's why I added "!"
                         return childColumn.props.filterElement!.element({getFilterItem: getFilterItem, setFilterItem: setFilterItem, options: options, autoFilter: childColumn.props.autoFilter});
                     };
                 }
@@ -1595,7 +1595,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                     } else if (xField.type === "date" || xField.type === "datetime") {
                         betweenFilter = getBetweenFilter(childColumn.props.betweenFilter, props.betweenFilter);
                         if (betweenFilter !== undefined) {
-                            // display: 'flex' umiestni DateInput elementy vedla seba
+                            // display: 'flex' places the DateInput elements next to each other
                             filterElement =
                                 <div style={betweenFilter === "row" ? {display: 'flex'} : undefined}>
                                     <DateInput value={getFilterValue1(childColumn.props.field)}
@@ -1615,7 +1615,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                         const params = UtilsMetadata.getParamsForInputNumber(xField);
                         betweenFilter = getBetweenFilter(childColumn.props.betweenFilter, props.betweenFilter);
                         if (betweenFilter !== undefined) {
-                            // display: 'flex' umiestni input elementy pod seba (betweenFilter = "column") resp. vedla seba (betweenFilter = "row")
+                            // display: 'flex' places the input elements one under the other (betweenFilter = "column") or next to each other (betweenFilter = "row")
                             filterElement =
                                 <div style={{display: 'flex', flexDirection: betweenFilter}}>
                                     <NumberInput value={getFilterValue1(childColumn.props.field)}
@@ -1676,7 +1676,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
             }
 
             // *********** showClearButton ***********
-            // pre filterDisplay = "row" nechceme clear button, chceme setrit miesto
+            // for filterDisplay = "row" we don't want a clear button, we want to save space
             let showClearButton: boolean = props.filterDisplay === "menu";
 
             // *********** body ***********
@@ -1707,7 +1707,7 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 align = childColumn.props.align;
             }
             else {
-                // decimal defaultne zarovnavame doprava
+                // by default we align decimal to the right
                 if (xField.type === "decimal") {
                     align = "right";
                 }
@@ -1722,12 +1722,12 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
                 let aggregateValue: any = value.aggregateValues[childColumn.props.field];
                 if (aggregateValue !== undefined && aggregateValue !== null) {
                     if (xField.type === "decimal" || xField.type === "number") {
-                        // v json subore su stringy (cislo v ""), konvertujeme aby sme zmenili 123.45 na 123,45
+                        // in the json file there are strings (a number in ""), we convert so that we change 123.45 to 123,45
                         aggregateValue = numberAsUI(numberFromModel(aggregateValue), xField.scale);
                     }
                 }
                 else {
-                    aggregateValue = ""; // nemame este nacitane data
+                    aggregateValue = ""; // we don't have the data loaded yet
                 }
                 footer = aggregateValue;
             }
@@ -1751,8 +1751,8 @@ export const LazyDataTable = forwardRef<LazyDataTableRef, LazyDataTableProps>((
         }
     }
 
-    // align-items-center centruje vertikalne (posuva smerom dolu do stredu)
-    // x-lazy-datatable-label-right-compensation - vyvazuje label, aby item-y v strede isli aspon priblizne do stredu
+    // align-items-center centers vertically (shifts downward to the center)
+    // x-lazy-datatable-label-right-compensation - offsets the label, so that items in the center go at least approximately to the center
     return (
         <div>
             {props.headerBodyTop ?
@@ -1837,9 +1837,9 @@ export type AutoCompleteInFilterProps = {
     sortField?: string | DataTableSortMeta[];
     fields?: string[];
     // copy of some props in AutocompleteInput (?)
-    lazyLoadMaxRows?: number; // max pocet zaznamov ktore nacitavame pri suggestionsLoad = lazy
-    field?: string | string[]; // field ktory zobrazujeme v input-e (niektory z fieldov objektu z value/suggestions)
-    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // pouzivane ak potrebujeme nejaky custom format item-om (funkcia defaultValue rata default format)
+    lazyLoadMaxRows?: number; // max number of records that we load when suggestionsLoad = lazy
+    field?: string | string[]; // field that we display in the input (one of the fields of the object from value/suggestions)
+    itemTemplate?: (suggestion: any, index: number, createStringValue: boolean, defaultValue: (suggestion: any) => string) => ReactNode; // used if we need some custom format of items (function defaultValue computes the default format)
     inputClassName?: string;
     SearchBrowse?: ComponentType<SearchBrowseProps>; // browse for searching row after clicking on search button
     searchBrowseElement?: ReactElement; // element version of SearchBrowse (for the case if additional (custom) props are needed)
@@ -1866,7 +1866,7 @@ export interface ColumnProps {
     fieldSetId?: string; // in case that we render json attribute (output from XFieldSet), here is id of XFieldSet (saved in x_field_set_meta), fieldSet metadata is needed to get labels of field set attributes
                         // note: better solution would be take fieldSetId from json attribute from model, but we would have to create decorator for this purpose...
     aggregateType?: AggregateFunction;
-    columnViewStatus: ViewStatusOrBoolean; // aby sme mohli mat Hidden stlpec (nedarilo sa mi priamo v kode "o-if-ovat" stlpec), zatial netreba funkciu, vola sa columnViewStatus lebo napr. v Edit tabulke moze byt viewStatus na row urovni
+    columnViewStatus: ViewStatusOrBoolean; // so that we can have a Hidden column (I didn't manage to "if-out" the column directly in the code), for now a function is not needed, it is called columnViewStatus because e.g. in an Edit table viewStatus can be at the row level
     initColumnToggle: boolean; // initial value for column toggle - if false, column is not displayed initially (user can display it via column toggle dialog) (default true)
     filterElement?: FilterElementProp;
     className?: string; // wraps the content of the column cell with div element with this className (prop is not applied if prop body is used)
@@ -1877,7 +1877,7 @@ export interface ColumnProps {
 export type ColumnType = {props: ColumnProps};
 
 export const Column = (props: ColumnProps) => {
-    // nevadi ze tu nic nevraciame, field a header vieme precitat a zvysok by sme aj tak zahodili lebo vytvarame novy element
+    // it doesn't matter that we return nothing here, we can read field and header and we would throw away the rest anyway because we create a new element
     return (null);
 }
 

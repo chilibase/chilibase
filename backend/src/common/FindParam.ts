@@ -40,10 +40,10 @@ export interface ExtendedDataTableFilterMeta {
 }
 
 export interface FullTextSearch {
-    fields?: string[]; // stlpce na ktorych sa vykona search, ak undefined, tak sa pouziju FindParam.fields
-    value: string; // hodnoty oddelene space-om, rozdelia sa a budu vo where podmienke pouzite cez AND (ak nie je splitValue = false)
-    splitValue: boolean; // ci rozdelit "value" by space (default true)
-    matchMode: 'startsWith' | 'contains' | 'endsWith' | 'equals'; // zatial tieto (podmnozina z DataTableFilterMetaData), default bude 'contains'
+    fields?: string[]; // columns on which the search is performed, if undefined, then FindParam.fields are used
+    value: string; // values separated by space, they are split and will be used in the where condition via AND (if splitValue is not false)
+    splitValue: boolean; // whether to split "value" by space (default true)
+    matchMode: 'startsWith' | 'contains' | 'endsWith' | 'equals'; // for now these (a subset of DataTableFilterMetaData), the default will be 'contains'
 }
 
 export enum AggregateFunction {
@@ -66,19 +66,19 @@ export interface FindParam {
     filters?: ExtendedDataTableFilterMeta;
     fullTextSearch?: FullTextSearch;
     customFilterItems?: CustomFilterItem[];
-    multiSortMeta?: DataTableSortMeta[]; // typ []
+    multiSortMeta?: DataTableSortMeta[]; // type []
     entity: string;
     fields?: string[];
     aggregateItems?: SimpleAggregateItem[];
 }
 
-// TODO - idealne spravit x-query-api.ts a tam supnut vsetky Request/Response typy ktore vytvaraju joiny, where podmienky (FindParam.ts, FindResult.ts, ...)
-// taky jednoduchsi FindParam
+// TODO - ideally create x-query-api.ts and put there all Request/Response types that create joins, where conditions (FindParam.ts, FindResult.ts, ...)
+// such a simpler FindParam
 export interface LazyAutoCompleteSuggestionsRequest {
     maxRows: number;
     fullTextSearch?: FullTextSearch;
     entity: string;
     filterItems?: CustomFilterItem[];
-    multiSortMeta?: DataTableSortMeta[]; // typ []
+    multiSortMeta?: DataTableSortMeta[]; // type []
     fields?: string[];
 }

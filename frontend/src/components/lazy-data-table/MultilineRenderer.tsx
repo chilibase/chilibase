@@ -12,10 +12,10 @@ export const MultilineRenderer = (props: {
     // used only for props.renderType === "fewLines"
     const [showAllLines, setShowAllLines] = useState<boolean>(false);
 
-    let valueResult: ReactElement; // musime vracat element, ak chceme XMultilineRenderer volat priamo cez jsx
+    let valueResult: ReactElement; // we must return an element if we want to call XMultilineRenderer directly via jsx
     if (props.renderType === "singleLine") {
-        // TODO - joinovat elementy
-        valueResult = <div>{props.valueList.join(", ")}</div>; // pouziva sa hlavne pre oneToMany asociacie
+        // TODO - join elements
+        valueResult = <div>{props.valueList.join(", ")}</div>; // used mainly for oneToMany associations
     }
     else {
         let valueListLocal: ReactNode[] = props.valueList;
@@ -26,14 +26,14 @@ export const MultilineRenderer = (props: {
         const elemList: ReactNode[] = valueListLocal.map((value: any, index: number) => <div key={index}>{value}</div>);
         if (props.renderType === "fewLines") {
             if (props.valueList.length > props.fewLinesCount) {
-                // prepiseme posledny element v zozname - pridame mu button
+                // we overwrite the last element in the list - we add a button to it
                 const elemListLastIndex: number = elemList.length - 1;
                 elemList[elemListLastIndex] =
                     <div key={elemListLastIndex}>
                         {valueListLocal[elemListLastIndex]}
                         <Button icon={showAllLines ? "pi pi-angle-double-left" : "pi pi-angle-double-right"} onClick={() => setShowAllLines(!showAllLines)} className="x-button-multiline-expand-collapse"/>
                     </div>;
-                // ak by bol nejaky problem s tym hore tak treba pouzit toto:
+                // if there is some problem with the above, this should be used:
                 // elemList[elemListLastIndex] =
                 //     <div className="flex flex-row flex-wrap">
                 //         <div key={elemListLastIndex}>{valueListLocal[elemListLastIndex]}</div>

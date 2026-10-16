@@ -58,11 +58,11 @@ export class UserForm extends FormBaseModif {
                     return;
                 }
 
-                // zapiseme nove heslo do objektu
+                // we write the new password into the object
                 this.state.entityRow.password = this.state.passwordNew;
             }
             else {
-                // nemenime heslo (atribut s hodnotou undefined sa nezapise do DB)
+                // we do not change the password (an attribute with the value undefined is not written to the DB)
                 this.state.entityRow.password = undefined;
             }
         }
@@ -71,22 +71,22 @@ export class UserForm extends FormBaseModif {
 
         const isAddRow = this.isAddRow();
 
-        // zapise this.state.entityRow do DB - samostatny servis koli hashovaniu password-u
+        // writes this.state.entityRow to the DB - a separate service because of hashing the password
         let entityRow: EntityRow;
         try {
             entityRow = await Utils.post('x-user-save-row', {entity: this.getEntity(), object: this.state.entityRow});
         }
         catch (e) {
             Utils.showErrorMessage("Save row failed.", e);
-            return; // zostavame vo formulari
+            return; // we stay in the form
         }
 
-        // formular je zobrazeny v dialogu
+        // the form is displayed in a dialog
         this.props.onSaveOrCancel!(entityRow, isAddRow ? OperationType.Insert : OperationType.Update);
     }
 
     render() {
-        // autoComplete="new-password" - bez tohto chrome predplna user/password, ak si user da ulozit user/password (pre danu url)
+        // autoComplete="new-password" - without this chrome prefills user/password, if the user chooses to save user/password (for the given url)
         let passwordElems: any[] = [];
         if (Utils.getEnvVarValue(EnvVar.VITE_AUTH) === ViteAuth.LOCAL) {
             passwordElems = [

@@ -1,5 +1,5 @@
-// ExportType a LazyDataTableQueryParam sa pouzivaju v samostatnom servise ktory data streamuje
-// (na rozdiel od ResultType.AllRows ktory by sa ani nemal pouzivat - nemali by sa vsetky rows tahat na klienta v jednom velkom requeste)
+// ExportType and LazyDataTableQueryParam are used in a separate service that streams data
+// (unlike ResultType.AllRows which should not even be used - all rows should not be pulled to the client in one large request)
 import type {DataTableSortMeta} from "primereact/datatable";
 import type {CustomFilterItem, ExtendedDataTableFilterMeta, FullTextSearch} from "./FindParam";
 import type {TextFormat} from "./types";
@@ -31,7 +31,7 @@ export interface LazyDataTableQueryParam {
     filters: ExtendedDataTableFilterMeta;
     fullTextSearch?: FullTextSearch;
     customFilterItems?: CustomFilterItem[];
-    multiSortMeta?: DataTableSortMeta[]; // typ []
+    multiSortMeta?: DataTableSortMeta[]; // type []
     entity: string;
     fields: string[];
 }
@@ -40,8 +40,8 @@ export interface LazyDataTableQueryParam {
 export interface ExcelCsvParam {
     columns: ExportColumnParam[]; // array corresponds to queryParam.fields
     createHeaders: boolean; // creates header row if true
-    toManyAssocExportType: ToManyAssocExportType; // export toMany asociacii
-    fieldsToDuplicateValues?: string[]; // (podmnozina LazyDataTableQueryParam.fields)
+    toManyAssocExportType: ToManyAssocExportType; // export of toMany associations
+    fieldsToDuplicateValues?: string[]; // (subset of LazyDataTableQueryParam.fields)
 }
 
 export interface ExportColumnParam {
@@ -55,32 +55,32 @@ export enum ToManyAssocExportType {
     Singleline = "singleline", // values are joined into one long text, separated by comma ","
     Multiline = "multiline", // values are written under each other into column, all values are in one cell separated by new line (works only for excel)
     Multirow = "multirow", // values are written under each other into column, every value has separated cell/row
-    Off = "off" // stlpce obsahujuce viac hodnot/riadkov sa vynechaju z exportu
+    Off = "off" // columns containing multiple values/rows are omitted from the export
 }
 
-// csv parametre pouzivane pri exporte/importe csv
+// csv parameters used during csv export/import
 export interface CsvParam {
     csvSeparator: CsvSeparator;
     csvDecimalFormat: CsvDecimalFormat;
     csvEncoding: CsvEncoding;
 }
 
-// vo windowse zavisi od regionalnych nastaveni, default nastavenie je ";" a preto vecsinou aj excel produkuje csv s ";" (menej sa to bije s decimalmi)
-// takze primarne pouzivame ";" a sekundarne "," napr. pri generickom exporte do csv davame uzivatelovi na vyber
+// on windows it depends on the regional settings, the default setting is ";" and therefore excel mostly also produces csv with ";" (it clashes less with decimals)
+// so we primarily use ";" and secondarily "," e.g. during a generic export to csv we give the user a choice
 export enum CsvSeparator {
     Semicolon = ";",
     Comma = ","
 }
 
-// decimal format pouzivany pri exporte do csv
+// decimal format used during export to csv
 export enum CsvDecimalFormat {
     Comma = "123456,78",
     Dot = "123456.78"
 }
 
-// zatial len tieto 2, ak bude treba, tak pridat napr. win1252 (Western Europe)
-// win1250 pouzivame ako default, lebo Excel automaticky predpoklada kodovanie win1250
-// konstanty sa pouzivaju priamo v kniznici iconv-lite
+// for now only these 2, if needed, then add e.g. win1252 (Western Europe)
+// we use win1250 as the default, because Excel automatically assumes the win1250 encoding
+// the constants are used directly in the iconv-lite library
 export enum CsvEncoding {
     Utf8 = "utf-8",
     Win1250 = "win1250"
@@ -96,8 +96,8 @@ export enum ImportType {
 export interface ImportParam {
     importType: ImportType;
     entity: string;
-    //fields: string[]; // pouzivane len pri csv importe
-    csvParam: CsvParam; // TODO - odstranit a aj z import dialogu odstranit
+    //fields: string[]; // used only during csv import
+    csvParam: CsvParam; // TODO - remove and also remove from the import dialog
 }
 
 export interface ImportResponse {

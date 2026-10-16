@@ -35,7 +35,7 @@ export interface IPostgresInterval {
 
 export type GetEnvVarValue = (envVarEnum: string) => string;
 
-// Query zatial docasne sem - ale je to globalny objekt - parametre pre Utils.fetchRows, taky jednoduchsi FindParam (este sem mozme pridat fullTextSearch ak bude treba)
+// Query temporarily here for now - but it is a global object - parameters for Utils.fetchRows, a simpler FindParam (we can still add fullTextSearch here if needed)
 
 export type FilterOrFunction = CustomFilter | (() => CustomFilter | undefined);
 

@@ -14,18 +14,18 @@ export interface TableFormFieldProps {
     rowData: any;
     readOnly?: TableFieldReadOnlyProp;
     onChange?: TableFieldOnChange;
-    placeholder?: string; // poznamka: placeholder moze byt nastavovany aj cez property desc (ak pouzivame napr. XFormPanelList)
+    placeholder?: string; // note: placeholder can also be set via property desc (if we use e.g. XFormPanelList)
 
-    // props pouzivane ak vytvarame component s label-om (nie sme v DetailDataTable, ale pouzivame napr. XFormPanelList)
+    // props used if we create a component with a label (we are not in DetailDataTable, but we use e.g. XFormPanelList)
     label?: string;
     tooltip?: string;
-    desc?: string; // specialny prop pouzivany ako placeholder a tooltip pre label naraz (aby sme nemuseli duplikovat placeholder a tooltip pre label) - vytvoreny pre depaul
+    desc?: string; // special prop used as placeholder and tooltip for the label at once (so that we don't have to duplicate placeholder and tooltip for the label) - created for depaul
     labelStyle?: CSSProperties;
 }
 
 export abstract class TableFormField<P extends TableFormFieldProps> extends Component<P> {
 
-    private valueChanged: boolean; // priznak, ci uzivatel zmenil hodnotu v inpute (pozri poznamku v FormField)
+    private valueChanged: boolean; // flag whether the user changed the value in the input (see the note in FormField)
 
     protected constructor(props: P) {
         super(props);
@@ -35,9 +35,9 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
         FormBase.getRowTechData(props.rowData).tableFormFieldList.push(this);
     }
 
-    // nazov fieldu, pod ktorym sa hodnota uklada do objektu this.props.rowData
-    // pri jednoduchych inputoch nazov fieldu (props.field), pri asociacnych inputoch nazov asociacie (props.assocField)
-    // pouziva sa aj ako id-cko fieldu pre errorMap pri validacii (form.state.errorMap) - TODO - doriesit
+    // name of the field under which the value is stored into the object this.props.rowData
+    // for simple inputs the field name (props.field), for association inputs the association name (props.assocField)
+    // it is also used as the field id for errorMap during validation (form.state.errorMap) - TODO - sort this out
     // must be overridden
     abstract getField(): string;
 
@@ -47,10 +47,10 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
     // can be overridden, but this should work for every component
     getValueFromRowData(): any {
         let rowDataValue: any = null;
-        // test na undefined je tu koli insertu noveho riadku
+        // the test for undefined is here because of inserting a new row
         if (this.props.rowData !== undefined && this.props.rowData !== null) {
             rowDataValue = UtilsCommon.getValueByPath(this.props.rowData, this.getField());
-            //  pre istotu dame na null, null je standard
+            //  just to be sure we set it to null, null is the standard
             if (rowDataValue === undefined) {
                 rowDataValue = null;
             }
@@ -87,7 +87,7 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
             readOnly = this.props.readOnly;
         }
         else if (typeof this.props.readOnly === 'function') {
-            // TODO - tazko povedat ci niekedy bude entityRow === null (asi ano vid metodu getFilterBase)
+            // TODO - hard to say whether entityRow === null will ever happen (probably yes, see method getFilterBase)
             const entityRow: EntityRow = this.props.form.state.entityRow;
             if (entityRow) {
                 readOnly = this.props.readOnly(this.props.form.getEntityRow(), this.props.rowData);
@@ -104,13 +104,13 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
         return readOnly;
     }
 
-    // *********** label support - len pre ne-DT componenty pouzivany ************
+    // *********** label support - used only for non-DT components ************
 
-    // ak je label undefined, label element sa nevykresli
+    // if label is undefined, the label element is not rendered
     getLabel(): string | undefined {
         let label: string | undefined = this.props.label;
         if (label !== undefined) {
-            // test na readOnly je tu hlavne koli tomu aby sme nemali * pri ID atribute, ktory sa pri inserte generuje az pri zapise do DB
+            // the readOnly test is here mainly so that we don't have * on the ID attribute, which on insert is generated only when writing to the DB
             if (this.isNotNull() && !this.isReadOnly()) {
                 label = Utils.markNotNull(label);
             }
@@ -120,21 +120,21 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
 
     getLabelStyle(): CSSProperties {
         let labelStyle: CSSProperties = this.props.labelStyle ?? {};
-        // this.props.inline nepouzivame, lebo je to asi zombie
+        // we don't use this.props.inline, because it is probably a zombie
         Utils.addCssPropIfNotExists(labelStyle, {width: Utils.FIELD_LABEL_WIDTH});
         return labelStyle;
     }
 
     // *********** validation support ************
 
-    // volane po kliknuti na Save
-    // vrati (field, FieldError) ak nezbehne "field validacia", ak zbehne, vrati undefined
+    // called after clicking Save
+    // returns (field, FieldError) if "field validation" does not pass, if it passes, returns undefined
     validate(): { field: string; fieldError: FieldError } | undefined {
-        // TODO - FILOZOFICKA OTAZKA - volat validaciu aj ked je field readOnly (this.isReadOnly() === true)? zatial dame ze hej...
+        // TODO - PHILOSOPHICAL QUESTION - call validation even when the field is readOnly (this.isReadOnly() === true)? for now let's say yes...
         const value: any = this.getValueFromRowData();
-        // not null validacia + custom field validacia volana na onChange
+        // not null validation + custom field validation called on onChange
         let errorOnChange: string | undefined = this.validateOnChange(value);
-        // custom field validacia volana na onBlur (focus lost)
+        // custom field validation called on onBlur (focus lost)
         // TODO - fieldLabel
         if (errorOnChange) {
             return {field: this.getField(), fieldError: {onChange: errorOnChange, fieldLabel: undefined}};
@@ -147,21 +147,21 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
         if (error) {
             return error;
         }
-        // custom field validacia volana na onChange
+        // custom field validation called on onChange
         // TODO
         return undefined;
     }
 
     validateNotNull(value: any): string | undefined {
-        // validacia by mala sediet s metodou getLabel(), kde sa pridava * , preto tu mame aj test !this.isReadOnly() - id fieldy pri inserte nechceme testovat
-        // otazka je ci nevypinat validaciu pre readOnly fieldy vzdy (aj ked napr. readOnly vznikne dynamicky)
+        // validation should match the method getLabel(), where * is added, that's why we also have the test !this.isReadOnly() here - we don't want to test id fields on insert
+        // the question is whether not to turn off validation for readOnly fields always (even when e.g. readOnly arises dynamically)
         if (this.isNotNull() && !this.isReadOnly() && value === null) {
             return "Field is required.";
         }
         return undefined;
     }
 
-    // vrati error message z rowData.errorMap
+    // returns the error message from rowData.errorMap
     getError(): string | undefined {
         const error: FieldError = FormBase.getRowTechData(this.props.rowData).errorMap[this.getField()];
         return error ? Utils.getErrorMessage(error) : undefined;
@@ -170,15 +170,15 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
     callOnChangeFromOnBlur() {
         if (this.valueChanged && this.props.onChange) {
             const entityRow: EntityRow = this.props.form.getEntityRow();
-            // developer v onChange nastavi atributy na entityRow-e
+            // the developer in onChange sets attributes on entityRow
             this.props.onChange({entityRow: entityRow, tableRow: this.props.rowData, assocObjectChange: undefined});
-            // rovno zavolame form.setState({...}), nech to nemusi robit developer
+            // we call form.setState({...}) right away, so that the developer doesn't have to do it
             this.props.form.setStateForm();
-            this.valueChanged = false; // resetneme na false (dalsi onChange volame az ked user zmeni hodnotu)
+            this.valueChanged = false; // we reset it to false (we call the next onChange only when the user changes the value)
         }
     }
 
-    // len pre assoc fieldy sa pouziva, aj to nie pre vsetky
+    // used only for assoc fields, and not even for all of them
     getFilterBase(filter: TableFieldFilterProp | undefined): CustomFilter | undefined {
         let customFilter: CustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
@@ -187,8 +187,8 @@ export abstract class TableFormField<P extends TableFormFieldProps> extends Comp
         if (typeof filter === 'function') {
             //const entityRow: EntityRow = this.props.form.getEntityRow();
             const entityRow: EntityRow = this.props.form.state.entityRow;
-            // zatial zakomentujeme, aby sa zavolal aj pre XAutoComplete (tam zatial nemame k dispozicii entityRow
-            // (componentDidMount pre XAutoComplete sa vola skor ako componentDidMount pre XFormBase))
+            // for now we comment it out, so that it is called also for XAutoComplete (there we don't have entityRow available for now
+            // (componentDidMount for XAutoComplete is called sooner than componentDidMount for XFormBase))
             //if (entityRow) {
             customFilter = filter(entityRow, this.props.rowData);
             //}

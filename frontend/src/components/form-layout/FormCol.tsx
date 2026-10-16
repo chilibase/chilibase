@@ -4,9 +4,9 @@ import {FormBase} from "../form";
 
 export interface FormColProps {
     form?: FormBase;
-    width?: string | "full"; // nastavi css property {width: <props.width>} na div (full nastavuje 100%)
+    width?: string | "full"; // sets css property {width: <props.width>} on the div (full sets 100%)
     labelStyle?: CSSProperties;
-    style?: CSSProperties; // prenesie sa na div
+    style?: CSSProperties; // is transferred onto the div
     children: ReactNode;
 }
 

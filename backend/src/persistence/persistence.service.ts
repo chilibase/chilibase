@@ -55,11 +55,11 @@ export class PersistenceService {
     }
 
     async saveRow(row: SaveRowParam): Promise<any> {
-        // vsetky db operacie dame do jednej transakcie
+        // we put all db operations into one transaction
         const fileListToRemove: Array<string> = new Array<string>();
         const objectReloaded: any = await this.dataSource.transaction<any>(manager => this.saveRowInTransaction(manager, row, fileListToRemove));
-        // transakcia bola commitnuta, zmazeme pripadne subory
-        // (ak by sme mazali pred commitom a commit by nepresiel, vznikla by inkonzistencia; ak neprejde zmazanie suboru neni to az taka tragedia)
+        // the transaction was committed, we delete possible files
+        // (if we deleted before the commit and the commit did not go through, an inconsistency would arise; if deleting a file does not go through it is not such a tragedy)
         this.removeFiles(fileListToRemove);
         return objectReloaded;
     }
@@ -69,23 +69,23 @@ export class PersistenceService {
         // first unlock the row if the entity uses pessimistic locking (lockDate !== null)
         await this.unlockRowForSave(manager, row.entity, row.object);
 
-        // saveRow sluzi aj pre insert (id-cko je undefined, TypeORM robi rovno insert)
-        // aj pre update (id-cko je cislo, TypeORM najprv cez select zistuje ci dany zaznam existuje)
+        // saveRow is also used for insert (the id is undefined, TypeORM does an insert directly)
+        // and also for update (the id is a number, TypeORM first finds out through a select whether the given record exists)
 
-        // poznamka: ak sa maju pri zavolani save(<master>) zapisovat aj detail zaznamy,
-        // treba na OneToMany asociaciu zapisat: {cascade: ["insert", "update", "remove"]}
-        // ("remove" netreba ale ten zas uplatnujeme na nasom custom removeRow)
+        // note: if detail records are also to be written when save(<master>) is called,
+        // this has to be written on the OneToMany association: {cascade: ["insert", "update", "remove"]}
+        // ("remove" is not needed but we apply that one on our custom removeRow)
 
-        // poznamka 2: na options na asociacii som nasiel atribut orphanedRowAction
-        // je pravdepodobne, ze tento atribut robi tu odprogramovany "orphan removal",
-        // mal by byt zadany na ManyToOne asociacii (https://john-hu.medium.com/typeorm-deletes-one-to-many-orphans-a7404f922895)
+        // note 2: on the association options I found the attribute orphanedRowAction
+        // it is likely that this attribute does the "orphan removal" that we programmed,
+        // it should be specified on the ManyToOne association (https://john-hu.medium.com/typeorm-deletes-one-to-many-orphans-a7404f922895)
 
         const xEntity: Entity = this.entityMetadataService.getEntity(row.entity);
 
-        // ak mame vygenerovane id-cko, zmenime ho na undefined (aby sme mali priamy insert a korektne id-cko)
+        // if we have a generated id, we change it to undefined (so that we have a direct insert and a correct id)
         if (row.object.__x_generatedRowId) {
             row.object[xEntity.idField] = undefined;
-            delete row.object.__x_generatedRowId; // v pripade ze objekt vraciame klientovi (reload === true), nechceme tam __x_generatedRowId
+            delete row.object.__x_generatedRowId; // in case we return the object to the client (reload === true), we do not want __x_generatedRowId there
         }
 
         const assocOneToManyList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many"]);
@@ -109,41 +109,41 @@ export class PersistenceService {
         for (const assoc of assocOneToManyWithCascadeList) {
             const xChildEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
 
-            // uprava toho co prislo z klienta - vynullujeme umelo vytvorene id-cka
-            // (robime to tu a nie na klientovi, lebo ak nam nezbehne save, tak formular zostava otvoreny)
-            // (poznamka: este by sa to dalo robit pri serializacii)
+            // adjustment of what came from the client - we null out artificially created ids
+            // (we do it here and not on the client, because if the save does not go through, the form stays open)
+            // (note: it could also be done during serialization)
             const childRowList = row.object[assoc.name];
 
-            // ak nemame nacitany childRowList, tak sa asociacie nedotykame - nerobime na nej ziadne zmeny
+            // if we do not have childRowList loaded, we do not touch the association - we do not make any changes on it
             if (childRowList === undefined) {
-                continue; // ideme na dalsiu asociaciu
+                continue; // we go to the next association
             }
 
             for (const childRow of childRowList) {
                 if (childRow.__x_generatedRowId) {
-                    // undefined v id-cku sposobi, ze sa priamo vykona INSERT
-                    // (netestuje sa ci zaznam uz existuje v DB (ako je tomu pri null alebo inej ciselnej hodnote))
-                    // kaskadny insert/update potom pekne zafunguje
+                    // undefined in the id causes INSERT to be executed directly
+                    // (it is not tested whether the record already exists in the DB (as is the case with null or another numeric value))
+                    // the cascade insert/update then works nicely
                     childRow[xChildEntity.idField] = undefined;
-                    delete childRow.__x_generatedRowId; // v pripade ze objekt vraciame klientovi (reload === true), nechceme tam __x_generatedRowId
+                    delete childRow.__x_generatedRowId; // in case we return the object to the client (reload === true), we do not want __x_generatedRowId there
                 }
             }
         }
 
-        // ak mame update
+        // if we have an update
         if (!insert) {
-            // kedze nam chyba "remove orphaned entities" na asociaciach s detailami, tak ho zatial musime odprogramovat rucne
-            // asi je to jedno ci pred save alebo po save (ak po save, tak cascade "remove" musi byt vypnuty - nefuguje ale tento remove zbehne skor)
+            // because we are missing "remove orphaned entities" on associations with details, for now we have to program it manually
+            // it is probably the same whether before save or after save (if after save, cascade "remove" must be turned off - it does not work but this remove runs sooner)
             for (const assoc of assocOneToManyWithCascadeList) {
                 const xChildEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
 
                 const idList: any[] = [];
                 const childRowList = row.object[assoc.name];
 
-                // ak nemame nacitany childRowList, tak sa asociacie nedotykame - nerobime na nej ziadne zmeny
-                // (ak niekto ocakava ze budu vymazane zaznamy na asociacii v takomto pripade, nech nastavi oneToMany atribut na prazdny zoznam - priradi object.<assoc> = [])
+                // if we do not have childRowList loaded, we do not touch the association - we do not make any changes on it
+                // (if someone expects that records on the association will be deleted in such a case, they should set the oneToMany attribute to an empty list - assign object.<assoc> = [])
                 if (childRowList === undefined) {
-                    continue; // ideme na dalsiu asociaciu
+                    continue; // we go to the next association
                 }
 
                 for (const childRow of childRowList) {
@@ -158,7 +158,7 @@ export class PersistenceService {
                 }
                 const repository = manager.getRepository(xChildEntity.name);
                 const selectQueryBuilder: SelectQueryBuilder<unknown> = repository.createQueryBuilder("t0");
-                // poznamka: ManyToOne/OneToOne asociacia "t0.${assoc.inverseAssocName}" sa transformuje na "t0.<idField>" v sql
+                // note: the ManyToOne/OneToOne association "t0.${assoc.inverseAssocName}" is transformed to "t0.<idField>" in sql
                 selectQueryBuilder.where(`t0.${assoc.inverseAssocName} = :rowId`, {rowId: rowId});
                 if (idList.length > 0) {
                     selectQueryBuilder.andWhere(`t0.${xChildEntity.idField} NOT IN (:...idList)`, {idList: idList});
@@ -169,15 +169,15 @@ export class PersistenceService {
                 if (rowList.length > 0) {
                     //await repository.remove(rowList);
                     const rowIdList: any[] = rowList.map(row => row[xChildEntity.idField]);
-                    // tato metodka vymaze aj pripadne asociovane objekty (metodka funguje pre *toMany asociacie ako aj pre *toOne asociacie)
+                    // this method also deletes possible associated objects (the method works for *toMany associations as well as for *toOne associations)
                     await this.removeRowsInTransaction(manager, xChildEntity, rowIdList, fileListToRemove);
-                    // delete vykona priamo DELETE FROM, na rozdiel od remove, ktory najprv SELECT-om overi ci dane zaznamy existuju v DB
+                    // delete executes DELETE FROM directly, unlike remove, which first checks with a SELECT whether the given records exist in the DB
                     //await repository.delete(rowIdList);
                 }
             }
         }
 
-        // samotny insert/update entity
+        // the actual insert/update of the entity
         const repository = manager.getRepository(row.entity);
         //console.log(row.object);
         //const date = row.object.carDate;
@@ -188,135 +188,135 @@ export class PersistenceService {
     }
 
     async removeRow(row: RemoveRowParam): Promise<void> {
-        // vsetky db operacie dame do jednej transakcie
+        // we put all db operations into one transaction
         const fileListToRemove: Array<string> = new Array<string>();
         await this.dataSource.transaction(manager => this.removeRowInTransaction(manager, row, fileListToRemove));
-        // transakcia bola commitnuta, zmazeme pripadne subory
-        // (ak by sme mazali pred commitom a commit by nepresiel, vznikla by inkonzistencia; ak neprejde zmazanie suboru neni to az taka tragedia)
+        // the transaction was committed, we delete possible files
+        // (if we deleted before the commit and the commit did not go through, an inconsistency would arise; if deleting a file does not go through it is not such a tragedy)
         this.removeFiles(fileListToRemove);
     }
 
     async removeRowInTransaction(manager: EntityManager, row: RemoveRowParam, fileListToRemove?: Array<string>): Promise<void> {
 
-        // na OneToMany asociacii standardne mame {cascade: ["insert", "update", "remove"]}
-        // "insert" a "update" su potrebne aby sa pri zavolani save(<master>) zapisovali aj detail zaznamy,
-        // pre "remove" by som ocakaval ze sa uplatni pre remove(<master>) ale nefunguje to (ani ked zavolam remove namiesto delete)
-        // ani pridanie onDelete: "CASCADE" na OneToMany, resp. ManyToOne nepomohlo...
-        // ani poslanie celeho json objektu (aj s child zaznamami) nepomohlo... <- to je asi nutne ak to ma zafungovat...
-        // preto sme kaskadny delete dorobili, funguje cez vsetky asociacie ktore maju cascade "remove"
-        // navyse tu mame aj mazanie suborov, ak strom objektov obsahuje zaznam FileMeta
+        // on a OneToMany association we normally have {cascade: ["insert", "update", "remove"]}
+        // "insert" and "update" are needed so that detail records are also written when save(<master>) is called,
+        // for "remove" I would expect it to apply for remove(<master>) but it does not work (not even when I call remove instead of delete)
+        // adding onDelete: "CASCADE" on OneToMany, or ManyToOne, did not help either...
+        // sending the whole json object (also with child records) did not help either... <- that is probably necessary if it is to work...
+        // that is why we added cascade delete, it works through all associations that have cascade "remove"
+        // in addition we also have file deletion here, if the object tree contains a FileMeta record
 
-        // update 14.5.2024: TypeORM nepodporuje cascade delete na asociaciach ("remove" mozno sluzi na volanie listenerov zavesenych na remove operaciu, netusim...)
-        // cascade delete sa realizuje v DB cez FK constrainty (klauzula ON DELETE CASCADE - tuto klauzulu vytvara option {onDelete: "CASCADE"} zapisany
-        // na ManyToOne asociacii - v pripade ak sa generuju tabulky z modelu)
-        // jedina vynimka su ManyToMany asociacie - ak sa zavola remove(<master>) tak automaticky vymaze "link" zaznamy
-        // (ManyToMany atributy nemusia byt nacitane, TypeORM si selectami zisti ci "link" zaznamy existuju)
-        // pre jednoduchost som sa rozhodol pouzivat ON DELETE CASCADE na databaze pre "link" zaznamy (plati len pre ManyToMany asociacie)
+        // update 14.5.2024: TypeORM does not support cascade delete on associations ("remove" maybe serves to call listeners hooked on the remove operation, I do not know...)
+        // cascade delete is implemented in the DB through FK constraints (the ON DELETE CASCADE clause - this clause is created by the option {onDelete: "CASCADE"} written
+        // on the ManyToOne association - in the case when tables are generated from the model)
+        // the only exception is ManyToMany associations - if remove(<master>) is called it automatically deletes the "link" records
+        // (ManyToMany attributes do not have to be loaded, TypeORM finds out with selects whether "link" records exist)
+        // for simplicity I decided to use ON DELETE CASCADE in the database for "link" records (applies only to ManyToMany associations)
 
-        // asi by nebolo od veci v buducnosti prejst na cascade delete realizovany v DB cez FK constrainty, ked sa preto v TypeORM rozhodli...
+        // it would probably not be a bad idea in the future to switch to cascade delete implemented in the DB through FK constraints, since that is what they decided on in TypeORM...
 
         const xEntity: Entity = this.entityMetadataService.getEntity(row.entity);
         return this.removeRowsInTransaction(manager, xEntity, [row.id], fileListToRemove, row.assocsToRemove);
     }
 
     async removeRowsInTransaction(manager: EntityManager, xEntity: Entity, rowIdList: any[], fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
-        // vygenerujeme query - jednym selectom nacitame cely strom zaznamov ktory ideme vymazat
-        // prejdeme rekurzivne cez vsetky asociacie ktore maju nastaveny cascade "remove"
+        // we generate a query - with one select we load the whole tree of records that we are going to delete
+        // we go recursively through all associations that have cascade "remove" set
         const alias: string = "t";
         const repository = manager.getRepository(xEntity.name);
         const selectQueryBuilder: SelectQueryBuilder<unknown> = repository.createQueryBuilder(alias);
-        // volanie this.addAssocsOfEntity pridava left join-y do selectQueryBuilder
-        // assocsToRemove je implementovane zjednodusene, len pre prvu uroven
-        // ak to ma fungovat pre cely path napr. "assoc1.assoc2", tak treba vytvarat mapu assocAliasMap (podobne ako pri lazy tabulke)
-        // a zaroven pustat pridavanie asociacii cez cascade remove pre kazdy alias (vcetne hlavneho), zbieranie id-ciek treba vykonat tiez podobne
+        // the call this.addAssocsOfEntity adds left joins into selectQueryBuilder
+        // assocsToRemove is implemented in a simplified way, only for the first level
+        // if it is to work for a whole path e.g. "assoc1.assoc2", a map assocAliasMap has to be created (similarly as for the lazy table)
+        // and at the same time adding associations through cascade remove has to be run for each alias (including the main one), collecting ids has to be done similarly too
         if (this.addAssocsOfEntity(selectQueryBuilder, xEntity, alias, assocsToRemove)) {
-            // ak sme pridali aspon 1 leftJoin
+            // if we added at least 1 leftJoin
             selectQueryBuilder.whereInIds(rowIdList);
 
-            // nacitame cely strom a zapiseme si id-cka na remove (v spravnom poradi)
+            // we load the whole tree and write down the ids for remove (in the correct order)
             const rowList: any[] = await selectQueryBuilder.getMany();
             const rowIdListToRemove: RowIdListToRemove = new RowIdListToRemove();
             for (const row of rowList) {
                 this.addRowOfEntityToRemove(xEntity, row, rowIdListToRemove, fileListToRemove, assocsToRemove);
             }
 
-            // vymazeme nazbierane id-cka
+            // we delete the collected ids
             for (const rowIdList of rowIdListToRemove.entityRowIdListList) {
                 await this.deleteRows(manager, rowIdList.entity, rowIdList.rowIdList);
             }
         }
         else {
-            // optimalizacia
-            // nepridali sme ani 1 leftJoin, netreba robit SELECT celeho stromu, usetrime ho a ideme priamo na delete
+            // optimization
+            // we did not add even 1 leftJoin, there is no need to do a SELECT of the whole tree, we save it and go directly to delete
             await this.deleteRows(manager, xEntity.name, rowIdList);
         }
     }
 
     addAssocsOfEntity(selectQueryBuilder: SelectQueryBuilder<unknown>, xEntity: Entity, alias: string, assocsToRemove?: string[]): boolean {
-        // prejdeme vsetky asociacie (ktore maju cascade "remove", aj *toMany aj *toOne) a pridame ich do query
+        // we go through all associations (that have cascade "remove", both *toMany and *toOne) and add them into the query
         let leftJoinAdded: boolean = false;
         const assocList: Assoc[] = this.entityMetadataService.getAssocList(xEntity).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const [index, assoc] of assocList.entries()) {
-            const aliasForAssoc: string = `${alias}_${index}`; // chceme mat unique alias v ramci celeho stromu, tak vytvarame nieco ako napr. t_2_0_1
+            const aliasForAssoc: string = `${alias}_${index}`; // we want a unique alias within the whole tree, so we create something like e.g. t_2_0_1
             selectQueryBuilder.leftJoinAndSelect(`${alias}.${assoc.name}`, aliasForAssoc);
             leftJoinAdded = true;
             const xAssocEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
-            this.addAssocsOfEntity(selectQueryBuilder, xAssocEntity, aliasForAssoc, undefined); // zatial zimplementovane len pre prvu uroven
+            this.addAssocsOfEntity(selectQueryBuilder, xAssocEntity, aliasForAssoc, undefined); // for now implemented only for the first level
         }
         return leftJoinAdded;
     }
 
     addRowOfEntityToRemove(xEntity: Entity, row: any, rowIdListToRemove: RowIdListToRemove, fileListToRemove?: Array<string>, assocsToRemove?: string[]) {
-        // vymazeme "row" aj s jeho asociovanymi objektmi
-        // musime mazat v spravnom poradi aby sme nenarusili FK constrainty (a ak asociacie vytvaraju cyklus, tak nam ani spravne poradie nepomoze...)
+        // we delete "row" together with its associated objects
+        // we have to delete in the correct order so that we do not violate FK constraints (and if associations create a cycle, even the correct order will not help us...)
 
-        // najprv *toMany asociacie
+        // first the *toMany associations
         const assocToManyList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const assoc of assocToManyList) {
             const assocRowList: any[] = row[assoc.name];
             for (const assocRow of assocRowList) {
-                this.addRowOfEntityToRemove(this.entityMetadataService.getEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // zatial zimplementovane len pre prvu uroven
+                this.addRowOfEntityToRemove(this.entityMetadataService.getEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // for now implemented only for the first level
             }
         }
 
-        // ulozime id-cko zaznamu "row" na remove
+        // we store the id of the "row" record for remove
         const rowId: any = row[xEntity.idField];
         rowIdListToRemove.addRowId(xEntity.name, rowId);
-        // ak sa jedna o row typu FileMeta, vymazeme aj subor (ak existuje)
+        // if it is a row of type FileMeta, we also delete the file (if it exists)
         if (fileListToRemove !== undefined && xEntity.name === "FileMeta") {
-            // TODO - cast na FileMeta
-            // ak row.pathName === null, subor je zapisany v DB v zazname "row"
+            // TODO - cast to FileMeta
+            // if row.pathName === null, the file is written in the DB in the "row" record
             if (row.pathName !== null) {
-                // subor mazeme z adresara app-files/x-files/<xFile.pathName>
+                // we delete the file from the directory app-files/x-files/<xFile.pathName>
                 fileListToRemove.push(join(Utils.getXFilesDir(), row.pathName));
             }
         }
 
-        // teraz mozme vymazat *toOne asociacie
+        // now we can delete the *toOne associations
         const assocToOneList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-one", "many-to-one"]).filter((assoc: Assoc) => this.filterForAssocToRemove(assoc, assocsToRemove));
         for (const assoc of assocToOneList) {
             const assocRow: any = row[assoc.name];
-            // ak je v FK-stlpci null, potom je myslim asociacia null (este by mohla byt undefined (nepritomna))
+            // if there is null in the FK column, then I think the association is null (it could also be undefined (absent))
             if (assocRow) {
-                this.addRowOfEntityToRemove(this.entityMetadataService.getEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // zatial zimplementovane len pre prvu uroven
+                this.addRowOfEntityToRemove(this.entityMetadataService.getEntity(assoc.entityName), assocRow, rowIdListToRemove, fileListToRemove, undefined); // for now implemented only for the first level
             }
         }
     }
 
-    // pomocna metodka
+    // helper method
     filterForAssocToRemove(assoc: Assoc, assocsToRemove?: string[]): boolean {
         return assoc.isCascadeRemove || (assocsToRemove !== undefined && assocsToRemove.includes(assoc.name));
     }
 
     async deleteRows(manager: EntityManager, entity: string, rowIdList: any[]) {
         const repository = manager.getRepository(entity);
-        // delete vykona priamo DELETE FROM, na rozdiel od remove, ktory najprv SELECT-om overi ci dane zaznamy existuju v DB
+        // delete executes DELETE FROM directly, unlike remove, which first checks with a SELECT whether the given records exist in the DB
         await repository.delete(rowIdList);
     }
 
     removeFiles(fileListToRemove: Array<string>) {
         for (const file of fileListToRemove) {
-            // ak sa nepodari vymazat subor, tak len zalogujeme
+            // if deleting the file fails, we only log it
             try {
                 unlinkSync(file);
             }
@@ -372,7 +372,7 @@ export class PersistenceService {
         if (lockDateFromDB && lockDateFromDB.getTime() === dateFromModel(unlockRowRequest.lockDate).getTime()) {
             row.lockDate = null;
             row.lockUser = null;
-            await manager.getRepository(unlockRowRequest.entity).save(row); // zatial dame save, lebo update inkrementuje version atribut
+            await manager.getRepository(unlockRowRequest.entity).save(row); // for now we use save, because update increments the version attribute
         }
     }
 
@@ -398,7 +398,7 @@ export class PersistenceService {
 
         const xEntity: Entity = this.entityMetadataService.getEntity(row.entity);
 
-        // prejdeme vsetky *ToMany asociacie (ktore maju cascade "remove") a zmazeme ich child zaznamy
+        // we go through all *ToMany associations (that have cascade "remove") and delete their child records
         const assocList: Assoc[] = this.entityMetadataService.getAssocList(xEntity, ["one-to-many", "many-to-many"]).filter((assoc: Assoc) => assoc.isCascadeRemove);
         for (const assoc of assocList) {
             const xChildEntity: Entity = this.entityMetadataService.getEntity(assoc.entityName);
@@ -407,36 +407,36 @@ export class PersistenceService {
             }
             const childRepository = manager.getRepository(xChildEntity.name);
             const selectQueryBuilder: SelectQueryBuilder<unknown> = childRepository.createQueryBuilder("t0");
-            // poznamka: ManyToOne/OneToOne asociacia "t0.${assoc.inverseAssocName}" sa transformuje na "t0.<idField>" v sql
+            // note: the ManyToOne/OneToOne association "t0.${assoc.inverseAssocName}" is transformed to "t0.<idField>" in sql
             selectQueryBuilder.where(`t0.${assoc.inverseAssocName} = :rowId`, {rowId: row.id});
             const rowList: any[] = await selectQueryBuilder.getMany();
             if (rowList.length > 0) {
-                // delete vykona priamo DELETE FROM, na rozdiel od remove, ktory najprv SELECT-om overi ci dane zaznamy existuju v DB
+                // delete executes DELETE FROM directly, unlike remove, which first checks with a SELECT whether the given records exist in the DB
                 const rowIdList: any[] = rowList.map(row => row[xChildEntity.idField]);
                 await childRepository.delete(rowIdList);
             }
         }
 
-        // samotny delete entity
+        // the actual delete of the entity
         const repository = manager.getRepository(row.entity);
         await repository.delete(row.id);
 
         /*
-            POZNAMKA: efektivnejsie by bolo pouzivat DeleteQueryBuilder (priamy DELETE FROM ... WHERE <fk-stlpec> = <id>),
-            ten ma vsak bugy - tu je priklad kodu ktory som skusal (predpoklada ze popri ManyToOne asociacii mame aj atribut pre FK stlpec)
+            NOTE: it would be more efficient to use DeleteQueryBuilder (direct DELETE FROM ... WHERE <fk-column> = <id>),
+            but it has bugs - here is an example of code that I tried (it assumes that alongside the ManyToOne association we also have an attribute for the FK column)
 
             const repository = this.dataSource.getRepository(VydajDobrovolnik);
 
-            // DeleteQueryBuilder nefunguje ak chceme pouzivat aliasy tabuliek a mapovat nazvy atributov do nazvov stlpcov
-            // je to bug - https://github.com/typeorm/typeorm/issues/5931
+            // DeleteQueryBuilder does not work if we want to use table aliases and map attribute names to column names
+            // it is a bug - https://github.com/typeorm/typeorm/issues/5931
             const selectQueryBuilder: SelectQueryBuilder<VydajDobrovolnik> = repository.createQueryBuilder();
             //selectQueryBuilder.where("vydajD.idVydaj = :idVydaj", {idVydaj: row.id});
             await selectQueryBuilder.delete().from(VydajDobrovolnik, "vydajDobr").where("vydajDobr.idVydaj = :idVydaj", {idVydaj: row.id}).execute();
-            // vrati:
+            // returns:
             //query failed: DELETE FROM `vydaj_dobrovolnik` WHERE vydajDobr.idVydaj = ? -- PARAMETERS: [22]
             //error: Error: ER_BAD_FIELD_ERROR: Unknown column 'vydajDobr.idVydaj' in 'where clause'
 
-            // nezafunguje ani toto:
+            // this does not work either:
             const selectQueryBuilder: SelectQueryBuilder<VydajDobrovolnik> = repository.createQueryBuilder("vydajD");
             selectQueryBuilder.where("vydajD.idVydaj = :idVydaj", {idVydaj: row.id});
             await selectQueryBuilder.delete().execute();
@@ -463,23 +463,23 @@ export class PersistenceService {
 
     async userSaveRow(row: SaveRowParam) {
         const repository = this.dataSource.getRepository(row.entity);
-        // ak bolo zmenene heslo, treba ho zahashovat
-        // ak nebolo vyplnene nove heslo, tak v password pride undefined a mapper atribut nebude menit
+        // if the password was changed, it has to be hashed
+        // if a new password was not filled in, then undefined comes in password and the mapper will not change the attribute
         if (Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.LOCAL) {
             if (row.object.password && row.object.password !== '') {
                 row.object.password = await this.localAuthService.hashPassword(row.object.password);
             }
         }
 
-        // projekt depaul potrebuje pracovat s detail zaznamami, preto volame this.saveRow
+        // the depaul project needs to work with detail records, that is why we call this.saveRow
         //await repository.save(row.object);
         await this.saveRow(row);
     }
 
     /* old authentication
-    // zatial docasne sem
+    // temporarily here for now
     async checkAuthentication(headerAuth: string) {
-        // zatial pre jednoduchost skontrolujeme vzdy v DB (lepsie by bolo cachovat)
+        // for now for simplicity we always check in the DB (it would be better to cache)
         if (headerAuth === undefined) {
             throw "Authentication failed.";
         }
@@ -494,7 +494,7 @@ export class PersistenceService {
         const username: string = headerAuthDecoded.substring(0, posColon);
         const password: string = headerAuthDecoded.substring(posColon + 1);
 
-        // poznamka: zjavne tento jednoduchy sposob (select only password) bol pouzity lebo tento select sa volal pri kazdom requeste
+        // note: apparently this simple way (select only password) was used because this select was called on every request
         const repository = this.dataSource.getRepository(XUser);
         const selectQueryBuilder: SelectQueryBuilder<XUser> = repository.createQueryBuilder("xUser");
         selectQueryBuilder.select("xUser.password", "passwordDB");
@@ -548,7 +548,7 @@ export class PersistenceService {
             }
         }
         else if (Utils.getEnvVarValue(EnvVar.X_AUTH) === Auth.MS_ENTRA_ID) {
-            // toto sa pouziva pri AAD - preferred_username je podozrivy nazov ale nechcelo sa mi hladat nieco lepsie
+            // this is used for AAD - preferred_username is a suspicious name but I did not feel like looking for something better
             //console.log(reqUser);
             username = reqUser.preferred_username
         }
@@ -557,9 +557,9 @@ export class PersistenceService {
         const selectQueryBuilder: SelectQueryBuilder<User> = repository.createQueryBuilder("xUser");
         selectQueryBuilder.where("xUser.username = :username", {username: username});
         const xUser: User | null = await selectQueryBuilder.getOne();
-        // synchronizaciu udajov vypneme, lebo pri auth0 kontach nam prepisuje meno e-mailom
+        // we turn off data synchronization, because for auth0 accounts it overwrites the name with the email
         // if (xUser !== null) {
-        //     // synchronizacia udajov
+        //     // data synchronization
         //     if (xPostLoginRequest.username !== undefined) {
         //         xUser.name = xPostLoginRequest.username;
         //         await repository.save(xUser);

@@ -6,7 +6,7 @@ import {
 import {Utils} from "../../utils/Utils";
 import {InputText} from "primereact/inputtext";
 
-// koli optimalizacii - typovany text si zapisuje do svojej stavovej premennej a onChange zavola az z onBlur
+// for optimization - it writes the typed text into its own state variable and calls onChange only from onBlur
 // used for filter element in LazyDataTable - if there was many rows/columns in datatable, typing in filter was slow (if setState was called after every character change)
 
 export const TextInput = (props: {
@@ -19,42 +19,42 @@ export const TextInput = (props: {
     placeholder?: string;
     className?: string;
     style?: CSSProperties;
-    error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
+    error?: string; // error message, if we want to mark the field as invalid
 }) => {
 
-    // true, ak uzivatel typuje hodnotu
-    // false, ak uz uzivatel dotypoval (zavolal sa onBlur) - hodnotu berieme "z hora" (z prop.value)
+    // true if the user is typing a value
+    // false if the user has finished typing (onBlur was called) - we take the value "from above" (from prop.value)
     const [inputChanged, setInputChanged] = useState<boolean>(false);
-    // pouzivane, len ak inputChanged === true, je tu zapisana zmenena hodnota v inpute
+    // used only if inputChanged === true; the changed value in the input is stored here
     const [inputValueState, setInputValueState] = useState<string | undefined>(undefined);
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-        // standardne prichadza z Calendar e.value - typ Date alebo null
-        // typ Date prichadza ak uzivatel vyplnil validny datum, null (typeof e.value vracia "object") prichadza ak uzivatel vymazal datum
-        // alebo je este datum nekompletny (uzivatel prave zadava datum)
-        // nastavili sme keepInvalid={true} -> bude chodit nevalidny string (typeof e.value vracia "string")
-        // naviac sme vypli parsovanie na datum (metoda parseDateTime), takze vzdy chodi "string" a konverziu robime v onBlur
+        // normally e.value comes from Calendar - type Date or null
+        // type Date comes if the user filled in a valid date, null (typeof e.value returns "object") comes if the user deleted the date
+        // or the date is still incomplete (the user is just entering the date)
+        // we set keepInvalid={true} -> an invalid string will come (typeof e.value returns "string")
+        // in addition we turned off parsing to a date (method parseDateTime), so "string" always comes and we do the conversion in onBlur
 
         //const value: string | null = stringFromUI(e.target.value);
 
         setInputChanged(true);
-        setInputValueState(e.target.value); // vzdycky string
+        setInputValueState(e.target.value); // always a string
     }
 
     const onBlur = (e: FocusEvent<HTMLInputElement>) => {
         if (inputChanged) {
-            // poznamka: e.target.value aj inputValueState obsahuju tu istu string hodnotu
+            // note: e.target.value and inputValueState contain the same string value
             const value: string | null = stringFromUI(e.target.value);
             props.onChange(value);
             setInputChanged(false);
-            setInputValueState(undefined); // pre poriadok
+            setInputValueState(undefined); // for the sake of order
         }
     }
 
     const getInputValue = (): any => {
         let inputValue: any;
         if (inputChanged) {
-            inputValue = inputValueState!; // vzdycky string
+            inputValue = inputValueState!; // always a string
         }
         else {
             inputValue = stringAsUI(props.value);

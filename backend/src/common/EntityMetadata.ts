@@ -33,11 +33,11 @@ export type RelationType = "one-to-one" | "one-to-many" | "many-to-one" | "many-
 export interface Assoc {
     relationType: RelationType;
     name: string;
-    entityName: string; // entita na druhej strane asociacie
-    inverseAssocName?: string; // opacna asociacia
+    entityName: string; // entity on the other side of the association
+    inverseAssocName?: string; // inverse association
     isCascadeInsert: boolean;
     isCascadeUpdate: boolean;
     isCascadeRemove: boolean;
-    isNullable: boolean; // pouzivane (zatial) len pre *ToOne asociacie
+    isNullable: boolean; // used (for now) only for *ToOne associations
 }
 

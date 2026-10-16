@@ -37,15 +37,15 @@ function removeAuth0RefreshToken(): void {
 */
 
 export const Auth0Provider = ({children}: {children: ReactNode;}) => {
-    // na fungovanie klienta stacili domain, clientId, redirectUri - tak som nechal len tie
-    // a este som sem pridal audience (id-cko backend-u) aby pri prihlasovani pytal suhlas na scope "profile"
-    // (bez toho pri getAccessTokenSilently vrati chybu "Consent required", v doku sa pise: user cannot provide consent during a non-interactive flow (like getAccessTokenSilently))
-    // scope "profile" je pravdepodobne defaultny scope ktory sa vzdy vyzaduje
-    // tu su dalsie atributy, ktore tu boli zapisane (audience, scope sa daju zapisat pri zavolani getAccessTokenSilently)
+    // for the client to work, domain, clientId, redirectUri were enough - so I left only those
+    // and I also added audience here (the id of the backend) so that during login it asks for consent for scope "profile"
+    // (without that, getAccessTokenSilently returns the error "Consent required", the docs say: user cannot provide consent during a non-interactive flow (like getAccessTokenSilently))
+    // scope "profile" is probably the default scope that is always required
+    // here are further attributes that were written here (audience, scope can be written when calling getAccessTokenSilently)
     // responseType="token id_token"
     // scope="openid profile admin:demo try:demo"
-    // redirect_uri je url-ka, na ktoru sa flow vrati po logine z auth0.com (musi byt uvedena v configuracii aplikacie na auth0.com vo fielde Allowed Callback URLs)
-    // (poznamka: mohli by sme pouzivat window.location.origin + "/callback" a na "/callback" v router-i zavesit specialny komponent ktory by sa cez navigate() dostal na spravnu stranku)
+    // redirect_uri is the url to which the flow returns after login from auth0.com (it must be listed in the application configuration on auth0.com in the field Allowed Callback URLs)
+    // (note: we could use window.location.origin + "/callback" and on "/callback" in the router hang a special component that would get to the right page via navigate())
     //console.log('redirect_uri = ' + window.location.origin + window.location.pathname);
     return (
         <Auth0Auth0Provider
@@ -77,19 +77,19 @@ function AppAuth0({children}: {children: ReactNode;}) {
         try {
             await setAuthSessionAndDoPostLogin();
             await fetchAndSetXMetadata();
-            // vsetko zbehlo, app-ka je inicializovana
+            // everything went through, the app is initialized
             setInitialized(true);
         }
         catch (err) {
             if (err instanceof UserNotFoundOrDisabledError) {
-                // prihlasil sa napr. gmail user, ktory nie je uvedeny v DB
-                // zrusime nastaveny access token
+                // e.g. a gmail user who is not listed in the DB signed in
+                // we clear the set access token
                 setSession(null);
-                // odhlasime uzivatela
+                // we log the user out
                 logout({logoutParams: {returnTo: window.location.origin}});
             }
             else {
-                // ak bola ina chyba, aplikacia spadne
+                // if there was another error, the application crashes
                 throw err;
             }
         }
@@ -99,16 +99,16 @@ function AppAuth0({children}: {children: ReactNode;}) {
 
         // const accessToken: string = await getAccessTokenSilently(/*{
         //     audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)
-        //     //scope: "openid profile admin:demo try:demo" - treba nam na nieco?
+        //     //scope: "openid profile admin:demo try:demo" - do we need it for something?
         // }*/);
 
-        // neviem ci tu je idealne miesto kde nastavit metodku getAccessToken, zatial dame sem
+        // I do not know if this is the ideal place to set the getAccessToken method, for now we put it here
         const accessToken: () => Promise<string> = getAccessToken;
         setSession({accessToken: accessToken});
 
-        // zavolame x-post-login
-        // - overime ci je user zapisany v DB (toto sa da obist - TODO - poriesit)
-        // - zosynchronizujeme zmeny (pre pripad ak sa zmenilo napr. Meno, Priezvisko) - TODO
+        // we call x-post-login
+        // - we check whether the user is written in the DB (this can be bypassed - TODO - deal with it)
+        // - we synchronize changes (for the case that e.g. Meno, Priezvisko changed) - TODO
         let xPostLoginResponse: PostLoginResponse;
         try {
             const xPostLoginRequest: PostLoginRequest = {username: user?.name};
@@ -130,16 +130,16 @@ function AppAuth0({children}: {children: ReactNode;}) {
         }
 
         if (xPostLoginResponse.user === undefined) {
-            // nenasli sme usera v DB
+            // we did not find the user in the DB
             alert(`User account "${user?.email}" not found in DB. Login not permitted. Ask admin to create user account in DB.`);
-            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            // we use a custom exception that we catch later (a nicer solution than returning true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
         if (!xPostLoginResponse.user.enabled) {
-            // user je disablovany
+            // the user is disabled
             alert(`User account "${user?.email}" is not enabled. Ask admin to enable user account.`);
-            // pouzijeme custom exception ktoru neskor odchytime (krajsie riesenie ako vracat true/false)
+            // we use a custom exception that we catch later (a nicer solution than returning true/false)
             throw new UserNotFoundOrDisabledError();
         }
 
@@ -156,13 +156,13 @@ function AppAuth0({children}: {children: ReactNode;}) {
         await UtilsMetadata.fetchAndSetXBrowseMetaMap();
     }
 
-    // tato funkcia sa vola pred kazdym requestom na backend - vola sa v metode Utils.fetchBasic
-    // ked sa vola len pri inicializacii, tak token po case (24h default) exspiruje a user si musi restartnut aplikaciu
+    // this function is called before every request to the backend - it is called in the method Utils.fetchBasic
+    // if it is called only during initialization, the token expires after some time (24h default) and the user has to restart the application
     const getAccessToken = async (): Promise<string> => {
 
         const accessToken: string | undefined = await getAccessTokenSilently(/*{
             audience: Utils.getEnvVarValue(EnvVar.VITE_AUTH0_AUDIENCE)
-            //scope: "openid profile admin:demo try:demo" - treba nam na nieco?
+            //scope: "openid profile admin:demo try:demo" - do we need it for something?
         }*/);
         if (accessToken === undefined) {
             throw new Error("Auth0 did not return an access token.");
@@ -177,9 +177,9 @@ function AppAuth0({children}: {children: ReactNode;}) {
     else {
         if (!isAuthenticated) {
             //removeAuth0RefreshToken();
-            // otvori Auth0 prihlasovaciu stranku
-            // window.location.pathname obsahuje path cast z volanej url-ky (napr. "/cars")
-            // pri volani callback uri (navrat z auth0 do app-ky) zjavne automaticky pouzije tento ulozeny path
+            // opens the Auth0 login page
+            // window.location.pathname contains the path part of the called url (e.g. "/cars")
+            // when calling the callback uri (return from auth0 to the app) it apparently automatically uses this stored path
             loginWithRedirect({
                 appState: { returnTo: window.location.pathname }
             });

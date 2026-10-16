@@ -19,7 +19,7 @@ export class EntityMetadataService {
             entityMap = {};
             const entityMetadataList = this.dataSource.entityMetadatas;
             for (const entityMetadata of entityMetadataList) {
-                if (!entityMetadata.isJunction) { // tabulky vytvorene manyToMany asociaciami nechceme
+                if (!entityMetadata.isJunction) { // we do not want tables created by manyToMany associations
                     const entity: Entity = this.getEntityForEntityMetadata(entityMetadata);
                     entityMap[entity.name] = entity;
                 }
@@ -50,26 +50,26 @@ export class EntityMetadataService {
             let type = "unknown"; // default
             if (typeof columnMetadata.type === "string") {
                 type = columnMetadata.type;
-                // nech nemame na klientovi milion vseliakych databazovych typov, tak si prehodime niektore typy na javascript-ove, t.j. napr. string, number
+                // so that we do not have a million assorted database types on the client, we convert some types to javascript ones, i.e. e.g. string, number
                 if (type === "character varying") {
                     type = "string";
                 }
                 else if (type === "int" || type === "integer") {
                     type = "number";
                 }
-                // entity generator pre postgres generuje pre db stlpce typu DECIMAL (financne sumy) typ numeric - na frontende pouzivame decimal
+                // the entity generator for postgres generates type numeric for db columns of type DECIMAL (financial amounts) - on the frontend we use decimal
                 else if (type === "numeric") {
                     type = "decimal";
                 }
-                // postgres nepouziva datetime ale timestamp, ale na klientovi riesime datetime stlpce pomocou typu datetime
+                // postgres does not use datetime but timestamp, but on the client we handle datetime columns using the datetime type
                 else if (type === "timestamp" || type === "timestamp without time zone") {
                     type = "datetime";
                 }
             }
             else if (typeof columnMetadata.type === "function") {
-                // ak nezapiseme do dekoratora @Column atribut type, zbieha tato vetva a ziskame typ atributu (string, number, ...) (plati napr. pre id-cka)
-                // columnMetadata.type.toString() vracia napr. "function String() { [native code] }", resp. "function Number() { [native code] }"
-                // vytiahneme odtial String
+                // if we do not write the type attribute into the @Column decorator, this branch runs and we get the attribute type (string, number, ...) (applies e.g. to ids)
+                // columnMetadata.type.toString() returns e.g. "function String() { [native code] }", or "function Number() { [native code] }"
+                // we extract String from there
                 const typeString: string = columnMetadata.type.toString();
                 const parenthesePos = typeString.indexOf("()");
                 if (parenthesePos !== -1) {
@@ -87,7 +87,7 @@ export class EntityMetadataService {
             if (type === "number" && width === undefined) {
                 width = 11;
             }
-            // poznamka: columnMetadata.isNullable - default je false, co nie je moc prijemne, vecsina stlpcov je nullable
+            // note: columnMetadata.isNullable - the default is false, which is not very pleasant, most columns are nullable
             fieldMap[fieldName] = {name: fieldName, type: type, isNullable: columnMetadata.isNullable,
                                     length: length, precision: columnMetadata.precision, scale: columnMetadata.scale, width: width};
         }
@@ -101,8 +101,8 @@ export class EntityMetadataService {
             idField = columnMetadataList[0].propertyName;
         }
         else {
-            // povolili sme composite PK, napr. specialna entita ZapisField
-            // dame takto, snad sa to nebude nikde pouzivat
+            // we allowed a composite PK, e.g. the special entity ZapisField
+            // we do it this way, hopefully it will not be used anywhere
             idField = columnMetadataList.map((value: ColumnMetadata) => value.propertyName).join(", ");
         }
 
@@ -115,7 +115,7 @@ export class EntityMetadataService {
         for (const relationMetadata of relationMetadataList) {
             const assocName = relationMetadata.propertyName;
             const inverseAssoc = relationMetadata.inverseRelation?.propertyName;
-            // poznamka: relationMetadata.isNullable - default je true (na rozdiel od columnMetadata!), ale mozno to v buducnosti zjednotia so stlpcami, takze je lepsie to vzdy explicitne uviest
+            // note: relationMetadata.isNullable - the default is true (unlike columnMetadata!), but maybe in the future they will unify it with columns, so it is better to always specify it explicitly
             assocMap[assocName] = ({
                 relationType: relationMetadata.relationType,
                 name: assocName,
@@ -136,7 +136,7 @@ export class EntityMetadataService {
      * @deprecated
      */
     getEntity(entity: string): Entity {
-        this.getEntityMap(); // pre istotu, nech sa zoznam nainicializuje, ak treba
+        this.getEntityMap(); // just in case, so that the list gets initialized if needed
         return UtilsMetadataCommon.getEntity(entity);
     }
 

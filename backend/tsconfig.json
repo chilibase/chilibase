@@ -1,4 +1,4 @@
-/* vytvorene podla XDevNestServerApp, poznamka: asi netreba mat v "exclude" napr. "node_modules", ked pouzivame "include" */
+/* created based on XDevNestServerApp, note: we probably do not need to have e.g. "node_modules" in "exclude" when we use "include" */
 {
   "compilerOptions": {
     "module": "NodeNext",

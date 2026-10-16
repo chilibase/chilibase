@@ -4,9 +4,9 @@ export type FormErrorMap = Record<string, string>;
 export interface FieldError {
     onChange?: string;
     onBlur?: string;
-    form?: string; // sem pride error z FormErrorMap (custom validacia na urovni formulara)
-    fieldLabel?: string; // z technickych dovodov si uz pri vytvoreni FieldError sem ulozime label componentu ktory vyprodukoval FieldError
-    // (teoreticky mozme mat viacero komponentov na jednej asociacii (SearchButton, Dropdown, ...) a potom je problem spatne najst component podla fieldId)
+    form?: string; // the error from FormErrorMap goes here (custom validation at the form level)
+    fieldLabel?: string; // for technical reasons we store here, already when creating FieldError, the label of the component that produced the FieldError
+    // (theoretically we can have several components on one association (SearchButton, Dropdown, ...) and then it is a problem to find the component back by fieldId)
 }
 
 // used internal in lib

@@ -35,15 +35,15 @@ export class Utils {
 
     static xBackendUrl: string | undefined = undefined;
 
-    // nacachovana AuthSession - na rozlicnych miestach potrebujeme vediet uzivatela
+    // cached AuthSession - in various places we need to know the user
     static authSession: AuthSession | null = null;
 
-    // nacachovane metadata (setuju sa v App.fetchAndSetXMetadata)
+    // cached metadata (set in App.fetchAndSetXMetadata)
     private static appFormMap: {[name: string]: any;} = {};
 
     static exportTypeOptions = [ExportType.Excel, ExportType.Csv, ExportType.Json];
 
-    // moznost Off zatial nie je implementovana
+    // the Off option is not implemented for now
     static toManyAssocExportTypeExcelOptions = [ToManyAssocExportType.Singleline, ToManyAssocExportType.Multiline, ToManyAssocExportType.Multirow/*, ToManyAssocExportType.Off*/];
     static toManyAssocExportTypeCsvOptions = [ToManyAssocExportType.Singleline, ToManyAssocExportType.Multirow/*, ToManyAssocExportType.Off*/];
 
@@ -55,7 +55,7 @@ export class Utils {
 
     static remSize: number | null = null;
 
-    // konstanty (zatial takto jednoducho)
+    // constants (for now simply like this)
     static FIELD_LABEL_WIDTH: string = '10.5rem';
 
     static lastVersionCheckTimestamp: number | null = null;
@@ -73,11 +73,11 @@ export class Utils {
     }
 
     static isMobile(): boolean {
-        // extra small displays (podla https://www.w3schools.com/howto/howto_css_media_query_breakpoints.asp)
-        // mozno tu treba dat (window.screen.width * window.devicePixelRatio)
-        // bolo 600 ($sm = 576 (primeflex)) - len ak bol mobil na vysku, 768 ma byt aj pre mobil na sirku
+        // extra small displays (according to https://www.w3schools.com/howto/howto_css_media_query_breakpoints.asp)
+        // maybe (window.screen.width * window.devicePixelRatio) should be put here
+        // it used to be 600 ($sm = 576 (primeflex)) - only if the phone was in portrait, 768 should also be for the phone in landscape
         //return typeof window !== 'undefined' && window.screen.availWidth < 768; // $sm = 576 (primeflex)
-        // blblo mi window.screen.availWidth (vracalo 1920 v mobile mode v browseri)
+        // window.screen.availWidth was misbehaving for me (it returned 1920 in mobile mode in the browser)
         return Utils.getViewWidth() < 768;
     }
 
@@ -140,7 +140,7 @@ export class Utils {
     // according to device width returns "exp(n)"
     static processGridBreakpoints(breakpointExp: string): string | undefined {
         const breakpointList: string[] = breakpointExp.split(' ');
-        // pridame si prefix xs: ak neni ziaden prefix, aby sa s tym lahsie pracovalo
+        // we add the prefix xs: if there is no prefix, so that it is easier to work with
         for (const [index, breakpoint] of breakpointList.entries()) {
             if (breakpoint !== '' && breakpoint.indexOf(':') === -1) {
                 breakpointList[index] = 'xs:' + breakpoint;
@@ -150,8 +150,8 @@ export class Utils {
         let breakpointsToFind: string[];
         let availWidth;
         if (typeof window !== 'undefined') {
-            //availWidth = window.screen.availWidth; // pouzivame availWidth, nie width, availWidth odratava napr. taskbar
-            // blblo mi window.screen.availWidth (vracalo 1920 v mobile mode v browseri) - mozno by tu malo byt window.outerWidth
+            //availWidth = window.screen.availWidth; // we use availWidth, not width, availWidth subtracts e.g. the taskbar
+            // window.screen.availWidth was misbehaving for me (it returned 1920 in mobile mode in the browser) - maybe window.outerWidth should be here
             availWidth = Utils.getViewWidth();
             if (availWidth < 576) {
                 breakpointsToFind = ['xs:'];
@@ -206,9 +206,9 @@ export class Utils {
         }
     }
 
-    // zatial nepouzivane - v buducnosti sa takto mozu vytvorit registre browsov a formularov, ktore potom budeme vediet otvorit len na zaklade entity
+    // unused for now - in the future registries of browses and forms can be created this way, which we will then be able to open only based on the entity
     static registerAppBrowse(elem: any, entity: string, formId?: string): void {
-        // console.log("***************** sme v register");
+        // console.log("***************** we are in register");
         // console.log(elem);
         // console.log(entity);
     }
@@ -227,14 +227,14 @@ export class Utils {
         return Utils.fetch(path, value);
     }
 
-    // pomocna metodka pouzivajuca lazyDataTable service
+    // helper method using the lazyDataTable service
     static async fetchRows(entity: string, customFilter?: CustomFilter | undefined, sortField?: string | DataTableSortMeta[] | undefined, fields?: string[]): Promise<any[]> {
         const findParam: FindParam = {resultType: ResultType.AllRows, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter), multiSortMeta: UtilsCommon.createMultiSortMeta(sortField), fields: fields};
         const {rowList}: {rowList: any[];} = await Utils.fetchOne('x-lazy-data-table-find-rows', findParam);
         return rowList;
     }
 
-    // pomocna metodka pouzivajuca lazyDataTable service
+    // helper method using the lazyDataTable service
     static async fetchRowCount(entity: string, customFilter?: CustomFilter | undefined): Promise<number> {
         const findParam: FindParam = {resultType: ResultType.OnlyRowCount, entity: entity, customFilterItems: UtilsCommon.createCustomFilterItems(customFilter)};
         const {totalRecords}: {totalRecords: number;} = await Utils.fetchOne('x-lazy-data-table-find-rows', findParam);
@@ -275,10 +275,10 @@ export class Utils {
             Utils.showErrorMessage(localeOption('fileDownloadFailed'), e);  // next info (apiPath, payload) should be in "e"
             return false;
         }
-        // let respJson = await response.json(); - konvertuje do json objektu
+        // let respJson = await response.json(); - converts into a json object
         let respBlob = await response.blob();
 
-        // download blob-u (download by mal fungovat asynchronne a "stream-ovo" v spolupraci so servrom)
+        // download of the blob (the download should work asynchronously and in a "streaming" way in cooperation with the server)
         let url = window.URL.createObjectURL(respBlob);
         let a = document.createElement('a');
         a.href = url;
@@ -303,25 +303,25 @@ export class Utils {
             fileToPost,
             fileToPost.name
         );
-        // poznamka: metoda fetch automaticky prida do headers 'Content-Type': 'multipart/form-data' aj s boundery
+        // note: the fetch method automatically adds 'Content-Type': 'multipart/form-data' into headers, including the boundary
         const response = await Utils.fetchBasic(path, {}, formData);
         return await response.json();
     }
 
 /*
-    // nepouzivana stara Basic autentifikacia
+    // unused old Basic authentication
     static async fetchBasicAuthBasic(path: string, headers: any, body: any, usePublicToken?: boolean | XToken): Promise<Response> {
         let xToken: XToken | null;
         if (typeof usePublicToken === 'object') {
             xToken = usePublicToken;
         }
         else if (usePublicToken) {
-            xToken = Utils.xTokenPublic; // public token vzdy
+            xToken = Utils.xTokenPublic; // public token always
         }
         else {
             xToken = Utils.getXToken();
             if (xToken === null) {
-                xToken = Utils.xTokenPublic; // ak nikto nie je prihlaseny, posleme public token
+                xToken = Utils.xTokenPublic; // if nobody is logged in, we send the public token
             }
         }
         headers = {...headers,
@@ -400,10 +400,10 @@ export class Utils {
         }
         let accessToken: string;
         if (typeof authSession.accessToken === 'function') {
-            accessToken = await authSession.accessToken(); // ziskame access token volanim getAccessTokenSilently (pripadne podobnym)
+            accessToken = await authSession.accessToken(); // we obtain the access token by calling getAccessTokenSilently (or something similar)
         }
         else if (authSession.accessToken !== undefined) {
-            accessToken = authSession.accessToken; // mame rovno access token
+            accessToken = authSession.accessToken; // we have the access token directly
         }
         else {
             throw "Unexpected error - Utils.authSession.accessToken is undefined";
@@ -458,7 +458,7 @@ export class Utils {
         return value === "true";
     }
 
-    // funkcionalita ktoru by bolo dobre dat do servisov
+    // functionality that would be good to put into services
 
     static async removeRow(entity: string, row: any) {
         const xEntity: Entity = UtilsMetadataCommon.getEntity(entity);
@@ -468,7 +468,7 @@ export class Utils {
 
     // helper
     static isReadOnly(path: string, readOnlyInit?: boolean): boolean {
-        // ak mame path dlzky 2 a viac, field je vzdy readOnly
+        // if we have a path of length 2 or more, the field is always readOnly
         let readOnly: boolean;
         if (!UtilsCommon.isSingleField(path)) {
             readOnly = true;
@@ -479,7 +479,7 @@ export class Utils {
         return readOnly;
     }
 
-    // docasna funkcia, kym sa vsade nebude pouzivat TableFormField a jej isReadOnly()
+    // temporary function, until TableFormField and its isReadOnly() are used everywhere
     static isReadOnlyTableField(path: string | undefined, readOnly: TableFieldReadOnlyProp | undefined, entityRow: EntityRow | null, tableRow: any): boolean {
 
         let isReadOnly: boolean;
@@ -498,7 +498,7 @@ export class Utils {
             isReadOnly = readOnly;
         }
         else if (typeof readOnly === 'function') {
-            // TODO - tazko povedat ci niekedy bude entityRow === null (asi ano vid metodu getFilterBase)
+            // TODO - hard to say whether entityRow === null will ever happen (probably yes, see the method getFilterBase)
             if (entityRow) {
                 isReadOnly = readOnly(entityRow, tableRow);
             }
@@ -547,7 +547,7 @@ export class Utils {
             msg += `${e.name}: ${e.message}`;
         }
         else if (typeof e === 'string' || typeof e === 'number') {
-            // chyba typu: throw 'nieco'
+            // error of the type: throw 'something'
             msg += e;
         }
         alert(msg);
@@ -558,15 +558,15 @@ export class Utils {
         return match ? match[1] : "unknown";
     }
 
-    // pouziva sa hlavne na inputy
+    // used mainly for inputs
     static createTooltipOrErrorProps(error: string | undefined, tooltip?: string | undefined): object {
-        // error ma prednost, ak nemame error, dame tooltip ak mame
+        // error takes precedence, if we do not have an error, we set the tooltip if we have one
         return error ? {className: "p-invalid", tooltip: error, tooltipOptions: { className: 'pink-tooltip', position: 'bottom' }}
                         : (tooltip ? {tooltip: tooltip, tooltipOptions: {position: 'bottom'}} : {});
     }
 
-    // pomocna metodka - prida className do props, ak uz className v props existuje tak len pripoji dalsiu hodnotu
-    // pouzivame ju, lebo Utils.createErrorProps nam prebijal className
+    // helper method - adds className into props, if className already exists in props it only appends another value
+    // we use it because Utils.createErrorProps was overwriting className for us
     static addClassName(props: {[key: string]: any;}, className: string | undefined): {[key: string]: any;} {
         let propsClassName: string = props.className;
         if (className !== undefined) {
@@ -581,8 +581,8 @@ export class Utils {
         return props;
     }
 
-    // pomocna metodka
-    // ak nie su v fieldErrorMap ziadne chyby, vrati ""
+    // helper method
+    // if there are no errors in fieldErrorMap, it returns ""
     static getErrorMessages(fieldErrorMap: FieldErrorMap): string {
         let msg: string = "";
         for (const [field, fieldError] of Object.entries(fieldErrorMap)) {
@@ -619,16 +619,16 @@ export class Utils {
         return undefined;
     }
 
-    // pomocna metodka pouzivana (zatial len) pre autocomplete na ignorovanie velkych-malych znakov a diakritiky
+    // helper method used (for now only) for autocomplete to ignore upper/lower case and diacritics
     static normalizeString(value: string): string {
         if (value) {
-            // odstranuje vselijaku moznu diakritiku, pre nas je dolezite, ze zmeni "ľščťžýáíéúäňô" na "lsctzyaieuano"
+            // removes all kinds of possible diacritics, for us it is important that it changes "ľščťžýáíéúäňô" to "lsctzyaieuano"
             value = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
         return value;
     }
 
-    // pomocna metodka
+    // helper method
     static evalFilter(filter: FilterOrFunction | undefined): CustomFilter | undefined {
         let customFilter: CustomFilter | undefined = undefined;
         if (typeof filter === 'object') {
@@ -640,12 +640,12 @@ export class Utils {
         return customFilter;
     }
 
-    // pomocna metodka
+    // helper method
     static isTableRowInserted(tableRow: any): boolean {
-        return tableRow.__x_generatedRowId ?? false; // specialny priznak, ze sme vygenerovali id-cko
+        return tableRow.__x_generatedRowId ?? false; // special flag that we generated the id
     }
 
-    // pomocna metodka
+    // helper method
     static xViewStatus(xViewStatusOrBoolean: ViewStatusOrBoolean): ViewStatus {
         let xViewStatus: ViewStatus;
         if (typeof xViewStatusOrBoolean === "boolean") {

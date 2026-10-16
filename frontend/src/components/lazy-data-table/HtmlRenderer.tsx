@@ -29,10 +29,10 @@ export const HtmlRenderer = (props: {
                 if (!showAllLines) {
                     htmlValue = "";
                     for (let i: number = 0; i < props.fewLinesCount; i++) {
-                        htmlValue += pElemList[i].outerHTML; // naspet do <p>line 1</p>
+                        htmlValue += pElemList[i].outerHTML; // back into <p>line 1</p>
                     }
                 }
-                // pridame button na koniec posledneho riadku
+                // we add a button at the end of the last line
                 buttonExpandCollapse = <Button icon={showAllLines ? "pi pi-angle-double-left" : "pi pi-angle-double-right"} onClick={() => setShowAllLines(!showAllLines)}
                                                className="x-button-multiline-expand-collapse" style={{marginLeft: '0rem'}}/>;
             }

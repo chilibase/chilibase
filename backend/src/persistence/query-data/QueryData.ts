@@ -35,7 +35,7 @@ export abstract class QueryData {
 
     abstract isMainQueryData(): boolean;
 
-    // vracia true prave vtedy ked this.addFilterField vytvori nejaku podmienku
+    // returns true exactly when this.addFilterField creates some condition
     isFilterValueNotNull(filterValue: DataTableFilterMetaData | DataTableOperatorFilterMetaData): boolean {
         if ('operator' in filterValue) {
             // composed condition
@@ -55,11 +55,11 @@ export abstract class QueryData {
     }
 
     isFilterItemNotNull(filterItem: DataTableFilterMetaData): boolean {
-        // podmienka filterItem.value !== '' je workaround, spravne by bolo na frontende menit '' na null v onChange metode filter input-u
-        // problem je, ze nemame custom input filter pre string atributy, museli by sme ho dorobit (co zas nemusi byt az taka hrozna robota)
+        // the condition filterItem.value !== '' is a workaround, correctly the frontend should change '' to null in the onChange method of the filter input
+        // the problem is that we do not have a custom input filter for string attributes, we would have to add it (which again may not be such terrible work)
         return (filterItem.value !== null && filterItem.value !== ''
                 && !(filterItem.matchMode === FilterMatchMode.BETWEEN && Array.isArray(filterItem.value) && filterItem.value.length === 2 && filterItem.value[0] === null && filterItem.value[1] === null)
-                // toto je hotfix - je to tu koli tomu ze nevieme po zmene match mode vymazat hodnotu a v urcitych pripadoch pride na backend (matchMode = X_FILTER_ELEMENT && customFilterItems = undefined && value = "nieco") a spadne to
+                // this is a hotfix - it is here because we cannot clear the value after a match mode change and in certain cases it arrives at the backend (matchMode = X_FILTER_ELEMENT && customFilterItems = undefined && value = "something") and it crashes
                 && !(filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.AUTO_COMPLETE && (filterItem as ExtendedDataTableFilterMetaData).customFilterItems === undefined)
                 && !(filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.FILTER_ELEMENT && (filterItem as ExtendedDataTableFilterMetaData).customFilterItems === undefined))
                 || filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.IS_NOT_NULL || filterItem.matchMode as ExtendedFilterMatchMode === ExtendedFilterMatchMode.IS_NULL;
@@ -96,8 +96,8 @@ export abstract class QueryData {
         let whereItem: string = "";
         if (this.isFilterItemNotNull(filterItem)) {
             const dbField: string = this.getFieldFromPathField(filterField);
-            // TODO - pouzit paramName :1, :2, :3, ... ?
-            let paramName: string = dbField; // paramName obsahuje "." (napr. t2.attrib)
+            // TODO - use paramName :1, :2, :3, ... ?
+            let paramName: string = dbField; // paramName contains "." (e.g. t2.attrib)
             if (paramIndex !== undefined) {
                 paramName += "_" + paramIndex;
             }
@@ -172,7 +172,7 @@ export abstract class QueryData {
                 default:
                     console.log(`FilterMatchMode "${filterItem.matchMode}" not implemented`);
             }
-            // kontrola - vzdy by mala existovat whereItem, ak metoda this.isFilterItemNotNull vratila true
+            // check - whereItem should always exist if the method this.isFilterItemNotNull returned true
             if (whereItem === "") {
                 throw `Unexpected error - function this.isFilterItemNotNull(filterItem) returned true, but whereItem was not created. filterItem = ${JSON.stringify(filterItem)}`;
             }
@@ -206,7 +206,7 @@ export abstract class QueryData {
     }
 
     getFieldFromAliasPath(path: string): string {
-        // ak sa jedna o koncovy atribut (napr. t2.attrib), tak ho vratime
+        // if it is a leaf attribute (e.g. t2.attrib), we return it
         const posDot: number = path.indexOf(".");
         if (posDot === -1) {
             throw "Unexpected error - path " + path + " has no alias";
@@ -215,11 +215,11 @@ export abstract class QueryData {
         if (posDotSecond === -1) {
             return path;
         }
-        // jedna sa o path
+        // it is a path
         const assoc: string = path.substring(0, posDotSecond);
         const remainingPath: string = path.substring(posDotSecond + 1);
 
-        // ziskame atribut zo zvysnej path
+        // we get the attribute from the remaining path
         const aliasForAssoc: string = this.getAliasForAssoc(assoc);
         return this.getFieldFromAliasPath(aliasForAssoc + "." + remainingPath);
     }
@@ -227,7 +227,7 @@ export abstract class QueryData {
     getAliasForAssoc(assoc: string): string {
         let aliasForAssoc: string = this.assocAliasMap.get(assoc);
         if (aliasForAssoc === undefined) {
-            // asociaciu este nemame pridanu, pridame ju
+            // we do not have the association added yet, we add it
             aliasForAssoc = this.rootAlias + "_" + (this.assocAliasMap.size + 1).toString();
             this.assocAliasMap.set(assoc, aliasForAssoc);
         }
@@ -237,10 +237,10 @@ export abstract class QueryData {
     addDBCastIfNeeded(dbField: string, field: string): string {
         const fieldMetadata: Field = this.entityMetadataService.getFieldByPath(this.entity, field);
         if (fieldMetadata.type === "jsonb") {
-            // ak neprecastujeme typ jsonb, tak nam vyhodi chybu
-            // toto je potrebne ak chceme aby fungovalo jednoduche zadanie textu do filtra na stlpci ktory zobrazuje jsonb atribut
-            // (fts filter funguje s jsonb atributmi pekne aj bez tejto upravy (tam sa vzdy robi cast na ::VARCHAR))
-            // ak dbField castujeme cez ::VARCHAR, treba ho uviest v zatvorkach, inac nam TypeORM neurobi replace na nazov stlpca
+            // if we do not cast the jsonb type, it throws an error
+            // this is needed if we want a simple text entry into the filter on a column that displays a jsonb attribute to work
+            // (the fts filter works with jsonb attributes fine even without this adjustment (there a cast to ::VARCHAR is always done))
+            // if we cast dbField via ::VARCHAR, it has to be put in parentheses, otherwise TypeORM will not replace it with the column name
             dbField = `(${dbField})::VARCHAR`;
         }
         return dbField;
@@ -254,7 +254,7 @@ export abstract class QueryData {
     }
 
     addParams(params: {}) {
-        // TODO - pridat kontrolu ci sa neprepisu (ak nahodou budu mat rovnake key, tak vitazi item z params)
+        // TODO - add a check whether they get overwritten (if they happen to have the same key, the item from params wins)
         this.params = {...this.params, ...params};
     }
 
@@ -265,9 +265,9 @@ export abstract class QueryData {
         // TODO - create DB conversion functions if used on multiple places
         let dbFieldWithCast: string;
         if (fieldMetadata.type === "boolean") {
-            // ak dbField castujeme cez ::VARCHAR (::INT), treba ho uviest v zatvorkach, inac nam TypeORM neurobi replace na nazov stlpca
-            dbFieldWithCast = `(${dbField})::INT::VARCHAR`; // nechceme vytvorit hodnoty |true| reps. |false|, radsej vytvorime |1| resp. |0|
-                                        // - tie sa budu menej pliest s vyhladavaniami zameranymi na ine stlpce
+            // if we cast dbField via ::VARCHAR (::INT), it has to be put in parentheses, otherwise TypeORM will not replace it with the column name
+            dbFieldWithCast = `(${dbField})::INT::VARCHAR`; // we do not want to create values |true| or |false|, we prefer to create |1| or |0|
+                                        // - those will collide less with searches aimed at other columns
         }
         else if (fieldMetadata.type === "decimal") {
             // decimal attributes (financial sums) are displayed like: 123,45 - we change "." to ","
@@ -280,25 +280,25 @@ export abstract class QueryData {
             dbFieldWithCast = `to_char(${dbField}, 'DD.MM.YYYY HH24:MI:SS')`;
         }
         else {
-            // ak dbField castujeme cez ::VARCHAR, treba ho uviest v zatvorkach, inac nam TypeORM neurobi replace na nazov stlpca
+            // if we cast dbField via ::VARCHAR, it has to be put in parentheses, otherwise TypeORM will not replace it with the column name
             dbFieldWithCast = `(${dbField})::VARCHAR`;
         }
-        // prefix (napr. RC pre rodne cislo) nam umoznuje zafixovat nejaku hodnotu vo vyhladavacom retazci na konkretny stlpec
-        // napr. ak zadame RC801207, bude sa retazec 801207 hladat len medzi hodnotami zo stlpca rodne cislo
+        // a prefix (e.g. RC for birth number) lets us pin some value in the search string to a specific column
+        // e.g. if we enter RC801207, the string 801207 will be searched only among values from the birth number column
         const dbPrefix: string = prefix ? `'${prefix}' || ` : ``;
         this.ftsFieldList.push(`coalesce(${dbPrefix}${dbFieldWithCast}, '')`);
     }
 
-    // pouzivam ako separator namiesto space-u (' ') lebo space sa moze nachadzat v hodnotach
-    // otazne je ci je to vhodna volba pri pouziti GIN indexu
+    // I use it as a separator instead of a space (' ') because a space can occur in the values
+    // it is questionable whether it is a suitable choice when using a GIN index
     static ftsSeparator: string = '|';
 
     createFtsWhereItemForQuery(ftsValue: string, ftsSeparator: string): string | "" {
         let whereItem: string | "" = "";
         if (this.ftsFieldList.length > 0) {
-            // na zaciatok a na koniec pridavame separator '|', vyuzijeme ich ak bude operator startsWith/endsWidth/equals
+            // we add the separator '|' at the beginning and at the end, we use them if the operator is startsWith/endsWidth/equals
             // ILIKE - I = insensitive case
-            // <schema>.unaccent - odstranuje diakritiku - neviem ci je lepsie ju volat raz alebo radsej pre kazdy field zvlast
+            // <schema>.unaccent - removes diacritics - I do not know whether it is better to call it once or rather for each field separately
             const ftsValueDB: string = stringAsDB(`%${ftsValue}%`);
             whereItem = `${Utils.getSchema()}.unaccent('${ftsSeparator}' || ${this.ftsFieldList.join(` || '${ftsSeparator}' || `)} || '${ftsSeparator}') ILIKE ${Utils.getSchema()}.unaccent(${ftsValueDB})`;
         }

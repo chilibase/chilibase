@@ -12,7 +12,7 @@ export const OcfDropdown = (props: {
 
     const onChange = (e: DropdownChangeEvent) => {
         let value: any | undefined;
-        // specialna null polozka ma label === ""
+        // special null item has label === ""
         if (e.value.label === "") {
             value = undefined;
         }
@@ -22,8 +22,8 @@ export const OcfDropdown = (props: {
         props.onChange(value);
     }
 
-    // pridame prazdnu polozku
-    // polozku pridavame do kopie zoznamu, lebo inac sa nam "polozka" v props.optionalCustomFilters "mnozi"
+    // we add an empty item
+    // we add the item into a copy of the list, otherwise the "item" in props.optionalCustomFilters "multiplies"
     let options: any[] = [...props.optionalCustomFilters];
     options.splice(0, 0, {label: ""});
 

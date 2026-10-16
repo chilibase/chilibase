@@ -18,7 +18,7 @@ export const TableFilterSelectInput = (props: {entity: string; path: string; val
     }
     const displayField = fieldList[fieldList.length - 1];
 
-    // parameter [] zabezpeci ze sa metoda zavola len po prvom renderingu (a nie po kazdej zmene stavu (zavolani setNieco()))
+    // parameter [] ensures that the method is called only after the first rendering (and not after every state change (calling setSomething()))
     useEffect(() => {
         findOptions(props.entity, props.path, displayField);
     },[]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -33,13 +33,13 @@ export const TableFilterSelectInput = (props: {entity: string; path: string; val
         const options: any[] = await Utils.fetchRows(xAssoc.entityName, props.filter, props.sortField ?? displayField);
         const emptyOption: {[field: string]: any;} = {};
         emptyOption[displayField] = Utils.dropdownEmptyOptionValue;
-        options.splice(0, 0, emptyOption); // null polozka (nepridavat pre not null atributy)
+        options.splice(0, 0, emptyOption); // null item (do not add for not null attributes)
         setOptions(options);
     }
 
-    // dropdown pouziva ako optionValue displayField (nie cely objekt) - je to koli problemom s prazdnym riadkom (nepodarilo sa to spravit inac)
-    // appendTo={document.body} appenduje overlay panel na element body - panel je vdaka tomu viditelny aj ked ma jeho parent (TH/TD element tabulky)
-    // nastavny overflow: hidden, resp. koli scrollovaniu by overlay panel "nevysiel" von z tabulky, v pripade ze je tabulka mala (napr. ma 1 riadok)
+    // the dropdown uses displayField as optionValue (not the whole object) - this is because of problems with the empty row (it could not be done otherwise)
+    // appendTo={document.body} appends the overlay panel to the body element - thanks to that the panel is visible even when its parent (TH/TD element of the table)
+    // has overflow: hidden set, or because of scrolling the overlay panel would not "go out" of the table, in the case that the table is small (e.g. it has 1 row)
     return (
         <Dropdown appendTo={document.body} style={{width: '100%'}} className="ui-column-filter"
                   optionLabel={displayField} optionValue={displayField} value={props.value} options={options} onChange={onValueChange}/>

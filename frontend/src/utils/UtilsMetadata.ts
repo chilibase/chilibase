@@ -5,11 +5,11 @@ import type {BetweenFilterProp} from "../components/lazy-data-table";
 import {UtilsMetadataCommon} from "../common/UtilsMetadataCommon";
 import type {BrowseMetaMap} from "../common/types";
 
-// idelany nazov: UtilsEntityMetadata - ale strasne dlhy
-// tato funkcionalita by mala ist bud do tried XEntity, XField alebo lepsie do nejakeho servisu
-// ekvivalentna funkcionalita sa nachadza aj na servri v servise EntityMetadataService.ts (TODO - v buducnosti spravit spolocnu triedu/servis)
+// ideal name: UtilsEntityMetadata - but terribly long
+// this functionality should go either into classes XEntity, XField or better into some service
+// equivalent functionality is also on the server in the service EntityMetadataService.ts (TODO - in the future make a common class/service)
 export class UtilsMetadata {
-    // nacachovane metadata (setuju sa v App.fetchAndSetXMetadata)
+    // cached metadata (set in App.fetchAndSetXMetadata)
     private static xBrowseMetaMap: BrowseMetaMap;
 
     static async fetchAndSetXEntityMap(): Promise<any> {
@@ -24,7 +24,7 @@ export class UtilsMetadata {
         }
     }
 
-    // docasne sem, kym nemame jednotny NumberField/TableNumberField
+    // temporarily here, until we have a unified NumberField/TableNumberField
     static getParamsForInputNumber(xField: Field): {useGrouping: boolean; fractionDigits?: number; min?: number; max?: number; size?: number} {
         let useGrouping: boolean = true;
         let scale: number | undefined = undefined;
@@ -41,9 +41,9 @@ export class UtilsMetadata {
         else if (xField.type === "number") {
             useGrouping = false;
             scale = 0;
-            precision = xField.width; // number pouziva width
+            precision = xField.width; // number uses width
             if (precision === undefined) {
-                precision = xField.precision; // nech to aj takto zafunguje...
+                precision = xField.precision; // let it work this way too...
             }
             size = precision;
         }
@@ -72,7 +72,7 @@ export class UtilsMetadata {
     }
 
     //static CHAR_SIZE: number = 0.57; // 0.57rem (8px)
-    static CHAR_SIZE: number = 0.5; // 0.5rem (7px) - skusime
+    static CHAR_SIZE: number = 0.5; // 0.5rem (7px) - we will try
 
     static computeColumnWidth(xField: Field, betweenFilter: BetweenFilterProp, filterMenuInFilterRow: boolean, formColumnType: string | undefined, header: string | undefined, sortableButtonInHeader: boolean, filterButtonInHeader: boolean): string | undefined {
         let width: number | undefined;
@@ -86,13 +86,13 @@ export class UtilsMetadata {
                 width = UtilsMetadata.computeColumnWidthBase(size, 0.5 + 0.5);
             }
             else if (xField.type === "date") {
-                width = UtilsMetadata.computeColumnWidthBase(11, 0.25 + 1.25 + 0.25); // napr. 31.12.2021 (poznamka: dal som 11 lebo vo filtri nebolo vidno cely datum), 1.25 rem date picker button
+                width = UtilsMetadata.computeColumnWidthBase(11, 0.25 + 1.25 + 0.25); // e.g. 31.12.2021 (note: I used 11 because the whole date was not visible in the filter), 1.25 rem date picker button
             }
             else if (xField.type === "datetime") {
-                width = UtilsMetadata.computeColumnWidthBase(10 + 9, 0.25 + 1.25 + 0.25); // napr. 31.12.2021 03:03:00
+                width = UtilsMetadata.computeColumnWidthBase(10 + 9, 0.25 + 1.25 + 0.25); // e.g. 31.12.2021 03:03:00
             }
             else if (xField.type === "boolean") {
-                width = 1.43 + 0.5 + 0.5; // checkbox ma sirku 20px
+                width = 1.43 + 0.5 + 0.5; // checkbox has a width of 20px
             }
             else {
                 throw `Field ${xField.name}: unknown xField.type = ${xField.type}`;
@@ -132,14 +132,14 @@ export class UtilsMetadata {
                     }
                 }
                 else if (xField.type === "boolean") {
-                    width = 1.43 + 0.5 + 0.5; // checkbox ma sirku 20px
+                    width = 1.43 + 0.5 + 0.5; // checkbox has a width of 20px
                 }
                 else {
                     throw `Field ${xField.name}: unknown xField.type = ${xField.type}`;
                 }
             }
             else if (formColumnType === "dropdown" || formColumnType === "autoComplete" || formColumnType === "searchButton") {
-                // vyratame sirku inputu
+                // we compute the width of the input
                 const padding = 0.21 + 0.07 + 0.5; // padding is 2.94px + 1px border + 7px padding in input
                 if (xField.type === "string") {
                     width = UtilsMetadata.computeColumnWidthBase(xField.length, padding + padding); // padding left + right
@@ -149,15 +149,15 @@ export class UtilsMetadata {
                     width = UtilsMetadata.computeColumnWidthBase(size, padding + padding);
                 }
                 else if (xField.type === "date") {
-                    width = UtilsMetadata.computeColumnWidthBase(10, padding + padding); // napr. 31.12.2021
+                    width = UtilsMetadata.computeColumnWidthBase(10, padding + padding); // e.g. 31.12.2021
                 }
                 else if (xField.type === "datetime") {
-                    width = UtilsMetadata.computeColumnWidthBase(10 + 9, padding + padding); // napr. 31.12.2021 03:03:00
+                    width = UtilsMetadata.computeColumnWidthBase(10 + 9, padding + padding); // e.g. 31.12.2021 03:03:00
                 }
                 else {
                     throw `Field ${xField.name}: xField.type = ${xField.type} not implemented for dropdown/autoComplete/searchButton`;
                 }
-                // pridame sirku buttonu
+                // we add the width of the button
                 if (formColumnType === "dropdown") {
                     if (width !== undefined) {
                         width += 2; // button for dropdown
@@ -184,7 +184,7 @@ export class UtilsMetadata {
                 width += 1.25; // filter menu icon
             }
         }
-        // ak je label dlhsi ako sirka stlpca, tak sirka stlpca bude podla label-u
+        // if the label is longer than the column width, the column width will follow the label
         if (header !== undefined) {
             let widthHeader = UtilsMetadata.computeColumnWidthBase(header.length, 0.5); // padding (7px)
             if (sortableButtonInHeader && widthHeader !== undefined) {

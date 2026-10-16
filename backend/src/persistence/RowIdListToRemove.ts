@@ -1,7 +1,7 @@
-// pomocna struktura - ukladame si sem id-cka zaznamov ktore neskor vymazeme
-// poradie id-ciek je dolezite aby nam mazanie zaznamov nepadlo na fk-constraintoch
-// hromadime id-cka s rovnakou entity, pre 1 item EntityRowIdList bude vygenerovany 1 DELETE FROM
-// nie je to dokonala optimalizacia ale na vecsinu pripadov nam staci...
+// helper structure - we store here ids of records that we will delete later
+// the order of the ids is important so that deleting records does not fail on fk constraints
+// we accumulate ids with the same entity, for 1 EntityRowIdList item 1 DELETE FROM will be generated
+// it is not a perfect optimization but it is enough for most cases...
 
 export interface EntityRowIdList {
     entity: string;
@@ -23,7 +23,7 @@ export class RowIdListToRemove {
                 lastItem.rowIdList.push(rowId);
             }
             else {
-                // zmenila sa entita, vytvorime novy zaznam
+                // the entity changed, we create a new record
                 this.addNewEntityItem(entity, rowId);
             }
         }

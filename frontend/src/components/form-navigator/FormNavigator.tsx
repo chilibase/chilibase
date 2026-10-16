@@ -34,19 +34,19 @@ export class FormNavigator extends Component<FormNavigatorProps> {
     }
 
     openForm(newFormElement: ReactElement | null): void {
-        //console.log("zavolany FormNavigator.openForm");
+        //console.log("called FormNavigator.openForm");
         //console.log(newFormElement);
 
-        // vzdy treba vytvorit novy objekt a ten set-nut do stavu, ak len pridame prvok do pola, tak react nevyvola render!
-        // shallow copy klonovanie (vytvara sa kopia referencii)
+        // we always need to create a new object and set that into the state, if we only add an element into the array, react does not trigger a render!
+        // shallow copy cloning (a copy of the references is created)
         const formElementsCloned: FormElement[] = this.state.formElements.slice();
 
         if (newFormElement !== null) {
             formElementsCloned.push({elem: newFormElement, xElemRef: createRef()});
         }
         else {
-            // user stlacil cancel/back - vratime sa na predchadzajuci formular
-            // vyhodime posledny element
+            // the user pressed cancel/back - we return to the previous form
+            // we drop the last element
             if (formElementsCloned.length > 0) {
                 formElementsCloned.pop();
             }
@@ -56,15 +56,15 @@ export class FormNavigator extends Component<FormNavigatorProps> {
         }
 
         this.setState({formElements: formElementsCloned}, () => {
-            // ked sa na mobile preklikavame medzi formularmi, tak browser drzi nascrollovanu poziciu ale my sa chceme vratit na zaciatok stranky
-            // (tento callback sa zavola po refreshnuti stranky)
+            // when on mobile we click through between forms, the browser keeps the scrolled position but we want to return to the start of the page
+            // (this callback is called after the page is refreshed)
 
-            // taketo nieco nezafungovalo, neviem preco...
+            // something like this did not work, I don't know why...
             // setTimeout(function() {
             //     window.scrollTo(0,0);
             // }, 100);
 
-            // tak scrollujeme k menu, ktore je v hornej casti
+            // so we scroll to the menu, which is in the upper part
             const menuElem = document.getElementById("menuId")
             if (menuElem !== null) {
                 menuElem.scrollIntoView();
@@ -107,14 +107,14 @@ export class FormNavigator extends Component<FormNavigatorProps> {
         const formElements: FormElement[] = this.getAllFormElements();
         const forms = formElements.map((formElement, index) => {
                 const displayed: boolean = (index === formElements.length - 1);
-                // klonovanim elementu pridame atribut openForm={this.openForm} (nemusime tento atribut pridavat pri vytvarani elementu)
+                // by cloning the element we add the attribute openForm={this.openForm} (we don't have to add this attribute when creating the element)
                 const formElementCloned = cloneElement(formElement.elem as ReactElement<any>, {ref: formElement.xElemRef, openForm: this.openForm, displayed: displayed}/*, (formElement as any).children*/);
-                // prvych n - 1 komponentov skryjeme cez display: "none" a az posledny vyrenderujeme naozaj (cez display: "block")
-                // TODO - do buducnosti - ak nechceme drzat stav componentu cez display: "none", staci vratit null (komponent vobec nevyrenderujeme)
+                // we hide the first n - 1 components via display: "none" and only the last one we really render (via display: "block")
+                // TODO - for the future - if we don't want to keep the component state via display: "none", it is enough to return null (we don't render the component at all)
                 const display: string = (displayed ? "block" : "none");
-                // TODO - neviem ci naisto treba key={index}
-                // max-width: 100% - koli chybe ked sa na mobile nezobrazovala lava cast tabulky/formularu (nedalo sa k nej doscrollovat)
-                // poznamka2: tento problem sa vyskytoval v suvislosti s flex-direction: column na .App-form - ten sme zrusili a preto maxWidth (zatial) odstranujeme
+                // TODO - I don't know for sure whether key={index} is needed
+                // max-width: 100% - because of a bug when on mobile the left part of the table/form was not displayed (it was not possible to scroll to it)
+                // note2: this problem occurred in connection with flex-direction: column on .App-form - we removed that and therefore we remove maxWidth (for now)
                 return <div key={index} style={{display: display /*, maxWidth: "100%"*/}}>{formElementCloned}</div>;
             }
         );

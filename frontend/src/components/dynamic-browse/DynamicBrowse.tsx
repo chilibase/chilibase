@@ -75,7 +75,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
     }
 
     onEditModeStart() {
-        // zmeny budeme robit na klonovanych datach - aby sme sa vedeli cez cancel vratit do povodneho stavu
+        // we will make the changes on cloned data - so that via cancel we can return to the original state
         let browseMetaCloned: BrowseMeta = _.cloneDeep(this.state.browseMeta);
         this.setState({browseMeta: browseMetaCloned, editMode: true});
     }
@@ -95,16 +95,16 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
         }
         catch (e) {
             Utils.showErrorMessage("Save row XBrowseMeta failed.", e);
-            return; // zostavame v edit mode
+            return; // we stay in edit mode
         }
 
-        // zmeny ulozime aj do cache formularov
+        // we also save the changes into the forms cache
         UtilsMetadata.setXBrowseMeta(this.props.entity, this.props.browseId, browseMeta);
         this.setState({editMode: false});
     }
 
     onEditModeCancel() {
-        // vratime formular z cache, resp. defaultny formular
+        // we return the form from the cache, or the default form
         const browseMeta: BrowseMeta = this.getBrowseMeta();
         this.setState({editMode: false, browseMeta: browseMeta});
     }
@@ -134,7 +134,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
                     columnMeta.header = editColumnDialogValues.header;
                     columnMeta.dropdownInFilter = editColumnDialogValues.dropdownInFilter;
                 }
-                // TODO - tu mozno treba setnut funkciu - koli moznej asynchronicite
+                // TODO - here we maybe need to set a function - because of possible asynchronicity
                 this.setState({browseMeta: browseMeta, editColumnDialogOpened: false});
                 return;
             }
@@ -161,7 +161,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
         if (index !== undefined) {
             const browseMeta = this.state.browseMeta;
             browseMeta.columnMetaList.splice(index, 1);
-            // TODO - tu mozno treba setnut funkciu - koli moznej asynchronicite
+            // TODO - here we maybe need to set a function - because of possible asynchronicity
             this.setState({browseMeta: browseMeta});
         }
     }
@@ -179,7 +179,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
         if (index !== undefined) {
             const browseMeta = this.state.browseMeta;
             UtilsCommon.arrayMoveElement(browseMeta.columnMetaList, index, offset);
-            // TODO - tu mozno treba setnut funkciu - koli moznej asynchronicite
+            // TODO - here we maybe need to set a function - because of possible asynchronicity
             this.setState({browseMeta: browseMeta});
         }
     }
@@ -204,7 +204,7 @@ export class DynamicBrowse extends Component<DynamicBrowseProps> {
             const id = selectedRow[entityMeta.idField];
             // we add property id={selectedRow.<id>} into formElement
             const formElementCloned = cloneElement(formElement, {id: id}, formElement.children);
-            // openForm pridavame automaticky v XFormNavigator3 pri renderovani komponentu
+            // openForm we add automatically in XFormNavigator3 when rendering the component
             (this.props as any).openForm(formElementCloned);
         }
         else {

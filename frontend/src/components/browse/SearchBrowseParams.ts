@@ -1,7 +1,7 @@
 import type {DataTableFilterMetaData} from "primereact/datatable";
 import type {FilterOrFunction} from "../../utils/types";
 
-// parametre ktore odovzdavame zo SearchButton do search table a dalej do LazyDataTable
+// parameters that we pass from SearchButton into the search table and further into LazyDataTable
 
 export interface FieldFilter {
     field: string;
@@ -10,7 +10,7 @@ export interface FieldFilter {
 
 export interface SearchBrowseParams {
     onChoose: (chosenRow: any) => void;
-    displayFieldFilter?: FieldFilter; // undefined sposobi ze sa neaplikuje filter - search table zobrazi vsetky mozne hodnoty
-    customFilter?: FilterOrFunction; // zapiseme sem funkciu, ktora vracia CustomFilter, aby sa ta funkcia volala co najneskor
-                                        // - v case otvorenia SearchBrowse, dovod je ten ze funkcia moze citat objekt formulara a ten sa moze v case menit
+    displayFieldFilter?: FieldFilter; // undefined causes the filter not to be applied - the search table displays all possible values
+    customFilter?: FilterOrFunction; // we write here a function that returns CustomFilter, so that the function is called as late as possible
+                                        // - at the time of opening SearchBrowse, the reason is that the function can read the form object and that can change over time
 }

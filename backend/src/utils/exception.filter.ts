@@ -23,7 +23,7 @@ export class ExceptionFilter implements NestExceptionFilter {
             };
         }
         else if (exception instanceof QueryFailedError) {
-            // tuto exception hadze TypeORM ak nezbehne nejake query
+            // TypeORM throws this exception if some query fails
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             responseBody = {
                 statusCode: status,
@@ -34,8 +34,8 @@ export class ExceptionFilter implements NestExceptionFilter {
             };
         }
         else if (exception instanceof Error) {
-            // default (toto by mohlo ist aj v produkcii pre vsetky pripady)
-            // tadeto ide aj AppError
+            // default (this could also be used in production for all cases)
+            // AppError also goes through here
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             responseBody = {
                 statusCode: status,
@@ -43,13 +43,13 @@ export class ExceptionFilter implements NestExceptionFilter {
                 exceptionName: exception.name
                 //stacktrace: exception.stack
             };
-            // AppError netreba logovat
+            // AppError does not need to be logged
             if (!(exception instanceof AppError)) {
                 console.log(exception.stack);
             }
         }
         else {
-            // exception typu string alebo number (throw 'nieco', resp. throw 300)
+            // exception of type string or number (throw 'something', or throw 300)
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             responseBody = {
                 statusCode: status,

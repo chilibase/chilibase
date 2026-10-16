@@ -58,7 +58,7 @@ export class SubQueryData extends QueryData {
     createFtsWhereItemForSubQuery(mainQueryBuilderForExistsSubQueries: SelectQueryBuilder<unknown> | undefined, ftsValue: string, ftsSeparator: string): string | "" {
         let where: string | "" = "";
         if (mainQueryBuilderForExistsSubQueries) {
-            // pridame podmienku EXISTS (subquery)
+            // we add the EXISTS (subquery) condition
             const selectSubQueryBuilder: SelectQueryBuilder<unknown> = this.createQueryBuilderForFts(mainQueryBuilderForExistsSubQueries, `1`, ftsValue, ftsSeparator);
             if (selectSubQueryBuilder) {
                 where = `EXISTS (${selectSubQueryBuilder.getQuery()})`;

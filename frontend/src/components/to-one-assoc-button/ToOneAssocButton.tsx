@@ -7,7 +7,7 @@ import {UtilsMetadataCommon} from "../../common/UtilsMetadataCommon";
 
 export const ToOneAssocButton = (props: {form: FormBase; assocField: string; assocForm: any; label?: string; buttonLabel?: string;}) => {
 
-    // mozno lepsie by bolo sem dat xEntityAssoc.idField ale postaci aj *FAKE*
+    // maybe it would be better to put xEntityAssoc.idField here but *FAKE* is enough too
     props.form.addField(props.assocField + '.*FAKE*');
 
     const label = props.label !== undefined ? props.label : props.assocField;
@@ -18,9 +18,9 @@ export const ToOneAssocButton = (props: {form: FormBase; assocField: string; ass
     const onClickButton = (e: any) => {
         const xEntity = UtilsMetadataCommon.getEntity(props.form.getEntity());
         const xEntityAssoc = UtilsMetadataCommon.getEntityForAssocToOne(xEntity, props.assocField)
-        // OTAZKA - ziskavat id priamo z root objektu? potom ho vsak treba do root objektu pridat
+        // QUESTION - obtain the id directly from the root object? but then it has to be added to the root object
         const id = assocObject !== null ? assocObject[xEntityAssoc.idField] : null;
-        // klonovanim elementu pridame atribut id
+        // by cloning the element we add the attribute id
         const assocForm = cloneElement(props.assocForm, {id: id}, props.assocForm.children);
         (props.form.props as any).openForm(assocForm);
     }

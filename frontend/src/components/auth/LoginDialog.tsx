@@ -8,7 +8,7 @@ import {LoginForm} from "./LoginForm";
 // TODO - replace setAuthSession with onLogin(username: string, accessToken: string) and call this props.onLogin form onLogin
 export const LoginDialog = (props: {dialogOpened: boolean; setAuthSession: (authSession: AuthSession | null) => void; onHideDialog: (ok: boolean) => void; customUserService?: string;}) => {
 
-    // bez tejto metody by pri opetovnom otvoreni dialogu ponechal povodne hodnoty
+    // without this method, when opening the dialog again it would keep the original values
     const onShow = () => {
     }
 
@@ -16,7 +16,7 @@ export const LoginDialog = (props: {dialogOpened: boolean; setAuthSession: (auth
         props.onHideDialog(true);
     }
 
-    // poznamka: renderovanie vnutornych komponentov Dialogu sa zavola az po otvoreni dialogu
+    // note: rendering of the inner components of the Dialog is called only after the dialog is opened
     return (
         <Dialog visible={props.dialogOpened} onShow={onShow} onHide={() => props.onHideDialog(false)}>
             <LoginForm onLogin={onLogin} customUserService={props.customUserService}/>
