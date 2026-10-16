@@ -19,7 +19,7 @@ export default defineConfig({
       { text: 'Features', link: '/features/browse' },
       { text: 'Reference', link: '/reference/packages' },
       {
-        text: '0.6.3',
+        text: '0.7.0',
         items: [
           { text: 'GitHub', link: 'https://github.com/chilibase/chilibase' },
           { text: 'Car demo', link: 'https://github.com/chilibase/car-demo' }

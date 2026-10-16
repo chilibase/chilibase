@@ -2,7 +2,7 @@
 
 Chilibase is a fullstack framework for **model-driven** CRUD apps. You define TypeORM entities; the UI (browse tables and forms) is built from that model with React and PrimeReact.
 
-Current library version in this repository is **0.6.3** (`@chilibase/frontend` and `@chilibase/backend`). Node **22+** and pnpm **11+** are required.
+Current library version in this repository is **0.7.0** (`@chilibase/frontend` and `@chilibase/backend`). Node **22.12+** and pnpm **11+** are required.
 
 ## Live demo
 
