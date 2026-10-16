@@ -6,7 +6,8 @@ import type {FormEvent} from "primereact/ts-helpers";
 
 // wrapper for Calendar component
 // TODO - nefunguje rezim datetime pre zapis - dorobit konverziu!
-export const DateInput = (props: {
+
+export interface DateInputProps {
     id?: string;
     value: Date | null;
     onChange: (value: Date | null) => void;
@@ -14,8 +15,20 @@ export const DateInput = (props: {
     error?: string; // chybova hlaska, ak chceme field oznacit za nevalidny
     scale?: DateScale;
     datetime?: boolean;
-}) => {
-    const scale = props.scale ?? DateScale.Date;
+}
+
+export const DateInput = (
+    {
+        scale = DateScale.Date,
+        datetime = false,
+        ...propsRest
+    }
+    : DateInputProps) => {
+    const props = {
+        scale,
+        datetime,
+        ...propsRest
+    }
 
     // true, ak uzivatel typuje hodnotu
     // false, ak uz uzivatel dotypoval (zavolal sa onBlur) - hodnotu berieme "z hora" (z prop.value)
@@ -88,14 +101,12 @@ export const DateInput = (props: {
         return view;
     }
 
-    const datetime: boolean = props.datetime ?? false;
-
     // poznamka: parseDateTime nerobi ziadny parse, nechceme aby Calendar "rusil" uzivatela pri typovani datumu
     // konverzia (a volanie props.onChange) sa robi az pri onBlur
     return (
         <Calendar id={props.id} value={getInputValue()} onChange={onChange} disabled={props.readOnly} showIcon={true} showOnFocus={false}
                   view={getView(scale)} dateFormat={dateFormatCalendar(scale)} keepInvalid={true} parseDateTime={(text: string) => text as any}
-                  showTime={datetime} showSeconds={datetime} inputClassName={datetime ? 'x-input-datetime' : 'x-input-date'}
+                  showTime={props.datetime} showSeconds={props.datetime} inputClassName={props.datetime ? 'x-input-datetime' : 'x-input-date'}
                   onSelect={onSelect} onBlur={onBlur} {...Utils.createTooltipOrErrorProps(props.error)}/>
     );
 }
