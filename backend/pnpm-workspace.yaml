@@ -3,8 +3,6 @@ allowBuilds:
   '@parcel/watcher': true
   bcrypt: true
   unrs-resolver: true
-minimumReleaseAgeExclude:
-  - typeorm@1.1.2
 overrides:
   encoding-sniffer: 1.0.2
   unzipper: 0.12.5
