@@ -1,4 +1,4 @@
-import {FormBase} from "../form";
+import {FormBase} from "../form/FormBase";
 import {Component, type CSSProperties} from "react";
 import type {EntityRow} from "../../common/types";
 import {UtilsCommon} from "../../common/UtilsCommon";

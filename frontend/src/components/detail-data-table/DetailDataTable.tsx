@@ -1,4 +1,4 @@
-﻿import {FormBase, type FormProps} from "../form";
+﻿import {FormBase, type FormProps} from "../form/FormBase";
 import type {EntityRow} from "../../common/types";
 import React, {Component, type ReactElement, type ReactNode, Children, type CSSProperties, type ComponentType} from "react";
 import {TableSelectField} from "../select-field/TableSelectField";

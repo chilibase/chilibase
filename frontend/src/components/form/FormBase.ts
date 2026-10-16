@@ -3,7 +3,7 @@ import type {EntityRow} from "../../common/types";
 import {OperationType} from "../../utils/types";
 import {Utils} from "../../utils/Utils";
 import {type FieldOnChange, FormField} from "./FormField";
-import {type TableFieldOnChange, DetailDataTable, type RowTechData} from "../detail-data-table";
+import type {TableFieldOnChange, DetailDataTable, RowTechData} from "../detail-data-table";
 import type {FieldErrorMap, FormErrorMap} from "./FormErrors";
 import {type Params, UtilsCommon} from "../../common/UtilsCommon";
 import type {Entity} from "../../common/EntityMetadata";
